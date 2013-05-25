@@ -9,6 +9,7 @@ class BedSheetModule {
 		binder.bindImpl(Router#)
 		binder.bindImpl(ResultProcessorSource#)
 		binder.bindImpl(FileServer#)
+		binder.bindImpl(GzipCompressible#)
 		
 		binder.bindImpl(Request#).withScope(ServiceScope.perThread)
 		binder.bindImpl(Response#).withScope(ServiceScope.perThread)
