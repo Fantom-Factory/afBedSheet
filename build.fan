@@ -12,7 +12,9 @@ class Build : BuildPod {
 					"vcs.uri"		: "https://bitbucket.org/SlimerDude/afbedsheet",
 					"proj.name"		: "AF-BedSheet",
 					"license.name"	: "BSD 2-Clause License",
-					"repo.private"	: "true"
+					"repo.private"	: "true",
+			
+					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
 
 		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0", "util 1.0",

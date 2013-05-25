@@ -83,7 +83,7 @@ const class BedSheetWebMod : WebMod {
 		Env.cur.err.printLine("hello!")//TODO:log
 
 		pod := Pod.find(moduleName, false)
-		mod := Type.find(moduleName, false)
+		mod := (pod == null) ? Type.find(moduleName, false) : null
 
 		bob := RegistryBuilder()
 		
