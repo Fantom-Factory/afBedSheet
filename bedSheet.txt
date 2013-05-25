@@ -1,0 +1,59 @@
+
+bitbucket
+
+plague scanner
+filelet
+
+Play on words from Tapestry, and Fantom ghosty wears a BedSheet!
+
+Powerful, Flexible, Simple.
+
+Why? Because people are lazy!
+
+horizonal not vertical - other frameworks make you extend their classes, not BedSheet!
+
+Fix'n'Go
+ - No server restart
+ - option to kill server
+   - (maybe inject kill links into a html header... in dev mode)
+ - too confusing having the one main method for 2 modes, seperate them out
+ - restart process checks a timestamp file, or URL!!! yeah! and dies if URL invalid (dev only)
+   
+Mainly for REST, HTML a 2nd concern (e.g. no component generation)
+  Easy Routing for HTTP, get, post, etc
+  /index pages...?
+  
+  Routing default to XXXPage#httpMethod
+  /foo/3/dude => FooPage.get(int 3, int dude) (does the fromStr thing to convert params)
+   - allow value encoders service  
+
+Map for non 200 status codes
+ - special cases for 404, 500
+
+servicePods (with & without vers)
+
+Proxy session
+ 
+Big Error page for 500
+ - disabled in prod mode
+
+Easy gzip
+
+static files served under 'hash' folder
+ - Asset class, File field and genned file field
+ 
+template files served under version number
+
+RequireJS module support 
+
+use the tales JS compiler! A bloody neat idea!
+
+Pluggable Template generation
+ - moustache
+ - tales
+
+ 
+ Tales
+http://fantom.org/sidewalk/topic/1290
+ 
+Look into integrating other tales stuff
