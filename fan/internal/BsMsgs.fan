@@ -1,0 +1,4 @@
+
+internal const class BsMsgs {
+
+}
