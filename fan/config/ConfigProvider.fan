@@ -22,6 +22,8 @@ const class ConfigProvider : DependencyProvider {
 		config := configs[0] as Config
 		id := config.id // ?: ctx.paramname
 		
-		return configSource.get(id)
+		strVal := configSource.get(id)
+		// TODO: check for "fromStr"
+		return dependencyType.method("fromStr").call(strVal)
 	}
 }

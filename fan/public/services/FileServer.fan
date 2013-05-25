@@ -6,9 +6,6 @@ const class FileServer {
 	@Inject
 	private const Request req
 
-	@Inject @Deprecated
-	private const Route route
-
 	private const Uri:File dirMappings
 	
 	new make(Uri:File dirMappings, |This|in) {
@@ -32,12 +29,12 @@ const class FileServer {
 
 	File service() {
 		
-		// ??? pub path?
-		pubDir := dirMappings[`/pub/`]
-		pubPath := route.pattern.replace("*", "").toUri
-		// TODO:
+		rt := req.route.pattern.replace("*", "").toUri
 		
-		routePath := req.modRel[pubPath.path.size..-1]
+		pubDir := dirMappings[rt]
+		
+		routePath := req.routeRel
+		
 	    aa:= pubDir + routePath
 		return aa
 	}

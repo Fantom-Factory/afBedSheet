@@ -9,8 +9,6 @@ const class BedSheetWebMod : WebMod {
 	
 	const AtomicRef	registry	:= AtomicRef()
 	
-	const LocalStash reqStash	:= LocalStash(BedSheetWebMod#)
-	
 	Registry reg {
 		get { registry.val }
 		set { }
@@ -24,15 +22,15 @@ const class BedSheetWebMod : WebMod {
 	
 	
 	override Void onService() {
-		try {
-			
-			// set mod
-			req.mod = this
+		req.mod = this
+		stashManager := (ThreadStashManager) reg.dependencyByType(ThreadStashManager#)
 
+		try {
 			router := (Router) reg.dependencyByType(Router#)
 			
 			// match req to Route
 			match := router.match(req.modRel, req.method)
+			req.stash["bedSheet.routeMatch"] = match 
 
 //			if (match == null) throw DraftErr(404)
 			if (match == null) throw Err("404")
@@ -43,7 +41,6 @@ const class BedSheetWebMod : WebMod {
 			
 			weblet := null
 			
-			reqStash["route"] = match.route
 			
 			// TODO: have cache of |func|s that either build per thread or return cache
 			// naa, have router take a serive type, and have a service interface?
@@ -63,18 +60,21 @@ const class BedSheetWebMod : WebMod {
 			resPro.process(result)
 				
 			}
-			
+
+			// we don't flush ot close because if, say for example, we send a 304 Not Modified, then there's nothing to close!
+//			try { res.out.flush } catch (IOErr ioe) { }
 			// make sure everyone tidies up after themselves
-			try { res.out.flush } catch (IOErr ioe) { }
-			res.out.close
+//			res.out.close
 		}
 		catch (Err err) {
-			err.trace
+			buf:=StrBuf()
+			err.trace(Env.cur.out, ["maxDepth":500])
+			
 			// TODO: contribute Err handlers
 //			if (err isnot DraftErr) err = DraftErr(500, err)
 //			onErr(err)
 		} finally {
-			reqStash.clear
+			stashManager.cleanUp
 		}
 	}
 	
