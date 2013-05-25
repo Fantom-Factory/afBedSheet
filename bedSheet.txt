@@ -39,6 +39,8 @@ Big Error page for 500
 
 Easy gzip
 
+json
+
 static files served under 'hash' folder
  - Asset class, File field and genned file field
  

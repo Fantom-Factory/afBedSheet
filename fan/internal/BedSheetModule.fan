@@ -9,12 +9,34 @@ class BedSheetModule {
 		binder.bindImpl(Router#)
 		binder.bindImpl(ResultProcessorSource#)
 		binder.bindImpl(FileServer#)
-		binder.bindImpl(Request#)
+		
+		binder.bindImpl(Request#).withScope(ServiceScope.perThread)
+		binder.bindImpl(Response#).withScope(ServiceScope.perThread)
 	}
 	
 	@Contribute { serviceType=ResultProcessorSource# }
 	static Void configureResultProcessorSource(MappedConfig config) {
 		config.addMapped(File#, config.autobuild(FileResultProcessor#))
+	}
+	
+	
+	@Contribute { serviceType=ConfigSource# } 
+	static Void configureConfigSource(MappedConfig config) {
+//		config.addMapped("yahoo.WebSearchUri", 		`http://uk.search.yahoo.com/search`)
+	}
+
+	
+	@Contribute { serviceType=GzipCompressible# }
+	static Void configureGzipCompressible(OrderedConfig config) {
+		// add some standard compressible mime types
+		config.addUnordered(MimeType("text/plain"))
+		config.addUnordered(MimeType("text/css"))
+		config.addUnordered(MimeType("text/tab-separated-values"))
+		config.addUnordered(MimeType("text/html"))
+		config.addUnordered(MimeType("text/javascript"))
+		config.addUnordered(MimeType("text/xml"))
+		config.addUnordered(MimeType("application/rss+xml"))
+		config.addUnordered(MimeType("application/json"))
 	}
 	
 	// perInjection 'cos *we* shouldn't be caching these babies! 
@@ -29,16 +51,6 @@ class BedSheetModule {
 	@Build { serviceId="WebRes"; scope=ServiceScope.perInjection } 
 	private static WebRes buildResponse() {
 		try return Actor.locals["web.res"]
-		catch (NullErr e)
-			throw Err("No web request active in thread")
-	}
-
-	@Deprecated 
-	@Build { serviceId="Route"; scope=ServiceScope.perInjection } 
-	private static Route buildRoute() {
-		k:=Actor.locals.keys
-		Env.cur.err.printLine(k)
-		try return Actor.locals["BedSheetWebMod.0001.route"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")
 	}

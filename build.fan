@@ -15,7 +15,7 @@ class Build : BuildPod {
 					"repo.private"	: "true"
 				]
 
-		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0",
+		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0", "util 1.0",
 					"afIoc 0+"]
 		srcDirs = [`fan/`, `fan/public/`, `fan/public/services/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/todo/`, `fan/internal/services/`, `fan/config/`]
 //		resDirs = [`doc/`]

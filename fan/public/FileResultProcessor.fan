@@ -8,6 +8,6 @@ const class FileResultProcessor : ResultProcessor {
 		if (!file.exists)
 			throw Err("404")	// FIXME
 		
-		FileWeblet(file).onService
+		FileWeblet(file).onGet
 	}
 }
