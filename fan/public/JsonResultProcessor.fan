@@ -8,7 +8,7 @@ const class JsonResultProcessor : ResultProcessor {
 	new make(|This|in) { in(this) }
 	
 	override Void process(Obj result) {
-		json := (Json) result
+		json := (JsonResult) result
 		
 		res.headers["Content-Type"] 	= "application/json"
 		

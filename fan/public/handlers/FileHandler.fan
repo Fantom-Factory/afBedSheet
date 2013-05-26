@@ -1,7 +1,7 @@
 using web::WebReq
 using afIoc::Inject
 
-const class FileServer {
+const class FileHandler {
 	
 	@Inject
 	private const Request req
@@ -27,15 +27,8 @@ const class FileServer {
 		this.dirMappings = dirMappings.toImmutable
 	}
 
-	File service() {
-		
-		rt := req.route.pattern.replace("*", "").toUri
-		
-		pubDir := dirMappings[rt]
-		
-		routePath := req.routeRel
-		
-	    aa:= pubDir + routePath
-		return aa
+	File service(Uri routeRel) {
+		pubDir := dirMappings[req.routeBase]
+	    return pubDir + routeRel
 	}
 }

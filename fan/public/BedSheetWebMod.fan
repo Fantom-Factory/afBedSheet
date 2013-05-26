@@ -26,52 +26,44 @@ const class BedSheetWebMod : WebMod {
 		stashManager := (ThreadStashManager) reg.dependencyByType(ThreadStashManager#)
 
 		try {
-			router := (Router) reg.dependencyByType(Router#)
-			
-			// match req to Route
-			match := router.match(req.modRel, req.method)
-			req.stash["bedSheet.routeMatch"] = match 
+			router 		:= (Router) reg.dependencyByType(Router#)
+			routeMatch	:= router.match(req.modRel, req.method)
 
-//			if (match == null) throw DraftErr(404)
-			if (match == null) throw Err("404")
+			// save the routeMatch so it can be picked up by `Request`
+			req.stash["bedSheet.routeMatch"] = routeMatch 
 
-			// delegate to Route.handler
-			h := match.route.handler
-			args := h.params.isEmpty ? null : [match.args]
-			
-			weblet := null
-			
-			
-			// TODO: have cache of |func|s that either build per thread or return cache
-			// naa, have router take a serive type, and have a service interface?
-			try {
-				weblet = reg.dependencyByType(h.parent)
-			} catch (IocErr e) {
-				weblet = reg.autobuild(h.parent) 
-			}
-			result := weblet.trap(h.name, args)
+			if (routeMatch == null)
+				throw HttpErr(404, BsMsgs.routeNotFound(req.modRel))
 
-			// TODO: if (result == null), we assume all handled??? 
-			
+			handler	:= (RouteHandler) reg.dependencyByType(RouteHandler#)
+			result	:= handler.handle(routeMatch)
+
 			if (result != null) {
-				
-			resProSrc := (ResultProcessorSource) reg.dependencyByType(ResultProcessorSource#)
-			resPro 		:= resProSrc.getResultProcessor(result.typeof)
-			resPro.process(result)
-				
+				resProSrc	:= (ResultProcessorSource) reg.dependencyByType(ResultProcessorSource#)
+				resPro 		:= resProSrc.getResultProcessor(result.typeof)
+				resPro.process(result)
 			}
 
-			// we don't flush ot close because if, say for example, we send a 304 Not Modified, then there's nothing to close!
-//			try { res.out.flush } catch (IOErr ioe) { }
-			// make sure everyone tidies up after themselves
+			// don't flush or close because if, say for example, we send a 304 Not Modified, then 
+			// there's nothing to close!
+//			res.out.flush
 //			res.out.close
-		}
-		catch (Err err) {
+			
+			// TODO: have a HttpStatus handler? 
+			
+		} catch (HttpErr err) {
+			
+			// TODO: have status code handlers
+			res.sendErr(err.statusCode, err.msg)
+			
+		} catch (Err err) {
+			
+			// TODO: have Err handlers
+			
 			buf:=StrBuf()
 			err.trace(Env.cur.out, ["maxDepth":500])
 			
 			// TODO: contribute Err handlers
-//			if (err isnot DraftErr) err = DraftErr(500, err)
 //			onErr(err)
 		} finally {
 			stashManager.cleanUp
@@ -79,13 +71,14 @@ const class BedSheetWebMod : WebMod {
 	}
 	
 	override Void onStart() {
-		
-		Env.cur.err.printLine("hello!")//TODO:log
+		// TODO: log BedSheet version
 
+		bob := RegistryBuilder()
+
+		// TODO: wrap up in try 
 		pod := Pod.find(moduleName, false)
 		mod := (pod == null) ? Type.find(moduleName, false) : null
 
-		bob := RegistryBuilder()
 		
 		if (pod != null)
 			bob.addModulesFromDependencies(pod, true)
@@ -98,11 +91,14 @@ const class BedSheetWebMod : WebMod {
 		reg := bob.build.startup
 		
 		registry.val = reg
+		
+		// validate routes on startup
+		reg.dependencyByType(Router#)
 	}
 
 	override Void onStop() {
+		Env.cur.err.printLine("Goodbye!")	//TODO:log
 		reg := (Registry?) registry.val
 		reg?.shutdown
-		Env.cur.err.printLine("Goodbye!")	//TODO:log
 	}
 }

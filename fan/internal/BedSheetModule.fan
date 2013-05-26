@@ -3,29 +3,40 @@ using web
 using concurrent
 
 @SubModule { modules=[ConfigModule#] }
-class BedSheetModule {
+internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
 		binder.bindImpl(Router#)
+		binder.bindImpl(RouteHandler#)
 		binder.bindImpl(ResultProcessorSource#)
-		binder.bindImpl(FileServer#)
+
+		binder.bindImpl(ValueEncoderSource#)
+		binder.bindImpl(FileHandler#)
+
 		binder.bindImpl(GzipCompressible#)
 		
 		binder.bindImpl(Request#).withScope(ServiceScope.perThread)
 		binder.bindImpl(Response#).withScope(ServiceScope.perThread)
 	}
-	
+
 	@Contribute { serviceType=ResultProcessorSource# }
 	static Void configureResultProcessorSource(MappedConfig config) {
-		config.addMapped(File#, config.autobuild(FileResultProcessor#))
+		config.addMapped(File#, 		config.autobuild(FileResultProcessor#))
+		config.addMapped(JsonResult#, 	config.autobuild(JsonResultProcessor#))
 	}
-	
 	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void configureConfigSource(MappedConfig config) {
 //		config.addMapped("yahoo.WebSearchUri", 		`http://uk.search.yahoo.com/search`)
 	}
 
+	
+	@Contribute { serviceType=ValueEncoderSource# }
+	static Void configureValueEncoderSource(MappedConfig config) {
+		// TODO: create more default encoders
+		config.addMapped(Str#, 	StrValueEncoder())
+		config.addMapped(Int#, 	IntValueEncoder())
+	}
 	
 	@Contribute { serviceType=GzipCompressible# }
 	static Void configureGzipCompressible(OrderedConfig config) {

@@ -1,115 +1,50 @@
 
 **
-** Route models how a URI pattern gets routed to a method handler.
-** Example patterns:
-**
-**	 Pattern				 Uri					 Args
-**	 --------------	------------	----------
-**   "/"             `/`           [:]
-**   "/foo/{bar}"    `/foo/12`     ["bar":"12"]
-**   "/foo/*"        `/foo/x/y/z`  [:]
-**   "/foo/{bar}/*"  `/foo/x/y/z`  ["bar":"x"]
+** Route maps a URI to a method handler. All uri's are treated as case-insensitive.
+** 
+** All handler classes are [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the 
+** instance is cached for future use.
+** 
+** Nicked and adapted form 'draft'
 **
 const class Route {
 
-	** Parsed tokens.
-	private const RouteToken[] tokens
+	** The URI this route matches. Always starts and ends with a slash.
+	const Uri routeBase
 
-	
-	** URI pattern for this route.
-	const Str pattern
-
-	** HTTP method used for this route.
-	const Str httpMethod
-
-	** Method handler for this route.	If this method is an instance
-	** method, a new intance of the parent type is created before
-	** invoking the method.
+	** Method handler for this route. 
 	const Method handler
 
-	new make(Str pattern, Method handler, Str httpMethod := "GET") {
-		this.pattern = pattern
-		this.httpMethod	= httpMethod
-		this.handler = handler
+	** HTTP method used for this route
+	const Str httpMethod
+	
+	private const Str[] matchingPath
 
-		try {
-			this.tokens = pattern == "/"
-				? RouteToken#.emptyList
-				: pattern[1..-1].split('/').map |v| { RouteToken(v) }
+	new make(Uri routeBase, Method handler, Str httpMethod := "GET") {
+	    if (!routeBase.isPathOnly)
+			throw BedSheetErr(BsMsgs.routeShouldBePathOnly(routeBase))
+	    if (!routeBase.isPathAbs)
+			throw BedSheetErr(BsMsgs.routeShouldStartWithSlash(routeBase))
 
-			varIndex := tokens.findIndex |t| { t.type == RouteToken.vararg }
-			if (varIndex != null && varIndex != tokens.size-1) throw Err()
-
-		}
-		catch (Err err) throw ArgErr("Invalid pattern $pattern.toCode", err)
+		this.routeBase 		= routeBase.plusSlash
+		this.httpMethod		= httpMethod.upper
+		this.handler 		= handler
+		this.matchingPath 	= routeBase.path.map { it.lower }
 	}
 
-	** Match this route against the request arguments.	If route can
-	** be be matched, return the pattern arguments, or return 'null'
-	** for no match.
-	[Str:Str]? match(Uri uri, Str httpMethod) {
-		// if methods not equal, no match
-		if (httpMethod != this.httpMethod) return null
+	** Match this route against the request arguments, returning a list of Str arguments. Returns
+	** 'null' if no match.
+	internal RouteMatch? match(Uri uri, Str httpMethod) {
+		if (httpMethod != this.httpMethod)
+			return null
 
-		// if size unequal, we know there is no match
-		path := uri.path
-		if (tokens.last?.type == RouteToken.vararg) {
-			if (path.size < tokens.size) 
-				return null
-		} else 
-			if (tokens.size != path.size) 
-				return null
+		uriPath := uri.path
+		match 	:= matchingPath.all |path, i| { path == uriPath[i].lower }
+		
+		if (!match) 
+			return null
 
-		// iterate tokens looking for matches
-		map := Str:Str[:]
-		for (i:=0; i<path.size; i++) {
-			p := path[i]
-			t := tokens[i]
-			switch (t.type) {
-				case RouteToken.literal: if (t.val != p) return null
-				case RouteToken.arg:	map[t.val] = p
-				case RouteToken.vararg:	break
-			}
-		}
-
-		return map
-	}
-}
-
-
-**
-** RouteToken models each path token in a URI pattern.
-**
-internal const class RouteToken {
-
-	** Token type.
-	const Int type
-
-	** Token value.
-	const Str val
-
-	** Str value is "$type:$val".
-	override Str toStr() { "$type:$val" }
-
-	** Type id for a literal token.
-	static const Int literal := 0
-
-	** Type id for an argument token.
-	static const Int arg := 1
-
-	** Type id for vararg token.
-	static const Int vararg := 2
-
-	new make(Str val) {
-		if (val[0] == '*') {
-			this.val = val
-			this.type = vararg
-		} else if (val[0] == '{' && val[-1] == '}') {
-			this.val	= val[1..-2]
-			this.type = arg
-		} else {
-			this.val	= val
-			this.type = literal
-		}
+		rel := uri.toStr[routeBase.toStr.size.min(uri.toStr.size)..-1].toUri
+		return RouteMatch(routeBase, rel, httpMethod, handler)
 	}
 }

@@ -4,7 +4,7 @@ bitbucket
 plague scanner
 filelet
 
-Play on words from Tapestry, and Fantom ghosty wears a BedSheet!
+Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
 
 Powerful, Flexible, Simple.
 
@@ -20,12 +20,6 @@ Fix'n'Go
  - restart process checks a timestamp file, or URL!!! yeah! and dies if URL invalid (dev only)
    
 Mainly for REST, HTML a 2nd concern (e.g. no component generation)
-  Easy Routing for HTTP, get, post, etc
-  /index pages...?
-  
-  Routing default to XXXPage#httpMethod
-  /foo/3/dude => FooPage.get(int 3, int dude) (does the fromStr thing to convert params)
-   - allow value encoders service  
 
 Map for non 200 status codes
  - special cases for 404, 500
@@ -36,10 +30,6 @@ Proxy session
  
 Big Error page for 500
  - disabled in prod mode
-
-Easy gzip
-
-json
 
 static files served under 'hash' folder
  - Asset class, File field and genned file field

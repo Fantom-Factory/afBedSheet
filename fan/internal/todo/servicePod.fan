@@ -1,5 +1,5 @@
 
-class servicePod {
+internal class servicePod {
 	
 //	  ** Service a pod request.
 //  private Void onServicePod()
