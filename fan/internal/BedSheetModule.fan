@@ -13,6 +13,8 @@ internal class BedSheetModule {
 		binder.bindImpl(ValueEncoderSource#)
 		binder.bindImpl(FileHandler#)
 
+		binder.bindImpl(ErrHandlerSource#)
+
 		binder.bindImpl(GzipCompressible#)
 		
 		binder.bindImpl(Request#).withScope(ServiceScope.perThread)

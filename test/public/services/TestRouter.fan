@@ -55,6 +55,15 @@ internal class TestRouter : BsTest {
 		}
 	}
 
+//	Void testRoutesMustNotBeDirs() {
+//		verifyErrMsg(BsMsgs.routesMustNotBeDirs(`/bar/foo/`, `/bar/`)) {
+//			router := Router([
+//				Route(`/bar/foo`,	#handler1, "WOT"),
+//				Route(`/bar/`, 		#handler1, "EVER")
+//			])
+//		}		
+//	}
+
 	Void testRoutes() {
 		router := Router([
 			Route(`/index`,		#handler1),
@@ -80,13 +89,13 @@ internal class TestRouter : BsTest {
 		verifyEq(match.routeRel,	``)
 		verifyEq(match.handler, 	#handler3)
 		verifyEq(match.httpMethod,	"GET")
-		
+
 		match = router.match(`/foo/bar/dude`, "POST")
 		verifyEq(match.routeBase,	`/fOO/`)
 		verifyEq(match.routeRel,	`bar/dude`)
 		verifyEq(match.handler, 	#handler2)
 		verifyEq(match.httpMethod,	"POST")
-		
+
 		match = router.match(`/foobar/dude/3`, "GET")
 		verifyEq(match.routeBase,	`/foobar/`)
 		verifyEq(match.routeRel,	`dude/3`)

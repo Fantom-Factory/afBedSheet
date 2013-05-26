@@ -25,4 +25,23 @@ internal const class BsMsgs {
 		"Handler $handler.qname has wrong number of params to handle `$uri`"
 	}
 	
+	static Str fileHandlerFileNotExist(File file) {
+		"Directory '${file.osPath}' does not exist"		
+	}
+	
+	static Str fileHandlerFileNotDir(File file) {
+		"File '${file.osPath}' is not a directory"
+	}
+
+	static Str fileHandlerUriNotPathOnly(Uri uri) {
+		"Uri '${uri}' must only contain a path. e.g. `/foo/bar/`"
+	}
+
+	static Str fileHandlerUriMustStartWithSlash(Uri uri) {
+		"Uri '${uri}' must start with a path. e.g. `/foo/bar/`"
+	}
+
+	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
+		"Uri '${uri}' must end with a path. e.g. `/foo/bar/`"
+	}
 }
