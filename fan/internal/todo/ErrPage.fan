@@ -1,5 +1,5 @@
 
-class ErrPage {
+internal class ErrPage {
 	
 //  ** Handle an error condition during a request.
 //  Void onErr(DraftErr err)

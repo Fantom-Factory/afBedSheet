@@ -1,6 +1,7 @@
 using util::JsonOutStream
 
-class Json {
+** Json result?
+class JsonResult {
 	
 	private Obj jsonObj
 	

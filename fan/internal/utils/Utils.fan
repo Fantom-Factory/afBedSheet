@@ -1,5 +1,5 @@
 
-class Utils {
+internal class Utils {
 	
 	static Log getLog(Type type) {
 //		Log.get(type.pod.name + "." + type.name)
