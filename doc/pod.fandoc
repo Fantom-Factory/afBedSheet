@@ -1,0 +1,15 @@
+Overview [#overview]
+********************
+BedSheet is a [fantom]`http://fantom.org/` framework for delivering web applications. Leveraging the power of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` aims to Powerful, Flexible, Simple.
+
+Push To Live! [#goLive]
+***********************
+In a hurry to go live?
+
+Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is to deploy your app to a live server with the [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom`.
+
+
+Release Notes [#releaseNotes]
+*****************************
+
+...coming soon.

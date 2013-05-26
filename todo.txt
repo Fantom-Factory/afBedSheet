@@ -1,12 +1,5 @@
 
-bitbucket
-
-plague scanner
-filelet
-
 Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
-
-Powerful, Flexible, Simple.
 
 Why? Because people are lazy!
 
@@ -18,8 +11,7 @@ Fix'n'Go
    - (maybe inject kill links into a html header... in dev mode)
  - too confusing having the one main method for 2 modes, seperate them out
  - restart process checks a timestamp file, or URL!!! yeah! and dies if URL invalid (dev only)
-   
-Mainly for REST, HTML a 2nd concern (e.g. no component generation)
+  
 
 Map for non 200 status codes
  - special cases for 404, 500
@@ -27,6 +19,8 @@ Map for non 200 status codes
 servicePods (with & without vers)
 
 Proxy session
+
+more req / res methods
  
 Big Error page for 500
  - disabled in prod mode

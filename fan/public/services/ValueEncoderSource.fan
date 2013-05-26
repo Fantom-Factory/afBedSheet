@@ -14,5 +14,4 @@ const class ValueEncoderSource {
         }
 		// TODO: throw better Err if not found
 	}
-
 }
