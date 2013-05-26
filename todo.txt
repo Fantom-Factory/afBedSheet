@@ -5,6 +5,9 @@ Why? Because people are lazy!
 
 horizonal not vertical - other frameworks make you extend their classes, not BedSheet!
 
+TODO: gzip disable all on/off config prop
+
+
 Fix'n'Go
  - No server restart
  - option to kill server
@@ -12,7 +15,6 @@ Fix'n'Go
  - too confusing having the one main method for 2 modes, seperate them out
  - restart process checks a timestamp file, or URL!!! yeah! and dies if URL invalid (dev only)
   
-
 Map for non 200 status codes
  - special cases for 404, 500
 
@@ -43,3 +45,8 @@ Pluggable Template generation
 http://fantom.org/sidewalk/topic/1290
  
 Look into integrating other tales stuff
+
+
+Good Stuff
+ - ajax responses are gzipped by default
+ - cache headers are set from ajax calls from IE

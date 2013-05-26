@@ -38,6 +38,7 @@ const class BedSheetWebMod : WebMod {
 			handler	:= (RouteHandler) reg.dependencyByType(RouteHandler#)
 			result	:= handler.handle(routeMatch)
 
+			// TODO: true is okay, void is warn, null is err
 			if (result != null) {
 				resProSrc	:= (ResultProcessorSource) reg.dependencyByType(ResultProcessorSource#)
 				resPro 		:= resProSrc.getResultProcessor(result.typeof)

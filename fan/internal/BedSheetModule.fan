@@ -25,13 +25,13 @@ internal class BedSheetModule {
 	static Void configureResultProcessorSource(MappedConfig config) {
 		config.addMapped(File#, 		config.autobuild(FileResultProcessor#))
 		config.addMapped(JsonResult#, 	config.autobuild(JsonResultProcessor#))
+		config.addMapped(TextResult#, 	config.autobuild(TextResultProcessor#))
 	}
 	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void configureConfigSource(MappedConfig config) {
 //		config.addMapped("yahoo.WebSearchUri", 		`http://uk.search.yahoo.com/search`)
 	}
-
 	
 	@Contribute { serviceType=ValueEncoderSource# }
 	static Void configureValueEncoderSource(MappedConfig config) {
@@ -41,16 +41,16 @@ internal class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=GzipCompressible# }
-	static Void configureGzipCompressible(OrderedConfig config) {
+	static Void configureGzipCompressible(MappedConfig config) {
 		// add some standard compressible mime types
-		config.addUnordered(MimeType("text/plain"))
-		config.addUnordered(MimeType("text/css"))
-		config.addUnordered(MimeType("text/tab-separated-values"))
-		config.addUnordered(MimeType("text/html"))
-		config.addUnordered(MimeType("text/javascript"))
-		config.addUnordered(MimeType("text/xml"))
-		config.addUnordered(MimeType("application/rss+xml"))
-		config.addUnordered(MimeType("application/json"))
+		config.addMapped(MimeType("text/plain"),				true)
+		config.addMapped(MimeType("text/css"),					true)
+		config.addMapped(MimeType("text/tab-separated-values"),	true)
+		config.addMapped(MimeType("text/html"),					true)
+		config.addMapped(MimeType("text/javascript"),			true)
+		config.addMapped(MimeType("text/xml"),					true)
+		config.addMapped(MimeType("application/rss+xml"),		true)
+		config.addMapped(MimeType("application/json"),			true)
 	}
 	
 	// perInjection 'cos *we* shouldn't be caching these babies! 

@@ -2,6 +2,17 @@ Overview [#overview]
 ********************
 BedSheet is a [fantom]`http://fantom.org/` framework for delivering web applications. Leveraging the power of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` aims to Powerful, Flexible, Simple.
 
+Routing
+=======
+
+Handling
+========
+Idealy you should not attempt to write anything to the http stream here, so if there's an err, it can be gracefully handled later and something suitable displayed to user.
+
+
+Result Processing
+=================
+
 Push To Live! [#goLive]
 ***********************
 In a hurry to go live?
