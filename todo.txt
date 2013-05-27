@@ -7,10 +7,13 @@ statuserr tests
 
 err tests
 
-method routing (with def) tests
 method routing (with val enc) tests
 
 more req / res methods
+
+test file handler, file + dir
+
+test IOC threading
 
 
 

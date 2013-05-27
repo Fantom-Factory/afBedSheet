@@ -10,7 +10,7 @@ internal class AppTest : Test {
 	
 	override Void setup() {
 		mod 	:= BedSheetWebMod(modName)
-		willow 	:= WispService { it.port=this.port; it.root=mod }
+		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 	}
 	
@@ -19,7 +19,7 @@ internal class AppTest : Test {
 	}
 
 	Str getAsStr(Uri uri, Str method := "GET") {
-		client.reqUri = `http://localhost:$port` + uri
+		client.reqUri = reqUri(uri) 
 		client.reqMethod = method
 		client.writeReq
 		client.readRes
@@ -29,4 +29,14 @@ internal class AppTest : Test {
 		return res
 	}
 	
+	Void verify404(Uri uri) {
+		client.reqUri = reqUri(uri) 
+		client.writeReq
+		client.readRes
+		verifyEq(client.resCode, 404, client.resPhrase)
+	}
+	
+	Uri reqUri(Uri uri) {
+		`http://localhost:$port` + uri
+	}
 }
