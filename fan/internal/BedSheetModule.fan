@@ -34,8 +34,6 @@ internal class BedSheetModule {
 		config.addMapped(HttpStatusErr#,	config.autobuild(HttpStatusErrHandler#))
 	}
 	
-	
-	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void configureConfigSource(MappedConfig config) {
 		config.addMapped(ConfigIds.gzipDisabled,	false)
@@ -48,7 +46,7 @@ internal class BedSheetModule {
 		config.addMapped(Str#, 	StrValueEncoder())
 		config.addMapped(Int#, 	IntValueEncoder())
 	}
-	
+
 	@Contribute { serviceType=GzipCompressible# }
 	static Void configureGzipCompressible(MappedConfig config) {
 		// add some standard compressible mime types

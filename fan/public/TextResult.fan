@@ -1,4 +1,5 @@
 
+** TODO: take a default Charset charset := Charset.utf8
 ** All `MimeType`s have a charset of 'UTF-8' because that is the default encoding of Fantom Strs. 
 const class TextResult {
 	
