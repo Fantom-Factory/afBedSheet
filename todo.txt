@@ -1,4 +1,22 @@
 
+gzip tests
+
+json tests
+
+404 tests
+
+statuserr tests
+
+err tests
+
+method routing (with def) tests
+method routing (with val enc) tests
+
+more req / res methods
+
+
+
+
 Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
 
 Why? Because people are lazy!
@@ -21,8 +39,9 @@ Map for non 200 status codes
 servicePods (with & without vers)
 
 Proxy session
+ - test, you have made 3 reqs
 
-more req / res methods
+web out stream 
  
 Big Error page for 500
  - disabled in prod mode

@@ -1,6 +1,6 @@
 using web::FileWeblet
 
-const class FileResultProcessor : ResultProcessor {
+internal const class FileResultProcessor : ResultProcessor {
 	
 	override Void process(Obj result) {
 		file := (File) result

@@ -3,7 +3,7 @@ using web
 **
 ** Router handles routing URIs to method handlers.
 **
-**// TODO: maybe abstract this away so routing becomes pluggable
+// TODO: maybe abstract this away so routing becomes pluggable
 const class Router {
 	const Route[] routes
 

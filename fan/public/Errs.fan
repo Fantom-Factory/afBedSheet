@@ -5,8 +5,15 @@ const class BedSheetErr : Err {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) {}
 }
 
-** Throw at any point to return / handle the http status
-const class HttpErr : BedSheetErr {
+** Throw at any point to return / handle the http status.
+** 
+** By default the Err msg is sent to the client. 
+** 
+** Note there's a fine line between helping the developer and helping a hacker, so be careful what 
+** msgs you construct your `HttpStatusErr` with!
+** 
+const class HttpStatusErr : BedSheetErr {
+	
 	** The HTTP (error) status code for this error.
 	** 
 	** @see `web::WebRes.statusMsg`

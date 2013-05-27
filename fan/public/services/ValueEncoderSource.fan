@@ -1,17 +1,14 @@
+using afIoc::StrategyRegistry
 
 const class ValueEncoderSource {
 	
-	private const Type:ValueEncoder valueEncoders
+	private const StrategyRegistry valueEncoderStrategy
 	
 	new make(Type:ValueEncoder valueEncoders) {
-		this.valueEncoders = valueEncoders
+		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
 	}
 	
-	// TODO: use cached adaprter pattern - see ModuleImpl.serviceDefsByType
 	ValueEncoder getValueEncoder(Type valueType) {
-		valueEncoders.find |encoder, encoderType| {
-			valueType.fits(encoderType)
-        }
-		// TODO: throw better Err if not found
+		valueEncoderStrategy.findBestFit(valueType)
 	}
 }
