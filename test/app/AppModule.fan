@@ -15,9 +15,16 @@ internal const class AppModule {
 		config.addUnordered(Route(`/jsonResult/list`, 	JsonPage#list))
 
 		config.addUnordered(Route(`/route/optional`, 	RoutePage#defaultParams))
+		config.addUnordered(Route(`/route/valEnc`, 		RoutePage#valEnc))
 		
 		
 //		config.addUnordered(Route(`/pub/`, 	FileHandler#service))
+	}
+
+	
+	@Contribute { serviceType=ValueEncoderSource# }
+	static Void configureValueEncoderSource(MappedConfig config) {
+		config.addMapped(Pinky#, 	PinkyEncoder())
 	}
 
 	@Contribute { serviceType=FileHandler# }

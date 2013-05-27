@@ -33,8 +33,9 @@ const class Router {
 	}
 
 	** Match a request uri to Route, returning 'null' if none found.
-	internal RouteMatch? match(Uri uri, Str httpMethod) {
-		return routes.eachWhile{ it.match(normalise(uri), httpMethod) }
+	internal RouteMatch? match(Uri modRel, Str httpMethod) {
+		routes.eachWhile{ it.match(normalise(modRel), httpMethod) } 
+			?: throw RouteNotFoundErr(BsMsgs.routeNotFound(modRel))
 	}
 	
 	private Uri normalise(Uri uri) {
@@ -68,6 +69,6 @@ internal const class RouteMatch {
 		if (paramRange.contains(routePath.size))
 			return routePath
 			
-		throw BedSheetErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
+		throw RouteNotFoundErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
 	}
 }
