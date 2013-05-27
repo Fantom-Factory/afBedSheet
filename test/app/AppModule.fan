@@ -11,6 +11,10 @@ internal const class AppModule {
 		config.addUnordered(Route(`/textResult/plain`, 	TextPage#plain))
 		config.addUnordered(Route(`/textResult/html`, 	TextPage#html))
 		config.addUnordered(Route(`/textResult/xml`, 	TextPage#xml))
+
+		config.addUnordered(Route(`/jsonResult/list`, 	JsonPage#list))
+
+		config.addUnordered(Route(`/route/optional`, 	RoutePage#defaultParams))
 		
 		
 //		config.addUnordered(Route(`/pub/`, 	FileHandler#service))

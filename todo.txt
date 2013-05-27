@@ -1,8 +1,6 @@
 
 gzip tests
 
-json tests
-
 404 tests
 
 statuserr tests
