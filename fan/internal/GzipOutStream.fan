@@ -19,8 +19,10 @@ using web::WebRes
 ** @see [What is recommended minimum object size for gzip performance benefits?]`http://webmasters.stackexchange.com/questions/31750/what-is-recommended-minimum-object-size-for-gzip-performance-benefits`
 internal class GzipOutStream : OutStream {
 	
-	private WebRes webRes
 	private Buf webBuf := Buf()
+
+	@Inject
+	private WebRes webRes
 	
 	@Inject @Config { id="afBedSheet.gzip.disabled" }
 	private Bool gzipDisabled
@@ -28,10 +30,7 @@ internal class GzipOutStream : OutStream {
 	@Inject @Config { id="afBedSheet.gzip.threshold" }
 	private Int gzipThreadhold
 	
-	new make(WebRes webRes, |This|in) : super(null) {
-		in(this)
-		this.webRes = webRes
-	}
+	new make(|This|in) : super(null) { in(this)	}
 	
 	override This write(Int byte) {
 		webBuf.write(byte)
