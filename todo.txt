@@ -1,6 +1,4 @@
 
-gzip tests
-
 err tests
 
 more req / res methods

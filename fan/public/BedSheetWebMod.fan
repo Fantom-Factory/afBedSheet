@@ -45,9 +45,7 @@ const class BedSheetWebMod : WebMod {
 			bob.addModule(mod)
 		}
 		
-		reg := bob.build.startup
-		
-		registry.val = reg
+		registry.val = bob.build.startup
 		
 		// validate routes on startup
 		reg.dependencyByType(Router#)

@@ -19,11 +19,19 @@ internal const class AppModule {
 		
 		config.addUnordered(Route(`/StatusCode`, 		StatusCodePage#statusCode))
 
-		config.addUnordered(Route(`/gzip`, 				GzipPage#gzip))
+		config.addUnordered(Route(`/gzip/big`,			GzipPage#gzipBig))
+		config.addUnordered(Route(`/gzip/small`,		GzipPage#gzipSmall))
 		
 //		config.addUnordered(Route(`/pub/`, 	FileHandler#service))
 	}
 
+	
+	@Contribute { serviceType=ConfigSource# } 
+	static Void configureConfigSource(MappedConfig config) {
+//		config.addOverride(ConfigIds.gzipThreshold, "app.gzip.threshold", 50)
+//		config.addMapped(ConfigIds.gzipThreshold, 50)
+		config.addOverride(ConfigIds.gzipThreshold, "wowt", 50)
+	}
 	
 	@Contribute { serviceType=ValueEncoderSource# }
 	static Void configureValueEncoderSource(MappedConfig config) {
