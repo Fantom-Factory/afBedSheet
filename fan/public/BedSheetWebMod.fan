@@ -3,8 +3,10 @@ using web
 using afIoc
 
 const class BedSheetWebMod : WebMod {
+	private const static Log log := Utils.getLog(BedSheetWebMod#)
 
-	const Str moduleName
+	const Str 			moduleName
+	const [Str:Obj]? 	registryOptions
 	
 	private const AtomicRef	registry	:= AtomicRef()
 	
@@ -13,47 +15,48 @@ const class BedSheetWebMod : WebMod {
 		set { }
 	}
 	
-	// pass registry startup optoins?
-	new make(Str moduleName) {
-		this.moduleName = moduleName
+	new make(Str moduleName, [Str:Obj]? registryOptions := null) {
+		this.moduleName 		= moduleName
+		this.registryOptions	= registryOptions
 	}
-	
 	
 	override Void onService() {
 		req.mod = this
-		
 		((BedSheetService) reg.dependencyByType(BedSheetService#)).service
-		
 		res.done
 	}
 	
 	override Void onStart() {
-		// TODO: log BedSheet version
-
 		bob := RegistryBuilder()
 
-		// TODO: wrap up in try 
-		pod := Pod.find(moduleName, false)
-		mod := (pod == null) ? Type.find(moduleName, false) : null
+		// pod name given...
+		if (!moduleName.contains("::")) {
+			pod := Pod.find(moduleName, true)
+			bob.addModulesFromDependencies(pod, true)			
+		}
 
-		
-		if (pod != null)
-			bob.addModulesFromDependencies(pod, true)
-		
-		if (mod != null) {
+		// mod name given...
+		if (moduleName.contains("::")) {
+			mod := Type.find(moduleName, true)
 			bob.addModule(BedSheetModule#)
 			bob.addModule(mod)
 		}
 		
-		registry.val = bob.build.startup
+		// TODO: Easter Egg please!
+		bannerText	:= "Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}"
+		options 	:= Str:Obj["bannerText":bannerText]
+		if (registryOptions != null)
+			options.setAll(registryOptions)
+		
+		registry.val = bob.build(options).startup
 		
 		// validate routes on startup
 		reg.dependencyByType(Router#)
 	}
 
 	override Void onStop() {
-		Env.cur.err.printLine("Goodbye!")	//TODO:log
 		reg := (Registry?) registry.val
 		reg?.shutdown
+		log.info("\"Goodbye!\" from afBedSheet!")
 	}
 }

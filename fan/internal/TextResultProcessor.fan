@@ -10,7 +10,7 @@ internal const class TextResultProcessor : ResultProcessor {
 	override Void process(Obj result) {
 		text := (TextResult) result
 		
-		res.headers["Content-Type"] 	= text.mimeType.toStr
+		res.headers["Content-Type"] = text.mimeType.toStr
 			
 		out := res.out
 		out.printLine(text.text)

@@ -1,7 +1,6 @@
 
+test route uri & route list param
 err tests
-
-more req / res methods
 
 test file handler, file + dir
 
