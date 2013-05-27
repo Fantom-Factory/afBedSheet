@@ -1,8 +1,15 @@
 
 abstract internal class BsTest : Test {
 	
-	Void verifyErrMsg(Str errMsg, |Obj| func) {
-		errType := BedSheetErr#
+	Void verifyBsErrMsg(Str errMsg, |Obj| func) {
+		verifyErrTypeMsg(BedSheetErr#, errMsg, func)
+	}
+
+	Void verifyRouteNotFoundErrMsg(Str errMsg, |Obj| func) {
+		verifyErrTypeMsg(RouteNotFoundErr#, errMsg, func)
+	}
+
+	private Void verifyErrTypeMsg(Type errType, Str errMsg, |Obj| func) {
 		try {
 			func(4)
 		} catch (Err e) {
