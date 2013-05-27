@@ -13,6 +13,8 @@ internal const class HttpStatusErrHandler : ErrHandler {
 	override Void handle(Err e) {
 		HttpStatusErr err := (HttpStatusErr) e
 		
+		// TODO: have status code handlers
+		
 		res := (WebRes) registry.dependencyByType(WebRes#)
 		res.sendErr(err.statusCode, err.msg)
 	}

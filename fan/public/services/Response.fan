@@ -64,10 +64,8 @@ internal const class ResponseImpl : Response {
 			return webRes.out
 		
 		doGzip := webReq.headers["Accept-encoding"]?.split(',', true)?.any { it.equalsIgnoreCase("gzip") } ?: false
-		if (doGzip)
-			webRes.headers["Content-Encoding"] = "gzip"
 		
-		return doGzip ? Zip.gzipOutStream(webRes.out) : webRes.out
+		return doGzip ? registry.autobuild(GzipOutStream#) : webRes.out
 	}
 
 	private WebReq webReq() {

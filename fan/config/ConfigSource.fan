@@ -1,3 +1,4 @@
+using afIoc::NotFoundErr
 
 const class ConfigSource {
 	
@@ -8,7 +9,6 @@ const class ConfigSource {
 	}
 	
 	Obj get(Str id) {
-		// TODO: throw nice Err msg when not found
-		config[id]
+		config[id] ?: throw NotFoundErr(ConfigMsgs.configNotFound(id), config.keys) 
 	}
 }
