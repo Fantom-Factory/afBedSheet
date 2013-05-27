@@ -17,9 +17,9 @@ class Build : BuildPod {
 					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
 
-		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0", "util 1.0",
+		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0", "wisp 1.0", "util 1.0",
 					"afIoc 0+"]
-		srcDirs = [`test/`, `test/public/`, `test/public/services/`, `fan/`, `fan/public/`, `fan/public/services/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/todo/`, `fan/internal/services/`, `fan/internal/encoders/`, `fan/config/`]
+		srcDirs = [`test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/services/`, `test/app-tests/`, `test/app/`, `fan/`, `fan/public/`, `fan/public/services/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/todo/`, `fan/internal/services/`, `fan/internal/encoders/`, `fan/config/`]
 //		resDirs = [`doc/`]
 
 		docApi = true

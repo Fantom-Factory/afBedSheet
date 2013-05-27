@@ -1,17 +1,16 @@
+using afIoc::StrategyRegistry
 
 const class ErrHandlerSource {
-	private const Type:ErrHandler errHandlers
+	
+	private const StrategyRegistry errHandlerStrategy
 	
 	new make(Type:ErrHandler errHandlers) {
-		this.errHandlers = errHandlers
+		this.errHandlerStrategy = StrategyRegistry(errHandlers)
 	}
 	
-	// TODO: use cached adaprter pattern - see ModuleImpl.serviceDefsByType
 	internal ErrHandler getErrHandler(Err err) {
-		errHandlers.find |handler, type| {
-			err.typeof.fits(type)
-        }
-		// TODO: throw better Err if not found
+		// TODO: search the causes for an exact match first
+		errHandlerStrategy.findBestFit(err.typeof)
 	}
 	
 }

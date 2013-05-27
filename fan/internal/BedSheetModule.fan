@@ -6,6 +6,7 @@ using concurrent
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
+		binder.bindImpl(BedSheetService#)
 		binder.bindImpl(Router#)
 		binder.bindImpl(RouteHandler#)
 		binder.bindImpl(ResultProcessorSource#)
@@ -27,6 +28,13 @@ internal class BedSheetModule {
 		config.addMapped(JsonResult#, 	config.autobuild(JsonResultProcessor#))
 		config.addMapped(TextResult#, 	config.autobuild(TextResultProcessor#))
 	}
+	
+	@Contribute { serviceType=ErrHandlerSource# }
+	static Void configureErrHandlerSource(MappedConfig config) {
+		config.addMapped(HttpStatusErr#,	config.autobuild(HttpStatusErrHandler#))
+	}
+	
+	
 	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void configureConfigSource(MappedConfig config) {
@@ -54,7 +62,7 @@ internal class BedSheetModule {
 	}
 	
 	// perInjection 'cos *we* shouldn't be caching these babies! 
-	@Build { serviceId="WebReq"; scope=ServiceScope.perInjection }	
+	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	
 	private static WebReq buildRequest() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
@@ -62,7 +70,7 @@ internal class BedSheetModule {
 	}
 
 	// perInjection 'cos *we* shouldn't be caching these babies! 
-	@Build { serviceId="WebRes"; scope=ServiceScope.perInjection } 
+	@Build { serviceId="WebRes"; scope=ServiceScope.perThread } 
 	private static WebRes buildResponse() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)

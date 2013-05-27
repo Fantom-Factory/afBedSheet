@@ -1,18 +1,14 @@
+using afIoc::StrategyRegistry
 
 const class ResultProcessorSource {
-	
-	private const Type:ResultProcessor resultProcessors
-	
+
+	private const StrategyRegistry resultProcessorStrategy
+
 	new make(Type:ResultProcessor resultProcessors) {
-		this.resultProcessors = resultProcessors
+		resultProcessorStrategy = StrategyRegistry(resultProcessors)
 	}
-	
-	// TODO: use cached adaprter pattern - see ModuleImpl.serviceDefsByType
+
 	internal ResultProcessor getResultProcessor(Type resultType) {
-		resultProcessors.find |processor, type| {
-			resultType.fits(type)
-        }
-		// TODO: throw better Err if not found
-	}
-	
+		resultProcessorStrategy.findBestFit(resultType)
+	}	
 }
