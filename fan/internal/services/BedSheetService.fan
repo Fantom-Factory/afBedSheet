@@ -34,16 +34,14 @@ const internal class BedSheetService {
 		} catch (Err err) {
 
 			try {
-			errHandlerSrc.getErrHandler(err).handle(err)
+				// what when no err handler matches!?
+				errHandlerSrc.getErrHandler(err).handle(err)
 
 				
 			} catch (Err doubleErr) {
-				// what when no err handler matches!?
+			// TODO: have backup plan for when the err handler errs!
 				err.trace(Env.cur.out, ["maxDepth":500])
 			}
-			
-			// TODO: have backup plan for when the err handler errs!
-			
 			
 		} finally {
 			stashManager.cleanUp

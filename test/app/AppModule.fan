@@ -17,6 +17,9 @@ internal const class AppModule {
 		config.addUnordered(Route(`/route/optional`, 	RoutePage#defaultParams))
 		config.addUnordered(Route(`/route/valEnc`, 		RoutePage#valEnc))
 		
+		config.addUnordered(Route(`/StatusCode`, 		StatusCodePage#statusCode))
+
+		config.addUnordered(Route(`/gzip`, 				GzipPage#gzip))
 		
 //		config.addUnordered(Route(`/pub/`, 	FileHandler#service))
 	}

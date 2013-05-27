@@ -1,13 +1,7 @@
 
 gzip tests
 
-404 tests
-
-statuserr tests
-
 err tests
-
-method routing (with val enc) tests
 
 more req / res methods
 
@@ -36,6 +30,7 @@ Fix'n'Go
   
 Map for non 200 status codes
  - special cases for 404, 500
+ - statuserr tests
 
 servicePods (with & without vers)
 
