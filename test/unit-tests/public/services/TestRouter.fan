@@ -8,7 +8,7 @@ internal class TestRouter : BsTest {
 	private Void handler4() {}
 
 	Void testRoutesCanNotBeDuplicated() {
-		verifyErrMsg(BsMsgs.routeAlreadyAdded(`/foo/`, #handler2)) {
+		verifyBsErrMsg(BsMsgs.routeAlreadyAdded(`/foo/`, #handler2)) {
 			router := Router([
 				Route(`/foo`, 	#handler2),
 				Route(`/foo/`,	#handler1)
@@ -24,7 +24,7 @@ internal class TestRouter : BsTest {
 		}()
 
 		// routes are case-insensitive
-		verifyErrMsg(BsMsgs.routeAlreadyAdded(`/bar/`, #handler1)) {
+		verifyBsErrMsg(BsMsgs.routeAlreadyAdded(`/bar/`, #handler1)) {
 			router := Router([
 				Route(`/bar/`,		#handler1),
 				Route(`/BAR/`, 		#handler2)
@@ -33,13 +33,13 @@ internal class TestRouter : BsTest {
 	}
 
 	Void testRoutesCanNotNest() {
-		verifyErrMsg(BsMsgs.routesCanNotBeNested(`/foo/bar/`, `/foo/`)) {
+		verifyBsErrMsg(BsMsgs.routesCanNotBeNested(`/foo/bar/`, `/foo/`)) {
 			router := Router([
 				Route(`/foo`, 		#handler1),
 				Route(`/foo/bar`,	#handler1)
 			])
 		}
-		verifyErrMsg(BsMsgs.routesCanNotBeNested(`/bar/foo/`, `/bar/`)) {
+		verifyBsErrMsg(BsMsgs.routesCanNotBeNested(`/bar/foo/`, `/bar/`)) {
 			router := Router([
 				Route(`/bar/foo`,	#handler1),
 				Route(`/bar/`, 		#handler1)
@@ -47,22 +47,13 @@ internal class TestRouter : BsTest {
 		}
 
 		// nested routes with different http methods are still NOT allowed
-		verifyErrMsg(BsMsgs.routesCanNotBeNested(`/bar/foo/`, `/bar/`)) {
+		verifyBsErrMsg(BsMsgs.routesCanNotBeNested(`/bar/foo/`, `/bar/`)) {
 			router := Router([
 				Route(`/bar/foo`,	#handler1, "WOT"),
 				Route(`/bar/`, 		#handler1, "EVER")
 			])
 		}
 	}
-
-//	Void testRoutesMustNotBeDirs() {
-//		verifyErrMsg(BsMsgs.routesMustNotBeDirs(`/bar/foo/`, `/bar/`)) {
-//			router := Router([
-//				Route(`/bar/foo`,	#handler1, "WOT"),
-//				Route(`/bar/`, 		#handler1, "EVER")
-//			])
-//		}		
-//	}
 
 	Void testRoutes() {
 		router := Router([
@@ -72,13 +63,15 @@ internal class TestRouter : BsTest {
 			Route(`/foobar`,	#handler4)
 		])
 		
-		match := router.match(`/index`, "PUT")
-		verifyNull(match)
+		verifyRouteNotFoundErrMsg(BsMsgs.routeNotFound(`/index`)) {
+			match := router.match(`/index`, "PUT")
+		}
 		
-		match = router.match(`/wotever`, "GET")
-		verifyNull(match)
+		verifyRouteNotFoundErrMsg(BsMsgs.routeNotFound(`/wotever`)) {
+			match := router.match(`/wotever`, "GET")
+		}
 		
-		match = router.match(`/index`, "GET")
+		match := router.match(`/index`, "GET")
 		verifyEq(match.routeBase,	`/index/`)
 		verifyEq(match.routeRel,	``)
 		verifyEq(match.handler, 	#handler1)
