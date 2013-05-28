@@ -9,4 +9,12 @@ internal const class RoutePage {
 		TextResult.fromPlain(pinky.str)
 	}
 	
+	Obj uri(Uri uri) {
+		TextResult.fromPlain("uri: $uri")
+	}
+	
+	Obj list(Str[] list) {
+		TextResult.fromPlain("uri: $list")
+	}
+	
 }
