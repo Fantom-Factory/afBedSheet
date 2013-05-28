@@ -13,7 +13,7 @@ const class FileHandler {
 	
 	new make(Uri:File dirMappings, |This|? in := null) {
 		in?.call(this)
-		
+
 		// verify file and uri mappings
 		dirMappings.each |file, uri| {
 			if (!file.exists)
@@ -33,6 +33,8 @@ const class FileHandler {
 
 	** Returns a File on the file system, mapped from the given config
 	File service(Uri routeRel) {
-	    dirMappings[req.routeBase] + routeRel
+		// prevent an err being thrown if the uri is a dir but doesn't end in '/'
+		// we append it automatically - it's nicer web behaviour
+	    dirMappings[req.routeBase].plus(routeRel, false)
 	}
 }

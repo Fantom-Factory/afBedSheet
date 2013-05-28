@@ -26,15 +26,13 @@ internal const class AppModule {
 
 		config.addUnordered(Route(`/boom`,				BoomPage#boom))
 		
-//		config.addUnordered(Route(`/pub/`, 	FileHandler#service))
+		config.addUnordered(Route(`/test-src/`, 		FileHandler#service))
 	}
 
 	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void configureConfigSource(MappedConfig config) {
-//		config.addOverride(ConfigIds.gzipThreshold, "app.gzip.threshold", 50)
-//		config.addMapped(ConfigIds.gzipThreshold, 50)
-		config.addOverride(ConfigIds.gzipThreshold, "wowt", 50)
+		config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 50)
 	}
 	
 	@Contribute { serviceType=ValueEncoderSource# }
@@ -44,7 +42,7 @@ internal const class AppModule {
 
 	@Contribute { serviceType=FileHandler# }
 	static Void configureFileServer(MappedConfig config) {
-//		config.addMapped(`/pub/`, `etc/web/`.toFile)
+		config.addMapped(`/test-src/`, `test/app-web/`.toFile)
 	}
-	
+
 }

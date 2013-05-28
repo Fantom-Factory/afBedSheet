@@ -1,6 +1,5 @@
 
 welcome pag eerr
-test route uri & route list param
 
 test file handler, file + dir
 
