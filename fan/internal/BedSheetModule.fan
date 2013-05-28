@@ -37,6 +37,7 @@ internal class BedSheetModule {
 	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void configureConfigSource(MappedConfig config) {
+		config.addMapped(ConfigIds.welcomePage,		`/index`)
 		config.addMapped(ConfigIds.gzipDisabled,	false)
 		config.addMapped(ConfigIds.gzipThreshold,	376)
 	}
