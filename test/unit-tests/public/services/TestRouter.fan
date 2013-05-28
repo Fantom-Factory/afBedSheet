@@ -9,7 +9,7 @@ internal class TestRouter : BsTest {
 
 	Void testRoutesCanNotBeDuplicated() {
 		verifyBsErrMsg(BsMsgs.routeAlreadyAdded(`/foo/`, #handler2)) {
-			router := Router([
+			router := RouteSource([
 				Route(`/foo`, 	#handler2),
 				Route(`/foo/`,	#handler1)
 			])
@@ -17,7 +17,7 @@ internal class TestRouter : BsTest {
 
 		|->| {
 			// same routes with different http methods ARE allowed
-			router := Router([
+			router := RouteSource([
 				Route(`/bar/`,		#handler1, "WOT"),
 				Route(`/bar/`, 		#handler1, "EVER")
 			])
@@ -25,7 +25,7 @@ internal class TestRouter : BsTest {
 
 		// routes are case-insensitive
 		verifyBsErrMsg(BsMsgs.routeAlreadyAdded(`/bar/`, #handler1)) {
-			router := Router([
+			router := RouteSource([
 				Route(`/bar/`,		#handler1),
 				Route(`/BAR/`, 		#handler2)
 			])
@@ -34,13 +34,13 @@ internal class TestRouter : BsTest {
 
 	Void testRoutesCanNotNest() {
 		verifyBsErrMsg(BsMsgs.routesCanNotBeNested(`/foo/bar/`, `/foo/`)) {
-			router := Router([
+			router := RouteSource([
 				Route(`/foo`, 		#handler1),
 				Route(`/foo/bar`,	#handler1)
 			])
 		}
 		verifyBsErrMsg(BsMsgs.routesCanNotBeNested(`/bar/foo/`, `/bar/`)) {
-			router := Router([
+			router := RouteSource([
 				Route(`/bar/foo`,	#handler1),
 				Route(`/bar/`, 		#handler1)
 			])
@@ -48,7 +48,7 @@ internal class TestRouter : BsTest {
 
 		// nested routes with different http methods are still NOT allowed
 		verifyBsErrMsg(BsMsgs.routesCanNotBeNested(`/bar/foo/`, `/bar/`)) {
-			router := Router([
+			router := RouteSource([
 				Route(`/bar/foo`,	#handler1, "WOT"),
 				Route(`/bar/`, 		#handler1, "EVER")
 			])
@@ -56,7 +56,7 @@ internal class TestRouter : BsTest {
 	}
 
 	Void testRoutes() {
-		router := Router([
+		router := RouteSource([
 			Route(`/index`,		#handler1),
 			Route(`/fOO`,		#handler2, "POST"),
 			Route(`/foo`,		#handler3),

@@ -5,7 +5,7 @@ using afIoc::Inject
 ** Router handles routing URIs to method handlers.
 **
 // Maybe abstract this away so routing becomes pluggable?
-const class Router {
+const class RouteSource {
 	const Route[] routes
 
 	@Inject @Config { id="afBedSheet.welcomePage" }

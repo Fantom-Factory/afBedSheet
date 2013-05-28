@@ -48,8 +48,7 @@ internal const class RouteHandler {
 		// watch out for ->Obj nulls here if ValEnc sig changes
 		args = args ?: routeMatch.argList.map |arg, i -> Obj| {
 			paramType	:= routeMatch.handler.params[i].type
-			valEnc		:= valueEncoderSource.getValueEncoder(paramType)
-			value		:= valEnc.toValue(arg)
+			value		:= valueEncoderSource.toValue(paramType, arg)
 			return value
 		}
 		

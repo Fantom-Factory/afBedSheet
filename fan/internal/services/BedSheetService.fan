@@ -11,7 +11,7 @@ const internal class BedSheetService {
 	@Inject	private const ThreadStashManager 	stashManager
 	@Inject	private const Request 				req
 	@Inject	private const RouteHandler 			routeHandler
-	@Inject	private const Router 				router
+	@Inject	private const RouteSource			routeSrc
 	@Inject	private const ResultProcessorSource	resProSrc
 	@Inject	private const ErrProcessorSource	errProSrc
 	
@@ -19,7 +19,7 @@ const internal class BedSheetService {
 	
 	Void service() {
 		try {
-			routeMatch	:= router.match(req.modRel, req.httpMethod)
+			routeMatch	:= routeSrc.match(req.modRel, req.httpMethod)
 
 			// save the routeMatch so it can be picked up by `Request`
 			webReq.stash["bedSheet.routeMatch"] = routeMatch
@@ -30,7 +30,7 @@ const internal class BedSheetService {
 		} catch (Err err) {
 			
 			try {
-				result := errProSrc.getErrProcessor(err).process(err)
+				result := errProSrc.process(err)
 				processResult(result)
 
 			} catch (Err doubleErr) {
@@ -51,8 +51,7 @@ const internal class BedSheetService {
 		if (result == true)
 			return
 		
-		resPro := resProSrc.getResultProcessor(result.typeof)
-		resPro.process(result)
+		resProSrc.process(result)
 	}
 	
 	private WebReq webReq() {
