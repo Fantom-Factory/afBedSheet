@@ -1,6 +1,11 @@
 
-test IOC threading
+result / responce?
+ - make final 
+ 
+value enc errs to 404
 
+
+future: uri or Str[] as last param takes the remaining url
 
 Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
 

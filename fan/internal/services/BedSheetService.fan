@@ -51,7 +51,7 @@ const internal class BedSheetService {
 		if (result == true)
 			return
 		
-		resPro := resProSrc.getResultProcessor(result.typeof)
+		resPro := resProSrc.getHandlerResultProcessor(result.typeof)
 		resPro.process(result)
 	}
 	

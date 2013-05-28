@@ -1,6 +1,6 @@
 using afIoc
 
-internal const class TextResultProcessor : ResultProcessor {
+internal const class TextResultProcessor : HandlerResultProcessor {
 	
 	@Inject
 	private const Response res
