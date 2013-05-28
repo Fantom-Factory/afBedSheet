@@ -9,12 +9,12 @@ internal class BedSheetModule {
 		binder.bindImpl(BedSheetService#)
 		binder.bindImpl(Router#)
 		binder.bindImpl(RouteHandler#)
-		binder.bindImpl(ResultProcessorSource#)
 
 		binder.bindImpl(ValueEncoderSource#)
 		binder.bindImpl(FileHandler#)
 
-		binder.bindImpl(ErrHandlerSource#)
+		binder.bindImpl(ResultProcessorSource#)
+		binder.bindImpl(ErrProcessorSource#)
 
 		binder.bindImpl(GzipCompressible#)
 		
@@ -23,34 +23,34 @@ internal class BedSheetModule {
 	}
 
 	@Contribute { serviceType=ResultProcessorSource# }
-	static Void configureResultProcessorSource(MappedConfig config) {
+	static Void contributeResultProcessorSource(MappedConfig config) {
 		config.addMapped(File#, 		config.autobuild(FileResultProcessor#))
 		config.addMapped(JsonResult#, 	config.autobuild(JsonResultProcessor#))
 		config.addMapped(TextResult#, 	config.autobuild(TextResultProcessor#))
 	}
 	
-	@Contribute { serviceType=ErrHandlerSource# }
-	static Void configureErrHandlerSource(MappedConfig config) {
-		config.addMapped(HttpStatusErr#,	config.autobuild(HttpStatusErrHandler#))
-		config.addMapped(Err#,				config.autobuild(DefaultErrHandler#))
+	@Contribute { serviceType=ErrProcessorSource# }
+	static Void contributeErrProcessorSource(MappedConfig config) {
+		config.addMapped(HttpStatusErr#,	config.autobuild(HttpStatusErrProcessor#))
+		config.addMapped(Err#,				config.autobuild(DefaultErrProcessor#))
 	}
 	
 	@Contribute { serviceType=ConfigSource# } 
-	static Void configureConfigSource(MappedConfig config) {
+	static Void contributeConfigSource(MappedConfig config) {
 		config.addMapped(ConfigIds.welcomePage,		`/index`)
 		config.addMapped(ConfigIds.gzipDisabled,	false)
 		config.addMapped(ConfigIds.gzipThreshold,	376)
 	}
 
 	@Contribute { serviceType=ValueEncoderSource# }
-	static Void configureValueEncoderSource(MappedConfig config) {
+	static Void contributeValueEncoderSource(MappedConfig config) {
 		// TODO: create more default encoders
 		config.addMapped(Str#, 	StrValueEncoder())
 		config.addMapped(Int#, 	IntValueEncoder())
 	}
 
 	@Contribute { serviceType=GzipCompressible# }
-	static Void configureGzipCompressible(MappedConfig config) {
+	static Void contributeGzipCompressible(MappedConfig config) {
 		// add some standard compressible mime types
 		config.addMapped(MimeType("text/plain"),				true)
 		config.addMapped(MimeType("text/css"),					true)
@@ -62,7 +62,6 @@ internal class BedSheetModule {
 		config.addMapped(MimeType("application/json"),			true)
 	}
 	
-	// perInjection 'cos *we* shouldn't be caching these babies! 
 	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	
 	private static WebReq buildRequest() {
 		try return Actor.locals["web.req"]
@@ -70,7 +69,6 @@ internal class BedSheetModule {
 			throw Err("No web request active in thread")
 	}
 
-	// perInjection 'cos *we* shouldn't be caching these babies! 
 	@Build { serviceId="WebRes"; scope=ServiceScope.perThread } 
 	private static WebRes buildResponse() {
 		try return Actor.locals["web.res"]

@@ -1,6 +1,6 @@
 using afIoc
 
-class ConfigModule {
+internal class ConfigModule {
 	
 	static Void bind(ServiceBinder binder) {
 		binder.bindImpl(ConfigSource#)

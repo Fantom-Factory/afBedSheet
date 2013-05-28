@@ -3,14 +3,14 @@ using afIoc::Registry
 using web::WebRes
 
 ** Sends the status code and msg in `HttpStatusErr` to the client. 
-internal const class HttpStatusErrHandler : ErrHandler {
+internal const class HttpStatusErrProcessor : ErrProcessor {
 
 	@Inject
 	private const Registry registry
 	
 	new make(|This|in) { in(this) }
 	
-	override Obj handle(Err e) {
+	override Obj process(Err e) {
 		HttpStatusErr err := (HttpStatusErr) e
 		
 		// TODO: have status code handlers

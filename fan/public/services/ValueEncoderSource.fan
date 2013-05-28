@@ -1,5 +1,6 @@
 using afIoc::StrategyRegistry
 
+** Holds a collection of `ValueEncoder`s.
 const class ValueEncoderSource {
 	
 	private const StrategyRegistry valueEncoderStrategy
@@ -9,6 +10,6 @@ const class ValueEncoderSource {
 	}
 	
 	ValueEncoder getValueEncoder(Type valueType) {
-		valueEncoderStrategy.findBestFit(valueType)
+		valueEncoderStrategy.findExactMatch(valueType)
 	}
 }

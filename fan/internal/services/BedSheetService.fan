@@ -13,7 +13,7 @@ const internal class BedSheetService {
 	@Inject	private const RouteHandler 			routeHandler
 	@Inject	private const Router 				router
 	@Inject	private const ResultProcessorSource	resProSrc
-	@Inject	private const ErrHandlerSource		errHandlerSrc
+	@Inject	private const ErrProcessorSource	errProSrc
 	
 	new make(|This|in) { in(this) }
 	
@@ -30,7 +30,7 @@ const internal class BedSheetService {
 		} catch (Err err) {
 			
 			try {
-				result := errHandlerSrc.getErrHandler(err).handle(err)
+				result := errProSrc.getErrProcessor(err).process(err)
 				processResult(result)
 
 			} catch (Err doubleErr) {
@@ -51,7 +51,7 @@ const internal class BedSheetService {
 		if (result == true)
 			return
 		
-		resPro := resProSrc.getHandlerResultProcessor(result.typeof)
+		resPro := resProSrc.getResultProcessor(result.typeof)
 		resPro.process(result)
 	}
 	

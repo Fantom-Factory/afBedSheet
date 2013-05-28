@@ -1,7 +1,4 @@
 
-result / responce?
- - make final 
- 
 value enc errs to 404
 
 

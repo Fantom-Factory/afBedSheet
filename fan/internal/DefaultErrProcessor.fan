@@ -1,8 +1,9 @@
 using afIoc::Inject
 using web::WebOutStream
 
-internal const class DefaultErrHandler : ErrHandler {
-	private const static Log log := Utils.getLog(DefaultErrHandler#)
+** Shamelessly based on 'draft's err page
+internal const class DefaultErrProcessor : ErrProcessor {
+	private const static Log log := Utils.getLog(DefaultErrProcessor#)
 	
 	@Inject
 	private const Request req
@@ -12,7 +13,7 @@ internal const class DefaultErrHandler : ErrHandler {
 	
 	new make(|This|in) { in(this) }
 	
-	override Obj handle(Err err) {
+	override Obj process(Err err) {
 	 	logErr(err)
 
 		buf := StrBuf()

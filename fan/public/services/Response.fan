@@ -5,7 +5,7 @@ using web::WebReq
 using web::WebRes
 using web::WebOutStream
 
-** Because [WebRes]`web::WebRes` isn't 'const'
+** An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
 ** This is proxied and always refers to the current request
 const mixin Response {

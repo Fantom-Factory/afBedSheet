@@ -1,4 +1,13 @@
 
+** A list config values provided by BedSheet. To change their value, override them in your 
+** 'AppModule'. Example:
+** 
+** pre>
+** @Contribute { serviceType=ConfigSource# } 
+** static Void configureConfigSource(MappedConfig config) {
+**   config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 500)
+** }
+** <pre
 const class ConfigIds {
 	
 //	static const Str devMode		:= "afBedsheet.devMode"

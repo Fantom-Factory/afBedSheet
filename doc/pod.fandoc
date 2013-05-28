@@ -1,17 +1,83 @@
 Overview [#overview]
 ********************
-BedSheet is a [fantom]`http://fantom.org/` framework for delivering web applications. Leveraging the power of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` aims to Powerful, Flexible, Simple.
+BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applications. Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`, BedSheet aims to be Powerful, Flexible, Simple.
+
+Quick Start [#quickStart]
+*************************
+
+1. Create an 'AppModule', this is where all your service configuration will go.
+2. Contribute to 'Router' and other services
+3. Create some page / request handlers
+4. Start the app...
+
+pre>
+using afBedSheet
+using afIoc
+
+class AppModule {
+  @Contribute { serviceType=Router# }
+  static Void configureRouter(OrderedConfig config) {
+    config.addUnordered(Route(`/hello`, HelloPage#hello))
+  }
+}
+
+class HelloPage {
+  TextResult hello(Str name, Int iq := 666) {
+    return TextResult.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+  }
+}
+<pre
+
+From the command line:
+
+pre>
+$ fan afBedSheet <mypod>::SimpleAppModule 8080
+...
+IoC started up in 323ms
+
+$ curl http://localhost:8080/hello/Traci/69
+Hello! I'm Traci and I have an IQ of 69!
+
+$ curl http://localhost:8080/hello/Luci
+Hello! I'm Luci and I have an IQ of 666!
+<pre
+
+Wow! That's awesome! But what just happened!?
 
 Routing
 =======
+Every application has an 'AppModule' that is used to contribute to [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. There we told the 'Router' service to route all requests to '/hello' to our 'HelloPage' class.
+
+The '#hello' handler now owns all uris that start with '/hello'.
+
 
 Handling
 ========
-Idealy you should not attempt to write anything to the http stream here, so if there's an err, it can be gracefully handled later and something suitable displayed to user.
+Deeper path segments are converted into method parameters. Hence our handler method takes a 'Str' and an 'Int'. Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
+
+> TIP: Contribute your own 'ValueEncoders' to convert uris into Entities. That way BedSheet can call your handlers with real Entities, and not just str IDs.
+
+As per our example, you can use default parameter values to declare optional uri segments. Any urls that don't match the handler parameters are reported as 404s.
 
 
 Result Processing
 =================
+Handlers should perform the logic processing of your request and not attempt to write to the HTTP OutStream. That way, if there's an Err, it can be gracefully handled and a suitable response sent to the user.
+
+Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and 'JsonResult'.
+
+If the response is over a given size, and is deemed compressible then it is gzipped before being sent to the user.
+
+
+More!
+=====
+All URI handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject' DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the [BedSheet source]`XXX` for afIoc examples.
+
+> TIP: 'const' handler classes are cached by BedSheet and reused on every request.
+
+There's also some Err reporting, HTTP status handling and probably more besides. It's early days still...
+
+
 
 Push To Live! [#goLive]
 ***********************
