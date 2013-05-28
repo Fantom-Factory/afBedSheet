@@ -7,7 +7,7 @@ internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
 		binder.bindImpl(BedSheetService#)
-		binder.bindImpl(Router#)
+		binder.bindImpl(RouteSource#)
 		binder.bindImpl(RouteHandler#)
 
 		binder.bindImpl(ValueEncoderSource#)

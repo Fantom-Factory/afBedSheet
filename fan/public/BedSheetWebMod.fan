@@ -52,7 +52,7 @@ const class BedSheetWebMod : WebMod {
 		registry.val = bob.build(options).startup
 		
 		// validate routes on startup
-		reg.dependencyByType(Router#)
+		reg.dependencyByType(RouteSource#)
 	}
 
 	override Void onStop() {

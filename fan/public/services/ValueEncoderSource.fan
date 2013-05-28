@@ -9,7 +9,15 @@ const class ValueEncoderSource {
 		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
 	}
 	
-	ValueEncoder getValueEncoder(Type valueType) {
+	Str toClient(Type valType, Obj value) {
+		get(valType).toClient(value)
+	}
+
+	Obj toValue(Type valType, Str clientValue) {
+		get(valType).toValue(clientValue)
+	}
+	
+	private ValueEncoder get(Type valueType) {
 		valueEncoderStrategy.findExactMatch(valueType)
 	}
 }

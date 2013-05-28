@@ -6,8 +6,8 @@ internal const class AppModule {
 //		binder.bindImpl(Router#)
 	}
 	
-	@Contribute { serviceType=Router# }
-	static Void configureRouter(OrderedConfig config) {
+	@Contribute { serviceType=RouteSource# }
+	static Void contributeRoutes(OrderedConfig config) {
 		config.addUnordered(Route(`/textResult/plain`, 	TextPage#plain))
 		config.addUnordered(Route(`/textResult/html`, 	TextPage#html))
 		config.addUnordered(Route(`/textResult/xml`, 	TextPage#xml))
@@ -31,17 +31,17 @@ internal const class AppModule {
 
 	
 	@Contribute { serviceType=ConfigSource# } 
-	static Void configureConfigSource(MappedConfig config) {
+	static Void contributeConfig(MappedConfig config) {
 		config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 50)
 	}
 	
 	@Contribute { serviceType=ValueEncoderSource# }
-	static Void configureValueEncoderSource(MappedConfig config) {
+	static Void contributeValueEncoders(MappedConfig config) {
 		config.addMapped(Pinky#, 	PinkyEncoder())
 	}
 
 	@Contribute { serviceType=FileHandler# }
-	static Void configureFileServer(MappedConfig config) {
+	static Void contributeFileMapping(MappedConfig config) {
 		config.addMapped(`/test-src/`, `test/app-web/`.toFile)
 	}
 
