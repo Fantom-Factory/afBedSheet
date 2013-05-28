@@ -1,13 +1,19 @@
 using web
+using afIoc::Inject
 
 **
 ** Router handles routing URIs to method handlers.
 **
-// TODO: maybe abstract this away so routing becomes pluggable
+// Maybe abstract this away so routing becomes pluggable?
 const class Router {
 	const Route[] routes
 
-	new make(Route[] routes) {
+	@Inject @Config { id="afBedSheet.welcomePage" }
+	private const Uri? welcomePage
+	
+	new make(Route[] routes, |This|? in := null) {
+		in?.call(this)
+
 		dups := Route[,]
 		routes.each |route| {
 			dup	:= dups.find { route.routeBase.toStr.equalsIgnoreCase(it.routeBase.toStr) && route.httpMethod == it.httpMethod }
@@ -30,17 +36,26 @@ const class Router {
 		}
 		
 		this.routes = innies
+		
+		// validate welcome page uri
+		if (welcomePage != null)
+			verify := Route(welcomePage, #toStr)
 	}
 
 	** Match a request uri to Route.
 	internal RouteMatch match(Uri modRel, Str httpMethod) {
-		routes.eachWhile{ it.match(normalise(modRel), httpMethod) } 
+		normalisedUri := normalise(modRel)
+		return routes.eachWhile{ it.match(normalisedUri, httpMethod) } 
 			?: throw RouteNotFoundErr(BsMsgs.routeNotFound(modRel))
+		// TODO: if req uri is '/' and no routes have been defined, route to a default 'BedSheet Welcome' page
 	}
 	
 	private Uri normalise(Uri uri) {
-		if (uri == ``)
-			uri = `index`	// TODO: config welcome page
+		if (uri.path.isEmpty) {
+			if (welcomePage == null)
+				throw RouteNotFoundErr(BsMsgs.routeNotFound(uri))
+			uri = welcomePage
+		}
 		if (!uri.isPathAbs)
 			uri = `/` + uri
 		return uri

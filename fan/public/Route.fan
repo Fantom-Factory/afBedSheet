@@ -17,7 +17,7 @@ const class Route {
 
 	** HTTP method used for this route
 	const Str httpMethod
-	
+
 	private const Str[] matchingPath
 
 	new make(Uri routeBase, Method handler, Str httpMethod := "GET") {
@@ -39,13 +39,19 @@ const class Route {
 			return null
 
 		uriPath := uri.path
-		// FIXME: index err when '/' and no welxome page
-		match 	:= matchingPath.all |path, i| { path == uriPath[i].lower }
-		
+		if (uriPath.isEmpty)
+			// we don't match '/', instead we route to a welcome page
+			return null 
+
+		actualBase := ``	// need to build up the actualBase for a case-insensitive Uri.relTo()
+		match 	:= matchingPath.all |path, i| { 
+			actualBase = actualBase.plusSlash.plusName(uriPath[i]) 
+			return path == uriPath[i].lower
+		}
 		if (!match) 
 			return null
 
-		rel := uri.toStr[routeBase.toStr.size.min(uri.toStr.size)..-1].toUri
+		rel:= uri.relTo(actualBase)
 		return RouteMatch(routeBase, rel, httpMethod, handler)
 	}
 }
