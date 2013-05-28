@@ -10,13 +10,15 @@ internal const class HttpStatusErrHandler : ErrHandler {
 	
 	new make(|This|in) { in(this) }
 	
-	override Void handle(Err e) {
+	override Obj handle(Err e) {
 		HttpStatusErr err := (HttpStatusErr) e
 		
 		// TODO: have status code handlers
 		
 		res := (WebRes) registry.dependencyByType(WebRes#)
 		res.sendErr(err.statusCode, err.msg)
+		
+		return true
 	}
 	
 }

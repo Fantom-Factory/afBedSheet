@@ -12,7 +12,7 @@ internal const class DefaultErrHandler : ErrHandler {
 	
 	new make(|This|in) { in(this) }
 	
-	override Void handle(Err err) {
+	override Obj handle(Err err) {
 	 	logErr(err)
 
 		buf := StrBuf()
@@ -27,7 +27,9 @@ internal const class DefaultErrHandler : ErrHandler {
 		.headEnd
 			
 		out.body
-			
+		
+		// TODO: only print the gubbins in devMode 
+		
 		// msg
 		out.h1.esc(err.msg).h1End
 		out.hr
@@ -45,6 +47,8 @@ internal const class DefaultErrHandler : ErrHandler {
 
 		out.bodyEnd
 		out.htmlEnd
+		
+		return TextResult.fromHtml(buf.toStr)
 	}
 
 	private Void logErr(Err err) {

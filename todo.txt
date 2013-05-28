@@ -7,16 +7,11 @@ test file handler, file + dir
 test IOC threading
 
 
-
-
 Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
 
 Why? Because people are lazy!
 
 horizonal not vertical - other frameworks make you extend their classes, not BedSheet!
-
-TODO: gzip disable all on/off config prop
-
 
 Fix'n'Go
  - No server restart
@@ -25,19 +20,10 @@ Fix'n'Go
  - too confusing having the one main method for 2 modes, seperate them out
  - restart process checks a timestamp file, or URL!!! yeah! and dies if URL invalid (dev only)
   
-Map for non 200 status codes
- - special cases for 404, 500
- - statuserr tests
-
-servicePods (with & without vers)
+servicePods (with & without vers), naa, use hash not ver
 
 Proxy session
- - test, you have made 3 reqs
-
-web out stream 
- 
-Big Error page for 500
- - disabled in prod mode
+ - test, "you have made 3 reqs"
 
 static files served under 'hash' folder
  - Asset class, File field and genned file field

@@ -44,4 +44,12 @@ internal const class BsMsgs {
 	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
 		"Uri '${uri}' must end with a path. e.g. `/foo/bar/`"
 	}
+	
+	static Str handlersCanNotBeVoid(Method method) {
+		"Handler $method.qname is not allowed to be Void. If processing is complete, return 'true' instead."
+	}
+
+	static Str handlersCanNotReturnNull(Method method) {
+		"Handler $method.qname is not allowed to return null. If processing is complete, return 'true' instead."
+	}
 }

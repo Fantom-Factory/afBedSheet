@@ -4,6 +4,7 @@ using afIoc::Registry
 using afIoc::ServiceStats
 
 internal const class RouteHandler {
+	private const static Log 		log 		:= Utils.getLog(BedSheetService#)
 	private const ConcurrentState 	conState	:= ConcurrentState(RouteHandlerState#)
 
 	@Inject
@@ -14,7 +15,7 @@ internal const class RouteHandler {
 	
 	new make(|This|in) { in(this) }
 	
-	Obj? handle(RouteMatch routeMatch) {
+	Obj handle(RouteMatch routeMatch) {
 		
 		handlerType := routeMatch.handler.parent
 		handlerInst	:= handlerType.isConst 
@@ -52,7 +53,17 @@ internal const class RouteHandler {
 			return value
 		}
 		
-		return handlerInst.trap(routeMatch.handler.name, args)
+		result := handlerInst.trap(routeMatch.handler.name, args)
+		
+		if (result == null) {
+			if (routeMatch.handler.returns == Void#)
+				log.warn(BsMsgs.handlersCanNotBeVoid(routeMatch.handler))
+			else
+				log.err(BsMsgs.handlersCanNotReturnNull(routeMatch.handler))
+			result = true
+		}
+		
+		return result
 	}
 	
 	private Void withState(|RouteHandlerState| state) {
