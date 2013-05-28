@@ -10,8 +10,7 @@ const class BedSheetErr : Err {
 ** By default the Err msg is sent to the client. 
 ** 
 ** Note there's a fine line between helping the developer and helping a hacker, so be careful what 
-** msgs you construct your `HttpStatusErr` with!
-** 
+** msgs you construct your Err with!
 const class HttpStatusErr : Err {
 	
 	** The HTTP (error) status code for this error.
@@ -24,7 +23,7 @@ const class HttpStatusErr : Err {
 	}
 }
 
-** To be throw by the routing mechanism on uri -> route mismatch. 
+** Throw by the routing mechanism on uri -> route mismatch. 
 internal const class RouteNotFoundErr : HttpStatusErr {
 	new make(Str msg := "", Err? cause := null) : super(404, msg, cause) {}
 }

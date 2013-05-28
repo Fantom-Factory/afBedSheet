@@ -22,7 +22,8 @@ internal const class BsMsgs {
 	}
 
 	static Str handlerArgSizeMismatch(Method handler, Uri uri) {
-		"Handler $handler.qname has wrong number of params to handle `$uri`"
+		// purposely do not use qname - that's too much info for a public message.
+		"Handler '$handler.name' can not handle `$uri`"
 	}
 	
 	static Str fileHandlerFileNotExist(File file) {

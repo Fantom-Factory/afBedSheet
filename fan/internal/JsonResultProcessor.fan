@@ -1,6 +1,6 @@
 using afIoc::Inject
 
-internal const class JsonResultProcessor : HandlerResultProcessor {
+internal const class JsonResultProcessor : ResultProcessor {
 
 	@Inject
 	private const Response res

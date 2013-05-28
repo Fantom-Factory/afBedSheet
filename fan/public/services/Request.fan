@@ -3,9 +3,9 @@ using afIoc::Registry
 using web::WebReq
 using inet::IpAddr
 
-** Because [WebReq]`web::WebReq` isn't 'const'
+** An injectable 'const' version of [WebReq]`web::WebReq`.
 ** 
-** This is proxied and always refers to the current request
+** This class is proxied and will always refer to the current web request.
 const mixin Request {
 
 	** The HTTP version of the request.

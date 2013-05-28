@@ -1,14 +1,15 @@
 using afIoc::StrategyRegistry
 
+** Holds a collection of `HandlerResultProcessor`s.
 const class ResultProcessorSource {
 
 	private const StrategyRegistry resultProcessorStrategy
 
-	new make(Type:HandlerResultProcessor resultProcessors) {
+	new make(Type:ResultProcessor resultProcessors) {
 		resultProcessorStrategy = StrategyRegistry(resultProcessors)
 	}
 
-	internal HandlerResultProcessor getHandlerResultProcessor(Type resultType) {
+	internal ResultProcessor getResultProcessor(Type resultType) {
 		resultProcessorStrategy.findBestFit(resultType)
 	}	
 }

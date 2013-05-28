@@ -2,6 +2,7 @@ using concurrent::AtomicRef
 using web
 using afIoc
 
+** The top-level `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
 	private const static Log log := Utils.getLog(BedSheetWebMod#)
 

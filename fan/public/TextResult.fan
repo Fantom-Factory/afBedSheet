@@ -1,5 +1,7 @@
 
 // TODO: take a default Charset charset := Charset.utf8
+** Return from Handler methods to send a text response to the client. 
+** 
 ** All `MimeType`s have a charset of 'UTF-8' because that is the default encoding of Fantom Strs.
 ** 
 ** This is purposely a concrete final class so there's no ambiguity as to what it is. For example, 

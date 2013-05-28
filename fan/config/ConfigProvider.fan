@@ -3,7 +3,7 @@ using afIoc::Inject
 using afIoc::ProviderCtx
 
 // TODO: test config service
-const class ConfigProvider : DependencyProvider {
+internal const class ConfigProvider : DependencyProvider {
 
 	@Inject
 	private const ConfigSource configSource
