@@ -39,6 +39,7 @@ const class Route {
 			return null
 
 		uriPath := uri.path
+		// FIXME: index err when '/' and no welxome page
 		match 	:= matchingPath.all |path, i| { path == uriPath[i].lower }
 		
 		if (!match) 

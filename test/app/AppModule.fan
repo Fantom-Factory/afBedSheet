@@ -21,6 +21,8 @@ internal const class AppModule {
 
 		config.addUnordered(Route(`/gzip/big`,			GzipPage#gzipBig))
 		config.addUnordered(Route(`/gzip/small`,		GzipPage#gzipSmall))
+
+		config.addUnordered(Route(`/boom`,				BoomPage#boom))
 		
 //		config.addUnordered(Route(`/pub/`, 	FileHandler#service))
 	}
