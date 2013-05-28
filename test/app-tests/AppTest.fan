@@ -30,10 +30,14 @@ internal class AppTest : Test {
 	}
 	
 	Void verify404(Uri uri) {
+		verifyStatus(uri, 404)
+	}
+	
+	Void verifyStatus(Uri uri, Int status) {
 		client.reqUri = reqUri(uri) 
 		client.writeReq
 		client.readRes
-		verifyEq(client.resCode, 404, client.resPhrase)
+		verifyEq(client.resCode, status, client.resPhrase)
 		client = WebClient()
 	}
 	
