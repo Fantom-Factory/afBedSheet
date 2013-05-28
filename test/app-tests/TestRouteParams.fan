@@ -29,4 +29,14 @@ internal class TestRouteParams : AppTest {
 		res := getAsStr(`/route/VALENC/penis`)
 		verifyEq(res, "penis")
 	}
+
+	Void testUri() {
+		res := getAsStr(`/route/uri/1/2/3`)
+		verifyEq(res, "uri: 1/2/3")
+	}
+
+	Void testList() {
+		res := getAsStr(`/route/list/1/2/3`)
+		verifyEq(res, "uri: [1, 2, 3]")
+	}
 }

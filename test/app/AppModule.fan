@@ -16,6 +16,8 @@ internal const class AppModule {
 
 		config.addUnordered(Route(`/route/optional`, 	RoutePage#defaultParams))
 		config.addUnordered(Route(`/route/valEnc`, 		RoutePage#valEnc))
+		config.addUnordered(Route(`/route/uri`, 		RoutePage#uri))
+		config.addUnordered(Route(`/route/list`, 		RoutePage#list))
 		
 		config.addUnordered(Route(`/StatusCode`, 		StatusCodePage#statusCode))
 

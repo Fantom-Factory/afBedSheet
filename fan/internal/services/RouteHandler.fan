@@ -42,7 +42,7 @@ internal const class RouteHandler {
 				args = [routeMatch.routeRel]
 			
 			if (paramType.fits(Str#.toListOf))
-				args = routeMatch.routeRel.path
+				args = [routeMatch.routeRel.path]
 		}
 		
 		// watch out for ->Obj nulls here if ValEnc sig changes

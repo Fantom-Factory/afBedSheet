@@ -68,7 +68,7 @@ internal const class RouteMatch {
 		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
 		if (paramRange.contains(routePath.size))
 			return routePath
-			
+
 		throw RouteNotFoundErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
 	}
 }
