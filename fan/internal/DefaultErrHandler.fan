@@ -42,20 +42,23 @@ internal const class DefaultErrHandler : ErrHandler {
 			
 		// stack trace
 		out.pre
-		err.trace(out, ["maxDepth":50])
+		b := Buf()	// can't trace to a StrBuf
+		err.trace(b.out, ["maxDepth":50])
+		out.writeChars(b.flip.in.readAllStr)
 		out.preEnd
 
 		out.bodyEnd
 		out.htmlEnd
 		
+		res.setStatusCode(500)
 		return TextResult.fromHtml(buf.toStr)
 	}
 
 	private Void logErr(Err err) {
 		buf := StrBuf()
 		buf.add("$err.msg - $req.uri\n")
-		req.headers.each |v,k| { buf.add("	$k: $v\n") }
-		err.traceToStr.splitLines.each |s| { buf.add("	$s\n") }
+		req.headers.each |v,k| { buf.add("  $k: $v\n") }
+		err.traceToStr.splitLines.each |s| { buf.add("  $s\n") }
 		log.err(buf.toStr.trim)
 	}		
 }

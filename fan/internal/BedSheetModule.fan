@@ -32,6 +32,7 @@ internal class BedSheetModule {
 	@Contribute { serviceType=ErrHandlerSource# }
 	static Void configureErrHandlerSource(MappedConfig config) {
 		config.addMapped(HttpStatusErr#,	config.autobuild(HttpStatusErrHandler#))
+		config.addMapped(Err#,				config.autobuild(DefaultErrHandler#))
 	}
 	
 	@Contribute { serviceType=ConfigSource# } 

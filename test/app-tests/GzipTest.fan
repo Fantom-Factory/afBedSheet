@@ -2,6 +2,7 @@
 internal class GzipTest : AppTest {
 
 	Void testGzipCompression() {
+		concurrent::Actor.sleep(Duration.maxVal)
 		client.reqUri = reqUri(`/gzip/big`)
 		client.reqHeaders["Accept-encoding"] = "gzip"
 		client.writeReq
