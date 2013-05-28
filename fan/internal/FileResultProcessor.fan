@@ -1,7 +1,7 @@
 using afIoc::Inject
 using web::FileWeblet
 
-internal const class FileResultProcessor : ResultProcessor {
+internal const class FileResultProcessor : HandlerResultProcessor {
 	
 	@Inject
 	private const Request request

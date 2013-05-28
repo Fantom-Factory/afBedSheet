@@ -1,7 +1,20 @@
 
-** TODO: take a default Charset charset := Charset.utf8
-** All `MimeType`s have a charset of 'UTF-8' because that is the default encoding of Fantom Strs. 
-const class TextResult {
+// TODO: take a default Charset charset := Charset.utf8
+** All `MimeType`s have a charset of 'UTF-8' because that is the default encoding of Fantom Strs.
+** 
+** This is purposely a concrete final class so there's no ambiguity as to what it is. For example, 
+** if a handler returned an Obj that was both a 'TextResult' and a "JsonResult' what is BedSheet 
+** supposed to do? 
+** 
+** Best practice is to have your Entities have a 'toText()' or 'toJson()' method and return that.
+** 
+** pre>
+** Obj myHandler(MyEntity entity) {
+**   ...
+**   return entity.toJson
+** }
+** <pre  
+const final class TextResult {
 	
 	const Str 		text
 	const MimeType	mimeType

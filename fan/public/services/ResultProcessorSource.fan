@@ -4,11 +4,11 @@ const class ResultProcessorSource {
 
 	private const StrategyRegistry resultProcessorStrategy
 
-	new make(Type:ResultProcessor resultProcessors) {
+	new make(Type:HandlerResultProcessor resultProcessors) {
 		resultProcessorStrategy = StrategyRegistry(resultProcessors)
 	}
 
-	internal ResultProcessor getResultProcessor(Type resultType) {
+	internal HandlerResultProcessor getHandlerResultProcessor(Type resultType) {
 		resultProcessorStrategy.findBestFit(resultType)
 	}	
 }
