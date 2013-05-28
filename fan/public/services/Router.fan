@@ -32,8 +32,8 @@ const class Router {
 		this.routes = innies
 	}
 
-	** Match a request uri to Route, returning 'null' if none found.
-	internal RouteMatch? match(Uri modRel, Str httpMethod) {
+	** Match a request uri to Route.
+	internal RouteMatch match(Uri modRel, Str httpMethod) {
 		routes.eachWhile{ it.match(normalise(modRel), httpMethod) } 
 			?: throw RouteNotFoundErr(BsMsgs.routeNotFound(modRel))
 	}

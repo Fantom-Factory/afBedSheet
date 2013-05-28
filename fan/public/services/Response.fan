@@ -47,7 +47,7 @@ const mixin Response {
 	** Send a redirect response to the client using the specified status code and url.
 	**
 	** @see `web::WebRes.redirect`
-	abstract Void redirect(Uri uri, Int statusCode := 303)
+	abstract Void redirect(Uri uri, Int statusCode)
 
 }
 
@@ -85,7 +85,7 @@ internal const class ResponseImpl : Response {
 		return doGzip ? registry.autobuild(GzipOutStream#) : webRes.out
 	}
 
-	override Void redirect(Uri uri, Int statusCode := 303) {
+	override Void redirect(Uri uri, Int statusCode) {
 		webRes.redirect(uri, statusCode)
 	}
 	

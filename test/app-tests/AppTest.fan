@@ -34,6 +34,7 @@ internal class AppTest : Test {
 		client.writeReq
 		client.readRes
 		verifyEq(client.resCode, 404, client.resPhrase)
+		client = WebClient()
 	}
 	
 	Uri reqUri(Uri uri) {

@@ -1,6 +1,6 @@
 
 const mixin ErrHandler {
 	
-	abstract Void handle(Err err)
+	abstract Obj handle(Err err)
 	
 }
