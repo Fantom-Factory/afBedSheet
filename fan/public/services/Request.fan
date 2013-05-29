@@ -8,6 +8,9 @@ using inet::IpAddr
 ** This class is proxied and will always refer to the current web request.
 const mixin Request {
 
+	** Returns 'true' if an 'XMLHttpRequest', as specified by the 'X-Requested-With' HTTP header.
+	abstract Bool isXmlHttpRequest()
+	
 	** The HTTP version of the request.
 	** 
 	** @see `web::WebReq.version`
@@ -58,6 +61,8 @@ const mixin Request {
 	** Map of HTTP request headers. The map is readonly and case insensitive.
 	** 
 	** @see `web::WebReq.headers`
+	** 
+	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests`
 	abstract Str:Str headers()
 	
 	** The accepted locales for this request based on the "Accept-Language" HTTP header. List is 
@@ -84,6 +89,10 @@ internal const class RequestImpl : Request {
 	private const Registry registry
 	
 	new make(|This|in) { in(this) } 
+
+	override Bool isXmlHttpRequest() {
+		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false
+	}
 
 	override Version httpVersion() {
 		webReq.version		
