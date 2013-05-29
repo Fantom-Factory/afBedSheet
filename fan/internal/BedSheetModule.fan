@@ -6,6 +6,7 @@ using concurrent
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
+		
 		binder.bindImpl(BedSheetService#)
 		binder.bindImpl(RouteSource#)
 		binder.bindImpl(RouteHandler#)
@@ -16,6 +17,7 @@ internal class BedSheetModule {
 		binder.bindImpl(ResultProcessorSource#)
 		binder.bindImpl(ErrProcessorSource#)
 
+		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
 		
 		binder.bindImpl(Request#).withScope(ServiceScope.perThread)

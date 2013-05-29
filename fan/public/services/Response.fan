@@ -19,6 +19,8 @@ const mixin Response {
 	** first time, which commits the response. Throw an err if response is already committed.
 	** 
 	** @see `web::WebRes.headers`
+	** 
+	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
 	abstract Str:Str headers()
 	
 	** Get the list of cookies to set via header fields.  Add a Cookie to this list to set a 
