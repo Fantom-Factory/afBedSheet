@@ -53,4 +53,8 @@ internal const class BsMsgs {
 	static Str handlersCanNotReturnNull(Method method) {
 		"Handler $method.qname is not allowed to return null. If processing is complete, return 'true' instead."
 	}
+	
+	static Str valueEncodingBuggered(Obj value, Type toType) {
+		"Could not convert $value to ${toType.qname}"
+	}
 }
