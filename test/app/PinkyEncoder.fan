@@ -3,14 +3,14 @@ internal const class PinkyEncoder : ValueEncoder {
 	
 	override Str toClient(Obj value) {
 		pinky := (Pinky) value
-		return pinky.toStr
+		return pinky.int.toStr
 	}
 
 	override Obj toValue(Str clientValue) {
-		Pinky{it.str = clientValue}
+		Pinky {it.int = clientValue.toInt}
 	}
 }
 
 internal class Pinky {
-	Str? str
+	Int? int
 }

@@ -1,5 +1,9 @@
 
-value enc errs to 404
+There's a blury line between handlers and processors which I'm not happy about. It's not convienient for all handlers to return a Obj.
+ - wot about redirects? Str is overused: mustache, html, xml, etc... 
+e.g. what should each do? 
+ - how to distinquish between pod resource and file resource -> is there?
+  - both return a file, diff handlers for diff uris.
 
 
 future: uri or Str[] as last param takes the remaining url
@@ -32,7 +36,7 @@ RequireJS module support
 use the tales JS compiler! A bloody neat idea!
 
 Pluggable Template generation
- - moustache
+ - moustacheSource - to cache Moustaches 
  - tales
 
  

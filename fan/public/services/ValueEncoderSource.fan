@@ -10,13 +10,21 @@ const class ValueEncoderSource {
 	}
 	
 	Str toClient(Type valType, Obj value) {
-		get(valType).toClient(value)
+		try {
+			return get(valType).toClient(value)
+		} catch (Err cause) {
+			throw ValueEncodingErr(BsMsgs.valueEncodingBuggered(value, Str#), cause)
+		}
 	}
 
 	Obj toValue(Type valType, Str clientValue) {
-		get(valType).toValue(clientValue)
+		try {
+			return get(valType).toValue(clientValue)
+		} catch (Err cause) {
+			throw ValueEncodingErr("Could not convert $clientValue to $valType.qname", cause)			
+		}
 	}
-	
+
 	private ValueEncoder get(Type valueType) {
 		valueEncoderStrategy.findExactMatch(valueType)
 	}

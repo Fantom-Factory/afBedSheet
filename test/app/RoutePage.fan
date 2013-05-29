@@ -6,7 +6,7 @@ internal const class RoutePage {
 	}
 
 	Obj valEnc(Pinky pinky) {
-		TextResult.fromPlain(pinky.str)
+		TextResult.fromPlain(pinky.int.toStr)
 	}
 	
 	Obj uri(Uri uri) {
