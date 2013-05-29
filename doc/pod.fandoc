@@ -15,8 +15,8 @@ using afBedSheet
 using afIoc
 
 class AppModule {
-  @Contribute { serviceType=Router# }
-  static Void configureRouter(OrderedConfig config) {
+  @Contribute { serviceType=RouteSource# }
+  static Void contributeRoutes(OrderedConfig config) {
     config.addUnordered(Route(`/hello`, HelloPage#hello))
   }
 }
@@ -31,7 +31,7 @@ class HelloPage {
 From the command line:
 
 pre>
-$ fan afBedSheet <mypod>::SimpleAppModule 8080
+$ fan afBedSheet <mypod>::AppModule 8080
 ...
 IoC started up in 323ms
 
