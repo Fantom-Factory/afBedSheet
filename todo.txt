@@ -5,6 +5,8 @@ e.g. what should each do?
  - how to distinquish between pod resource and file resource -> is there?
   - both return a file, diff handlers for diff uris.
 
+how to return a redirect?
+ - should uri's be resolved?  
 
 future: uri or Str[] as last param takes the remaining url
 
@@ -15,7 +17,6 @@ Why? Because people are lazy!
 horizonal not vertical - other frameworks make you extend their classes, not BedSheet!
 
 Fix'n'Go
- - No server restart
  - option to kill server
    - (maybe inject kill links into a html header... in dev mode)
  - too confusing having the one main method for 2 modes, seperate them out

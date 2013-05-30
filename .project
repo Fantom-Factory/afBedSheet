@@ -20,4 +20,11 @@
 		<nature>com.xored.fanide.core.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>workDir</name>
+			<type>2</type>
+			<location>C:/Repositories/Fantom/workDir</location>
+		</link>
+	</linkedResources>
 </projectDescription>

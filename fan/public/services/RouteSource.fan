@@ -4,6 +4,9 @@ using afIoc::Inject
 **
 ** Router handles routing URIs to method handlers.
 **
+** BedSheet takes the stance that any Err encountered whilst finding or invoking a handler should 
+** cause a 404. If a route doesn't exist, or the wrong params were supplied, then that URI is 
+** clearly wrong and should be reported as such.   
 // Maybe abstract this away so routing becomes pluggable?
 const class RouteSource {
 	const Route[] routes
