@@ -17,6 +17,8 @@ internal class BedSheetModule {
 		binder.bindImpl(ResultProcessorSource#)
 		binder.bindImpl(ErrProcessorSource#)
 
+		binder.bindImpl(MoustacheSource#)
+
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
 		
@@ -46,9 +48,7 @@ internal class BedSheetModule {
 
 	@Contribute { serviceType=ValueEncoderSource# }
 	static Void contributeValueEncoderSource(MappedConfig config) {
-		// TODO: create more default encoders
-		config.addMapped(Str#, 	StrValueEncoder())
-		config.addMapped(Int#, 	IntValueEncoder())
+		// wot no value encoders!? Aha! I see you're using fromStr() instead!
 	}
 
 	@Contribute { serviceType=GzipCompressible# }
