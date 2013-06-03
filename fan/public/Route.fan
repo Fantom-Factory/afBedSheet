@@ -20,6 +20,8 @@ const class Route {
 
 	private const Str[] matchingPath
 
+	static new wotever() {return Route(``,#match)}
+	
 	new make(Uri routeBase, Method handler, Str httpMethod := "GET") {
 	    if (!routeBase.isPathOnly)
 			throw BedSheetErr(BsMsgs.routeShouldBePathOnly(routeBase))
