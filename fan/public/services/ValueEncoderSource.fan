@@ -2,10 +2,6 @@ using afIoc::StrategyRegistry
 
 ** Holds a collection of `ValueEncoder`s.
 ** 
-** BedSheet ships with default ValueEncoders for: 
-**  - Str
-**  - Int 
-** 
 ** pre>
 **   @Contribute { serviceType=ValueEncoderSource# }
 **   static Void contributeValueEncoders(MappedConfig config) {
