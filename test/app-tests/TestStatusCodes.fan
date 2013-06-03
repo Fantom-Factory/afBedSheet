@@ -14,7 +14,7 @@ internal class TestStatusCodes : AppTest {
 		client.reqUri = reqUri(`/statuscode/417`) 
 		client.writeReq
 		client.readRes
-		verifyEq(client.resCode, 417, client.resPhrase)
+		verifyEq(client.resCode, 417, "$client.resCode "+ client.resPhrase)
 	}
 	
 }

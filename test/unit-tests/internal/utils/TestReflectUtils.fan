@@ -122,6 +122,8 @@ class TestReflectUtils : Test {
 		verify		(ReflectUtils.paramTypesFitMethodSignature([Num#, Int#, Int#], MyReflectTestUtils2#params7))
 
 		verify		(ReflectUtils.paramTypesFitMethodSignature([,],			 MyReflectTestUtils2#params8))
+
+		verify		(ReflectUtils.paramTypesFitMethodSignature([Str#],		 Int#fromStr))
 		
 		// test I can call a method with more params than it declares
 		MyReflectTestUtils2#params1.callOn(MyReflectTestUtils2(), [48, 45])

@@ -22,7 +22,13 @@ const class ValueEncoderSource {
 		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
 	}
 	
+	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
+	** found, 'toStr()' is used. 
 	Str toClient(Type valType, Obj value) {
+		// check the basics first!
+		if (value is Str)
+			return value
+		
 		valEnc := get(valType)
 		if (valEnc != null)
 			try {
@@ -38,6 +44,10 @@ const class ValueEncoderSource {
 	** If no 'ValueEncoder' is found, this looks for a suitable static factory 'fromStr()' method
 	** on the type.
 	Obj toValue(Type valType, Str clientValue) {
+		// check the basics first!
+		if (valType.fits(Str#))
+			return clientValue
+
 		valEnc := get(valType)
 		if (valEnc != null)
 			try {
@@ -46,7 +56,10 @@ const class ValueEncoderSource {
 				throw ValueEncodingErr(BsMsgs.valueEncodingBuggered(clientValue, valType), cause)
 			}
 		
-		fromStr := ReflectUtils.findMethod(valType, "fromStr", [Str#], true)
+		// see http://fantom.org/sidewalk/topic/2154
+		fromStr := ReflectUtils.findCtor(valType, "fromStr", [Str#])
+		if (fromStr == null)
+			fromStr = ReflectUtils.findMethod(valType, "fromStr", [Str#], true)
 		if (fromStr == null)
 			throw ValueEncodingErr(BsMsgs.valueEncodingNotFound(valType))
 		
