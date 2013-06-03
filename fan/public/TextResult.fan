@@ -25,24 +25,24 @@ const final class TextResult {
 		this.text = text
 		this.mimeType = mimeType
 	}
-	
+
 	** Creates a 'TextResult' with the `MimeType` 'text/plain; charset=utf-8'
-	static TextResult fromPlain(Str text) {
-		TextResult(text, MimeType("text/plain; charset=utf-8"))
+	static new fromPlain(Str text) {
+		TextResult.make(text, MimeType("text/plain; charset=utf-8"))
 	}
 
 	** Creates a 'TextResult' with the `MimeType` 'text/html; charset=utf-8'
-	static TextResult fromHtml(Str text) {
-		TextResult(text, MimeType("text/html; charset=utf-8"))
+	static new fromHtml(Str text) {
+		TextResult.make(text, MimeType("text/html; charset=utf-8"))
 	}
 
 	** Creates a 'TextResult' with the `MimeType` 'text/xml; charset=utf-8'
-	static TextResult fromXml(Str text) {
-		TextResult(text, MimeType("text/xml; charset=utf-8"))
+	static new fromXml(Str text) {
+		TextResult.make(text, MimeType("text/xml; charset=utf-8"))
 	}
 
 	** Creates a 'TextResult' with the `MimeType` 'text/xml; charset=utf-8'
-	static TextResult fromMime(Str text, MimeType mimeType) {
-		TextResult(text, mimeType)
+	static new fromMime(Str text, MimeType mimeType) {
+		TextResult.make(text, mimeType)
 	}
 }
