@@ -29,7 +29,7 @@ internal const class JsonResultProcessor : ResultProcessor {
 		}
 		
 		out := response.out
-		out.printLine(json.toJsonStr)
+		out.print(json.toJsonStr)
 		out.close
 	}
 	

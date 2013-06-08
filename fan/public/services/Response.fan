@@ -1,5 +1,7 @@
 using afIoc::Inject
 using afIoc::Registry
+using afIoc::ThreadStash
+using afIoc::ThreadStashManager
 using web::Cookie
 using web::WebReq
 using web::WebRes
@@ -61,8 +63,20 @@ internal const class ResponseImpl : Response {
 	@Inject
 	private const GzipCompressible gzipCompressible
 
-	new make(|This|in) { in(this) } 
+	@Inject @Config { id="afBedSheet.gzip.disabled" }
+	private const Bool gzipDisabled
 
+	private const ThreadStash threadStash
+
+	new make(ThreadStashManager threadStashManager, |This|in) { 
+		in(this) 
+		threadStash = threadStashManager.createStash("Response")
+	} 
+
+	Void disableCompression() {
+		threadStash["disableCompression"] = true
+	}
+	
 	override Void setStatusCode(Int statusCode) {
 		webRes.statusCode = statusCode
 	}
@@ -83,10 +97,22 @@ internal const class ResponseImpl : Response {
 		contentType := webRes.headers["Content-Type"]
 		mimeType	:= MimeType(contentType, false)
 		acceptGzip	:= webReq.headers["Accept-encoding"]?.split(',', true)?.any { it.equalsIgnoreCase("gzip") } ?: false
-		doGzip 		:= acceptGzip && gzipCompressible.isCompressible(mimeType)  
-		return doGzip ? registry.autobuild(GzipOutStream#) : webRes.out
+		// TODO: afIoc 1.3.2 - use ThreadStash.contains() 
+		doGzip 		:= !gzipDisabled && (threadStash["disableCompression"] != true) && acceptGzip && gzipCompressible.isCompressible(mimeType)
+		
+		// TODO: afIoc 1.3.2 - Could we make a delegate pipeline?
+		// buffered goes on the inside so content-length is the gzipped size
+		webResOut	:= registry.autobuild(WebResOutProxy#)
+		bufferedOut	:= registry.autobuild(BufferedOutStream#, [webResOut])
+		gzipOut		:= doGzip ? registry.autobuild(GzipOutStream#, [bufferedOut]) : bufferedOut 
+		return gzipOut
 	}
 
+//	scope = perthread
+//	OutStream buildResponseOutStream(Type[] delegates) {
+//		DelegatePipelineBuilder(OutStream#, delegates)
+//	}
+	
 	override Void redirect(Uri uri, Int statusCode) {
 		webRes.redirect(uri, statusCode)
 	}

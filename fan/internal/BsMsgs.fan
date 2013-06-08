@@ -61,4 +61,9 @@ internal const class BsMsgs {
 	static Str valueEncodingNotFound(Type valType) {
 		"Could not find either a ValueEncoder or a suitable fromStr() static factory method for ${valType.qname}"
 	}
+	
+	static Str oneShotLockViolation(Str because) {
+		"Method may no longer be invoked - $because"
+	}
+	
 }
