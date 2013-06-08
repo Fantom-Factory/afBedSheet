@@ -1,9 +1,12 @@
 using afIoc::Inject
 using web::WebRes
 
-** At what point do we start gzipping our response?
+** This gzips data once it has accumulated past a given (minimum) threshold. When gzip is 
+** initiated, the 'Content-Encoding' header is set.
 ** 
-** Well Google reccomend between [100 -> 1,000 bytes]`https://developers.google.com/speed/docs/best-practices/payload#GzipCompression` 
+** But at what point do we start gzipping our response?
+** 
+** Well Google recommend between [100 -> 1,000 bytes]`https://developers.google.com/speed/docs/best-practices/payload#GzipCompression` 
 ** which is quite a bit gap. Tapestry 5 sets it's default to an agressive 100.
 **  
 ** So looking into [Maximum Transmission Units]`http://en.wikipedia.org/wiki/Maximum_transmission_unit`
@@ -16,55 +19,96 @@ using web::WebRes
 ** So the default GZIP threshold is set to 376. Although you should still inspect your site traffic 
 ** and adjust accordingly.
 ** 
+** @see `ConfigIds.gzipThreshold`
 ** @see [What is recommended minimum object size for gzip performance benefits?]`http://webmasters.stackexchange.com/questions/31750/what-is-recommended-minimum-object-size-for-gzip-performance-benefits`
 internal class GzipOutStream : OutStream {
-	
-	private Buf webBuf := Buf()
 
-	@Inject
-	private WebRes webRes
+	// We start by piping all data to the OutStream of an internal Buf. When that exceeds the 
+	// given gzip threshold, we switch to piping to gzip wrapped res.out. 
 	
-	@Inject @Config { id="afBedSheet.gzip.disabled" }
-	private Bool gzipDisabled
-
 	@Inject @Config { id="afBedSheet.gzip.threshold" }
-	private Int gzipThreadhold
+	private Int 		gzipThreadhold
 	
-	new make(|This|in) : super(null) { in(this)	}
+	@Inject
+	private Response 	response
+	
+	@Inject
+	private WebRes 		webRes
+	
+	private OutStream	realOut
+	private Bool		switched
+	private Buf? 		buf
+	private OutStream? 	bufOut
+	private OneShotLock	lock
+
+	private new make(OutStream realOut, |This|in) : super(null) {
+		in(this)
+		this.realOut	= realOut
+		this.lock 		= OneShotLock("Stream is closed")
+	}
 	
 	override This write(Int byte) {
-		webBuf.write(byte)
+		lock.check
+		switchToGzip(1)
+		bufOut.write(byte)
 		return this
 	}
 
 	override This writeBuf(Buf buf, Int n := buf.remaining()) {
-		webBuf.writeBuf(buf, n)
+		lock.check
+		switchToGzip(n)
+		bufOut.writeBuf(buf, n)
 		return this
 	}
 	
 	override This flush() {
-		webBuf.flush
+		lock.check
+		bufOut?.flush
 		return this
 	}
 	
-	// TODO: Don't wait until we close the stream before we start gzipping - we can do it dynamically.  
 	override Bool close() {
-		outBuf := webBuf
+		// check lock, cos we should be able to call 'close()' more than once
+		if (lock.isLocked)
+			return true
 		
-		if (!gzipDisabled && webBuf.size >= gzipThreadhold) {
-			webRes.headers["Content-Encoding"] = "gzip"
-			
-			outBuf = Buf()
-			gzipOut := Zip.gzipOutStream(outBuf.out)
-			gzipOut.writeBuf(webBuf.flip)
-			gzipOut.flush
-			gzipOut.close
+		lock.lock
+
+		if (!switched) {
+			bufOut = realOut
+			writeBufToOut
 		}
 		
-		webRes.headers["Content-Length"] = outBuf.size.toStr
-		webRes.out.writeBuf(outBuf.flip)
-		webRes.out.flush
-		webRes.out.close
+		bufOut.flush
+		bufOut.close
 		return true
+	}
+
+	private Void switchToGzip(Int noOfBytes) {
+		if (switched)
+			return
+		
+		if (((buf?.size ?: 0) + noOfBytes) > gzipThreadhold) {
+			webRes.headers["Content-Encoding"] = "gzip"		
+			bufOut = Zip.gzipOutStream(realOut)
+			writeBufToOut
+			switched = true
+			return
+		}
+		
+		// wait until last minute before creating a buf
+		if (buf == null) {
+			buf		= Buf(gzipThreadhold)
+			bufOut 	= buf.out
+		}
+	}
+
+	private Void writeBufToOut() {
+		// when we close the stream, we may not have written anything
+		if (buf != null) {
+			bufOut.writeBuf(buf.flip)
+			buf.close
+		}
+		switched = true
 	}
 }

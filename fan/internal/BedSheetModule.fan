@@ -41,9 +41,10 @@ internal class BedSheetModule {
 	
 	@Contribute { serviceType=ConfigSource# } 
 	static Void contributeConfigSource(MappedConfig config) {
-		config.addMapped(ConfigIds.welcomePage,		`/index`)
-		config.addMapped(ConfigIds.gzipDisabled,	false)
-		config.addMapped(ConfigIds.gzipThreshold,	376)
+		config.addMapped(ConfigIds.welcomePage,				`/index`)
+		config.addMapped(ConfigIds.gzipDisabled,			false)
+		config.addMapped(ConfigIds.gzipThreshold,			376)
+		config.addMapped(ConfigIds.responseBufferThreshold,	8 * 1024)	// TODO: why not kB?
 	}
 
 	@Contribute { serviceType=ValueEncoderSource# }
