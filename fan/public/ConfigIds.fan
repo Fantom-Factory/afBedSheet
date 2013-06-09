@@ -12,7 +12,11 @@ const class ConfigIds {
 	
 	// TODO: code for other environments
 //	static const Str devMode					:= "afBedsheet.devMode"
-	
+
+	** How often the `AppDestroyer` pings the proxy to keep the app alive.
+	** Defaults to '1sec'.
+	static const Str pingInterval				:= "afBedSheet.appDestroyer.pingInterval"
+
 	** If a request uri of '/' is received it is automatically routed (internally) to this uri.  
 	** Defaults to '/index', set to 'null' to disable.
 	static const Str welcomePage				:= "afBedSheet.welcomePage"

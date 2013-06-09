@@ -30,7 +30,7 @@ const class MoustacheSource {
 			return temp.template
 		}
 	}
-	
+
 	private MoustacheTemplate fromFile(File templateFile, DateTime now) {
 		MoustacheTemplate {
 			in := templateFile.in
