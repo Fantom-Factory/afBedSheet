@@ -61,6 +61,6 @@ internal const class AppDestroyer {
 			log.warn(BsLogMsgs.appDestroyerStrikeOut(maxNoOfStrikes - out))
 		}
 		
-		actor.sendLater(1sec, null)
+		actor.sendLater(pingInterval, null)
 	}
 }
