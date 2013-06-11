@@ -1,9 +1,10 @@
 
-** Parses a 'Str' of HTTP qvalues as per HTTP 1.1 Spec / rfc2616-sec14.3 and provides some useful 
-** accessor methods.
+** Parses a 'Str' of HTTP qvalues as per HTTP 1.1 Spec / rfc2616-sec14.3. Provides some useful 
+** accessor methods; like [#accept(Str name)]`#accept` which returns 'true' only if the name exists
+** AND has a qvalue greater than 0.0.
 **
 ** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`
-internal class QualityValues {
+class QualityValues {
 	private Str:Float	qvalues	:= Utils.makeMap(Str#, Float#)
 	
 	private new make(Str:Float qvalues) {
@@ -40,7 +41,7 @@ internal class QualityValues {
 				
 				throw ParseErr("'$val' contains too many ';'")
 			}
-			
+
 			return QualityValues(qvalues)
 			
 		} catch (ParseErr pe) {

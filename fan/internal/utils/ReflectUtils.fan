@@ -1,5 +1,5 @@
 
-class ReflectUtils {
+internal class ReflectUtils {
 	private new make() { }
 
 	static Field? findField(Type type, Str fieldName, Type fieldType) {
