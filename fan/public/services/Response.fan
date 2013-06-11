@@ -48,6 +48,9 @@ const mixin Response {
 	** @see `web::WebRes.out`
 	abstract OutStream out()
 	
+	** Disables gzip compression for this response
+	abstract Void disableGzip()
+	
 	** Send a redirect response to the client using the specified status code and url.
 	**
 	** @see `web::WebRes.redirect`
@@ -73,8 +76,8 @@ internal const class ResponseImpl : Response {
 		threadStash = threadStashManager.createStash("Response")
 	} 
 
-	Void disableCompression() {
-		threadStash["disableCompression"] = true
+	override Void disableGzip() {
+		threadStash["disableGzip"] = true
 	}
 	
 	override Void setStatusCode(Int statusCode) {
@@ -96,9 +99,10 @@ internal const class ResponseImpl : Response {
 	override OutStream out() {
 		contentType := webRes.headers["Content-Type"]
 		mimeType	:= MimeType(contentType, false)
-		acceptGzip	:= webReq.headers["Accept-encoding"]?.split(',', true)?.any { it.equalsIgnoreCase("gzip") } ?: false
+		encodings	:= QualityValues(webReq.headers["Accept-encoding"])
+		acceptGzip	:= encodings.accepts("gzip")
 		// TODO: afIoc 1.3.2 - use ThreadStash.contains() 
-		doGzip 		:= !gzipDisabled && (threadStash["disableCompression"] != true) && acceptGzip && gzipCompressible.isCompressible(mimeType)
+		doGzip 		:= !gzipDisabled && (threadStash["disableGzip"] != true) && acceptGzip && gzipCompressible.isCompressible(mimeType)
 		
 		// TODO: afIoc 1.3.2 - Could we make a delegate pipeline?
 		// buffered goes on the inside so content-length is the gzipped size

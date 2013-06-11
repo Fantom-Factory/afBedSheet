@@ -1,18 +1,18 @@
 using afIoc::Inject
 using web::WebRes
 
-** This gzips data once it has accumulated past a given (minimum) threshold. When gzip is 
-** initiated, the 'Content-Encoding' header is set.
+** A stream that starts gzipping once data has accumulated past a given (minimum) threshold. When 
+** the stream turns gzip, the HTTP 'Content-Encoding' header is set in the `Response`.
 ** 
 ** But at what point do we start gzipping our response?
 ** 
 ** Well Google recommend between [100 -> 1,000 bytes]`https://developers.google.com/speed/docs/best-practices/payload#GzipCompression` 
-** which is quite a bit gap. Tapestry 5 sets it's default to an agressive 100.
+** which is quite a bit gap. Tapestry 5 sets its default to an agressive 100 bytes.
 **  
 ** So looking into [Maximum Transmission Units]`http://en.wikipedia.org/wiki/Maximum_transmission_unit`
 ** it seems for IPv4 it is at least 576 bytes and for IPv6 it a maximum of 1280 bytes. The MTU 
 ** would also have to include the http header text which, looking at WISP responses, seem to be 
-** 150 -> 200 bytes. Simple maths is then:
+** 150 -> 200 bytes. Simple math is then:
 ** 
 **     576 - 200 = 376
 **  
@@ -20,8 +20,9 @@ using web::WebRes
 ** and adjust accordingly.
 ** 
 ** @see `ConfigIds.gzipThreshold`
+** 
 ** @see [What is recommended minimum object size for gzip performance benefits?]`http://webmasters.stackexchange.com/questions/31750/what-is-recommended-minimum-object-size-for-gzip-performance-benefits`
-internal class GzipOutStream : OutStream {
+class GzipOutStream : OutStream {
 
 	// We start by piping all data to the OutStream of an internal Buf. When that exceeds the 
 	// given gzip threshold, we switch to piping to gzip wrapped res.out. 
@@ -30,20 +31,17 @@ internal class GzipOutStream : OutStream {
 	private Int 		gzipThreadhold
 	
 	@Inject
-	private Response 	response
-	
-	@Inject
 	private WebRes 		webRes
 	
-	private OutStream	realOut
+	private OutStream	wrappedOut
 	private Bool		switched
 	private Buf? 		buf
 	private OutStream? 	bufOut
 	private OneShotLock	lock
 
-	private new make(OutStream realOut, |This|in) : super(null) {
+	private new make(OutStream wrappedOut, |This|in) : super(null) {
 		in(this)
-		this.realOut	= realOut
+		this.wrappedOut	= wrappedOut
 		this.lock 		= OneShotLock("Stream is closed")
 	}
 	
@@ -75,7 +73,7 @@ internal class GzipOutStream : OutStream {
 		lock.lock
 
 		if (!switched) {
-			bufOut = realOut
+			bufOut = wrappedOut
 			writeBufToOut
 		}
 		
@@ -90,7 +88,7 @@ internal class GzipOutStream : OutStream {
 		
 		if (((buf?.size ?: 0) + noOfBytes) > gzipThreadhold) {
 			webRes.headers["Content-Encoding"] = "gzip"		
-			bufOut = Zip.gzipOutStream(realOut)
+			bufOut = Zip.gzipOutStream(wrappedOut)
 			writeBufToOut
 			switched = true
 			return

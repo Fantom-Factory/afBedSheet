@@ -1,6 +1,18 @@
 Overview [#overview]
 ********************
-BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applications. Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`, BedSheet aims to be Powerful, Flexible, Simple.
+BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applications. Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`, BedSheet aims to be:
+
+Powerful.
+---------
+BedSheet is built in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped, decorated, replaced or deleted! It makes hard tasks, easy.
+
+Flexible.
+---------
+Show a developer a really cool feature and the first response is usually, "Wow, that's awewome! ... But how do I turn it off?" With that in mind, BedSheet is reluctant
+
+Simple.
+-------
+Developers are lazy. If it's complicated or difficult, they won't use it.
 
 Quick Start [#quickStart]
 *************************
@@ -44,15 +56,15 @@ Hello! I'm Luci and I have an IQ of 666!
 
 Wow! That's awesome! But what just happened!?
 
-Routing
-=======
+Routing [#routing]
+==================
 Every application has an 'AppModule' that is used to contribute to [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. There we told the 'Router' service to route all requests to '/hello' to our 'HelloPage' class.
 
 The '#hello' handler now owns all uris that start with '/hello'.
 
 
-Handling
-========
+Handling [#handling]
+====================
 Deeper path segments are converted into method parameters. Hence our handler method takes a 'Str' and an 'Int'. Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
 
 > TIP: Contribute your own 'ValueEncoders' to convert uris into Entities. That way BedSheet can call your handlers with real Entities, and not just str IDs.
@@ -67,6 +79,53 @@ Handlers should perform the logic processing of your request and not attempt to 
 Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and 'JsonResult'.
 
 If the response is over a given size, and is deemed compressible then it is gzipped before being sent to the user.
+
+Gzip [#gzip]
+************
+By default, BedSheet compresses the HTTP response where it can.(1) But it doesn't do this willy nilly, oh no! There are many hurdles to overcome...
+
+Disable All [#disablePerWebApp]
+-------------------------------
+Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
+
+    config.addOverride(ConfigIds.gzipDisabled, "my.gzip.disabled", true)
+
+Disable per Response [#disablePerResponse]
+------------------------------------------
+Although enabled by default, gzip can be disabled on a per request / response basis by calling the following:
+
+    response.disableGzip()
+
+Gzip'able Mime Types [#mimeTypes]
+---------------------------------
+Not everything should be gzipped. For example, text files gzip very well and yield high compression rates. JPG images on the other hand, because they're already compressed, don't gzip well and can end up bigger than the original! For this reason you must contribute to the `GzipCompressible` service to enable gzip for specified [Mime Types]`sys::MimeType`:
+
+    config.addMapped(MimeType("text/funky"), true)
+
+By default BedSheet will compress plain text, css, html, javascript, xml and json responses.
+
+Gzip only when asked [#askNicely]
+---------------------------------
+It's guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such, and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, we only gzip the response if the client actually *asked* for it!
+
+Minimum content threshold [#minThreshold]
+-----------------------------------------
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following:
+
+    config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 768)
+
+See `GzipOutStream` and `ConfigIds.gzipThreshold` for more details.
+
+Phew! Made it! [#madeIt]
+------------------------
+If (and only if!) your data passed all the tests above, then it will be lovingly gzipped and sent to the client.
+
+ - (1) `http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/`
+
+Buffered Response
+*****************
+
+ - (2) `http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`
 
 
 More!
