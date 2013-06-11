@@ -4,7 +4,7 @@ BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applicat
 
 Powerful.
 ---------
-BedSheet is built in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped, decorated, replaced or deleted! It makes hard tasks, easy.
+Built in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped, decorated, replaced or deleted! It makes hard tasks, easy.
 
 Flexible.
 ---------

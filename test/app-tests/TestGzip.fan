@@ -58,9 +58,4 @@ internal class TestGzip : AppTest {
 		verifyEq(res, "This is a gzipped message. No really! Need 5 more bytes!")
 		verifyEq(client.resCode, 200)
 	}
-	
-	static Void main(Str[] args) {
-		q:=Uri.decodeQuery("gzip;q=0.0, identity; q=0.5, *;q=0")
-		Env.cur.err.printLine(q)
-	}
 }
