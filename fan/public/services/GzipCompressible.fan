@@ -3,9 +3,9 @@
 ** configured by default, to add to the list:
 ** 
 ** pre>
-** 	@Contribute { serviceType=GzipCompressible# }
-**	static Void configureGzipCompressible(MappedConfig config) {
-**		config.addMapped(MimeType("text/funky"), true)
+**  @Contribute { serviceType=GzipCompressible# }
+**  static Void configureGzipCompressible(MappedConfig config) {
+**     config.addMapped(MimeType("text/funky"), true)
 **  }
 ** <pre
 ** 

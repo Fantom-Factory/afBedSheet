@@ -1,6 +1,6 @@
 
-** A list config values provided by BedSheet. To change their value, override them in your 
-** 'AppModule'. Example:
+** Config values as provided by BedSheet. To change their value, override them in your 'AppModule'. 
+** Example:
 ** 
 ** pre>
 ** @Contribute { serviceType=ConfigSource# } 
@@ -10,9 +10,6 @@
 ** <pre
 const class ConfigIds {
 	
-	// TODO: code for other environments
-//	static const Str devMode					:= "afBedsheet.devMode"
-
 	** How often the `AppDestroyer` pings the proxy to keep the app alive.
 	** Defaults to '1sec'.
 	static const Str pingInterval				:= "afBedSheet.appDestroyer.pingInterval"
