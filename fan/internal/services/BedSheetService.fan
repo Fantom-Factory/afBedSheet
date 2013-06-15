@@ -24,8 +24,11 @@ const internal class BedSheetService {
 			// save the routeMatch so it can be picked up by `Request`
 			webReq.stash["bedSheet.routeMatch"] = routeMatch
 
+			afIoc::IocHelper.debugOperation |->|{
+				
 			result := routeHandler.handle(routeMatch)
 			processResult(result)
+			}
 
 		} catch (Err err) {
 			
@@ -37,6 +40,11 @@ const internal class BedSheetService {
 				// the backup plan for when the err handler errs!
 				log.err("ERROR in the ERR HANDLER!!!", doubleErr)
 				log.err("  - Original Err", err)
+				
+//		b := Buf()	// can't trace to a StrBuf
+//		err.trace(b.out, ["maxDepth":250])
+//		es:=b.flip.in.readAllStr
+//		Env.cur.err.printLine(es)
 				
 				if (!webRes.isCommitted)
 					webRes.sendErr(500, err.msg)

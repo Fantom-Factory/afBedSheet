@@ -52,10 +52,25 @@ internal class TestGzip : AppTest {
 		client.readRes
 		
 		verifyFalse(client.resHeaders.containsKey("Content-Encoding"))
-		verifyEq(client.resHeaders["Content-Length"], 	"56")
+		verifyEq(client.resHeaders["Content-Length"], "56")
 		
 		res := client.resIn.readAllStr.trim
 		verifyEq(res, "This is a gzipped message. No really! Need 5 more bytes!")
+		verifyEq(client.resCode, 200)
+	}
+
+	** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`
+	Void testResponseDisableGzip() {
+		client.reqUri = reqUri(`/gzip/disable`)
+		client.reqHeaders["Accept-encoding"] = "gzip"
+		client.writeReq
+		client.readRes
+		
+		verifyFalse(client.resHeaders.containsKey("Content-Encoding"))
+		verifyEq(client.resHeaders["Content-Length"], "60")
+		
+		res := client.resIn.readAllStr.trim
+		verifyEq(res, "This is NOT a gzipped message. No really! Need 5 more bytes!")
 		verifyEq(client.resCode, 200)
 	}
 }
