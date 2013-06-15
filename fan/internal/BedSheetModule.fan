@@ -67,14 +67,14 @@ internal class BedSheetModule {
 	}
 	
 	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	
-	private static WebReq buildRequest() {
+	private static WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
 	@Build { serviceId="WebRes"; scope=ServiceScope.perThread } 
-	private static WebRes buildResponse() {
+	private static WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")

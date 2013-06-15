@@ -12,7 +12,7 @@ const class ErrProcessorSource {
 	internal Obj process(Err err) {
 		get(err).process(err)
 	}
-	
+
 	internal ErrProcessor get(Err err) {
 		// TODO: search the causes for an exact match first
 		errProcessorStrategy.findBestFit(err.typeof)
