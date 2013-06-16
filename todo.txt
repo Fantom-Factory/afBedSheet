@@ -1,8 +1,7 @@
 
-For BedSheet 0.0.4
+For BedSheet 0.0.6
 ------------------
  - (doc) out buffer
- - pipeline delegate
  - res.disableOutBuffer
  - (doc) restarter
 
@@ -16,7 +15,7 @@ serve pod files
 config factory defaults so you don't have to override...
 
 
-For BedSheet 0.0.6
+For BedSheet 0.0.8
 ------------------
  - filters
  

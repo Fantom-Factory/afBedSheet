@@ -51,7 +51,7 @@ const internal class BedSheetService {
 			}
 			
 		} finally {
-			stashManager.cleanUp
+			stashManager.cleanUpThread
 		}
 	}
 	

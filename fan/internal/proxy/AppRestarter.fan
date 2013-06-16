@@ -1,5 +1,6 @@
 using afIoc::ConcurrentState
 using concurrent::Actor
+using concurrent::Future
 using util::PathEnv
 
 ** Adapted from 'draft'
@@ -35,12 +36,10 @@ internal const class AppRestarter {
 				Actor.sleep(2sec)
 				state.updateTimeStamps
 			}
-		}
-		// TODO: afIoc 1.3.2 update afIoc and change to
-//		getFuture { ... }.get(30sec)
+		}.get(30sec)
 	}
 	
-	private Void withState(|AppRestarterState| state) {
+	private Future withState(|AppRestarterState| state) {
 		conState.withState(state)
 	}
 }
