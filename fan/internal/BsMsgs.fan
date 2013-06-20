@@ -13,9 +13,9 @@ internal const class BsMsgs {
 		"Routing path '$routeBase' must start with a slash. e.g. `/foo/bar`"
 	}
 	
-	static Str routesCanNotBeNested(Uri inner, Uri outer) {
-		"Route `$inner` can not be nested under `$outer`"
-	}
+//	static Str routesCanNotBeNested(Uri inner, Uri outer) {
+//		"Route `$inner` can not be nested under `$outer`"
+//	}
 
 	static Str routeAlreadyAdded(Uri route, Method hander) {
 		"Route `$route` has already been assigned to hander $hander.qname"
@@ -47,11 +47,13 @@ internal const class BsMsgs {
 	}
 	
 	static Str handlersCanNotBeVoid(Method method) {
-		"Handler $method.qname is not allowed to be Void. If processing is complete, return 'true' instead."
+		// TODO: better msg
+		"Handler $method.qname is not allowed to be Void. If processing is not complete, return 'false' instead."
 	}
 
 	static Str handlersCanNotReturnNull(Method method) {
-		"Handler $method.qname is not allowed to return null. If processing is complete, return 'true' instead."
+		// TODO: better msg
+		"Handler $method.qname is not allowed to return null. If processing is not complete, return 'false' instead."
 	}
 	
 	static Str valueEncodingBuggered(Obj value, Type toType) {

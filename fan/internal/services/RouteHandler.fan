@@ -18,11 +18,10 @@ internal const class RouteHandler {
 	Obj handle(RouteMatch routeMatch) {
 		
 		handlerType := routeMatch.handler.parent
+		// TODO: isConst - we should also check for threaded services - for reuse
 		handlerInst	:= handlerType.isConst 
 			? getState |state->Obj| {
 				state.handlerCache.getOrAdd(handlerType) |->Obj| {
-					// TODO: we should also check for threaded services
-					// maybe put checked=true on reg.dependencyByType and reg.serviceById ??
 					serviceStats 	:= (ServiceStats) registry.dependencyByType(ServiceStats#)
 					serviceStat		:= serviceStats.stats.find { it.type == handlerType }
 					service			:= (serviceStat == null) 
@@ -59,7 +58,7 @@ internal const class RouteHandler {
 				log.warn(BsMsgs.handlersCanNotBeVoid(routeMatch.handler))
 			else
 				log.err(BsMsgs.handlersCanNotReturnNull(routeMatch.handler))
-			result = true
+			result = false
 		}
 		
 		return result

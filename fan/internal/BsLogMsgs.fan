@@ -22,7 +22,7 @@ internal const class BsLogMsgs {
 	}	
 
 	static Str appRestarterPodUpdatd(Pod pod, Duration timeDiff) {
-		"Pod '$pod.name' pod was updated $timeDiff.toLocale ago"
+		"Pod '$pod.name' pod was updated $timeDiff.abs.toLocale ago"
 	}
 
 	// ---- AppDestroyer --------------------------------------------------------------------------
