@@ -19,19 +19,22 @@ const internal class BedSheetService {
 	
 	Void service() {
 		try {
-			routeMatch	:= routeSrc.match(req.modRel, req.httpMethod)
+			result	:= routeSrc.match(req.modRel, req.httpMethod)
 
-			// save the routeMatch so it can be picked up by `Request`
-			webReq.stash["bedSheet.routeMatch"] = routeMatch
-
-			result := routeHandler.handle(routeMatch)
-			processResult(result)
+//			// save the routeMatch so it can be picked up by `Request` for routeBase() & routeMod()
+//			webReq.stash["bedSheet.routeMatch"] = routeMatch
+//
+//			result := routeHandler.handle(routeMatch)
+			if (result != true)
+				resProSrc.process(result)
 
 		} catch (Err err) {
 			
 			try {
 				result := errProSrc.process(err)
-				processResult(result)
+				// TODO: more recursive handling...
+				if (result != true)
+					resProSrc.process(result)
 
 			} catch (Err doubleErr) {
 				// the backup plan for when the err handler errs!
@@ -50,13 +53,6 @@ const internal class BedSheetService {
 		} finally {
 			stashManager.cleanUpThread
 		}
-	}
-	
-	private Void processResult(Obj result) {
-		if (result == true)
-			return
-		
-		resProSrc.process(result)
 	}
 	
 	private WebReq webReq() {

@@ -6,6 +6,9 @@ using web::WebRes
 internal const class HttpStatusErrProcessor : ErrProcessor {
 
 	@Inject
+	private const Request req
+
+	@Inject
 	private const Registry registry
 	
 	new make(|This|in) { in(this) }
@@ -17,6 +20,9 @@ internal const class HttpStatusErrProcessor : ErrProcessor {
 		
 		res := (WebRes) registry.dependencyByType(WebRes#)
 		res.sendErr(err.statusCode, err.msg)
+		
+		// FIXME: log filter please!
+		Env.cur.err.printLine("${err.statusCode} ${err.msg} - ${req.uri}")
 		
 		return true
 	}
