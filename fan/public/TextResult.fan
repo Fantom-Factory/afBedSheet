@@ -26,17 +26,17 @@ const final class TextResult {
 		this.mimeType = mimeType
 	}
 
-	** Creates a 'TextResult' with the `MimeType` 'text/plain; charset=utf-8'
+	** Creates a 'TextResult' with the `MimeType` 'text/plain; charset=UTF-8'
 	static new fromPlain(Str text) {
 		TextResult.make(text, MimeType("text/plain; charset=$Charset.utf8.name"))
 	}
 
-	** Creates a 'TextResult' with the `MimeType` 'text/html; charset=utf-8'
+	** Creates a 'TextResult' with the `MimeType` 'text/html; charset=UTF-8'
 	static new fromHtml(Str text) {
 		TextResult.make(text, MimeType("text/html; charset=$Charset.utf8.name"))
 	}
 
-	** Creates a 'TextResult' with the `MimeType` 'text/xml; charset=utf-8'
+	** Creates a 'TextResult' with the `MimeType` 'text/xml; charset=UTF-8'
 	static new fromXml(Str text) {
 		TextResult.make(text, MimeType("text/xml; charset=$Charset.utf8.name"))
 	}

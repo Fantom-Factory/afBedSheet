@@ -24,11 +24,8 @@ const internal class BedSheetService {
 			// save the routeMatch so it can be picked up by `Request`
 			webReq.stash["bedSheet.routeMatch"] = routeMatch
 
-			afIoc::IocHelper.debugOperation |->|{
-				
 			result := routeHandler.handle(routeMatch)
 			processResult(result)
-			}
 
 		} catch (Err err) {
 			
