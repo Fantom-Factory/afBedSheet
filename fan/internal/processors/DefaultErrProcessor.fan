@@ -58,8 +58,20 @@ internal const class DefaultErrProcessor : ErrProcessor {
 	private Void logErr(Err err) {
 		buf := StrBuf()
 		buf.add("$err.msg - $req.uri\n")
+		
+		buf.add("\nHeaders:\n")
 		req.headers.each |v,k| { buf.add("  $k: $v\n") }
-		err.traceToStr.splitLines.each |s| { buf.add("  $s\n") }
+
+		if (req.form != null) {
+			buf.add("\nForm:\n")
+			req.form.each |v,k| { buf.add("  $k: $v\n") }
+		}
+		
+		buf.add("\nLocales:\n")
+		req.locales.each |v,k| { buf.add("  $k: $v\n") }
+		
+		buf.add("\nStack Trace:\n")
+		err.traceToStr.splitLines.each |s| { buf.add("$s\n") }
 		log.err(buf.toStr.trim)
 	}		
 }

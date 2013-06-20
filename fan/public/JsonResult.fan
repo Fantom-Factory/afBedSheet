@@ -17,14 +17,25 @@ using util::JsonOutStream
 final class JsonResult {
 	
 	private Obj jsonObj
+	private Str? callback
 
 	** The jsonObj should be serialisable into Json via `JsonOutStream`
 	new make(Obj jsonObj) {
 		this.jsonObj = jsonObj
 	}
+
+	new makeFromJsonp(Str callback, Obj jsonObj) {
+		this.jsonObj = jsonObj
+		this.callback = callback
+	}
 	
 	** Converts the wrapped Obj into JSON via `JsonOutStream.writeJsonToStr`
 	Str toJsonStr() {
-		JsonOutStream.writeJsonToStr(jsonObj)
+		if (callback == null)
+			return JsonOutStream.writeJsonToStr(jsonObj)
+		
+		return "$callback(${JsonOutStream.writeJsonToStr(jsonObj)});"
 	}
+	
+	// FIXME: munge into TextResult once the IE hacks have been moved to a filter
 }
