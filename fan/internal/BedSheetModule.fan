@@ -39,9 +39,8 @@ internal class BedSheetModule {
 		config.addMapped(Err#,				config.autobuild(DefaultErrProcessor#))
 	}
 	
-	@Contribute { serviceType=ConfigSource# } 
+	@Contribute { serviceType=ConfigSource# }
 	static Void contributeConfigSource(MappedConfig config) {
-		config.addMapped(ConfigIds.welcomePage,				`/index`)
 		config.addMapped(ConfigIds.pingInterval,			1sec)
 		config.addMapped(ConfigIds.gzipDisabled,			false)
 		config.addMapped(ConfigIds.gzipThreshold,			376)
