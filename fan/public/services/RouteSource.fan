@@ -10,6 +10,8 @@ using afIoc::Registry
 ** clearly wrong and should be reported as such.   
 // Maybe abstract this away so routing becomes pluggable?
 const class RouteSource {
+	private const static Log log := Utils.getLog(RouteSource#)
+	
 	const Route[] routes
 
 	@Inject
@@ -22,6 +24,8 @@ const class RouteSource {
 	new make(Route[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
+		
+		routes.each |r| { Env.cur.err.printLine(r.routeBase)  }
 	}
 
 	** Match a request uri to Route.
@@ -34,6 +38,8 @@ const class RouteSource {
 			if (routeMatch == null) {
 				return null
 			}
+			
+			log.debug("Matched to uri `$routeMatch.routeBase` for $routeMatch.handler.qname")
 			
 			// save the routeMatch so it can be picked up by `Request` for routeBase() & routeMod()
 			webReq.stash["bedSheet.routeMatch"] = routeMatch
@@ -62,13 +68,11 @@ const class RouteSource {
 internal const class RouteMatch {
 	const Uri 		routeBase
 	const Uri		routeRel
-	const Str 		httpMethod
 	const Method	handler
 	
-	new make(Uri routeBase, Uri routeRel, Str httpMethod, Method handler) {
+	new make(Uri routeBase, Uri routeRel, Method handler) {
 		this.routeBase	= routeBase
 		this.routeRel	= routeRel
-		this.httpMethod = httpMethod
 		this.handler	= handler
 	}
 	
