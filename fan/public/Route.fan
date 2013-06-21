@@ -19,8 +19,7 @@ const class Route {
 	const Str httpMethod
 
 	private const Str[] matchingPath
-
-	static new wotever() {return Route(``,#match)}
+	private const Regex httpMethodGlob
 	
 	new make(Uri routeBase, Method handler, Str httpMethod := "GET") {
 	    if (!routeBase.isPathOnly)
@@ -29,24 +28,21 @@ const class Route {
 			throw BedSheetErr(BsMsgs.routeShouldStartWithSlash(routeBase))
 
 		this.routeBase 		= routeBase.plusSlash
-		this.httpMethod		= httpMethod.upper
+		this.httpMethod		= httpMethod.upper.trim
 		this.handler 		= handler
 		this.matchingPath 	= routeBase.path.map { it.lower }
+		this.httpMethodGlob	= Regex.glob(this.httpMethod)
 	}
 
 	** Match this route against the request arguments, returning a list of Str arguments. Returns
 	** 'null' if no match.
 	internal RouteMatch? match(Uri uri, Str httpMethod) {
-		if (httpMethod != this.httpMethod)
+		if (!httpMethodGlob.matches(httpMethod))
 			return null
 
-		uriPath := uri.path
-		if (uriPath.isEmpty)
-			// we don't match '/', instead we route to a welcome page
-			return null 
-
-		actualBase := ``	// need to build up the actualBase for a case-insensitive Uri.relTo()
-		match 	:= matchingPath.all |path, i| { 
+		uriPath 	:= uri.path
+		actualBase	:= ``	// need to build up the actualBase for a case-insensitive Uri.relTo()
+		match		:= matchingPath.all |path, i| { 
 			actualBase = actualBase.plusSlash.plusName(uriPath[i]) 
 			return path == uriPath[i].lower
 		}
@@ -54,6 +50,6 @@ const class Route {
 			return null
 
 		rel:= uri.relTo(actualBase)
-		return RouteMatch(routeBase, rel, httpMethod, handler)
+		return RouteMatch(routeBase, rel, handler)
 	}
 }
