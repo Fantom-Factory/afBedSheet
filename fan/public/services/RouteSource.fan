@@ -12,10 +12,6 @@ using afIoc::Registry
 const class RouteSource {
 	const Route[] routes
 
-	@Inject @Config { id="afBedSheet.welcomePage" }
-	@Deprecated	 //- no longer used
-	private const Uri? welcomePage
-
 	@Inject
 	private const RouteHandler routeHandler
 	
@@ -25,33 +21,7 @@ const class RouteSource {
 	
 	new make(Route[] routes, |This|? in := null) {
 		in?.call(this)
-
-		dups := Route[,]
-		routes.each |route| {
-//			dup	:= dups.find { route.routeBase.toStr.equalsIgnoreCase(it.routeBase.toStr) && route.httpMethod == it.httpMethod }
-//			if (dup != null)
-//				throw BedSheetErr(BsMsgs.routeAlreadyAdded(dup.routeBase, dup.handler))
-			dups.add(route)
-		}
-
-		innies := Route[,]
-		dups.each |route| {
-//			innies.each {
-//				if (route.routeBase != it.routeBase) {
-//					if (route.routeBase.toStr.startsWith(it.routeBase.toStr))
-//						throw BedSheetErr(BsMsgs.routesCanNotBeNested(route.routeBase, it.routeBase))
-//					if (it.routeBase.toStr.startsWith(route.routeBase.toStr))
-//						throw BedSheetErr(BsMsgs.routesCanNotBeNested(it.routeBase, route.routeBase))
-//				}
-//			}
-			innies.add(route)
-		}
-		
-		this.routes = innies
-		
-		// validate welcome page uri
-		if (welcomePage != null)
-			verify := Route(welcomePage, #toStr)
+		this.routes = routes
 	}
 
 	** Match a request uri to Route.
@@ -79,11 +49,6 @@ const class RouteSource {
 	}
 	
 	private Uri normalise(Uri uri) {
-		if (uri.path.isEmpty) {
-			if (welcomePage == null)
-				throw RouteNotFoundErr(BsMsgs.routeNotFound(uri))
-			uri = welcomePage
-		}
 		if (!uri.isPathAbs)
 			uri = `/` + uri
 		return uri

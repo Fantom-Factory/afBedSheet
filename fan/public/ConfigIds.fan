@@ -14,10 +14,6 @@ const class ConfigIds {
 	** Defaults to '1sec'.
 	static const Str pingInterval				:= "afBedSheet.appDestroyer.pingInterval"
 
-	** If a request uri of '/' is received it is automatically routed (internally) to this uri.  
-	** Defaults to '/index', set to 'null' to disable.
-	static const Str welcomePage				:= "afBedSheet.welcomePage"
-
 	** If set to 'true' then *all* gzipping is disabled, regardless of other configuration. 
 	** Defaults to 'false'.
 	static const Str gzipDisabled				:= "afBedSheet.gzip.disabled"
