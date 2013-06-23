@@ -4,8 +4,8 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ConfigSource# } 
-** static Void configureConfigSource(MappedConfig config) {
-**   config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 500)
+** static Void configureApplicationDefaults(MappedConfig config) {
+**   config.addMapped(ConfigIds.gzipThreshold, 500)
 ** }
 ** <pre
 const class ConfigIds {
@@ -24,7 +24,48 @@ const class ConfigIds {
 	
 	** The buffer size (in bytes) of the response OutStream buffer. The buffer is used to 
 	** automatically set the 'Content-Length' response header. Any content larger than the buffer 
-	** is streamed direct to the client. 
+	** is streamed direct to the client.
+	** Defaults to '8Kb'. 
 	static const Str responseBufferThreshold	:= "afBedSheet.responseBuffer.threshold"
+		
+	** A CSV glob list of all origins (domains) allowed for Cross Origin Resource Sharing.
+	** Defaults to empty Str.
+	** Example, "*.alienfactory.co.uk, *.heroku.com" 
+	** 
+	** @see `CrossOriginResourceSharingFilter` 
+	static const Str corsAllowedOrigins			:= "afBedSheet.cors.allowedOrigins"
+
+	** If set to 'true' the 'Access-Control-Allow-Credentials' response header is set.
+	** Defaults to 'false'
+	** 
+	** @see `CrossOriginResourceSharingFilter` 
+	static const Str corsAllowCredentials		:= "afBedSheet.cors.allowCredentials"
+
+	** A CSV list of http headers the client application is allowed access to. 
+	** Defaults to empty Str.
+	** 
+	** @see `CrossOriginResourceSharingFilter` 
+	static const Str corsExposeHeaders			:= "afBedSheet.cors.exposeHeaders"
+
+	** A CSV list of http methods the client is allowed to make. 
+	** (Only required for preflight requests.)
+	** Defaults to "GET, POST".
+	** 
+	** @see `CrossOriginResourceSharingFilter` 
+	static const Str corsAllowedMethods			:= "afBedSheet.cors.allowedMethods"
+	
+	** A CSV list of http heads the client is allowed to send. 
+	** (Only required for preflight requests.)
+	** Defaults to empty Str.
+	** 
+	** @see `CrossOriginResourceSharingFilter` 
+	static const Str corsAllowedHeaders			:= "afBedSheet.cors.allowedHeaders"
+
+	** The max age to tell a client to cache the preflight request for.
+	** (Only required for preflight requests.)
+	** Defaults to '60min'
+	** 
+	** @see `CrossOriginResourceSharingFilter` 
+	static const Str corsMaxAge					:= "afBedSheet.cors.maxAge"
 	
 }

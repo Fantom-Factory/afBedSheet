@@ -2,8 +2,7 @@ using afIoc::DependencyProvider
 using afIoc::Inject
 using afIoc::ProviderCtx
 
-// TODO: test config service
-internal const class ConfigProvider : DependencyProvider {
+const class ConfigProvider : DependencyProvider {
 
 	@Inject
 	private const ConfigSource configSource
@@ -14,7 +13,7 @@ internal const class ConfigProvider : DependencyProvider {
 		!ctx.facets.findType(Config#).isEmpty
 	}
 
-	override Obj provide(ProviderCtx ctx, Type dependencyType) {
+	override Obj? provide(ProviderCtx ctx, Type dependencyType) {
 		configs	:= ctx.facets.findType(Config#)
 		if (configs.size > 1)
 			throw Err("WTF")

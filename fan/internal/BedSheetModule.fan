@@ -24,6 +24,8 @@ internal class BedSheetModule {
 		
 		binder.bindImpl(Request#).withScope(ServiceScope.perThread)
 		binder.bindImpl(Response#).withScope(ServiceScope.perThread)
+
+		binder.bindImpl(CrossOriginResourceSharingFilter#)
 	}
 
 	@Contribute { serviceType=ResultProcessorSource# }
@@ -39,12 +41,19 @@ internal class BedSheetModule {
 		config.addMapped(Err#,				config.autobuild(DefaultErrProcessor#))
 	}
 	
-	@Contribute { serviceType=ConfigSource# }
-	static Void contributeConfigSource(MappedConfig config) {
+	@Contribute { serviceType=FactoryDefaults# }
+	static Void contributeFactoryDefaults(MappedConfig config) {
 		config.addMapped(ConfigIds.pingInterval,			1sec)
 		config.addMapped(ConfigIds.gzipDisabled,			false)
 		config.addMapped(ConfigIds.gzipThreshold,			376)
 		config.addMapped(ConfigIds.responseBufferThreshold,	8 * 1024)	// TODO: why not kB?
+		
+		config.addMapped(ConfigIds.corsAllowedOrigins,		"")
+		config.addMapped(ConfigIds.corsExposeHeaders,		"")
+		config.addMapped(ConfigIds.corsAllowCredentials,	false)
+		config.addMapped(ConfigIds.corsAllowedMethods,		"GET, POST")
+		config.addMapped(ConfigIds.corsAllowedHeaders,		"")
+		config.addMapped(ConfigIds.corsMaxAge,				60min)
 	}
 
 	@Contribute { serviceType=ValueEncoderSource# }
