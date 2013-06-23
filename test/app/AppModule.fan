@@ -6,28 +6,28 @@ internal const class AppModule {
 //		binder.bindImpl(Router#)
 	}
 	
-	@Contribute { serviceType=RouteSource# }
+	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(OrderedConfig config) {
-		config.addUnordered(Route(`/textResult/plain`, 	TextPage#plain))
-		config.addUnordered(Route(`/textResult/html`, 	TextPage#html))
-		config.addUnordered(Route(`/textResult/xml`, 	TextPage#xml))
+		config.addUnordered(ArgRoute(`/textResult/plain`, 	TextPage#plain))
+		config.addUnordered(ArgRoute(`/textResult/html`, 	TextPage#html))
+		config.addUnordered(ArgRoute(`/textResult/xml`, 	TextPage#xml))
 
-		config.addUnordered(Route(`/jsonResult/list`, 	JsonPage#list))
+		config.addUnordered(ArgRoute(`/jsonResult/list`, 	JsonPage#list))
 
-		config.addUnordered(Route(`/route/optional`, 	RoutePage#defaultParams))
-		config.addUnordered(Route(`/route/valEnc`, 		RoutePage#valEnc))
-		config.addUnordered(Route(`/route/uri`, 		RoutePage#uri))
-		config.addUnordered(Route(`/route/list`, 		RoutePage#list))
+		config.addUnordered(ArgRoute(`/route/optional`, 	RoutePage#defaultParams))
+		config.addUnordered(ArgRoute(`/route/valEnc`, 		RoutePage#valEnc))
+		config.addUnordered(ArgRoute(`/route/uri`, 			RoutePage#uri))
+		config.addUnordered(ArgRoute(`/route/list`, 		RoutePage#list))
 		
-		config.addUnordered(Route(`/StatusCode`, 		StatusCodePage#statusCode))
+		config.addUnordered(ArgRoute(`/StatusCode`, 		StatusCodePage#statusCode))
 
-		config.addUnordered(Route(`/gzip/big`,			GzipPage#gzipBig))
-		config.addUnordered(Route(`/gzip/small`,		GzipPage#gzipSmall))
-		config.addUnordered(Route(`/gzip/disable`,		GzipPage#gzipDisable))
+		config.addUnordered(ArgRoute(`/gzip/big`,			GzipPage#gzipBig))
+		config.addUnordered(ArgRoute(`/gzip/small`,			GzipPage#gzipSmall))
+		config.addUnordered(ArgRoute(`/gzip/disable`,		GzipPage#gzipDisable))
 
-		config.addUnordered(Route(`/boom`,				BoomPage#boom))
+		config.addUnordered(ArgRoute(`/boom`,				BoomPage#boom))
 		
-		config.addUnordered(Route(`/test-src/`, 		FileHandler#service))
+		config.addUnordered(ArgRoute(`/test-src/`, 			FileHandler#service))
 	}
 
 	

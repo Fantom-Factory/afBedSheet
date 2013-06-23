@@ -10,8 +10,8 @@ const internal class BedSheetService {
 	@Inject	private const Registry				registry
 	@Inject	private const ThreadStashManager 	stashManager
 	@Inject	private const Request 				req
-	@Inject	private const RouteHandler 			routeHandler
-	@Inject	private const RouteSource			routeSrc
+//	@Inject	private const RouteHandler 			routeHandler
+	@Inject	private const Routes				routes
 	@Inject	private const ResultProcessorSource	resProSrc
 	@Inject	private const ErrProcessorSource	errProSrc
 	
@@ -19,7 +19,7 @@ const internal class BedSheetService {
 	
 	Void service() {
 		try {
-			result	:= routeSrc.match(req.modRel, req.httpMethod)
+			result	:= routes.processRequest(req.modRel, req.httpMethod)
 
 //			// save the routeMatch so it can be picked up by `Request` for routeBase() & routeMod()
 //			webReq.stash["bedSheet.routeMatch"] = routeMatch

@@ -68,9 +68,6 @@ const class BedSheetWebMod : WebMod {
 
 		registry.val = bob.build(options).startup
 
-		// validate routes on startup
-		reg.dependencyByType(RouteSource#)
-
 		if (bedSheetOptions["pingProxy"] == true) {
 			pingPort := (Int) bedSheetOptions["pingProxyPort"]
 			destroyer := reg.autobuild(AppDestroyer#, [ActorPool(), pingPort]) as AppDestroyer

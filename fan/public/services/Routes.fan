@@ -8,12 +8,14 @@ using afIoc::Registry
 ** BedSheet takes the stance that any Err encountered whilst finding or invoking a handler should 
 ** cause a 404. If a route doesn't exist, or the wrong params were supplied, then that URI is 
 ** clearly wrong and should be reported as such.   
-// Maybe abstract this away so routing becomes pluggable?
-const class RouteSource {
-	private const static Log log := Utils.getLog(RouteSource#)
+const class Routes {
+	private const static Log log := Utils.getLog(Routes#)
 	
-	const Route[] routes
+	private const Obj[] routes
 
+	@Inject
+	private const RouteMatcherSource routeMatcherSource
+	
 	@Inject
 	private const RouteHandler routeHandler
 	
@@ -21,20 +23,19 @@ const class RouteSource {
 	private const Registry registry
 	
 	
-	new make(Route[] routes, |This|? in := null) {
+	new make(Obj[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
-		
-		routes.each |r| { Env.cur.err.printLine(r.routeBase)  }
 	}
 
-	** Match a request uri to Route.
-	internal Obj match(Uri modRel, Str httpMethod) {
+	internal Obj processRequest(Uri modRel, Str httpMethod) {
 		normalisedUri := normalise(modRel)
 		
 		return routes.eachWhile |route| {
 			
-			routeMatch := route.match(normalisedUri, httpMethod) 
+			routeMatcher := routeMatcherSource.get(route.typeof)
+			
+			routeMatch := routeMatcher.match(route, normalisedUri, httpMethod) 
 			if (routeMatch == null) {
 				return null
 			}
@@ -65,26 +66,3 @@ const class RouteSource {
 	}	
 }
 
-internal const class RouteMatch {
-	const Uri 		routeBase
-	const Uri		routeRel
-	const Method	handler
-	
-	new make(Uri routeBase, Uri routeRel, Method handler) {
-		this.routeBase	= routeBase
-		this.routeRel	= routeRel
-		this.handler	= handler
-	}
-	
-	Str[] argList() {
-		routePath	:= routeRel.path
-		if (handler.params.size == routePath.size)
-			return routePath
-		
-		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
-		if (paramRange.contains(routePath.size))
-			return routePath
-
-		throw RouteNotFoundErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
-	}
-}
