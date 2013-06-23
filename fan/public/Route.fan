@@ -19,8 +19,11 @@ const class Route {
 	const Str httpMethod
 
 	private const Str[] matchingPath
-	private const Regex httpMethodGlob
+	private const Regex[] httpMethodGlob
 	
+	** 'routeBase' should start with a slash "/"
+	** 
+	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
 	new make(Uri routeBase, Method handler, Str httpMethod := "GET") {
 	    if (!routeBase.isPathOnly)
 			throw BedSheetErr(BsMsgs.routeShouldBePathOnly(routeBase))
@@ -31,13 +34,14 @@ const class Route {
 		this.httpMethod		= httpMethod.upper.trim
 		this.handler 		= handler
 		this.matchingPath 	= routeBase.path.map { it.lower }
-		this.httpMethodGlob	= Regex.glob(this.httpMethod)
+		// split on both space and ','
+		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) } 
 	}
 
 	** Match this route against the request arguments, returning a list of Str arguments. Returns
 	** 'null' if no match.
 	internal RouteMatch? match(Uri uri, Str httpMethod) {
-		if (!httpMethodGlob.matches(httpMethod))
+		if (!httpMethodGlob.any { it.matches(httpMethod) })
 			return null
 
 		uriPath 	:= uri.path

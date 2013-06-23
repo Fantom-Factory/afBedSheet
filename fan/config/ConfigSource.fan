@@ -1,3 +1,4 @@
+using afIoc::Inject
 using afIoc::NotFoundErr
 
 ** Provides injectable application config values. It lets BedSheet provide default values for you, 
@@ -5,16 +6,26 @@ using afIoc::NotFoundErr
 ** 
 ** @see `Config` facet.
 ** 
-** @uses a MappedConfig of Str IDs to Objs. Config Obj values must be immutable.
-const class ConfigSource {
+internal const class ConfigSource {
 	
-	const Str:Obj config
+	private const Str:Obj config
+
+	@Inject  
+	private const FactoryDefaults	factoryDefaults
 	
-	new make(Str:Obj config) {
+	@Inject  
+	private const ApplicationDefaults	applicationDefaults
+	
+	new make(|This|in) {
+		in(this)
+		config := factoryDefaults.config.rw
+		config.setAll(applicationDefaults.config)
 		this.config = config.toImmutable
 	}
 	
-	Obj get(Str id) {
-		config[id] ?: throw NotFoundErr(ConfigMsgs.configNotFound(id), config.keys) 
+	Obj? get(Str id) {
+		if (!config.containsKey(id))
+			throw NotFoundErr(ConfigMsgs.configNotFound(id), config.keys)
+		return config[id]  
 	}
 }

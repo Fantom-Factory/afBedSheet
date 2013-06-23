@@ -68,4 +68,13 @@ internal const class BsMsgs {
 		"Method may no longer be invoked - $because"
 	}
 	
+	// ---- CORS Msgs ----
+	
+	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str allowedDomains) {
+		"CORS request with origin '${origin}' does not match allowed domains: ${allowedDomains}"
+	}
+
+	static Str corsRequestHeadersDoesNotMatchAllowedHeaders(Str reqHeaders, Str allowedHeaders) {
+		"CORS request with headers '${reqHeaders}' did not match allowed headers: ${allowedHeaders}"
+	}
 }
