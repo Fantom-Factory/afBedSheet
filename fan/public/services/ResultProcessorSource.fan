@@ -13,8 +13,7 @@ const class ResultProcessorSource {
 		get(result.typeof).process(result)
 	}	
 	
-	
-	internal ResultProcessor get(Type resultType) {
+	private ResultProcessor get(Type resultType) {
 		processorStrategy.findBestFit(resultType)
 	}	
 }

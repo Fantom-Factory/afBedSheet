@@ -12,14 +12,14 @@ Proxy session
  
 serve pod files
 
-config factory defaults so you don't have to override...
+ - filters
+ 
+ - rethink JSON result (merge with Text result?)
+
 
 
 For BedSheet 0.0.8
 ------------------
- - filters
- 
- - rethink JSON result (merge with Text result?)
  
  - add charset to Text Result (if poss)
  

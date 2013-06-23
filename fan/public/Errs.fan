@@ -26,7 +26,7 @@ const class HttpStatusErr : Err {
 ** Throw by the routing mechanism on uri -> route mismatch.
 ** 
 ** Extends `HttpStatusErr` so, by default, they cause a 404.
-internal const class RouteNotFoundErr : HttpStatusErr {
+const class RouteNotFoundErr : HttpStatusErr {
 	new make(Str msg := "", Err? cause := null) : super(404, msg, cause) {}
 }
 

@@ -8,8 +8,11 @@ internal class BedSheetModule {
 	static Void bind(ServiceBinder binder) {
 		
 		binder.bindImpl(BedSheetService#)
-		binder.bindImpl(RouteSource#)
-		binder.bindImpl(RouteHandler#)
+		
+		binder.bindImpl(RouteMatcherSource#)
+		binder.bindImpl(RouteMatcherArgImpl#)
+//		binder.bindImpl(RouteSource#)
+//		binder.bindImpl(RouteHandler#)
 
 		binder.bindImpl(ValueEncoderSource#)
 		binder.bindImpl(FileHandler#)
@@ -26,6 +29,13 @@ internal class BedSheetModule {
 		binder.bindImpl(Response#).withScope(ServiceScope.perThread)
 
 		binder.bindImpl(CrossOriginResourceSharingFilter#)
+	}
+
+	@Contribute { serviceType=RouteMatcherSource# }
+	static Void contributeRouteMatcherSource(MappedConfig config) {
+		config.addMapped(ArgRoute#,		config.autobuild(RouteMatcherArgImpl#))
+//		config.addMapped(PathMapRoute#,	config.autobuild(RouteMatcherPathMapImpl#))
+//		config.addMapped(ExactRoute#,	config.autobuild(RouteMatcherExactImpl#))
 	}
 
 	@Contribute { serviceType=ResultProcessorSource# }

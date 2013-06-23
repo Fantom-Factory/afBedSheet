@@ -32,26 +32,8 @@ internal const class RouteHandler {
 			}
 			// no need to stash in Thread, 'cos currently there's only 1 handler per req
 			: registry.autobuild(handlerType)
-
-		// param special cases
-		Obj[]? args	:= null
-		if (routeMatch.handler.params.size == 1) {
-			paramType := routeMatch.handler.params[0].type
-			if (paramType.fits(Uri#))
-				args = [routeMatch.routeRel]
-			
-			if (paramType.fits(Str#.toListOf))
-				args = [routeMatch.routeRel.path]
-		}
 		
-		// watch out for ->Obj nulls here if ValEnc sig changes
-		args = args ?: routeMatch.argList.map |arg, i -> Obj| {
-			paramType	:= routeMatch.handler.params[i].type
-			value		:= valueEncoderSource.toValue(paramType, arg)
-			return value
-		}
-		
-		result := handlerInst.trap(routeMatch.handler.name, args)
+		result := handlerInst.trap(routeMatch.handler.name, routeMatch.args)
 		
 		if (result == null) {
 			if (routeMatch.handler.returns == Void#)

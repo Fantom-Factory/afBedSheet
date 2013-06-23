@@ -5,9 +5,7 @@
 ** All handler classes are [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the 
 ** instance is cached for future use.
 ** 
-** Nicked and adapted form 'draft'
-**
-const class Route {
+const class ArgRoute {
 
 	** The URI this route matches. Always starts and ends with a slash.
 	const Uri routeBase
@@ -38,13 +36,14 @@ const class Route {
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) } 
 	}
 
-	** Match this route against the request arguments, returning a list of Str arguments. Returns
-	** 'null' if no match.
-	internal RouteMatch? match(Uri uri, Str httpMethod) {
+	internal Uri? match(Uri uri, Str httpMethod) {
 		if (!httpMethodGlob.any { it.matches(httpMethod) })
 			return null
 
-		uriPath 	:= uri.path
+		uriPath := uri.path
+		if (matchingPath.size > uriPath.size)
+			return null
+		
 		actualBase	:= ``	// need to build up the actualBase for a case-insensitive Uri.relTo()
 		match		:= matchingPath.all |path, i| { 
 			actualBase = actualBase.plusSlash.plusName(uriPath[i]) 
@@ -53,7 +52,19 @@ const class Route {
 		if (!match) 
 			return null
 
-		rel:= uri.relTo(actualBase)
-		return RouteMatch(routeBase, rel, handler)
+		routeRel	:= uri.relTo(actualBase)
+		return routeRel
+	}
+	
+	internal Str[] argList(Uri routeRel) {
+		routePath	:= routeRel.path
+		if (handler.params.size == routePath.size)
+			return routePath
+		
+		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
+		if (paramRange.contains(routePath.size))
+			return routePath
+
+		throw RouteNotFoundErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
 	}
 }
