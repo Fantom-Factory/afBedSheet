@@ -6,13 +6,12 @@ using concurrent
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
-		
 		binder.bindImpl(BedSheetService#)
 		
+		binder.bindImpl(Routes#)
+		binder.bindImpl(RouteHandler#)
 		binder.bindImpl(RouteMatcherSource#)
 		binder.bindImpl(RouteMatcherArgImpl#)
-//		binder.bindImpl(RouteSource#)
-//		binder.bindImpl(RouteHandler#)
 
 		binder.bindImpl(ValueEncoderSource#)
 		binder.bindImpl(FileHandler#)

@@ -31,9 +31,9 @@ internal const class AppModule {
 	}
 
 	
-	@Contribute { serviceType=ConfigSource# } 
+	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeConfig(MappedConfig config) {
-		config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 50)
+		config.addMapped(ConfigIds.gzipThreshold, 50)
 	}
 	
 	@Contribute { serviceType=ValueEncoderSource# }
