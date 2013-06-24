@@ -40,7 +40,7 @@ const class Routes {
 				return null
 			}
 			
-			log.debug("Matched to uri `$routeMatch.routeBase` for $routeMatch.handler.qname")
+//			log.debug("Matched to uri `$routeMatch.routeBase` for $routeMatch.handler.qname")
 			
 			// save the routeMatch so it can be picked up by `Request` for routeBase() & routeMod()
 			webReq.stash["bedSheet.routeMatch"] = routeMatch

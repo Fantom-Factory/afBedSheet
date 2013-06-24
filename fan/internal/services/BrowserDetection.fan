@@ -8,7 +8,7 @@ internal const class BrowserDetection {
 	
 	new make(|This|in) { in(this) }
 	
-	** Returns 'true' if the client identifies its self as Interner Explorer.
+	** Returns 'true' if the client identifies its self as Internet Explorer.
 	** 
 	** @see `http://www.useragentstring.com/pages/Internet%20Explorer/`
 	Bool isInternetExplorer() {
