@@ -1,6 +1,11 @@
 using afIoc::Inject
 
-** Prevents IE from caching Ajax and CORS requests by setting the cache response headers:
+** Prevents IE from caching Ajax and CORS requests by setting the following response http headers:
+** 
+** pre>
+**   Cache-Control: max-age=0,no-cache,no-store,post-check=0,pre-check=0"
+**   Expires:       Mon, 26 Jul 1997 05:00:00 GMT"
+** <pre
 const class IeAjaxCacheBustingFilter {
 	
 	@Inject

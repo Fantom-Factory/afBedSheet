@@ -41,7 +41,8 @@ const class CrossOriginResourceSharingFilter {
 		domainGlobs = corsAllowedOrigins.split(',').map { Regex.glob(it) }
 	}
 	
-	** Map to...
+	** Map to... 
+	** TODO: more docs
 	public Bool serviceSimple(Uri uri) {
 		if (!isSimpleReq)
 			return false
