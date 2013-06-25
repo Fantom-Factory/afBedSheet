@@ -26,13 +26,16 @@ internal const class AppModule {
 		config.addUnordered(ArgRoute(`/gzip/disable`,		GzipPage#gzipDisable))
 
 		config.addUnordered(ArgRoute(`/boom`,				BoomPage#boom))
+
+		config.addUnordered(ArgRoute(`/cors/simple`,		CrossOriginResourceSharingFilter#serviceSimple))
+		config.addUnordered(ArgRoute(`/cors/simple`,		CorsPage#cors))
 		
 		config.addUnordered(ArgRoute(`/test-src/`, 			FileHandler#service))
 	}
 
 	
 	@Contribute { serviceType=ApplicationDefaults# } 
-	static Void contributeConfig(MappedConfig config) {
+	static Void contributeApplicationDefaults(MappedConfig config) {
 		config.addMapped(ConfigIds.gzipThreshold, 50)
 	}
 	

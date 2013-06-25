@@ -29,7 +29,7 @@ const class ConfigIds {
 	static const Str responseBufferThreshold	:= "afBedSheet.responseBuffer.threshold"
 		
 	** A CSV glob list of all origins (domains) allowed for Cross Origin Resource Sharing.
-	** Defaults to empty Str.
+	** Defaults to "*" (all domains).
 	** Example, "*.alienfactory.co.uk, *.heroku.com" 
 	** 
 	** @see `CrossOriginResourceSharingFilter` 
@@ -42,7 +42,7 @@ const class ConfigIds {
 	static const Str corsAllowCredentials		:= "afBedSheet.cors.allowCredentials"
 
 	** A CSV list of http headers the client application is allowed access to. 
-	** Defaults to empty Str.
+	** Defaults to 'null'.
 	** 
 	** @see `CrossOriginResourceSharingFilter` 
 	static const Str corsExposeHeaders			:= "afBedSheet.cors.exposeHeaders"
@@ -56,14 +56,14 @@ const class ConfigIds {
 	
 	** A CSV list of http heads the client is allowed to send. 
 	** (Only required for preflight requests.)
-	** Defaults to empty Str.
+	** Defaults to 'null'.
 	** 
 	** @see `CrossOriginResourceSharingFilter` 
 	static const Str corsAllowedHeaders			:= "afBedSheet.cors.allowedHeaders"
 
 	** The max age to tell a client to cache the preflight request for.
 	** (Only required for preflight requests.)
-	** Defaults to '60min'
+	** Defaults to '60min', set to 'null' to disable.
 	** 
 	** @see `CrossOriginResourceSharingFilter` 
 	static const Str corsMaxAge					:= "afBedSheet.cors.maxAge"

@@ -23,19 +23,19 @@ const class CrossOriginResourceSharingFilter {
 	private const Bool corsAllowCredentials
 
 	@Inject @Config{ id="afBedSheet.cors.exposeHeaders" }
-	private const Str? corsExposeHeaders		// TODO: how to disable / supply null?
+	private const Str? corsExposeHeaders
 
 	@Inject @Config{ id="afBedSheet.cors.allowedMethods" }
 	private const Str corsAllowedMethods
 
 	@Inject @Config{ id="afBedSheet.cors.allowedHeaders" }
-	private const Str? corsAllowedHeaders	// TODO: how to disable / supply null?
+	private const Str? corsAllowedHeaders
 
 	@Inject @Config{ id="afBedSheet.cors.maxAge" }
-	private const Duration? corsMaxAge	// TODO: how to disable / supply null?
+	private const Duration? corsMaxAge
 
 	private const Regex[] domainGlobs
-	
+
 	new make(|This|in) { 
 		in(this) 
 		domainGlobs = corsAllowedOrigins.split(',').map { Regex.glob(it) }
@@ -58,7 +58,7 @@ const class CrossOriginResourceSharingFilter {
 
 		if (corsAllowCredentials)
 			res.headers["Access-Control-Allow-Credentials"]	 = "true"
-		
+
 		if (corsExposeHeaders != null)
 			res.headers["Access-Control-Expose-Headers"]	 = corsExposeHeaders
 
@@ -86,7 +86,7 @@ const class CrossOriginResourceSharingFilter {
 
 		if (req.headers.containsKey("Access-Control-Request-Headers")) {
 			reqHeaders := req.headers["Access-Control-Request-Headers"]
-			if (corsAllowedHeaders.split(',').containsAll(reqHeaders.split(',')))
+			if (corsAllowedHeaders == null || !corsAllowedHeaders.split(',').containsAll(reqHeaders.split(',')))
 				log.warn(BsMsgs.corsRequestHeadersDoesNotMatchAllowedHeaders(reqHeaders, corsAllowedHeaders))
 			res.headers["Access-Control-Allow-Headers"]	 = corsAllowedHeaders
 		}

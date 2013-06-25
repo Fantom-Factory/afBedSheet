@@ -57,11 +57,11 @@ internal class BedSheetModule {
 		config.addMapped(ConfigIds.gzipThreshold,			376)
 		config.addMapped(ConfigIds.responseBufferThreshold,	8 * 1024)	// TODO: why not kB?
 		
-		config.addMapped(ConfigIds.corsAllowedOrigins,		"")
-		config.addMapped(ConfigIds.corsExposeHeaders,		"")
+		config.addMapped(ConfigIds.corsAllowedOrigins,		"*")
+		config.addMapped(ConfigIds.corsExposeHeaders,		null)
 		config.addMapped(ConfigIds.corsAllowCredentials,	false)
 		config.addMapped(ConfigIds.corsAllowedMethods,		"GET, POST")
-		config.addMapped(ConfigIds.corsAllowedHeaders,		"")
+		config.addMapped(ConfigIds.corsAllowedHeaders,		null)
 		config.addMapped(ConfigIds.corsMaxAge,				60min)
 	}
 

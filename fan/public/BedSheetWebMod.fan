@@ -60,11 +60,14 @@ const class BedSheetWebMod : WebMod {
 			bob.addModule(mod)			
 		}
 		
-		// TODO: Easter Egg please!
+		// TODO: Easter Egg in the banner text please!
 		bannerText	:= "Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}"
 		options 	:= Str:Obj["bannerText":bannerText]
 		if (registryOptions != null)
 			options.setAll(registryOptions)
+
+		if (bedSheetOptions.containsKey("iocModules"))
+			bob.addModules(bedSheetOptions["iocModules"])
 
 		registry.val = bob.build(options).startup
 

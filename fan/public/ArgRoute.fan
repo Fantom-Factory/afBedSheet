@@ -67,4 +67,8 @@ const class ArgRoute {
 
 		throw RouteNotFoundErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
 	}
+	
+	override Str toStr() {
+		"ArgRoute:$routeBase - $httpMethod -> $handler.qname"
+	}
 }

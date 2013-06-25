@@ -26,12 +26,14 @@ const class Routes {
 	new make(Obj[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
+//		routes.each { Env.cur.err.printLine(it) }
 	}
 
 	internal Obj processRequest(Uri modRel, Str httpMethod) {
 		normalisedUri := normalise(modRel)
 		
 		return routes.eachWhile |route| {
+//			log.debug("Testing $route")
 			
 			routeMatcher := routeMatcherSource.get(route.typeof)
 			
