@@ -13,10 +13,6 @@ internal const class BsMsgs {
 		"Routing path '$routeBase' must start with a slash. e.g. `/foo/bar`"
 	}
 	
-//	static Str routesCanNotBeNested(Uri inner, Uri outer) {
-//		"Route `$inner` can not be nested under `$outer`"
-//	}
-
 	static Str routeAlreadyAdded(Uri route, Method hander) {
 		"Route `$route` has already been assigned to hander $hander.qname"
 	}
@@ -71,11 +67,15 @@ internal const class BsMsgs {
 	
 	// ---- CORS Msgs ----
 	
-	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str allowedDomains) {
+	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str? allowedDomains) {
 		"CORS request with origin '${origin}' does not match allowed domains: ${allowedDomains}"
 	}
 
-	static Str corsRequestHeadersDoesNotMatchAllowedHeaders(Str reqHeaders, Str allowedHeaders) {
+	static Str corsRequestHeadersDoesNotMatchAllowedHeaders(Str reqHeaders, Str? allowedHeaders) {
 		"CORS request with headers '${reqHeaders}' did not match allowed headers: ${allowedHeaders}"
+	}
+
+	static Str corsOriginDoesNotMatchAllowedMethods(Str reqMethod, Str? allowedMethods) {
+		"CORS request for method '${reqMethod}' did not match allowed methods: ${allowedMethods}"
 	}
 }

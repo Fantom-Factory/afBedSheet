@@ -1,6 +1,12 @@
 
 internal const class CorsPage {
-	TextResult cors(Uri uri) {
+	
+	TextResult simple(Uri uri) {
 		TextResult.fromPlain("CORS!")
 	}
+
+	TextResult preflight(Uri uri) {
+		TextResult.fromPlain("Preflight!")
+	}
+	
 }
