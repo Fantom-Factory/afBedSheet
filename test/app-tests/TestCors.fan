@@ -4,11 +4,7 @@ internal class TestCoors : AppTest {
 
 	override Type[] iocModules	:= [,]
 	override Void setup() { }
-	
-//	Void testOriginNotMatch() {
-//		
-//	}
-	
+
 	Void testSimpleReqWorks() {
 		iocModules = [T_CorsMod1#]
 		super.setup
@@ -19,11 +15,98 @@ internal class TestCoors : AppTest {
 		client.readRes
 		
 		verifyEq(client.resHeader("Access-Control-Allow-Origin"), "http://api.bob.com")
+		verifyNull(client.resHeaders.get("Access-Control-Allow-Credentials", null))
+		verifyNull(client.resHeaders.get("Access-Control-Expose-Headers", null))
+		verifyEq(client.resCode, 200)
+	}
+	
+	Void testOriginMisMatch() {
+		iocModules = [T_CorsMod2#]
+		super.setup
+		
+		client.reqHeaders["origin"] = "http://api.bob.com"
+		client.reqUri = reqUri(`/cors/simple`)
+		client.writeReq
+		client.readRes
+		
+		verifyNull(client.resHeaders.get("Access-Control-Allow-Origin", null))
+		verifyEq(client.resCode, 200)
+	}
+
+	Void testAllowedCredentials() {
+		iocModules = [T_CorsMod3#]
+		super.setup
+		
+		client.reqHeaders["origin"] = "http://api.bob.com"
+		client.reqUri = reqUri(`/cors/simple`)
+		client.writeReq
+		client.readRes
+		
+		verifyEq(client.resHeaders["Access-Control-Allow-Credentials"], "true")
+		verifyEq(client.resCode, 200)
+	}
+
+	Void testExposeHeaders() {
+		iocModules = [T_CorsMod4#]
+		super.setup
+		
+		client.reqHeaders["origin"] = "http://api.bob.com"
+		client.reqUri = reqUri(`/cors/simple`)
+		client.writeReq
+		client.readRes
+		
+		verifyEq(client.resHeaders["Access-Control-Expose-Headers"], "Max-Headroom")
+		verifyEq(client.resCode, 200)
+	}
+
+	Void testPreflight() {
+		iocModules = [T_CorsMod5#]
+		super.setup
+		
+		client.reqHeaders["origin"] = "http://api.bob.com"
+		client.reqHeaders["Access-Control-Request-Method"] = "POST"
+		client.reqMethod = "OPTIONS"
+		client.reqUri = reqUri(`/cors/preflight`)
+		client.writeReq
+		client.readRes
+		
+		verifyEq(client.resHeaders["Access-Control-Allow-Origin"], "http://api.bob.com")
+		verifyEq(client.resHeaders["Access-Control-Allow-Methods"], "GET, POST")
+		verifyEq(client.resCode, 200)
 	}
 }
 
 internal class T_CorsMod1 {
+	@Contribute
 	static Void contributeApplicationDefaults(MappedConfig config) {
 		config.addMapped(ConfigIds.corsAllowedOrigins, "http://api.bob.com, bobby.com")
+	}
+}
+
+internal class T_CorsMod2 {
+	@Contribute
+	static Void contributeApplicationDefaults(MappedConfig config) {
+		config.addMapped(ConfigIds.corsAllowedOrigins, null)
+	}
+}
+
+internal class T_CorsMod3 {
+	@Contribute
+	static Void contributeApplicationDefaults(MappedConfig config) {
+		config.addMapped(ConfigIds.corsAllowCredentials, true)
+	}
+}
+
+internal class T_CorsMod4 {
+	@Contribute
+	static Void contributeApplicationDefaults(MappedConfig config) {
+		config.addMapped(ConfigIds.corsExposeHeaders, "Max-Headroom")
+	}
+}
+
+internal class T_CorsMod5 {
+	@Contribute
+	static Void contributeApplicationDefaults(MappedConfig config) {
+//		config.addMapped(ConfigIds.corsExposeHeaders, "Max-Headroom")
 	}
 }

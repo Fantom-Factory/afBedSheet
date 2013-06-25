@@ -28,7 +28,9 @@ internal const class AppModule {
 		config.addUnordered(ArgRoute(`/boom`,				BoomPage#boom))
 
 		config.addUnordered(ArgRoute(`/cors/simple`,		CrossOriginResourceSharingFilter#serviceSimple))
-		config.addUnordered(ArgRoute(`/cors/simple`,		CorsPage#cors))
+		config.addUnordered(ArgRoute(`/cors/simple`,		CorsPage#simple))
+		config.addUnordered(ArgRoute(`/cors/preflight`,		CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS"))
+		config.addUnordered(ArgRoute(`/cors/preflight`,		CorsPage#preflight, "OPTIONS"))
 		
 		config.addUnordered(ArgRoute(`/test-src/`, 			FileHandler#service))
 	}

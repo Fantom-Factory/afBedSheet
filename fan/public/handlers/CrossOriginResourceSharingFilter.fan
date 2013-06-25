@@ -17,7 +17,7 @@ const class CrossOriginResourceSharingFilter {
 	private const Response	res
 	
 	@Inject @Config{ id="afBedSheet.cors.allowedOrigins" }
-	private const Str corsAllowedOrigins
+	private const Str? corsAllowedOrigins
 
 	@Inject @Config{ id="afBedSheet.cors.allowCredentials" }
 	private const Bool corsAllowCredentials
@@ -38,7 +38,7 @@ const class CrossOriginResourceSharingFilter {
 
 	new make(|This|in) { 
 		in(this) 
-		domainGlobs = corsAllowedOrigins.split(',').map { Regex.glob(it) }
+		domainGlobs = (corsAllowedOrigins ?: "").split(',').map { Regex.glob(it) }
 	}
 	
 	** Map to... 
@@ -71,6 +71,7 @@ const class CrossOriginResourceSharingFilter {
 			return false
 
 		origin := req.headers["Origin"]
+		requestedMethod := req.headers["Access-Control-Request-Method"].upper
 		log.debug("CORS Preflight request from origin '$origin'")
 		
 		if (!domainGlobs.any |domain| { domain.matches(origin) }) {
@@ -79,6 +80,8 @@ const class CrossOriginResourceSharingFilter {
 		}
 		res.headers["Access-Control-Allow-Origin"]	 = origin
 
+		if (!corsAllowedMethods.upper.split(',').contains(requestedMethod))
+			log.warn(BsMsgs.corsOriginDoesNotMatchAllowedMethods(requestedMethod, corsAllowedMethods))
 		res.headers["Access-Control-Allow-Methods"]	 = corsAllowedMethods
 		
 		if (corsAllowCredentials)
