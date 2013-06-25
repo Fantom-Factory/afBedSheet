@@ -6,9 +6,6 @@ For BedSheet 0.0.6
  - (doc) restarter
 
 fantom afIoc on T5
-
-Proxy session
- - test, "you have made 3 reqs"
  
 serve pod files
 
@@ -20,6 +17,11 @@ serve pod files
 
 For BedSheet 0.0.8
 ------------------
+
+@Config { ... def="wotever" } 
+
+Proxy session
+ - test, "you have made 3 reqs"
  
  - add charset to Text Result (if poss)
  

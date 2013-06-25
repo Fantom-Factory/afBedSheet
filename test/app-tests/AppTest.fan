@@ -9,7 +9,7 @@ internal class AppTest : Test {
 			WebClient	 	client	:= WebClient()
 	
 	override Void setup() {
-		mod 	:= BedSheetWebMod(modName, port, [:])
+		mod 	:= BedSheetWebMod(modName, port, ["iocModules":iocModules])
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 	}
@@ -44,4 +44,6 @@ internal class AppTest : Test {
 	Uri reqUri(Uri uri) {
 		"http://localhost:$port".toUri + uri
 	}
+	
+	virtual Type[] iocModules() { [,] }
 }
