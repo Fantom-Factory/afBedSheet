@@ -40,7 +40,6 @@ internal class BedSheetModule {
 	@Contribute { serviceType=ResultProcessorSource# }
 	static Void contributeResultProcessorSource(MappedConfig config) {
 		config.addMapped(File#, 		config.autobuild(FileResultProcessor#))
-		config.addMapped(JsonResult#, 	config.autobuild(JsonResultProcessor#))
 		config.addMapped(TextResult#, 	config.autobuild(TextResultProcessor#))
 	}
 	

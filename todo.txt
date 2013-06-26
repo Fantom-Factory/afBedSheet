@@ -4,21 +4,28 @@ For BedSheet 0.0.6
  - (doc) out buffer
  - res.disableOutBuffer
  - (doc) restarter
+ - (doc) cors
+ - (doc) ie cache buster
+ - (doc) Routes
+ - (doc) 404 and 500
+ 
+ Exact Routes
 
 fantom afIoc on T5
  
-serve pod files
-
  - filters
  
  - rethink JSON result (merge with Text result?)
 
 
-
 For BedSheet 0.0.8
 ------------------
 
-@Config { ... def="wotever" } 
+ - serve pod files
+
+ - @Config { ... def="wotever" } 
+
+ - PathMapRoute
 
 Proxy session
  - test, "you have made 3 reqs"
