@@ -97,7 +97,7 @@ internal const class ResponseImpl : Response {
 	}
 
 	override OutStream out() {
-		// TODO: afIoc 1.3.4 - Could we make a delegate pipeline?
+		// TODO: afIoc 1.3.8 - Could we make a delegate pipeline?
 		contentType := webRes.headers["Content-Type"]
 		mimeType	:= MimeType(contentType, false)
 		encodings	:= QualityValues(webReq.headers["Accept-encoding"])
