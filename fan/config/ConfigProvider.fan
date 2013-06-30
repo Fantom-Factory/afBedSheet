@@ -2,7 +2,7 @@ using afIoc::DependencyProvider
 using afIoc::Inject
 using afIoc::ProviderCtx
 
-const class ConfigProvider : DependencyProvider {
+internal const class ConfigProvider : DependencyProvider {
 
 	@Inject
 	private const ConfigSource configSource

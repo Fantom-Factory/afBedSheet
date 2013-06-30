@@ -1,12 +1,37 @@
 using afIoc::Inject
 
-**
+** Cross Origin Resource Sharing (CORS) is a strategy for browsers to overcome the limitations of 
+** cross domain scripting. The handshake is done via http headers:
 ** 
-** @see http://www.w3.org/TR/cors/
+**  1. The browser sets CORS specific http headers in the request
+**  2. The server inspects the headers and sets its own http headers in the response
+**  3. The browser asserts the resonse headers
 ** 
-** @see http://www.html5rocks.com/en/tutorials/cors/
+** On the browser side, most of the header setting and checking is done automatically by 
+** 'XMLHttpRequest'. On the server side, contribute the following routes to the paths that will 
+** service the ajax requests:
 ** 
-** @see https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
+** pre>
+**  simpleRoute    := ArgRoute(`<simple-path>`,    CrossOriginResourceSharingFilter#serviceSimple,    "GET POST")
+**  preflightRoute := ArgRoute(`<preflight-path>`, CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS")
+** 
+**  config.addOrdered("corsSimple", 	simpleRoute,    ["before: routes"])
+**  config.addOrdered("corsPreflight", 	preflightRoute, ["before: routes"])
+** <pre
+** 
+** And set the following config values:
+** - `ConfigIds.corsAllowedOrigins`
+** - `ConfigIds.corsAllowCredentials`
+** - `ConfigIds.corsExposeHeaders`
+** - `ConfigIds.corsAllowedMethods`
+** - `ConfigIds.corsAllowedHeaders`
+** - `ConfigIds.corsMaxAge`
+** 
+** @see Read the following for specifics:
+**  - `http://www.w3.org/TR/cors/`
+**  - `http://www.html5rocks.com/en/tutorials/cors/`
+**  - `https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS`
+**  - `http://api.brain-map.org/examples/doc/scatter/javascripts/jquery.ie.cors.js.html`
 const class CrossOriginResourceSharingFilter {
 	private const static Log log := Utils.getLog(CrossOriginResourceSharingFilter#)
 

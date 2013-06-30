@@ -25,14 +25,14 @@ const class ConfigIds {
 	** The buffer size (in bytes) of the response OutStream buffer. The buffer is used to 
 	** automatically set the 'Content-Length' response header. Any content larger than the buffer 
 	** is streamed direct to the client.
-	** Defaults to '8Kb'. 
+	** Defaults to '8Kb'.
 	static const Str responseBufferThreshold	:= "afBedSheet.responseBuffer.threshold"
-		
+
 	** A CSV glob list of all origins (domains) allowed for Cross Origin Resource Sharing.
 	** Defaults to "*" (all domains).
-	** Example, "*.alienfactory.co.uk, *.heroku.com" 
+	** Example, "*.alienfactory.co.uk, *.heroku.com"
 	** 
-	** @see `CrossOriginResourceSharingFilter` 
+	** @see `CrossOriginResourceSharingFilter`
 	static const Str corsAllowedOrigins			:= "afBedSheet.cors.allowedOrigins"
 
 	** If set to 'true' the 'Access-Control-Allow-Credentials' response header is set.
