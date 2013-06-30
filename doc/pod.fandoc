@@ -1,10 +1,10 @@
 Overview [#overview]
 ********************
-BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applications. Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`, BedSheet aims to be: Powerful, Flexible and Simple.
+BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applications. Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`, BedSheet aims to be:
 
 Powerful.
 ---------
-Built in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped, decorated, replaced or deleted! It makes hard tasks, easy.
+uilt in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped, decorated, replaced or deleted! It makes hard tasks, easy.
 
 Flexible.
 ---------
@@ -19,7 +19,7 @@ Quick Start [#quickStart]
 *************************
 
 1. Create an 'AppModule', this is where all your service configuration will go.
-2. Contribute to 'Router' and other services
+2. Contribute to 'Routes' and other services
 3. Create some page / request handlers
 4. Start the app...
 
@@ -28,9 +28,9 @@ using afBedSheet
 using afIoc
 
 class AppModule {
-  @Contribute { serviceType=RouteSource# }
+  @Contribute
   static Void contributeRoutes(OrderedConfig config) {
-    config.addUnordered(Route(`/hello`, HelloPage#hello))
+    config.addUnordered(ArgRoute(`/hello`, HelloPage#hello))
   }
 }
 
@@ -68,7 +68,7 @@ Handling [#handling]
 ====================
 Deeper path segments are converted into method parameters. Hence our handler method takes a 'Str' and an 'Int'. Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
 
-> TIP: Contribute your own 'ValueEncoders' to convert uris into Entities. That way BedSheet can call your handlers with real Entities, and not just str IDs.
+> TIP: Contribute your own 'ValueEncoders' to convert uris into Entities. Then BedSheet will call handlers with real Entities, not just str IDs!
 
 As per our example, you can use default parameter values to declare optional uri segments. Any urls that don't match the handler parameters are reported as 404s.
 
@@ -80,6 +80,26 @@ Handlers should perform the logic processing of your request and not attempt to 
 Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and 'JsonResult'.
 
 If the response is over a given size, and is deemed compressible then it is gzipped before being sent to the user.
+
+
+
+Routing [#routing]
+******************
+When a web request comes in, you need some code to handle it. Routes are a means to To map an incoming request to a handler method, contribute a Route.
+
+pre>
+@Contribute { serviceType=Routes# }
+static Void contributeRoutes(OrderedConfig config) {
+  config.addUnordered(ArgRoute(`/index`, IndexPage#service))
+}
+<pre
+
+Mapping requests to handlers is the job of Route
+To route requests to handlers, contribute Routes.
+
+Routing lesson over. (You Aussies may stop giggling now.)
+
+
 
 Gzip [#gzip]
 ************
@@ -111,9 +131,9 @@ It's guaranteed that someone, somewhere is still using Internet Explorer 3.0 and
 
 Minimum content threshold [#minThreshold]
 -----------------------------------------
-Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following:
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following `ApplicationDefaults`:
 
-    config.addOverride(ConfigIds.gzipThreshold, "my.gzip.threshold", 768)
+    config.addMapped(ConfigIds.gzipThreshold, 768)
 
 See `GzipOutStream` and `ConfigIds.gzipThreshold` for more details.
 
@@ -148,6 +168,10 @@ Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is t
 
 Release Notes [#releaseNotes]
 *****************************
+
+v0.0.6 [#v0.0.6]
+----------------
+ -
 
 v0.0.4 [#v0.0.4]
 ----------------

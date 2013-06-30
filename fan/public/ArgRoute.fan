@@ -1,9 +1,43 @@
 
 **
-** Route maps a URI to a method handler. All uri's are treated as case-insensitive.
+** Matches request paths to handler methods, converting any remaining path segments into method 
+** parameters. Example:
 ** 
-** All handler classes are [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the 
-** instance is cached for future use.
+** pre>
+** using afBedSheet
+** using afIoc
+** 
+** class AppModule {
+**   @Contribute
+**   static Void contributeRoutes(OrderedConfig config) {
+**     config.addUnordered(ArgRoute(`/hello`, HelloPage#hello))
+**   }
+** }
+** 
+** class HelloPage {
+**   TextResult hello(Str name, Int iq := 666) {
+**     return TextResult.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+**   }
+** }
+** 
+** '/hello/Traci/69' => helloPage.hello("Traci", 69) => "Hello! I'm Traci and I have an IQ of 69"
+** 'hello/Luci'      => helloPage.hello("Luci")      => "Hello! I'm Luci and I have an IQ of 666"
+** 'HELLO/Luci'      => helloPage.hello("Luci")      => "Hello! I'm Luci and I have an IQ of 666"
+** 'hello/'          => RouteNotFoundErr
+** 'hello/1/2/3      => RouteNotFoundErr
+** 'dude'            => no match
+** <pre
+**  
+** Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
+**
+** > TIP: Contribute 'ValueEncoders' to convert path into Entities. BedSheet can then call handlers 
+** with real Entities, not just str IDs!
+**
+** Request uri's (for matching purposes) are treated as case-insensitive.
+** 
+** If a handler class is a service, it is obtained from the IoC registry, otherwise it is
+** [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the instance is cached for 
+** future use.
 ** 
 const class ArgRoute {
 

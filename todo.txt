@@ -4,7 +4,6 @@ For BedSheet 0.0.6
  - (doc) out buffer
  - res.disableOutBuffer
  - (doc) restarter
- - (doc) cors
  - (doc) ie cache buster
  - (doc) Routes
  - (doc) 404 and 500
@@ -15,7 +14,6 @@ fantom afIoc on T5
  
  - filters
  
- - rethink JSON result (merge with Text result?)
 
 
 For BedSheet 0.0.8
