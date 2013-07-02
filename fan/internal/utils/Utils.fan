@@ -10,4 +10,10 @@ internal class Utils {
 		mapType := Map#.parameterize(["K":keyType, "V":valType])
 		return keyType.fits(Str#) ? Map.make(mapType) { caseInsensitive = true } : Map.make(mapType) { ordered = true }
 	}
+	
+	static Str traceErr(Err err, Int maxDepth := 50) {
+		b := Buf()	// can't trace to a StrBuf
+		err.trace(b.out, ["maxDepth":50])
+		return b.flip.in.readAllStr
+	}
 }

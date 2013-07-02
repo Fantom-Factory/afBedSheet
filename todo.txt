@@ -30,7 +30,7 @@ Proxy session
  
  - add charset to Text Result (if poss)
  
- - better Err handling
+ - More custom Err handling
  
  - have Dev / Prod mode (and other envs)
 
