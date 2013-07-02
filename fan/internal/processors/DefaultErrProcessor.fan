@@ -43,9 +43,7 @@ internal const class DefaultErrProcessor : ErrProcessor {
 			
 		// stack trace
 		out.pre
-		b := Buf()	// can't trace to a StrBuf
-		err.trace(b.out, ["maxDepth":50])
-		out.writeChars(b.flip.in.readAllStr)
+		out.writeChars(Utils.traceErr(err, 50))
 		out.preEnd
 
 		out.bodyEnd
@@ -71,7 +69,7 @@ internal const class DefaultErrProcessor : ErrProcessor {
 		req.locales.each |v,k| { buf.add("  $k: $v\n") }
 		
 		buf.add("\nStack Trace:\n")
-		err.traceToStr.splitLines.each |s| { buf.add("$s\n") }
+		Utils.traceErr(err, 50).splitLines.each |s| { buf.add("$s\n") }
 		log.err(buf.toStr.trim)
 	}		
 }
