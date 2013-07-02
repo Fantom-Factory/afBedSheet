@@ -1,9 +1,32 @@
 using web::WebReq
 using afIoc::Inject
 
-** Maps files to URIs
+** A Request Handler that maps uris to files on the file system.
 ** 
-** @uses MappedConfig of Uris to Files
+** Example, to map all uris prefixed with '/pub/' to files under the '<app>/etc/web/' directory, 
+** in your AppModule:
+** 
+** pre>
+** @Contribute { serviceType=FileHandler# }
+** static Void contributeFileHandler(MappedConfig config) {
+**   config.addMapped(`/pub/`, `etc/web/`.toFile)
+** }
+** <pre
+** 
+** Don't forget to route the '/pub/' uri to 'FileHandler':
+**
+** pre>
+** @Contribute { serviceType=Routes# }
+** static Void contributeRoutes(OrderedConfig config) {
+**   ...
+**   config.addUnordered(ArgRoute(`/pub/`, FileHandler#service))
+**   ...
+** }
+** <pre
+** 
+** Now all requests to '/pub/css/mystyle.css' will map to 'etc/web/css/mystyle.css'
+** 
+** @uses MappedConfig of Uri:File
 const class FileHandler {
 	
 	@Inject
@@ -11,7 +34,7 @@ const class FileHandler {
 
 	private const Uri:File dirMappings
 	
-	new make(Uri:File dirMappings, |This|? in := null) {
+	internal new make(Uri:File dirMappings, |This|? in := null) {
 		in?.call(this)
 
 		// verify file and uri mappings
@@ -27,14 +50,16 @@ const class FileHandler {
 			if (!uri.isDir)
 				throw BedSheetErr(BsMsgs.fileHandlerUriMustEndWithSlash(uri))
 		}
-		
+
 		this.dirMappings = dirMappings.toImmutable
 	}
 
-	** Returns a File on the file system, mapped from the given config
+	** Returns a `File` on the file system, as mapped from the given route relative uri.
 	File service(Uri routeRel) {
-		// prevent an err being thrown if the uri is a dir but doesn't end in '/'
-		// we append it automatically - it's nicer web behaviour
+		// Pass 'false' to prevent an err being thrown if the uri is a dir but doesn't end in '/'.
+		// The 'false' appends a '/' automatically - it's nicer web behaviour
+		// TODO: configure this behaviour once we've thought up a nice name for the config! 
+		// TODO: handle FileNotFound
 	    dirMappings[req.routeBase].plus(routeRel, false)
 	}
 }

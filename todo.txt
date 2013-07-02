@@ -8,6 +8,11 @@ For BedSheet 0.0.6
  - (doc) Routes
  - (doc) 404 and 500
  
+RouteMatching
+RouteHandlers
+ 
+ check wisp dies on reg startup err
+ 
  Exact Routes
 
 fantom afIoc on T5

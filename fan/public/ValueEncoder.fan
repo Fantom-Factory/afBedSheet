@@ -1,5 +1,5 @@
 
-** Responsible for converting values to and from Strs, used to inject values into web handler 
+** Responsible for converting values to and from Strs, use to inject values into request handler 
 ** methods.
 ** 
 ** Contribute to `ValueEncoderSource` to add your own ValueEncoders.

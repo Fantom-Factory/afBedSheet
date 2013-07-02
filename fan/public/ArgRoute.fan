@@ -1,7 +1,7 @@
 
 **
-** Matches request paths to handler methods, converting any remaining path segments into method 
-** parameters. Example:
+** Matches uri paths to handler methods, converting any remaining path segments into method 
+** arguments. Method arguments with default values are mapped to optional path segments. Example:
 ** 
 ** pre>
 ** using afBedSheet
@@ -22,18 +22,24 @@
 ** 
 ** '/hello/Traci/69' => helloPage.hello("Traci", 69) => "Hello! I'm Traci and I have an IQ of 69"
 ** 'hello/Luci'      => helloPage.hello("Luci")      => "Hello! I'm Luci and I have an IQ of 666"
-** 'HELLO/Luci'      => helloPage.hello("Luci")      => "Hello! I'm Luci and I have an IQ of 666"
 ** 'hello/'          => RouteNotFoundErr
 ** 'hello/1/2/3      => RouteNotFoundErr
 ** 'dude'            => no match
 ** <pre
+** 
+** Path segments are converted to Objs via the [ValueEncoder]`ValueEncoder` service.
 **  
-** Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
-**
 ** > TIP: Contribute 'ValueEncoders' to convert path into Entities. BedSheet can then call handlers 
 ** with real Entities, not just str IDs!
+** 
+** Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
 **
-** Request uri's (for matching purposes) are treated as case-insensitive.
+** Request uri's (for matching purposes) are treated as case-insensitive. In the example above, both
+** 
+**  - 'hello/Luci' and 
+**  - 'HELLO/Luci' 
+**
+** would be matched.
 ** 
 ** If a handler class is a service, it is obtained from the IoC registry, otherwise it is
 ** [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the instance is cached for 
