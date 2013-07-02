@@ -17,7 +17,8 @@ using util::JsonOutStream
 **   ...
 **   return entity.toJson
 ** }
-** <pre  
+** <pre
+** FIXME: rename to TextResponse (I found myself typing TextResponse by default many times)   
 const final class TextResult {
 	
 	const Str 		text
