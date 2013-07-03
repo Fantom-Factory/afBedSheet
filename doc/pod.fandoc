@@ -17,6 +17,7 @@ Simple.
 -------
 Developers are lazy. If it's complicated or difficult, they won't use it.
 
+BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
 
 Quick Start [#quickStart]
 *************************
@@ -32,8 +33,8 @@ using afIoc
 
 class AppModule {
   @Contribute
-  static Void contributeRoutes(OrderedConfig config) {
-    config.addUnordered(ArgRoute(`/hello`, HelloPage#hello))
+  static Void contributeRoutes(OrderedConfig conf) {
+    conf.add(ArgRoute(`/hello`, HelloPage#hello))
   }
 }
 
@@ -86,8 +87,8 @@ configuration in one place.
 
 > TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the afIoc @SubModule facet.
 
-You may find it more convientient to create your own BedSheet Main wrapper. (In fact, if using
-[Heroku]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom` you will need to.)
+You may find it more convenient to create your own BedSheet Main wrapper. (In fact, if using
+[Heroku]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom` you have to.)
 
 pre>
 using util
@@ -109,8 +110,8 @@ meta:
 
 pre>
 meta  = [ ...
-          ...
           "afIoc.module"  : "<fully-qualified-app-module-name>"
+          ...
         ]
 <pre
 
@@ -124,26 +125,41 @@ When BedSheet receives a web request, it is matched to a handler for processing.
 
 pre>
 @Contribute { serviceType=Routes# }
-static Void contributeRoutes(OrderedConfig config) {
-  config.addUnordered(ArgRoute(`/index`, IndexPage#service))
+static Void contributeRoutes(OrderedConfig conf) {
+
+  conf.add(ArgRoute(`/index`, IndexPage#service))
+
 }
 <pre
 
-TODO: fall through & filters & placeholders
-
-TODO: you can write your own
-
-BedSheet is bundled with the following routes:
+BedSheet is bundled with the following Routes objs:
  - `ArgRoute`: Matches against the request URI, converting deeper path segments into method arguments.
+
+If the handler returns 'Void' or 'null' then processing is passed onto the next matching route. This makes it possible to
+create filter like handlers that blanket pre-process a wide set of uris. To facilitate this, BedSheet contributes a placeholder
+called "Routes" that all routes (ordered or unordered) naturally come after. Example:
+
+pre>
+@Contribute { serviceType=Routes# }
+static Void contributeRoutes(OrderedConfig conf) {
+
+  // add filter to check all requests under `/admin` are authorised
+  conf.addOrdered("AuthFilter", ArgRoute(`/admin`, AuthFilter#service), ["before: Routes"])
+}
+<pre
+
+Routes are not limited to matching against uris, you can create your own routes that match against anything, such as http
+headers or the time of day! Just create a `RouteMatcher` and contribute it to `RouteMatcherSource`.
 
 Routing lesson over.
 
-...you Aussies may stop giggling now.
+(...you Aussies may stop giggling now.)
 
 
 
 Request Handling [#requestHandling]
 ***********************************
+
 TODO: return values
 
 BedSheet is bundled with the following request handlers:
@@ -201,7 +217,7 @@ Gzip'able Mime Types [#mimeTypes]
 ---------------------------------
 Not everything should be gzipped. For example, text files gzip very well and yield high compression rates. JPG images on the other hand, because they're already compressed, don't gzip well and can end up bigger than the original! For this reason you must contribute to the `GzipCompressible` service to enable gzip for specified [Mime Types]`sys::MimeType`:
 
-    config.addMapped(MimeType("text/funky"), true)
+    config[MimeType("text/funky")] = true
 
 By default BedSheet will compress plain text, css, html, javascript, xml and json responses.
 
@@ -213,7 +229,7 @@ Minimum content threshold [#minThreshold]
 -----------------------------------------
 Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following `ApplicationDefaults`:
 
-    config.addMapped(ConfigIds.gzipThreshold, 768)
+    config[ConfigIds.gzipThreshold] = 768
 
 See `GzipOutStream` and `ConfigIds.gzipThreshold` for more details.
 
