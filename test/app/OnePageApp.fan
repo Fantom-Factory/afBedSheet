@@ -9,8 +9,8 @@
 //
 //class SimpleAppModule {
 //	@Contribute { serviceType=Router# }
-//	static Void configureRouter(OrderedConfig config) {
-//		config.addUnordered(Route(`/hello`, HelloPage#hello))
+//	static Void configureRouter(OrderedConfig conf) {
+//		conf.add(Route(`/hello`, HelloPage#hello))
 //	}
 //}
 //

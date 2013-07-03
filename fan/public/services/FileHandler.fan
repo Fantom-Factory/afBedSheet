@@ -8,8 +8,8 @@ using afIoc::Inject
 ** 
 ** pre>
 ** @Contribute { serviceType=FileHandler# }
-** static Void contributeFileHandler(MappedConfig config) {
-**   config.addMapped(`/pub/`, `etc/web/`.toFile)
+** static Void contributeFileHandler(MappedConfig conf) {
+**   conf[`/pub/`] = `etc/web/`.toFile
 ** }
 ** <pre
 ** 
@@ -17,9 +17,9 @@ using afIoc::Inject
 **
 ** pre>
 ** @Contribute { serviceType=Routes# }
-** static Void contributeRoutes(OrderedConfig config) {
+** static Void contributeRoutes(OrderedConfig conf) {
 **   ...
-**   config.addUnordered(ArgRoute(`/pub/`, FileHandler#service))
+**   conf.add(ArgRoute(`/pub/`, FileHandler#service))
 **   ...
 ** }
 ** <pre

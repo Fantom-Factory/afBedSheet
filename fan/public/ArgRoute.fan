@@ -9,8 +9,8 @@
 ** 
 ** class AppModule {
 **   @Contribute
-**   static Void contributeRoutes(OrderedConfig config) {
-**     config.addUnordered(ArgRoute(`/hello`, HelloPage#hello))
+**   static Void contributeRoutes(OrderedConfig conf) {
+**     conf.add(ArgRoute(`/hello`, HelloPage#hello))
 **   }
 ** }
 ** 
