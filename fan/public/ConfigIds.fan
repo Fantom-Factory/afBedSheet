@@ -4,8 +4,8 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ConfigSource# } 
-** static Void configureApplicationDefaults(MappedConfig config) {
-**   config.addMapped(ConfigIds.gzipThreshold, 500)
+** static Void configureApplicationDefaults(MappedConfig conf) {
+**   conf[ConfigIds.gzipThreshold] = 500
 ** }
 ** <pre
 const class ConfigIds {

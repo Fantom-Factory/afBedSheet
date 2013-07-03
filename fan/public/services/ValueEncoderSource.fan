@@ -4,12 +4,12 @@ using afIoc::StrategyRegistry
 ** 
 ** pre>
 **   @Contribute { serviceType=ValueEncoderSource# }
-**   static Void contributeValueEncoders(MappedConfig config) {
-**     config.addMapped(MyEntity#, config.autobuild(MyEntityEncoder#))
+**   static Void contributeValueEncoders(MappedConfig conf) {
+**     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)
 **   }
 ** <pre
 ** 
-** @uses a 'MappedConfig' of 'Type' to `ValueEncoder`s
+** @uses a MappedConfig of 'Type':`ValueEncoder`s
 const class ValueEncoderSource {
 	
 	private const StrategyRegistry valueEncoderStrategy
