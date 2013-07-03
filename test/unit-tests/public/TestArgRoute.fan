@@ -32,48 +32,34 @@ internal class TestArgRoute : BsTest {
 		rm = ArgRoute(`/wotever/`, #handler1)
 		verify(rm.argList(``).isEmpty)
 
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler1, `eek`)) {
-			ArgRoute(`/wotever/`, #handler1).argList(`eek`)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler1).argList(`eek`))
 		
 		// ---- handler2 ----
 
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler2, ``)) {
-			ArgRoute(`/wotever/`, #handler2).argList(``)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler2).argList(``))
 
 		rm = ArgRoute(`/wotever/`, #handler2)
 		verifyEq(rm.argList(`wot`).size, 1)
 		verifyEq(rm.argList(`wot`)[0], "wot")
 
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler2, `wot/ever`)) {
-			ArgRoute(`/wotever/`, #handler2).argList(`wot/ever`)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler2).argList(`wot/ever`))
 
 		// ---- handler3 ----
 
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler3, ``)) {
-			ArgRoute(`/wotever/`, #handler3).argList(``)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler3).argList(``))
 
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler3, `wot`)) {
-			ArgRoute(`/wotever/`, #handler3).argList(`wot`)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler3).argList(`wot`))
 
 		rm = ArgRoute(`/wotever/`, #handler3)
 		verifyEq(rm.argList(`wot/ever`).size, 2)
 		verifyEq(rm.argList(`wot/ever`)[0], "wot")
 		verifyEq(rm.argList(`wot/ever`)[1], "ever")
 		
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler3, `wot/ever/dude`)) {
-			ArgRoute(`/wotever/`, #handler3).argList(`wot/ever/dude`)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler3).argList(`wot/ever/dude`))
 
 		// ---- handler4 ----
 
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler4, ``)) {
-			ArgRoute(`/wotever/`, #handler4).argList(``)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler4).argList(``))
 
 		rm = ArgRoute(`/wotever/`, #handler4)
 		verifyEq(rm.argList(`wot`).size, 1)
@@ -84,9 +70,7 @@ internal class TestArgRoute : BsTest {
 		verifyEq(rm.argList(`wot/ever`)[0], "wot")
 		verifyEq(rm.argList(`wot/ever`)[1], "ever")
 		
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler4, `wot/ever/dude`)) {
-			ArgRoute(`/wotever/`, #handler4).argList(`wot/ever/dude`)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler4).argList(`wot/ever/dude`))
 
 		// ---- handler5 ----
 
@@ -102,8 +86,6 @@ internal class TestArgRoute : BsTest {
 		verifyEq(rm.argList(`wot/ever`)[0], "wot")
 		verifyEq(rm.argList(`wot/ever`)[1], "ever")
 		
-		verifyRouteNotFoundErrMsg(BsMsgs.handlerArgSizeMismatch(#handler5, `wot/ever/dude`)) {
-			ArgRoute(`/wotever/`, #handler5).argList(`wot/ever/dude`)
-		}
+		verifyNull(ArgRoute(`/wotever/`, #handler5).argList(`wot/ever/dude`))
 	}
 }

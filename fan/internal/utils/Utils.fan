@@ -13,7 +13,7 @@ internal class Utils {
 	
 	static Str traceErr(Err err, Int maxDepth := 50) {
 		b := Buf()	// can't trace to a StrBuf
-		err.trace(b.out, ["maxDepth":50])
+		err.trace(b.out, ["maxDepth":maxDepth])
 		return b.flip.in.readAllStr
 	}
 }

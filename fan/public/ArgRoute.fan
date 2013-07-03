@@ -22,9 +22,9 @@
 ** 
 ** '/hello/Traci/69' => helloPage.hello("Traci", 69) => "Hello! I'm Traci and I have an IQ of 69"
 ** 'hello/Luci'      => helloPage.hello("Luci")      => "Hello! I'm Luci and I have an IQ of 666"
-** 'hello/'          => RouteNotFoundErr
-** 'hello/1/2/3      => RouteNotFoundErr
-** 'dude'            => no match
+** 'dude/'           => no match
+** 'hello/'          => no match
+** 'hello/1/2/3      => no match
 ** <pre
 ** 
 ** Path segments are converted to Objs via the [ValueEncoder]`ValueEncoder` service.
@@ -96,7 +96,8 @@ const class ArgRoute {
 		return routeRel
 	}
 	
-	internal Str[] argList(Uri routeRel) {
+	** Returns null if uri does not match (optional) method arguments
+	internal Str[]? argList(Uri routeRel) {
 		routePath	:= routeRel.path
 		if (handler.params.size == routePath.size)
 			return routePath
@@ -105,7 +106,7 @@ const class ArgRoute {
 		if (paramRange.contains(routePath.size))
 			return routePath
 
-		throw RouteNotFoundErr(BsMsgs.handlerArgSizeMismatch(handler, routeRel))
+		return null
 	}
 	
 	override Str toStr() {

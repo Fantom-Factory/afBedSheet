@@ -49,7 +49,7 @@ From the command line:
 pre>
 $ fan afBedSheet <mypod>::AppModule 8080
 ...
-IoC started up in 323ms
+BedSheet v1.0 started up in 323ms
 
 $ curl http://localhost:8080/hello/Traci/69
 Hello! I'm Traci and I have an IQ of 69!

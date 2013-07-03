@@ -53,9 +53,11 @@ const mixin Request {
 	abstract Uri modRel()
 
 	** The uri matched against the `Route`
+	@Deprecated
 	abstract Uri routeBase()
 
 	** The uri relative to the `Route`
+	@Deprecated
 	abstract Uri routeRel()
 	
 	** Map of HTTP request headers. The map is readonly and case insensitive.

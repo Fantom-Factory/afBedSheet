@@ -14,6 +14,7 @@ internal const class RouteMatcherArgImpl : RouteMatcher {
 		if (routeRel == null)
 			return null
 		
+		// TODO: look for special cases at the end of the arg list (in the loop), like splats
 		// param special cases
 		Obj[]? args	:= null
 		if (argRoute.handler.params.size == 1) {
@@ -25,11 +26,18 @@ internal const class RouteMatcherArgImpl : RouteMatcher {
 				args = [routeRel.path]
 		}
 		
-		// watch out for ->Obj nulls here if ValEnc sig changes
-		args = args ?: argRoute.argList(routeRel).map |arg, i -> Obj| {
-			paramType	:= argRoute.handler.params[i].type
-			value		:= valueEncoderSource.toValue(paramType, arg)
-			return value
+		if (args == null) {
+			// watch out for ->Obj nulls here if ValEnc sig changes
+			args = argRoute.argList(routeRel)
+			
+			if (args == null)
+				return null
+
+			args = args.map |arg, i -> Obj| {
+				paramType	:= argRoute.handler.params[i].type
+				value		:= valueEncoderSource.toValue(paramType, arg)
+				return value
+			}
 		}
 				
 		return RouteMatch(argRoute.routeBase, routeRel, argRoute.handler, args)

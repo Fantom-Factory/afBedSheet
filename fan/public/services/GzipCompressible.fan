@@ -9,16 +9,15 @@
 **  }
 ** <pre
 ** 
-const class GzipCompressible {
+const mixin GzipCompressible {
 	
 	** Returns 'true' if the given `MimeType` may be compressed.
 	** 
 	** Only the 'mediaType' and 'subType' are used for matching, case is ignored.
-	// FIXME: LazyService cause stackOverflow
-//	abstract Bool isCompressible(MimeType? mimeType)
-//}
-//
-//internal const class GzipCompressibleImpl : GzipCompressible {  
+	abstract Bool isCompressible(MimeType? mimeType)
+}
+
+internal const class GzipCompressibleImpl : GzipCompressible {  
 
 	private const Str:Bool compressibleMimeTypes
 	
@@ -30,7 +29,7 @@ const class GzipCompressible {
 		this.compressibleMimeTypes = comTypes.toImmutable
 	}
 	
-	Bool isCompressible(MimeType? mimeType) {
+	override Bool isCompressible(MimeType? mimeType) {
 		if (mimeType == null)
 			return false
 		return compressibleMimeTypes.get(toKey(mimeType), false)

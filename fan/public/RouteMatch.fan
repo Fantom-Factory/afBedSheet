@@ -1,6 +1,8 @@
 
 class RouteMatch {
+	@Deprecated
 	const Uri 		routeBase
+	@Deprecated
 	const Uri		routeRel
 	const Method	handler
 		  Obj[]		args

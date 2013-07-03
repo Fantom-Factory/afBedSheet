@@ -2,7 +2,7 @@
 internal class TestGzipCompressible : BsTest {
 	
 	Void testGzipCompressible() {
-		gzip := GzipCompressible([
+		gzip := GzipCompressibleImpl([
 			MimeType("text/funk")	: true,
 			MimeType("text/arse")	: true,
 			MimeType("text/bird; feather=blue")	: true,
@@ -23,6 +23,5 @@ internal class TestGzipCompressible : BsTest {
 
 		// test params ignored
 		verify(gzip.isCompressible(MimeType("text/bird ; kick=ass")))
-	}
-	
+	}	
 }
