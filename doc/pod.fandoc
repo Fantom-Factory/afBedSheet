@@ -71,10 +71,50 @@ Request handlers are typically what we, the app developers, write. They perform 
 A default `ResultProcessor` then sends our `TextResponse` to the client.
 
 
-AppModule [#appModule]
-**********************
-Every application has an 'AppModule' that is used to contribute to [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
-services.
+
+Starting BedSheet [#startingBedSheet]
+*************************************
+BedSheet may be started from the command line using:
+
+pre>
+$ fan afBedSheet <fully-qualified-app-module-name> <port-number>
+<pre
+
+Every BedSheet web application has an 'AppModule' class that defines and configures your
+[afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an afIoC concept that allows you centralise your app
+configuration in one place.
+
+> TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the afIoc @SubModule facet.
+
+You may find it more convientient to create your own BedSheet Main wrapper. (In fact, if using
+[Heroku]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom` you will need to.)
+
+pre>
+using util
+
+class Main : AbstractMain {
+
+  @Arg { help="The HTTP port to run the app on" }
+  private Int port
+
+  override Int run() {
+    afBedSheet::Main().main("<fully-qualified-app-module-name> $port".split)
+    return 0
+  }
+}
+<pre
+
+'<fully-qualified-app-module-name>' may be replaced with '<pod-name>' as long as your pod's 'build.fan' defines the following
+meta:
+
+pre>
+meta  = [ ...
+          ...
+          "afIoc.module"  : "<fully-qualified-app-module-name>"
+        ]
+<pre
+
+Note that 'AppModule' is named so out of convention but may be called anything you like.
 
 
 
