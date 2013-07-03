@@ -96,10 +96,13 @@ internal const class ResponseImpl : Response {
 		webRes.isCommitted
 	}
 
-	override OutStream out() {
+	override OutStream out() {		
 		// TODO: afIoc 1.3.8 - Could we make a delegate pipeline?
 		contentType := webRes.headers["Content-Type"]
 		mimeType	:= MimeType(contentType, false)
+		
+		gzipCompressible.isCompressible(mimeType)
+		
 		encodings	:= QualityValues(webReq.headers["Accept-encoding"])
 		acceptGzip	:= encodings.accepts("gzip")
 		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)

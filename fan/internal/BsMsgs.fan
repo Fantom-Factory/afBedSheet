@@ -17,12 +17,6 @@ internal const class BsMsgs {
 		"Route `$route` has already been assigned to hander $hander.qname"
 	}
 
-	static Str handlerArgSizeMismatch(Method handler, Uri uri) {
-		// TODO: purposely do not use qname - that's too much info for a public message.
-		// but it's great for dev debug!
-		"Handler '$handler.qname' can not handle `$uri`"
-	}
-	
 	static Str fileHandlerFileNotExist(File file) {
 		"Directory '${file.osPath}' does not exist"		
 	}
