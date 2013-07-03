@@ -57,20 +57,20 @@ internal class T_MyModule01 {
 
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void cuntFuct(MappedConfig config) {
-		config.addMapped("c01", "Belgium")	// factory value
-		config.addMapped("c03", "UK")		// app override
+		config.set("c01", "Belgium")	// factory value
+		config.set("c03", "UK")			// app override
 		
-		config.addMapped("c05", null)		// null factory value
-		config.addMapped("c07", "belgium")	// null factory value
+		config.set("c05", null)			// null factory value
+		config.set("c07", "belgium")	// null factory value
 	}
 
 	@Contribute { serviceType=ApplicationDefaults# }
 	static Void cuntApp(MappedConfig config) {
-		config.addMapped("c02", "Belgium")	// app value
-		config.addMapped("c03", "Belgium")	// app override
+		config.set("c02", "Belgium")	// app value
+		config.set("c03", "Belgium")	// app override
 		
-		config.addMapped("c06", null)		// null app value
-		config.addMapped("c07", null)		// null app override
+		config.set("c06", null)			// null app value
+		config.set("c07", null)			// null app override
 	}
 }
 

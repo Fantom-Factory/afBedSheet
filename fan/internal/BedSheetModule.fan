@@ -32,36 +32,36 @@ internal class BedSheetModule {
 
 	@Contribute { serviceType=RouteMatcherSource# }
 	static Void contributeRouteMatcherSource(MappedConfig config) {
-		config.addMapped(ArgRoute#,		config.autobuild(RouteMatcherArgImpl#))
-//		config.addMapped(PathMapRoute#,	config.autobuild(RouteMatcherPathMapImpl#))
-//		config.addMapped(ExactRoute#,	config.autobuild(RouteMatcherExactImpl#))
+		config[ArgRoute#] = config.autobuild(RouteMatcherArgImpl#)
+//		config[PathMapRoute#]	= config.autobuild(RouteMatcherPathMapImpl#)
+//		config[ExactRoute#]		= config.autobuild(RouteMatcherExactImpl#)
 	}
 
 	@Contribute { serviceType=ResultProcessorSource# }
-	static Void contributeResultProcessorSource(MappedConfig config) {
-		config.addMapped(File#, 		config.autobuild(FileResultProcessor#))
-		config.addMapped(TextResult#, 	config.autobuild(TextResultProcessor#))
+	static Void contributeResultProcessorSource(MappedConfig conf) {
+		conf[File#]			= conf.autobuild(FileResultProcessor#)
+		conf[TextResult#]	= conf.autobuild(TextResultProcessor#)
 	}
 	
 	@Contribute { serviceType=ErrProcessorSource# }
-	static Void contributeErrProcessorSource(MappedConfig config) {
-		config.addMapped(HttpStatusErr#,	config.autobuild(HttpStatusErrProcessor#))
-		config.addMapped(Err#,				config.autobuild(DefaultErrProcessor#))
+	static Void contributeErrProcessorSource(MappedConfig conf) {
+		conf[HttpStatusErr#]	= conf.autobuild(HttpStatusErrProcessor#)
+		conf[Err#]				= conf.autobuild(DefaultErrProcessor#)
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig config) {
-		config.addMapped(ConfigIds.pingInterval,			1sec)
-		config.addMapped(ConfigIds.gzipDisabled,			false)
-		config.addMapped(ConfigIds.gzipThreshold,			376)
-		config.addMapped(ConfigIds.responseBufferThreshold,	8 * 1024)	// TODO: why not kB?
+	static Void contributeFactoryDefaults(MappedConfig conf) {
+		conf[ConfigIds.pingInterval]			= 1sec
+		conf[ConfigIds.gzipDisabled]			= false
+		conf[ConfigIds.gzipThreshold]			= 376
+		conf[ConfigIds.responseBufferThreshold]	= 8 * 1024	// TODO: why not kB?
 		
-		config.addMapped(ConfigIds.corsAllowedOrigins,		"*")
-		config.addMapped(ConfigIds.corsExposeHeaders,		null)
-		config.addMapped(ConfigIds.corsAllowCredentials,	false)
-		config.addMapped(ConfigIds.corsAllowedMethods,		"GET, POST")
-		config.addMapped(ConfigIds.corsAllowedHeaders,		null)
-		config.addMapped(ConfigIds.corsMaxAge,				60min)
+		conf[ConfigIds.corsAllowedOrigins]		= "*"
+		conf[ConfigIds.corsExposeHeaders]		= null
+		conf[ConfigIds.corsAllowCredentials]	= false
+		conf[ConfigIds.corsAllowedMethods]		= "GET, POST"
+		conf[ConfigIds.corsAllowedHeaders]		= null
+		conf[ConfigIds.corsMaxAge]				= 60min
 	}
 
 	@Contribute { serviceType=ValueEncoderSource# }
@@ -70,16 +70,16 @@ internal class BedSheetModule {
 	}
 
 	@Contribute { serviceType=GzipCompressible# }
-	static Void contributeGzipCompressible(MappedConfig config) {
+	static Void contributeGzipCompressible(MappedConfig conf) {
 		// add some standard compressible mime types
-		config.addMapped(MimeType("text/plain"),				true)
-		config.addMapped(MimeType("text/css"),					true)
-		config.addMapped(MimeType("text/tab-separated-values"),	true)
-		config.addMapped(MimeType("text/html"),					true)
-		config.addMapped(MimeType("text/javascript"),			true)
-		config.addMapped(MimeType("text/xml"),					true)
-		config.addMapped(MimeType("application/rss+xml"),		true)
-		config.addMapped(MimeType("application/json"),			true)
+		conf[MimeType("text/plain")]				= true
+		conf[MimeType("text/css")]					= true
+		conf[MimeType("text/tab-separated-values")]	= true
+		conf[MimeType("text/html")]					= true
+		conf[MimeType("text/javascript")]			= true
+		conf[MimeType("text/xml")]					= true
+		conf[MimeType("application/rss+xml")]		= true
+		conf[MimeType("application/json")]			= true
 	}
 	
 	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	

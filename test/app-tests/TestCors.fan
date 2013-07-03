@@ -79,34 +79,34 @@ internal class TestCoors : AppTest {
 internal class T_CorsMod1 {
 	@Contribute
 	static Void contributeApplicationDefaults(MappedConfig config) {
-		config.addMapped(ConfigIds.corsAllowedOrigins, "http://api.bob.com, bobby.com")
+		config.set(ConfigIds.corsAllowedOrigins, "http://api.bob.com, bobby.com")
 	}
 }
 
 internal class T_CorsMod2 {
 	@Contribute
 	static Void contributeApplicationDefaults(MappedConfig config) {
-		config.addMapped(ConfigIds.corsAllowedOrigins, null)
+		config.set(ConfigIds.corsAllowedOrigins, null)
 	}
 }
 
 internal class T_CorsMod3 {
 	@Contribute
 	static Void contributeApplicationDefaults(MappedConfig config) {
-		config.addMapped(ConfigIds.corsAllowCredentials, true)
+		config.set(ConfigIds.corsAllowCredentials, true)
 	}
 }
 
 internal class T_CorsMod4 {
 	@Contribute
 	static Void contributeApplicationDefaults(MappedConfig config) {
-		config.addMapped(ConfigIds.corsExposeHeaders, "Max-Headroom")
+		config.set(ConfigIds.corsExposeHeaders, "Max-Headroom")
 	}
 }
 
 internal class T_CorsMod5 {
 	@Contribute
 	static Void contributeApplicationDefaults(MappedConfig config) {
-//		config.addMapped(ConfigIds.corsExposeHeaders, "Max-Headroom")
+//		config.set(ConfigIds.corsExposeHeaders, "Max-Headroom")
 	}
 }

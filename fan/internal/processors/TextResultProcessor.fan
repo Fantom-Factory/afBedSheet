@@ -11,10 +11,7 @@ internal const class TextResultProcessor : ResultProcessor {
 		text := (TextResult) result
 		
 		res.headers["Content-Type"] = text.mimeType.toStr
-			
-		out := res.out
-		out.print(text.text)
-		out.close
+		res.out.printLine(text.text).close
 	}
 	
 }

@@ -9,9 +9,9 @@ internal class ConfigModule {
 	}
 	
 	@Contribute 
-	static Void contributeDependencyProviderSource(OrderedConfig config) {
-		configProvider := config.autobuild(ConfigProvider#)
-		config.addUnordered(configProvider)
+	static Void contributeDependencyProviderSource(OrderedConfig conf) {
+		configProvider := conf.autobuild(ConfigProvider#)
+		conf.add(configProvider)
 	}
 
 }
