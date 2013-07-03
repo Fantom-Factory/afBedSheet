@@ -39,7 +39,7 @@ internal const class RouteMatcherArgImpl : RouteMatcher {
 				return value
 			}
 		}
-				
+
 		return RouteMatch(argRoute.routeBase, routeRel, argRoute.handler, args)
 	}
 }

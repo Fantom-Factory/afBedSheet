@@ -13,11 +13,12 @@ RouteHandlers
  
  check wisp dies on reg startup err
  
- Exact Routes
+ Exact Routes / GlobRoute
 
 fantom afIoc on T5
  
- - filters
+ ArgRoute
+// TODO: look for special cases at the end of the arg list (in the loop), like splats
  
 
 
@@ -60,7 +61,7 @@ Pluggable Template generation
 
  Tales
 http://fantom.org/sidewalk/topic/1290
- 
+ - tales routing
 Look into integrating other tales stuff
 
 

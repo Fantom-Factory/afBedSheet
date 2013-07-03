@@ -14,9 +14,9 @@ internal const class FileResultProcessor : ResultProcessor {
 		if (!file.exists)
 			throw HttpStatusErr(404, "File not found: $request.modRel")
 		
-		// I dunno if this should be a 403 or 404. 403 gives any would be attacker info about your 
-		// server.
-		if (file.isDir)	// not allowed, until I implement it! Make them pluggable.
+		// I dunno if this should be a 403 or 404. 
+		// 403 gives any would be attacker info about your server.
+		if (file.isDir)	// not allowed, until I implement it! 
 			throw HttpStatusErr(403, "Directory listing not allowed: $request.modRel")
 		
 		FileWeblet(file).onGet
