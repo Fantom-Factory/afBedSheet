@@ -10,7 +10,6 @@ const internal class BedSheetService {
 	@Inject	private const Registry				registry
 	@Inject	private const ThreadStashManager 	stashManager
 	@Inject	private const Request 				req
-//	@Inject	private const RouteHandler 			routeHandler
 	@Inject	private const Routes				routes
 	@Inject	private const ResultProcessorSource	resProSrc
 	@Inject	private const ErrProcessorSource	errProSrc
@@ -19,12 +18,11 @@ const internal class BedSheetService {
 	
 	Void service() {
 		try {
-			result	:= routes.processRequest(req.modRel, req.httpMethod)
-
-//			// save the routeMatch so it can be picked up by `Request` for routeBase() & routeMod()
-//			webReq.stash["bedSheet.routeMatch"] = routeMatch
-//
-//			result := routeHandler.handle(routeMatch)
+			result
+				:= routes.processRequest(req.modRel, req.httpMethod)
+				?: HttpStatusErr(404, "Route `${req.modRel}` not found")
+				// FIXME: handle HttpStatusErr
+			
 			if (result != true)
 				resProSrc.process(result)
 
@@ -40,11 +38,6 @@ const internal class BedSheetService {
 				// the backup plan for when the err handler errs!
 				log.err("ERROR in the ERR HANDLER!!!", doubleErr)
 				log.err("  - Original Err", err)
-				
-//		b := Buf()	// can't trace to a StrBuf
-//		err.trace(b.out, ["maxDepth":250])
-//		es:=b.flip.in.readAllStr
-//		Env.cur.err.printLine(es)
 				
 				if (!webRes.isCommitted)
 					webRes.sendErr(500, err.msg)

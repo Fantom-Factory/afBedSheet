@@ -4,15 +4,8 @@ For BedSheet 0.0.6
  - (doc) out buffer
  - res.disableOutBuffer
  - (doc) restarter
- - (doc) ie cache buster
  - (doc) Routes
- - (doc) 404 and 500
- 
-RouteMatching
-RouteHandlers
- 
- check wisp dies on reg startup err
- 
+   
  Exact Routes / GlobRoute
 
 fantom afIoc on T5
@@ -24,6 +17,10 @@ fantom afIoc on T5
 
 For BedSheet 0.0.8
 ------------------
+ - (doc) ie cache buster
+ - (doc) 404 and 500
+
+ check wisp dies on reg startup err
 
  - serve pod files
 
@@ -40,6 +37,13 @@ Proxy session
  
  - have Dev / Prod mode (and other envs)
 
+ - TypeCorercer, not a service but toStr / fromStr
+  - use in OrderedConfig
+  - use in MappedConfig
+  - use in ValueEncoders
+  - use in Config def values
+ 
+ front all services with mixins
  
 Future
 ------

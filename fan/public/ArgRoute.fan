@@ -102,6 +102,7 @@ const class ArgRoute {
 		if (handler.params.size == routePath.size)
 			return routePath
 		
+		// FIXME: allow nulls as well as defaults
 		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
 		if (paramRange.contains(routePath.size))
 			return routePath
