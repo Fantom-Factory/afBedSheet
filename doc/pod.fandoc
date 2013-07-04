@@ -35,13 +35,13 @@ using afIoc
 class AppModule {
   @Contribute
   static Void contributeRoutes(OrderedConfig conf) {
-    conf.add(ArgRoute(`/hello`, HelloPage#hello))
+    conf.add(Route(`/hello/**`, HelloPage#hello))
   }
 }
 
 class HelloPage {
-  TextResult hello(Str name, Int iq := 666) {
-    return TextResult.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+  TextResponse hello(Str name, Int iq := 666) {
+    return TextResponse.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
   }
 }
 <pre
@@ -64,7 +64,7 @@ Wow! That's awesome! But what just happened!?
 
 Every application has an 'AppModule' that is used to contribute to [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
 services. In our 'AppModule' we told the `Routes` service to route all request uris, that start with '/hello', to our
-'HelloPage' class. `ArgRoute` converts any extra uri path segments into method arguments, or in our case, a 'Str name' and an
+'HelloPage' class. `Route` converts any extra uri path segments into method arguments, or in our case, a 'Str name' and an
 optional 'Int iq'.
 
 Request handlers are typically what we, the app developers, write. They perform logic processing and render responses. Our
@@ -128,13 +128,13 @@ pre>
 @Contribute { serviceType=Routes# }
 static Void contributeRoutes(OrderedConfig conf) {
 
-  conf.add(ArgRoute(`/index`, IndexPage#service))
+  conf.add(Route(`/index`, IndexPage#service))
 
 }
 <pre
 
-BedSheet is bundled with the following Routes objs:
- - `ArgRoute`: Matches against the request URI, converting deeper path segments into method arguments.
+BedSheet is bundled with the following Route objs:
+ - `Route`: Matches against the request URI, converting deeper path segments into method arguments.
 
 If the handler returns 'Void' or 'null' then processing is passed onto the next matching route. This makes it possible to
 create filter like handlers that blanket pre-process a wide set of uris. To facilitate this, BedSheet contributes a placeholder
@@ -145,7 +145,7 @@ pre>
 static Void contributeRoutes(OrderedConfig conf) {
 
   // add filter to check all requests under `/admin` are authorised
-  conf.addOrdered("AuthFilter", ArgRoute(`/admin`, AuthFilter#service), ["before: Routes"])
+  conf.addOrdered("AuthFilter", Route(`/admin/*`, AuthFilter#service), ["before: Routes"])
 }
 <pre
 
@@ -160,28 +160,36 @@ Routing lesson over.
 
 Request Handling [#requestHandling]
 ***********************************
+Request handlers are where logic is processed and responses are rendered. Handlers generally shouldn't pipe anything to
+'Response.out'. Instead they should return a response object. Example: The above 'HelloPage' handler simply renders a
+`TextResponse`.
 
-TODO: return values
+BedSheet bundles with a couple request handlers:
+ - `FileHandler`: Maps request URIs to files on file system.
 
-BedSheet is bundled with the following request handlers:
- - `FileHandler`: Maps request URIs to Files on file system.
+By default, BedSheet handles the following handler responses:
+ - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
+ - 'true' : A response has been sent to the client and no further processing should performed on the request.
+ - `File` : The file (on the file system) is sent to the client.
+ - `TextResponse` : The text, with the given `MimeType` is sent to the client.
+ - `HttpStatusErr` : The http status and msg is sent to the client.
 
 
 
 Result Processing [#resultProcessing]
 *************************************
-It's the job of [ResultProcessors]`ResultProcessor` to send a responses to the client.
+[ResultProcessors]`ResultProcessor` send responses to the client.
 
 'ResultProcessors' deal with the results returned
+
+return values, e.g. void or null
 
 Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and
 'JsonResult'.
 
 If the response is over a given size, and is deemed compressible then it is gzipped before being sent to the user.
 
-By default, BedSheet processes the following handler responses:
- - `File`
- - `TextResponse`
+
 
 
 Error Processing [#errorProcessing]

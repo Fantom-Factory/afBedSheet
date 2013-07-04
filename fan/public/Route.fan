@@ -10,13 +10,13 @@
 ** class AppModule {
 **   @Contribute
 **   static Void contributeRoutes(OrderedConfig conf) {
-**     conf.add(ArgRoute(`/hello`, HelloPage#hello))
+**     conf.add(Route(`/hello/**`, HelloPage#hello))
 **   }
 ** }
 ** 
 ** class HelloPage {
-**   TextResult hello(Str name, Int iq := 666) {
-**     return TextResult.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+**   TextResponse hello(Str name, Int iq := 666) {
+**     return TextResponse.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
 **   }
 ** }
 ** 
@@ -29,10 +29,10 @@
 ** 
 ** Path segments are converted to Objs via the [ValueEncoder]`ValueEncoder` service.
 **  
-** > TIP: Contribute 'ValueEncoders' to convert path into Entities. BedSheet can then call handlers 
-** with real Entities, not just str IDs!
+** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. BedSheet can then call 
+** handlers with real Entities, not just str IDs!
 ** 
-** Parameters of type 'Uri' or 'Str[]' are *capture all* parameters and match the whole uri.
+** Parameters of type 'Str[]' are *capture all* parameters and match the whole uri.
 **
 ** Request uri's (for matching purposes) are treated as case-insensitive. In the example above, both
 ** 

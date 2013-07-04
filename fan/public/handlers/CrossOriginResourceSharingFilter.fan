@@ -12,11 +12,11 @@ using afIoc::Inject
 ** service the ajax requests:
 ** 
 ** pre>
-**  simpleRoute    := ArgRoute(`<simple-path>`,    CrossOriginResourceSharingFilter#serviceSimple,    "GET POST")
-**  preflightRoute := ArgRoute(`<preflight-path>`, CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS")
+**  simpleRoute    := Route(`<simple-path>`,    CrossOriginResourceSharingFilter#serviceSimple,    "GET POST")
+**  preflightRoute := Route(`<preflight-path>`, CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS")
 ** 
-**  config.addOrdered("corsSimple", 	simpleRoute,    ["before: routes"])
-**  config.addOrdered("corsPreflight", 	preflightRoute, ["before: routes"])
+**  conf.add("corsSimple", 	  simpleRoute,    ["before: routes"])
+**  conf.add("corsPreflight", preflightRoute, ["before: routes"])
 ** <pre
 ** 
 ** And set the following config values:

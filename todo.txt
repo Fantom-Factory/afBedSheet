@@ -10,7 +10,7 @@ For BedSheet 0.0.6
 
 fantom afIoc on T5
  
- ArgRoute
+ Route
 // TODO: look for special cases at the end of the arg list (in the loop), like splats
  
 

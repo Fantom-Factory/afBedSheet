@@ -19,7 +19,7 @@ using afIoc::Inject
 ** @Contribute { serviceType=Routes# }
 ** static Void contributeRoutes(OrderedConfig conf) {
 **   ...
-**   conf.add(ArgRoute(`/pub/`, FileHandler#service))
+**   conf.add(Route(`/pub/*`, FileHandler#service))
 **   ...
 ** }
 ** <pre
