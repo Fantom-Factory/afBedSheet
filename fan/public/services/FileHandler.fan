@@ -58,9 +58,10 @@ const class FileHandler {
 	File service(Uri routeRel) {
 		// Pass 'false' to prevent an err being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
-		// FUTURE: configure this behaviour once we've thought up a nice name for the config! 
-	    dirMappings[req.routeBase].plus(routeRel, false)
-		
+		// FUTURE: configure this behaviour once we've thought up a nice name for the config!
+		// FIXME:
+//	    dirMappings[req.routeBase].plus(routeRel, false)
+		File(``)
 		// currently it's the FileResultProcessor that throws a 404 if the file doesn't exist
 	}
 }

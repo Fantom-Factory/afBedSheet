@@ -51,14 +51,6 @@ const mixin Request {
 	** 
 	** @see `web::WebReq.modRel`
 	abstract Uri modRel()
-
-	** The uri matched against the `Route`
-	@Deprecated
-	abstract Uri routeBase()
-
-	** The uri relative to the `Route`
-	@Deprecated
-	abstract Uri routeRel()
 	
 	** Map of HTTP request headers. The map is readonly and case insensitive.
 	** 
@@ -128,14 +120,6 @@ internal const class RequestImpl : Request {
 		webReq.modRel
 	}
 	
-	override Uri routeBase() {
-		routeMatch.routeBase
-	}
-	
-	override Uri routeRel() {
-		routeMatch.routeRel
-	}
-	
 	override [Str:Str] headers() {
 		webReq.headers
 	}
@@ -150,9 +134,5 @@ internal const class RequestImpl : Request {
 	
 	private WebReq webReq() {
 		registry.dependencyByType(WebReq#)
-	}
-
-	private RouteMatch routeMatch() {
-		webReq.stash["bedSheet.routeMatch"]
 	}
 }

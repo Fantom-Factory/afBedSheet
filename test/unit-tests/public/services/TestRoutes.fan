@@ -33,15 +33,15 @@ internal class T_MyModule02 {
 
 	@Contribute { serviceType=RouteMatcherSource# }
 	static Void contributeRouteMatcherSource(MappedConfig conf) {
-		conf[ArgRoute#] = conf.autobuild(RouteMatcherArgImpl#)
+		conf[Route#] = conf.autobuild(RouteMatcherImpl#)
 	}
 
 	@Contribute { serviceType=Routes# }
 	static Void contribute(OrderedConfig conf) {
-		conf.add(ArgRoute(`/1`,         TestRoutes#handler1))
-		conf.add(ArgRoute(`/1/2`,       TestRoutes#handler2))
-		conf.add(ArgRoute(`/1/2/3`,     TestRoutes#handler3))
-		conf.add(ArgRoute(`/1/2/3/4`,   TestRoutes#handler4))
-		conf.add(ArgRoute(`/1/2/3/4/5`, TestRoutes#handler5))
+		conf.add(Route(`/1`,         TestRoutes#handler1))
+		conf.add(Route(`/1/2`,       TestRoutes#handler2))
+		conf.add(Route(`/1/2/3`,     TestRoutes#handler3))
+		conf.add(Route(`/1/2/3/4`,   TestRoutes#handler4))
+		conf.add(Route(`/1/2/3/4/5`, TestRoutes#handler5))
 	}
 }

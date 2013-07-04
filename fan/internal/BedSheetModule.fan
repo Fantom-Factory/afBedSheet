@@ -31,7 +31,7 @@ internal class BedSheetModule {
 
 	@Contribute { serviceType=RouteMatcherSource# }
 	static Void contributeRouteMatcherSource(MappedConfig config) {
-		config[ArgRoute#] = config.autobuild(RouteMatcherArgImpl#)
+		config[Route#] = config.autobuild(RouteMatcherImpl#)
 //		config[PathMapRoute#]	= config.autobuild(RouteMatcherPathMapImpl#)
 //		config[ExactRoute#]		= config.autobuild(RouteMatcherExactImpl#)
 	}

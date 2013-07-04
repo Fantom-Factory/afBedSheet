@@ -36,15 +36,8 @@ const class Routes {
 			routeMatcher := routeMatcherSource.get(route.typeof)
 			
 			routeMatch := routeMatcher.match(route, normalisedUri, httpMethod) 
-			if (routeMatch == null) {
+			if (routeMatch == null)
 				return null
-			}
-
-			log.debug("Matched to uri `$routeMatch.routeBase` for $routeMatch.handler.qname")
-			
-			// save the routeMatch so it can be picked up by `Request` for routeBase() & routeMod()
-			// TODO: kill commnet
-//			webReq.stash["bedSheet.routeMatch"] = routeMatch
 
 			result := handlerInvoker.invokeHandler(routeMatch)
 			
