@@ -5,10 +5,6 @@ abstract internal class BsTest : Test {
 		verifyErrTypeMsg(BedSheetErr#, errMsg, func)
 	}
 
-	Void verifyRouteNotFoundErrMsg(Str errMsg, |Obj| func) {
-		verifyErrTypeMsg(RouteNotFoundErr#, errMsg, func)
-	}
-
 	private Void verifyErrTypeMsg(Type errType, Str errMsg, |Obj| func) {
 		try {
 			func(4)

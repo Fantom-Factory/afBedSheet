@@ -3,7 +3,7 @@ using afIoc::Inject
 using afIoc::Registry
 using afIoc::ServiceStats
 
-internal const class RouteHandler {
+internal const class ReqestHandlerInvoker {
 	private const static Log 		log 		:= Utils.getLog(BedSheetService#)
 	private const ConcurrentState 	conState	:= ConcurrentState(RouteHandlerState#)
 
@@ -15,9 +15,10 @@ internal const class RouteHandler {
 	
 	new make(|This|in) { in(this) }
 	
-	Obj handle(RouteMatch routeMatch) {
+	Obj? invokeHandler(RouteMatch routeMatch) {
 		
 		handlerType := routeMatch.handler.parent
+		
 		// TODO: isConst - we should also check for threaded services - for reuse
 		handlerInst	:= handlerType.isConst 
 			? getState |state->Obj| {
@@ -30,20 +31,9 @@ internal const class RouteHandler {
 					return service
 				}
 			}
-			// no need to stash in Thread, 'cos currently there's only 1 handler per req
 			: registry.autobuild(handlerType)
 		
-		result := handlerInst.trap(routeMatch.handler.name, routeMatch.args)
-		
-		if (result == null) {
-			if (routeMatch.handler.returns == Void#)
-				log.warn(BsMsgs.handlersCanNotBeVoid(routeMatch.handler))
-			else
-				log.err(BsMsgs.handlersCanNotReturnNull(routeMatch.handler))
-			result = false
-		}
-		
-		return result
+		return routeMatch.invokeHandler(handlerInst)
 	}
 	
 	private Void withState(|RouteHandlerState| state) {

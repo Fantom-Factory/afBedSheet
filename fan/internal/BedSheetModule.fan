@@ -9,9 +9,8 @@ internal class BedSheetModule {
 		binder.bindImpl(BedSheetService#)
 		
 		binder.bindImpl(Routes#)
-		binder.bindImpl(RouteHandler#)
 		binder.bindImpl(RouteMatcherSource#)
-		binder.bindImpl(RouteMatcherArgImpl#)
+		binder.bindImpl(ReqestHandlerInvoker#)
 
 		binder.bindImpl(ValueEncoderSource#)
 		binder.bindImpl(FileHandler#)
@@ -72,14 +71,14 @@ internal class BedSheetModule {
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(MappedConfig conf) {
 		// add some standard compressible mime types
-		conf[MimeType("text/plain")]				= true
-		conf[MimeType("text/css")]					= true
-		conf[MimeType("text/tab-separated-values")]	= true
-		conf[MimeType("text/html")]					= true
-		conf[MimeType("text/javascript")]			= true
-		conf[MimeType("text/xml")]					= true
-		conf[MimeType("application/rss+xml")]		= true
-		conf[MimeType("application/json")]			= true
+		conf["text/plain"]					= true
+		conf["text/css"]					= true
+		conf["text/tab-separated-values"]	= true
+		conf["text/html"]					= true
+		conf["text/javascript"]				= true
+		conf["text/xml"]					= true
+		conf["application/rss+xml"]			= true
+		conf["application/json"]			= true
 	}
 	
 	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	

@@ -17,7 +17,8 @@ Simple.
 -------
 Developers are lazy. If it's complicated or difficult, they won't use it.
 
-BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
+BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
+Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
 
 Quick Start [#quickStart]
 *************************
@@ -173,7 +174,8 @@ It's the job of [ResultProcessors]`ResultProcessor` to send a responses to the c
 
 'ResultProcessors' deal with the results returned
 
-Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and 'JsonResult'.
+Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and
+'JsonResult'.
 
 If the response is over a given size, and is deemed compressible then it is gzipped before being sent to the user.
 
@@ -184,16 +186,15 @@ By default, BedSheet processes the following handler responses:
 
 Error Processing [#errorProcessing]
 ***********************************
-TODO: 404 & 500
+TODO: doc 404 & 500
 
-TODO: App Proxy Restarter
+TODO: docApp Proxy Restarter
 
-TODO:
-TODO: Out Buffer
+TODO: docOut Buffer
 
-TODO: Misc
- - Internet Explorer Ajax Cache Buster
- - CORS
+TODO: Misc section
+ - doc Internet Explorer Ajax Cache Buster
+ - doc CORS
 
 
 Gzip [#gzip]
@@ -215,19 +216,27 @@ Although enabled by default, gzip can be disabled on a per request / response ba
 
 Gzip'able Mime Types [#mimeTypes]
 ---------------------------------
-Not everything should be gzipped. For example, text files gzip very well and yield high compression rates. JPG images on the other hand, because they're already compressed, don't gzip well and can end up bigger than the original! For this reason you must contribute to the `GzipCompressible` service to enable gzip for specified [Mime Types]`sys::MimeType`:
+Not everything should be gzipped. For example, text files gzip very well and yield high compression rates. JPG images on the
+other hand, because they're already compressed, don't gzip well and can end up bigger than the original! For this reason you
+must contribute to the `GzipCompressible` service to enable gzip for specified [Mime Types]`sys::MimeType`:
 
-    config[MimeType("text/funky")] = true
+    config["text/funky"] = true
+
+(Note: The GzipCompressible contrib type is actually `MimeType` - afIoc kindly coerces the Str to 'MimeType' for us.)
 
 By default BedSheet will compress plain text, css, html, javascript, xml and json responses.
 
 Gzip only when asked [#askNicely]
 ---------------------------------
-It's guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such, and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, we only gzip the response if the client actually *asked* for it!
+It's guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such,
+and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, we only gzip the
+response if the client actually *asked* for it!
 
 Minimum content threshold [#minThreshold]
 -----------------------------------------
-Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following `ApplicationDefaults`:
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is
+going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must
+reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following `ApplicationDefaults`:
 
     config[ConfigIds.gzipThreshold] = 768
 
@@ -247,7 +256,9 @@ Buffered Response
 
 More!
 =====
-All URI handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject' DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the [BedSheet source]`XXX` for afIoc examples.
+All URI handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
+DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the
+[BedSheet source]`XXX` for afIoc examples.
 
 > TIP: 'const' handler classes are cached by BedSheet and reused on every request.
 
@@ -259,7 +270,8 @@ Push To Live! [#goLive]
 ***********************
 In a hurry to go live?
 
-Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is to deploy your app to a live server with the [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom`.
+Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is to deploy your app to a live server with the
+[heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom`.
 
 
 Release Notes [#releaseNotes]

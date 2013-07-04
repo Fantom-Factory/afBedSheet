@@ -52,6 +52,7 @@ const class ValueEncoderSource {
 				throw ValueEncodingErr(BsMsgs.valueEncodingBuggered(clientValue, valType), cause)
 			}
 		
+		// FIXME: Typecoerce
 		// see http://fantom.org/sidewalk/topic/2154
 		fromStr := ReflectUtils.findCtor(valType, "fromStr", [Str#])
 		if (fromStr == null)

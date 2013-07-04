@@ -6,17 +6,13 @@ internal const class BsMsgs {
 	}
 	
 	static Str routeShouldBePathOnly(Uri routeBase) {
-		"Routing path '$routeBase' must only contain a path. e.g. `/foo/bar`"
+		"Route '$routeBase' must only contain a path. e.g. `/foo/bar`"
 	}
 
 	static Str routeShouldStartWithSlash(Uri routeBase) {
-		"Routing path '$routeBase' must start with a slash. e.g. `/foo/bar`"
+		"Route '$routeBase' must start with a slash. e.g. `/foo/bar`"
 	}
 	
-	static Str routeAlreadyAdded(Uri route, Method hander) {
-		"Route `$route` has already been assigned to hander $hander.qname"
-	}
-
 	static Str fileHandlerFileNotExist(File file) {
 		"Directory '${file.osPath}' does not exist"		
 	}
@@ -35,16 +31,6 @@ internal const class BsMsgs {
 
 	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
 		"Uri '${uri}' must end with a path. e.g. `/foo/bar/`"
-	}
-	
-	static Str handlersCanNotBeVoid(Method method) {
-		// TODO: better msg
-		"Handler $method.qname is not allowed to be Void. If processing is not complete, return 'false' instead."
-	}
-
-	static Str handlersCanNotReturnNull(Method method) {
-		// TODO: better msg
-		"Handler $method.qname is not allowed to return null. If processing is not complete, return 'false' instead."
 	}
 	
 	static Str valueEncodingBuggered(Obj value, Type toType) {
