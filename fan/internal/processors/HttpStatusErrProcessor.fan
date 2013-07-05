@@ -21,7 +21,7 @@ internal const class HttpStatusErrProcessor : ErrProcessor {
 		res := (WebRes) registry.dependencyByType(WebRes#)
 		res.sendErr(err.statusCode, err.msg)
 		
-		// FIXME: log filter please!
+		// TODO: log filter please!
 //		Env.cur.err.printLine("${err.statusCode} ${err.msg} - ${req.uri}")
 		
 		return true

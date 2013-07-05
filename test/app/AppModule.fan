@@ -5,7 +5,7 @@ internal const class AppModule {
 	static Void bind(ServiceBinder binder) {
 //		binder.bindImpl(Router#)
 	}
-	
+
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(OrderedConfig conf) {
 		conf.add(Route(`/textResult/plain`,	TextPage#plain))
