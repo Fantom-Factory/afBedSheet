@@ -20,88 +20,114 @@ internal class TestRoute : BsTest {
 		}
 	}	
 	
-	private Void dummyHandler(Uri uri) {}
-
 	Void testHttpMethodMismatch() {
-		match := Route(`/index`, #dummyHandler).match(`/index`, "POST")
+		match := Route(`/index`, #foo).match(`/index`, "POST")
 		verifyNull(match)
 	}
 	
-	Void testMatch() {
+	Void testMatchRegex() {
 		Str[]? match
 		
-		match = Route(`/index`, #dummyHandler).matchUri(`/wotever`)
+		match = Route(Regex<|(?i)^\/index$|>, #foo).matchUri(`/index`)
+		verifyEq(match.size,	0)
+
+		match = Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo).matchUri(`/index/dude`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"dude")
+		
+		match = Route(Regex<|(?i)^\/foobar\/(.*?)$|>, #foo, "GET", true)
+		.matchUri(`/foobar/dude/2/argh`)
+		verifyEq(match.size,	3)
+		verifyEq(match[0],		"dude")
+		verifyEq(match[1],		"2")
+		verifyEq(match[2],		"argh")
+	}
+	
+	Void testMatchGlob() {
+		Str[]? match
+		
+		match = Route(`/index`, #foo).matchUri(`/wotever`)
 		verifyNull(match)
 		
-		match = Route(`/index`, #dummyHandler).matchUri(`/index`)
+		match = Route(`/index`, #foo).matchUri(`/index`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foo/?`, #dummyHandler).matchUri(`/foo`)
+		match = Route(`/foo/?`, #foo).matchUri(`/foo`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foo/?`, #dummyHandler).matchUri(`/foo/`)
+		match = Route(`/foo/?`, #foo).matchUri(`/foo/`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foo*`, #dummyHandler).matchUri(`/foo`)
+		match = Route(`/foo*`, #foo).matchUri(`/foo`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"")
 		
-		match = Route(`/foo/*`, #dummyHandler).matchUri(`/foo`)
+		match = Route(`/foo/*`, #foo).matchUri(`/foo`)
 		verifyNull(match)
 
-		match = Route(`/foo/*`, #dummyHandler).matchUri(`/foo/`)
+		match = Route(`/foo/*`, #foo).matchUri(`/foo/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"")
 
-		match = Route(`/foo/*/`, #dummyHandler).matchUri(`/foo//`)
+		match = Route(`/foo/*/`, #foo).matchUri(`/foo//`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"")
 
 		// case-insensitive
-		match = Route(`/foo`, #dummyHandler).matchUri(`/fOO`)
+		match = Route(`/foo`, #foo).matchUri(`/fOO`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foobar/*/*`, #dummyHandler).matchUri(`/foobar/dude/3`)
+		match = Route(`/foobar/*/*`, #foo).matchUri(`/foobar/dude/3`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"3")
 
-		match = Route(`/foobar/*/*`, #dummyHandler).matchUri(`/foobar/dude`)
+		match = Route(`/foobar/*/*`, #foo).matchUri(`/foobar/dude`)
 		verifyNull(match)
 
-		match = Route(`/foobar/*/*`, #dummyHandler).matchUri(`/foobar/dude/2/3`)
+		match = Route(`/foobar/*/*`, #foo).matchUri(`/foobar/dude/2/3`)
 		verifyNull(match)
 
-		match = Route(`/foobar/**`, #dummyHandler).matchUri(`/foobar/dude/2/argh`)
+		match = Route(`/foobar/***`, #foo)
+		.matchUri(`/foobar/dude/2/3`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"dude/2/3")
+
+		match = Route(`/foobar/**`, #foo).matchUri(`/foobar/dude/2/argh`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
 
-		match = Route(`/foobar/**`, #dummyHandler).matchUri(`/foobar/dude/2/argh/`)
+		match = Route(`/foobar/**`, #foo).matchUri(`/foobar/dude/2/argh/`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
 		
-		match = Route(`/foobar**`, #dummyHandler).matchUri(`/foobarbitch/mf/`)
+		match = Route(`/foobar**`, #foo).matchUri(`/foobarbitch/mf/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"bitch")
 		verifyEq(match[1],		"mf")
 		
-		match = Route(`/index`, #dummyHandler).matchUri(`/index?dude=3`)
+		match = Route(`/index`, #foo).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
 		
-		match = Route(`/index/?`, #dummyHandler).matchUri(`/index?dude=3`)
+		match = Route(`/index/?`, #foo).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/index*`, #dummyHandler).matchUri(`/index?dude=3`)
+		match = Route(`/index*`, #foo).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"")
 
-		match = Route(`/index**`, #dummyHandler).matchUri(`/index?dude=3`)
+		match = Route(`/index**`, #foo).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"")
+
+		match = Route(`/wot/*/ever/*`, #foo).matchUri(`/wot/3/ever/4`)
+		verifyEq(match.size,	2)
+		verifyEq(match[0],		"3")
+		verifyEq(match[1],		"4")
 	}
 	
 	Void testArgList() {

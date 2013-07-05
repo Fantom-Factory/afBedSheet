@@ -1,7 +1,23 @@
 
 **
 ** Matches uri paths to handler methods, converting any remaining path segments into method 
-** arguments. Method arguments with default values are mapped to optional path segments. Example:
+** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all 
+** remaining path segments and "***" to capture the remaining url:
+** 
+** pre>
+**   glob pattern     uri             arguments
+**   -----------------------------------------------------
+**   /user/*      --> /user/42     => "42"
+**   /user/*      --> /user/42/dee => no match
+** 
+**   /user/**     --> /user/42     => "42"
+**   /user/**     --> /user/42/dee => "42", "dee"
+
+**   /user/***    --> /user/42     => "42"
+**   /user/***    --> /user/42/dee => "42/dee"
+** <pre
+** 
+** Method arguments with default values are mapped to optional path segments. Example:
 ** 
 ** pre>
 ** using afBedSheet
@@ -32,7 +48,7 @@
 ** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. BedSheet can then call 
 ** handlers with real Entities, not just str IDs!
 ** 
-** Parameters of type 'Str[]' are *capture all* parameters and match the whole uri.
+** Parameters of type 'Str[]' are *capture all* parameters and match the remaining uri (split on '/').
 **
 ** Request uri's (for matching purposes) are treated as case-insensitive. In the example above, both
 ** 
@@ -41,12 +57,29 @@
 **
 ** would be matched.
 ** 
+** Use '?' to optional match the last character. Use to optionally match a trailing slash. e.g.
+** 
+** pre>
+**   glob         uri
+**   -----------------------------
+**   /index/? --> /index  => match
+**   /index/? --> /index/ => match
+**   vs
+**   /index/  --> /index  => no match
+**   /index   --> /index/ => no match
+** <pre
+** 
 ** If a handler class is a service, it is obtained from the IoC registry, otherwise it is
 ** [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the instance is cached for 
 ** future use.
 ** 
-class Route {
-
+** Route only matches on the path
+** Note: There is no special handling for nullable types in handler method arguments as BedSheet 
+** can not determine when 'null' is a suitable replacement for an empty str. Instead contribute a
+** `ValueEncoder` or use default values.
+** 
+const class Route {
+	private static const Str star	:= "(.*?)"
 	** The uri regex this route matches.
 	const Regex routeRegex
 
@@ -58,13 +91,14 @@ class Route {
 
 	private const Regex[] 	httpMethodGlob
 	private const Bool		matchAllArgs
+	private const Bool		matchToEnd
+	private const Bool		isGlob
 
-	**
+	** Make a Route that matches on the given glob pattern.
+	** 
 	** 'glob' must start with a slash "/"
 	** 
 	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
-	** 
-	** case-insensitive
 	new makeFromGlob(Uri glob, Method handler, Str httpMethod := "GET") {
 	    if (glob.scheme != null || glob.host != null || glob.port!= null )
 			throw BedSheetErr(BsMsgs.routeShouldBePathOnly(glob))
@@ -72,44 +106,54 @@ class Route {
 			throw BedSheetErr(BsMsgs.routeShouldStartWithSlash(glob))
 
 		uriGlob	:= glob.toStr
-		skip 	:= false
 		regex	:= "(?i)^"
 		uriGlob.each |c, i| {
-			if (skip) {
-				skip = false
-				return
-			}
 			if (c.isAlphaNum || c == '?')
 				regex += c.toChar
-			else if (c == '*')  {
-				if (i < (uriGlob.size-1) && uriGlob[i+1] == '*') {
-					// match all args
-					regex += "(.*?)\\/?"
-					skip = true
-				} else
-					regex += "(.*?)"
-			}
-			else regex += ("\\" + c.toChar)
+			else if (c == '*')  
+				regex += star
+			else 
+				regex += ("\\" + c.toChar)
 		}
+		
+		matchRemaining	:= false
+		matchToEnd		:= false
+		if (uriGlob.endsWith("***")) {
+			regex = regex[0..<-star.size*3] + "(.*)"
+			matchToEnd	= true
+			
+		} else if (uriGlob.endsWith("**")) {
+			regex = regex[0..<-star.size*2] + "(.*?)\\/?"
+			matchRemaining = true
+		}
+		
 		regex += "\$"
-
+		
 		this.routeRegex 	= Regex.fromStr(regex)
 		this.handler 		= handler
 		this.httpMethod 	= httpMethod
 		// split on both space and ','
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
-		this.matchAllArgs	= uriGlob.endsWith("**")
+		this.matchToEnd		= matchToEnd
+		this.matchAllArgs	= matchRemaining
+		this.isGlob			= true
 	}
 
-	** TODO: check syntax for eg. Route(Regex<| blah |>)
-	new makeFromRegex(Regex uriRegex, Method handler, Str httpMethod := "GET") {
+	** For hardcore users; make a Route from a regex. Capture groups are used to match arguments.
+	** Example:
+	** 
+	**   Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo, "GET", true) -> Route(`/index/**`)
+	** 
+	** Set 'matchRemaining' to 'true' to have the last capture group mimic the glob '**' operator, 
+	** splitting on "/" to match all remaining segments.  
+	new makeFromRegex(Regex uriRegex, Method handler, Str httpMethod := "GET", Bool matchRemaining := false) {
 		this.routeRegex 	= uriRegex
 		this.handler 		= handler
 		this.httpMethod 	= httpMethod
 		// split on both space and ','
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
-		// TODO: check this works
-		this.matchAllArgs	= uriRegex.toStr.endsWith("**") || uriRegex.toStr.endsWith("**\$")
+		this.matchAllArgs	= matchRemaining
+		this.isGlob			= false
 	}
 
 	internal Str[]? match(Uri uri, Str httpMethod) {
@@ -155,7 +199,7 @@ class Route {
 			groups.addAll(last.split('/'))
 		}
 		
-		if (!matchAllArgs && groups[-1].contains("/"))
+		if (isGlob && !matchToEnd && !matchAllArgs && groups[-1].contains("/"))
 			return null
 						
 		return groups
@@ -166,7 +210,6 @@ class Route {
 		if (handler.params.size == uriSegments.size)
 			return uriSegments
 		
-		// FIXME: allow nulls as well as defaults
 		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
 		if (paramRange.contains(uriSegments.size))
 			return uriSegments

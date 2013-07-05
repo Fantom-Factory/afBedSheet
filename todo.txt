@@ -1,9 +1,6 @@
 
 For BedSheet 0.0.6
 ------------------
- - (doc) out buffer
- - res.disableOutBuffer
- - (doc) restarter
  - (doc) Routes
    
  Exact Routes / GlobRoute
@@ -13,10 +10,20 @@ fantom afIoc on T5
  Route
 // TODO: look for special cases at the end of the arg list (in the loop), like splats
  
-
+ rename textResult -> textResponse
+ 
+ - TypeCorercer, not a service but toStr / fromStr
+  - use in OrderedConfig
+  - use in MappedConfig
+  - use in ValueEncoders
+  - use in Config def values
+  
 
 For BedSheet 0.0.8
 ------------------
+ - (doc) restarter
+ - (doc) out buffer
+ - res.disableOutBuffer
  - (doc) ie cache buster
  - (doc) 404 and 500
 
@@ -36,19 +43,13 @@ Proxy session
  - More custom Err handling
  
  - have Dev / Prod mode (and other envs)
-
- - TypeCorercer, not a service but toStr / fromStr
-  - use in OrderedConfig
-  - use in MappedConfig
-  - use in ValueEncoders
-  - use in Config def values
  
  front all services with mixins
+
+Route : uri or Str[] as last param takes the remaining url
  
 Future
 ------
-
-future: uri or Str[] as last param takes the remaining url
 
 static files & pod files served under 'hash' folder
  - Asset class, File field and genned file field
