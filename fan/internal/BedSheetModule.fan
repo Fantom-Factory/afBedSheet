@@ -9,16 +9,16 @@ internal class BedSheetModule {
 		binder.bindImpl(BedSheetService#)
 		
 		binder.bindImpl(Routes#)
-		binder.bindImpl(RouteMatcherSource#)
+		binder.bindImpl(RouteMatchers#)
 		binder.bindImpl(ReqestHandlerInvoker#)
 
-		binder.bindImpl(ValueEncoderSource#)
+		binder.bindImpl(ValueEncoders#)
 		binder.bindImpl(FileHandler#)
 
-		binder.bindImpl(ResponseProcessorSource#)
-		binder.bindImpl(ErrProcessorSource#)
+		binder.bindImpl(ResponseProcessors#)
+		binder.bindImpl(ErrProcessors#)
 
-		binder.bindImpl(MoustacheSource#)
+		binder.bindImpl(MoustacheTemplates#)
 
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
@@ -29,21 +29,19 @@ internal class BedSheetModule {
 		binder.bindImpl(CrossOriginResourceSharingFilter#)
 	}
 
-	@Contribute { serviceType=RouteMatcherSource# }
-	static Void contributeRouteMatcherSource(MappedConfig config) {
-		config[Route#] = config.autobuild(RouteMatcherImpl#)
-//		config[PathMapRoute#]	= config.autobuild(RouteMatcherPathMapImpl#)
-//		config[ExactRoute#]		= config.autobuild(RouteMatcherExactImpl#)
+	@Contribute { serviceType=RouteMatchers# }
+	static Void contributeRouteMatchers(MappedConfig conf) {
+		conf[Route#] 			= conf.autobuild(RouteMatcherImpl#)
 	}
 
-	@Contribute { serviceType=ResponseProcessorSource# }
-	static Void contributeResponseProcessorSource(MappedConfig conf) {
-		conf[File#]			= conf.autobuild(FileResponseProcessor#)
-		conf[TextResponse#]	= conf.autobuild(TextResponseProcessor#)
+	@Contribute { serviceType=ResponseProcessors# }
+	static Void contributeResponseProcessors(MappedConfig conf) {
+		conf[File#]				= conf.autobuild(FileResponseProcessor#)
+		conf[TextResponse#]		= conf.autobuild(TextResponseProcessor#)
 	}
 	
-	@Contribute { serviceType=ErrProcessorSource# }
-	static Void contributeErrProcessorSource(MappedConfig conf) {
+	@Contribute { serviceType=ErrProcessors# }
+	static Void contributeErrProcessors(MappedConfig conf) {
 		conf[HttpStatusErr#]	= conf.autobuild(HttpStatusErrProcessor#)
 		conf[Err#]				= conf.autobuild(DefaultErrProcessor#)
 	}
@@ -63,8 +61,8 @@ internal class BedSheetModule {
 		conf[ConfigIds.corsMaxAge]				= 60min
 	}
 
-	@Contribute { serviceType=ValueEncoderSource# }
-	static Void contributeValueEncoderSource(MappedConfig config) {
+	@Contribute { serviceType=ValueEncoders# }
+	static Void contributeValueEncoders(MappedConfig config) {
 		// wot no value encoders!? Aha! I see you're using fromStr() instead!
 	}
 

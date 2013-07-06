@@ -1,4 +1,6 @@
+using afIoc::ConcurrentState
 using afIoc::StrategyRegistry
+using afIoc::TypeCoercer
 
 ** Holds a collection of `ValueEncoder`s.
 ** 
@@ -10,11 +12,11 @@ using afIoc::StrategyRegistry
 ** <pre
 ** 
 ** @uses a MappedConfig of 'Type':`ValueEncoder`s
-const class ValueEncoderSource {
+const class ValueEncoders {
+	private const ConcurrentState 	conState	:= ConcurrentState(ValueEncoderSourceState#)
+	private const StrategyRegistry 	valueEncoderStrategy
 	
-	private const StrategyRegistry valueEncoderStrategy
-	
-	new make(Type:ValueEncoder valueEncoders) {
+	internal new make(Type:ValueEncoder valueEncoders) {
 		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
 	}
 	
@@ -37,8 +39,7 @@ const class ValueEncoderSource {
 	}
 
 	** Converts the given 'clientValue' into the given 'valType' via a contributed `ValueEncoder`. 
-	** If no 'ValueEncoder' is found, this looks for a suitable static factory 'fromStr()' method
-	** on the type.
+	** If no 'ValueEncoder' is found the value is [coerced]`afIoc::TypeCoercer`.
 	Obj toValue(Type valType, Str clientValue) {
 		// check the basics first!
 		if (valType.fits(Str#))
@@ -52,22 +53,25 @@ const class ValueEncoderSource {
 				throw ValueEncodingErr(BsMsgs.valueEncodingBuggered(clientValue, valType), cause)
 			}
 		
-		// FIXME: Typecoerce
-		// see http://fantom.org/sidewalk/topic/2154
-		fromStr := ReflectUtils.findCtor(valType, "fromStr", [Str#])
-		if (fromStr == null)
-			fromStr = ReflectUtils.findMethod(valType, "fromStr", [Str#], true)
-		if (fromStr == null)
+		if (getState() { it.typeCoercer.canCoerce(Str#, valType) } == false)
 			throw ValueEncodingErr(BsMsgs.valueEncodingNotFound(valType))
 		
 		try {
-			return fromStr.call(clientValue) 
+			return getState() { it.typeCoercer.coerce(clientValue, valType) } 
 		} catch (Err cause) {
 			throw ValueEncodingErr(BsMsgs.valueEncodingBuggered(clientValue, valType), cause)
 		}
 	}
 
 	private ValueEncoder? get(Type valueType) {
-		valueEncoderStrategy.findExactMatch(valueType, false)
+		valueEncoderStrategy.findBestFit(valueType, false)
 	}
+
+	private Obj? getState(|ValueEncoderSourceState -> Obj| state) {
+		conState.getState(state)
+	}
+}
+
+internal class ValueEncoderSourceState {
+	TypeCoercer	typeCoercer	:= TypeCoercer()
 }

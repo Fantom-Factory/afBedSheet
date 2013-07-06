@@ -10,9 +10,6 @@ internal const class ReqestHandlerInvoker {
 	@Inject
 	private const Registry registry
 
-	@Inject
-	private const ValueEncoderSource valueEncoderSource
-	
 	new make(|This|in) { in(this) }
 	
 	Obj? invokeHandler(RouteMatch routeMatch) {

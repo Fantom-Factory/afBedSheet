@@ -3,8 +3,8 @@ using mustache::Mustache
 using mustache::MustacheParser
 
 ** A cache of 'Mustache' templates.
-const class MoustacheSource {
-	private const ConcurrentState 	conState	:= ConcurrentState(MoustacheSourceState#)
+const class MoustacheTemplates {
+	private const ConcurrentState 	conState	:= ConcurrentState(MoustacheTemplatesState#)
 	
 	Str renderFromFile(File templateFile, Obj? context:=null, [Str:Mustache] partials:=[:], Obj?[] callStack := [,], Str indentStr := "") {
 		getTemplateFromFile(templateFile).render(context, partials, callStack, indentStr)
@@ -41,16 +41,16 @@ const class MoustacheSource {
 		}		
 	}
 	
-	private Void withState(|MoustacheSourceState| state) {
+	private Void withState(|MoustacheTemplatesState| state) {
 		conState.withState(state)
 	}
 
-	private Obj? getState(|MoustacheSourceState -> Obj| state) {
+	private Obj? getState(|MoustacheTemplatesState -> Obj| state) {
 		conState.getState(state)
 	}
 }
 
-internal class MoustacheSourceState {
+internal class MoustacheTemplatesState {
 	Str:MoustacheTemplate	moustacheCache	:= [:]
 }
 

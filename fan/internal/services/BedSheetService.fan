@@ -6,29 +6,28 @@ using afIoc::Registry
 
 const internal class BedSheetService {
 	private const static Log log := Utils.getLog(BedSheetService#)
-	
-	@Inject	private const Registry					registry
-	@Inject	private const ThreadStashManager	 	stashManager
-	@Inject	private const Request 					req
-	@Inject	private const Routes					routes
-	@Inject	private const ResponseProcessorSource	resProSrc
-	@Inject	private const ErrProcessorSource		errProSrc
-	
+
+	@Inject	private const Registry				registry
+	@Inject	private const ThreadStashManager	stashManager
+	@Inject	private const Request 				req
+	@Inject	private const Routes				routes
+	@Inject	private const ResponseProcessors	responseProcessors
+	@Inject	private const ErrProcessors			errProcessors
+
 	new make(|This|in) { in(this) }
-	
+
 	Void service() {
 		try {
 			response := routes.processRequest(req.modRel, req.httpMethod)
 			if (response != true)
-				resProSrc.processResponse(response)
+				responseProcessors.processResponse(response)
 
 		} catch (Err err) {
-			
+
 			try {
-				response := errProSrc.process(err)
-				// TODO: more recursive handling...
+				response := errProcessors.processErr(err)				
 				if (response != true)
-					resProSrc.processResponse(response)
+					responseProcessors.processResponse(response)
 
 			} catch (Err doubleErr) {
 				// the backup plan for when the err handler errs!

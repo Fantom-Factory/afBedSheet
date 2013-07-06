@@ -8,7 +8,6 @@ internal const class AppModule {
 
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(OrderedConfig conf) {
-		// TODO: make urls nice once the app works again
 		conf.add(Route(`/textResult/plain`,		TextPage#plain))
 		conf.add(Route(`/textResult/html`,	 	TextPage#html))
 		conf.add(Route(`/textResult/xml`, 		TextPage#xml))
@@ -44,7 +43,7 @@ internal const class AppModule {
 		conf[ConfigIds.gzipThreshold] = 50
 	}
 	
-	@Contribute { serviceType=ValueEncoderSource# }
+	@Contribute { serviceType=ValueEncoders# }
 	static Void contributeValueEncoders(MappedConfig conf) {
 		conf[Pinky#] = PinkyEncoder()
 	}

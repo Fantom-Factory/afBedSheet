@@ -27,12 +27,12 @@ internal class TestRoutes : BsTest {
 internal class T_MyModule02 {
 	static Void bind(ServiceBinder binder) {
 		binder.bindImpl(Routes#)
-		binder.bindImpl(RouteMatcherSource#)
+		binder.bindImpl(RouteMatchers#)
 		binder.bindImpl(ReqestHandlerInvoker#)
-		binder.bindImpl(ValueEncoderSource#)
+		binder.bindImpl(ValueEncoders#)
 	}	
 
-	@Contribute { serviceType=RouteMatcherSource# }
+	@Contribute { serviceType=RouteMatchers# }
 	static Void contributeRouteMatcherSource(MappedConfig conf) {
 		conf[Route#] = conf.autobuild(RouteMatcherImpl#)
 	}

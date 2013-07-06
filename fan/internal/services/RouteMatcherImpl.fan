@@ -3,7 +3,7 @@ using afIoc::Inject
 internal const class RouteMatcherImpl : RouteMatcher {
 	
 	@Inject
-	private const ValueEncoderSource valueEncoderSource
+	private const ValueEncoders valueEncoders
 	
 	new make(|This|in) { in(this) }
 	
@@ -17,7 +17,7 @@ internal const class RouteMatcherImpl : RouteMatcher {
 		// watch out for ->Obj nulls here if ValEnc sig changes
 		args := params.map |arg, i -> Obj| {
 			paramType	:= route.handler.params[i].type
-			value		:= valueEncoderSource.toValue(paramType, arg)
+			value		:= valueEncoders.toValue(paramType, arg)
 			return value
 		}
 
