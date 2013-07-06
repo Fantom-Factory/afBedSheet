@@ -23,7 +23,7 @@
 **   /user/***    --> /user/42/dee => "42/dee"
 ** <pre
 ** 
-** Method arguments with default values are mapped to optional path segments. Use "**" to capture 
+** Method arguments with default values are mapped to optional path segments. Use '**' to capture 
 ** optional segments in the uri. Example:
 ** 
 ** pre>
