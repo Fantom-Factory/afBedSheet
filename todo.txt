@@ -33,7 +33,7 @@ For BedSheet 0.0.8
 
  - @Config { ... def="wotever" } 
 
- - PathMapRoute
+ - PathMapRoute / RouteLikeDraft
 
 Proxy session
  - test, "you have made 3 reqs"
@@ -46,7 +46,6 @@ Proxy session
  
  front all services with mixins
 
-Route : uri or Str[] as last param takes the remaining url
  
 Future
 ------

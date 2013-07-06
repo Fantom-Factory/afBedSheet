@@ -68,7 +68,7 @@ const class CrossOriginResourceSharingFilter {
 	
 	** Map to... 
 	** TODO: more docs
-	public Bool serviceSimple(Uri uri) {
+	public Bool serviceSimple(Uri uri := ``) {
 		if (!isSimpleReq)
 			return false
 		
@@ -91,7 +91,7 @@ const class CrossOriginResourceSharingFilter {
 	}
 
 	** Map to an 'OPTIONS' http method
-	public Bool servicePrefilght(Uri uri) {
+	public Bool servicePrefilght(Uri uri := ``) {
 		if (!isPreflightReq)
 			return false
 

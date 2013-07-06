@@ -1,23 +1,31 @@
 
 **
 ** Matches uri paths to handler methods, converting any remaining path segments into method 
-** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all 
-** remaining path segments and "***" to capture the remaining url:
+** arguments. Use "*" to capture (non-greedy) method arguments, "**" to capture all 
+** remaining path segments and "***" to capture the remaining url Examples:
 ** 
 ** pre>
 **   glob pattern     uri             arguments
 **   -----------------------------------------------------
+**   /user/*      --> /user/       => ""
 **   /user/*      --> /user/42     => "42"
 **   /user/*      --> /user/42/dee => no match
+**
+**   /user/*/*    --> /user/       => no match
+**   /user/*/*    --> /user/42     => no match
+**   /user/*/*    --> /user/42/dee => "42", "dee"
 ** 
+**   /user/**     --> /user/       => ""
 **   /user/**     --> /user/42     => "42"
 **   /user/**     --> /user/42/dee => "42", "dee"
 
+**   /user/***    --> /user/       => ""
 **   /user/***    --> /user/42     => "42"
 **   /user/***    --> /user/42/dee => "42/dee"
 ** <pre
 ** 
-** Method arguments with default values are mapped to optional path segments. Example:
+** Method arguments with default values are mapped to optional path segments. Use "**" to capture 
+** optional segments in the uri. Example:
 ** 
 ** pre>
 ** using afBedSheet

@@ -32,7 +32,7 @@ const class Routes {
 	internal Obj? processRequest(Uri modRel, Str httpMethod) {
 		normalisedUri := normalise(modRel)
 		
-		return routes.eachWhile |route| {
+		response := routes.eachWhile |route| {
 			routeMatcher := routeMatcherSource.get(route.typeof)
 			
 			routeMatch := routeMatcher.match(route, normalisedUri, httpMethod) 
@@ -41,13 +41,16 @@ const class Routes {
 
 			result := handlerInvoker.invokeHandler(routeMatch)
 			
-			return (result == false) ? null : result 
+			return (result == false) ? null : result
 		}
 		
-		// TODO: if req uri is '/' and no routes have been defined, route to a default 'BedSheet Welcome' page
-		// TODO: have this as a contributed route, after *! Use config to turn on and off
+		// TODO: if no routes have been defined, route to a default 'BedSheet Welcome' page. Use config to turn on and off
+		if (response == null)
+			throw HttpStatusErr(404, BsMsgs.route404(modRel, httpMethod))
+
+		return response
 	}
-	
+
 	private Uri normalise(Uri uri) {
 		if (!uri.isPathAbs)
 			uri = `/` + uri

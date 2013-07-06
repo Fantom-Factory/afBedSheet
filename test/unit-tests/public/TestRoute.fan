@@ -43,6 +43,49 @@ internal class TestRoute : BsTest {
 		verifyEq(match[2],		"argh")
 	}
 	
+	Void testMatchGlobFromDocs() {
+		Str[]? match
+
+		match = Route(`/user/*`, #foo).matchUri(`/user/`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
+		match = Route(`/user/*`, #foo).matchUri(`/user/42`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"42")
+		match = Route(`/user/*`, #foo).matchUri(`/user/42/dee`)
+		verifyNull(match)
+
+		match = Route(`/user/*/*`, #foo).matchUri(`/user/`)
+		verifyNull(match)
+		match = Route(`/user/*/*`, #foo).matchUri(`/user/42`)
+		verifyNull(match)
+		match = Route(`/user/*/*`, #foo).matchUri(`/user/42/dee`)
+		verifyEq(match.size,	2)
+		verifyEq(match[0],		"42")
+		verifyEq(match[1],		"dee")
+
+		match = Route(`/user/**`, #foo).matchUri(`/user/`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
+		match = Route(`/user/**`, #foo).matchUri(`/user/42`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"42")
+		match = Route(`/user/**`, #foo).matchUri(`/user/42/dee`)
+		verifyEq(match.size,	2)
+		verifyEq(match[0],		"42")
+		verifyEq(match[1],		"dee")
+
+		match = Route(`/user/***`, #foo).matchUri(`/user/`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
+		match = Route(`/user/***`, #foo).matchUri(`/user/42`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"42")
+		match = Route(`/user/***`, #foo).matchUri(`/user/42/dee`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"42/dee")
+	}
+	
 	Void testMatchGlob() {
 		Str[]? match
 		
