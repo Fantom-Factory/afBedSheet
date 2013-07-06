@@ -1,7 +1,7 @@
 
-** Responsible for processing handler return values and sending content to the client.
+** Responsible for processing request handler return values and sending content to the client.
 const mixin ResponseProcessor {
 	
-	abstract Void process(Obj response)
+	abstract Obj? process(Obj response)
 		
 }

@@ -1,21 +1,21 @@
 using afIoc::StrategyRegistry
 
 ** Holds a collection of `ErrProcessor`s.
-const class ErrProcessorSource {
+const class ErrProcessors {
 	
 	private const StrategyRegistry errProcessorStrategy
 	
-	new make(Type:ErrProcessor errProcessors) {
+	internal new make(Type:ErrProcessor errProcessors) {
 		this.errProcessorStrategy = StrategyRegistry(errProcessors)
 	}
 	
-	internal Obj process(Err err) {
-		get(err).process(err)
+	internal Obj processErr(Err err) {
+		get(err.typeof).process(err)
 	}
 
-	internal ErrProcessor get(Err err) {
+	internal ErrProcessor get(Type errType) {
 		// TODO: search the causes for an exact match first
-		errProcessorStrategy.findBestFit(err.typeof)
+		errProcessorStrategy.findBestFit(errType)
 	}
 	
 }

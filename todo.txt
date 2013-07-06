@@ -1,20 +1,8 @@
 
 For BedSheet 0.0.6
-------------------
- - (doc) Routes
-   
- Exact Routes / GlobRoute
+------------------   
 
 fantom afIoc on T5
- 
- Route
-// TODO: look for special cases at the end of the arg list (in the loop), like splats
- 
- - TypeCorercer, not a service but toStr / fromStr
-  - use in OrderedConfig
-  - use in MappedConfig
-  - use in ValueEncoders
-  - use in Config def values
   
 
 For BedSheet 0.0.8
@@ -29,7 +17,8 @@ For BedSheet 0.0.8
 
  - serve pod files
 
- - @Config { ... def="wotever" } 
+ - @Config { ... def="wotever" }
+   - use TypeCoercer
 
  - PathMapRoute / RouteLikeDraft
 
@@ -43,7 +32,7 @@ Proxy session
  - have Dev / Prod mode (and other envs)
  
  front all services with mixins
-
+   - note that methods NEED to be public in order to be advised 
  
 Future
 ------

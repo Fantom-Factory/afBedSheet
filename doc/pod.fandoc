@@ -164,21 +164,21 @@ Request handlers are where logic is processed and responses are rendered. Handle
 'Response.out'. Instead they should return a response object. Example: The above 'HelloPage' handler simply renders a
 `TextResponse`.
 
-BedSheet bundles with a couple request handlers:
+BedSheet bundles with the following request handlers:
  - `FileHandler`: Maps request URIs to files on file system.
 
 By default, BedSheet handles the following handler responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : A response has been sent to the client and no further processing should performed on the request.
  - `File` : The file (on the file system) is sent to the client.
- - `TextResponse` : The text, with the given `MimeType` is sent to the client.
- - `HttpStatusErr` : The http status and msg is sent to the client.
+ - `TextResponse` : The text (be it plain, json or xml), with the given `MimeType` is sent to the client.
 
 
 
 Response Processing [#responseProcessing]
 *************************************
-[ResponseProcessors]`ResponseProcessor` send responses to the client.
+[ResponseProcessors]`ResponseProcessor` process request handler responses (`File`, `TextResponse`, etc...) and send data to
+the client.
 
 'ResponseProcessors' deal with the responses returned
 
@@ -194,15 +194,22 @@ If the response is over a given size, and is deemed compressible then it is gzip
 
 Error Processing [#errorProcessing]
 ***********************************
-TODO: doc 404 & 500
+TODO: doc 404, 500 pages and Err handling
+
+
+
+BedSheet Dev Proxy
+******************
+Never (manually) restart your app again! Use the Dev Proxy to auto re-start your app when your pod changes:
+
+pre>
+$ fan afBedSheet -proxy <mypod> 8080
+<pre
+
+(Goes a step further than Draft 1.0.2 as) The real app dies if the proxy dies! No more lingering Fantom / Java processes.
 
 TODO: docApp Proxy Restarter
 
-TODO: docOut Buffer
-
-TODO: Misc section
- - doc Internet Explorer Ajax Cache Buster
- - doc CORS
 
 
 Gzip [#gzip]
@@ -256,21 +263,30 @@ If (and only if!) your data passed all the tests above, then it will be lovingly
 
  - (1) `http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/`
 
+
+
 Buffered Response
 *****************
+By default, BedSheet sets the 'Content-Length' http header in the http response.
+
+TODO: doc Buffered Response
 
  - (2) `http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`
 
 
+
 More!
-=====
-All URI handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
+*****
+All request handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
 DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the
 [BedSheet source]`XXX` for afIoc examples.
 
 > TIP: 'const' handler classes are cached by BedSheet and reused on every request.
 
-There's also some Err reporting, HTTP status handling and probably more besides. It's early days still...
+There's also some Err reporting, HTTP status handling and more besides. It's early days still...
+
+TODO: doc Internet Explorer Ajax Cache Buster
+TODO: doc CORS
 
 
 
@@ -282,23 +298,17 @@ Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is t
 [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom`.
 
 
+
 Release Notes [#releaseNotes]
 *****************************
 
+Breaking Changes
+================
+
 v0.0.6 [#v0.0.6]
 ----------------
- - New: CORS
- - Chg: Routing overhaul.
-
-v0.0.4 [#v0.0.4]
-----------------
- - New: Proxy mode to restart web app on pod change.
- - Chg: Gzip handling overhauled.
- - Chg: afIoc upgraded to 1.3.2.
- - Bug: Resolved issue injecting Request & Response into handler classes.
-
-v0.0.2 [#v0.0.2]
-----------------
- - Preview release.
-
+ - `Route` URIs now need the suffix \'*\*\' to match all remaiing method arguments
+ - 'TextResult' has been renamed to 'TextRepsonse'
+ - 'MoustacheSource' has been renamed to 'MoustacheTemplates'
+ - All Services ending in 'Source' have renamed to their plural. Example: ValueEncoderSource -> ValueEncoders
 

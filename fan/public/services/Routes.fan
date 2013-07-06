@@ -2,28 +2,25 @@ using web
 using afIoc::Inject
 using afIoc::Registry
 
+** Handles routing URIs to request handler methods.
 **
-** Router handles routing URIs to method handlers.
-**
-** BedSheet takes the stance that any Err encountered whilst finding or invoking a handler should 
-** cause a 404. If a route doesn't exist, or the wrong params were supplied, then that URI is 
-** clearly wrong and should be reported as such.   
+** If a uri can not be matched to a `Route` then a 404 HttpStatusErr is thrown.
 const class Routes {
 	private const static Log log := Utils.getLog(Routes#)
 	
 	private const Obj[] routes
 
 	@Inject
-	private const RouteMatcherSource routeMatcherSource
-	
+	private const RouteMatchers routeMatchers
+
 	@Inject
 	private const ReqestHandlerInvoker handlerInvoker
-	
+
 	@Inject
 	private const Registry registry
-	
-	
-	new make(Obj[] routes, |This|? in := null) {
+
+
+	internal new make(Obj[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
 //		routes.each { Env.cur.err.printLine(it) }
@@ -33,9 +30,7 @@ const class Routes {
 		normalisedUri := normalise(modRel)
 		
 		response := routes.eachWhile |route| {
-			routeMatcher := routeMatcherSource.get(route.typeof)
-			
-			routeMatch := routeMatcher.match(route, normalisedUri, httpMethod) 
+			routeMatch := routeMatchers.matchRoute(route, normalisedUri, httpMethod) 
 			if (routeMatch == null)
 				return null
 
