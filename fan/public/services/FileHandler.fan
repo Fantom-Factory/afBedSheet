@@ -13,13 +13,13 @@ using afIoc::Inject
 ** }
 ** <pre
 ** 
-** Don't forget to route the '/pub/' uri to 'FileHandler':
+** Don't forget to `Route` '/pub/***' URIs to 'FileHandler':
 **
 ** pre>
 ** @Contribute { serviceType=Routes# }
 ** static Void contributeRoutes(OrderedConfig conf) {
 **   ...
-**   conf.add(Route(`/pub/*`, FileHandler#service))
+**   conf.add(Route(`/pub/***`, FileHandler#service))
 **   ...
 ** }
 ** <pre
@@ -55,13 +55,14 @@ const class FileHandler {
 	}
 
 	** Returns a `File` on the file system, as mapped from the given route relative uri.
-	File service(Uri routeRel) {
-		// Pass 'false' to prevent an err being thrown if the uri is a dir but doesn't end in '/'.
+	File service(Uri remainingUri := ``) {
+		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
 		// FUTURE: configure this behaviour once we've thought up a nice name for the config!
-		// FIXME:
-//	    dirMappings[req.routeBase].plus(routeRel, false)
-		File(``)
+		
+		matchedUri := req.modRel.toStr[0..<-remainingUri.toStr.size].toUri
+	    return dirMappings[matchedUri].plus(remainingUri, false)
+		
 		// currently it's the FileResultProcessor that throws a 404 if the file doesn't exist
 	}
 }

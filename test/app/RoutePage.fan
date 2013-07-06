@@ -13,8 +13,4 @@ internal const class RoutePage {
 		TextResult.fromPlain("uri: $uri")
 	}
 	
-	Obj list(Str[] list) {
-		TextResult.fromPlain("uri: $list")
-	}
-	
 }

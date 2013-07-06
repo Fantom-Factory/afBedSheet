@@ -45,6 +45,10 @@ internal const class BsMsgs {
 		"Method may no longer be invoked - $because"
 	}
 	
+	static Str route404(Uri modRel, Str httpMethod) {
+		"Route `${modRel}` not found"
+	}
+	
 	// ---- CORS Msgs ----
 	
 	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str? allowedDomains) {

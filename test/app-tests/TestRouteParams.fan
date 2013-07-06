@@ -3,7 +3,12 @@ using web::WebClient
 internal class TestRouteParams : AppTest {
 
 	Void testP0() {
-		verify404(`/route/optional/`)
+		verify404(`/route/`)
+	}
+
+	Void testP02() {
+		res := getAsStr(`/route/optional/`)
+		verifyEq(res, "p2 p3")
 	}
 
 	Void testP1() {
@@ -33,11 +38,6 @@ internal class TestRouteParams : AppTest {
 	Void testUri() {
 		res := getAsStr(`/route/uri/1/2/3`)
 		verifyEq(res, "uri: 1/2/3")
-	}
-
-	Void testList() {
-		res := getAsStr(`/route/list/1/2/3`)
-		verifyEq(res, "uri: [1, 2, 3]")
 	}
 
 	Void testInvalidValEnc() {

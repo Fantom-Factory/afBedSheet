@@ -18,7 +18,7 @@ internal const class ReqestHandlerInvoker {
 	Obj? invokeHandler(RouteMatch routeMatch) {
 		
 		handlerType := routeMatch.handler.parent
-		
+
 		// TODO: isConst - we should also check for threaded services - for reuse
 		handlerInst	:= handlerType.isConst 
 			? getState |state->Obj| {

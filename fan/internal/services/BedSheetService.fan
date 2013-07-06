@@ -18,21 +18,17 @@ const internal class BedSheetService {
 	
 	Void service() {
 		try {
-			result
-				:= routes.processRequest(req.modRel, req.httpMethod)
-				?: HttpStatusErr(404, "Route `${req.modRel}` not found")
-				// FIXME: handle HttpStatusErr
-			
-			if (result != true)
-				resProSrc.process(result)
+			response := routes.processRequest(req.modRel, req.httpMethod)
+			if (response != true)
+				resProSrc.processResponse(response)
 
 		} catch (Err err) {
 			
 			try {
-				result := errProSrc.process(err)
+				response := errProSrc.process(err)
 				// TODO: more recursive handling...
-				if (result != true)
-					resProSrc.process(result)
+				if (response != true)
+					resProSrc.processResponse(response)
 
 			} catch (Err doubleErr) {
 				// the backup plan for when the err handler errs!

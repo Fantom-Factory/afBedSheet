@@ -145,7 +145,7 @@ pre>
 static Void contributeRoutes(OrderedConfig conf) {
 
   // add filter to check all requests under `/admin` are authorised
-  conf.addOrdered("AuthFilter", Route(`/admin/*`, AuthFilter#service), ["before: Routes"])
+  conf.addOrdered("AuthFilter", Route(`/admin/***`, AuthFilter#service), ["before: Routes"])
 }
 <pre
 

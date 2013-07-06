@@ -9,8 +9,8 @@ const class ResultProcessorSource {
 		processorStrategy = StrategyRegistry(resultProcessors)
 	}
 
-	internal Void process(Obj result) {
-		get(result.typeof).process(result)
+	internal Void processResponse(Obj response) {
+		get(response.typeof).process(response)
 	}	
 	
 	private ResultProcessor get(Type resultType) {
