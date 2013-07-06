@@ -9,7 +9,6 @@ const internal class BedSheetService {
 
 	@Inject	private const Registry				registry
 	@Inject	private const ThreadStashManager	stashManager
-	@Inject	private const Request 				req
 	@Inject	private const Routes				routes
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const ErrProcessors			errProcessors
@@ -18,16 +17,14 @@ const internal class BedSheetService {
 
 	Void service() {
 		try {
-			response := routes.processRequest(req.modRel, req.httpMethod)
-			if (response != true)
-				responseProcessors.processResponse(response)
+			response := routes.processRequest(webReq.modRel, webReq.method)
+			responseProcessors.processResponse(response)
 
 		} catch (Err err) {
 
 			try {
 				response := errProcessors.processErr(err)				
-				if (response != true)
-					responseProcessors.processResponse(response)
+				responseProcessors.processResponse(response)
 
 			} catch (Err doubleErr) {
 				// the backup plan for when the err handler errs!

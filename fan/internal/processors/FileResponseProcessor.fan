@@ -8,7 +8,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 	
 	new make(|This|in) { in(this) }
 	
-	override Obj? process(Obj response) {
+	override Obj process(Obj response) {
 		file := (File) response
 		
 		if (!file.exists)
@@ -20,6 +20,6 @@ internal const class FileResponseProcessor : ResponseProcessor {
 			throw HttpStatusErr(403, "Directory listing not allowed: $request.modRel")
 		
 		FileWeblet(file).onGet
-		return null
+		return true
 	}
 }

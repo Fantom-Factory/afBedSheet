@@ -10,9 +10,8 @@ const class ResponseProcessors {
 	}
 
 	internal Void processResponse(Obj response) {
-		
-		get(response.typeof).process(response)
-		
+		while (response != true)
+			response = get(response.typeof).process(response)
 	}	
 	
 	private ResponseProcessor get(Type responseType) {
