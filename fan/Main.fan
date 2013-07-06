@@ -4,6 +4,7 @@ using util::Opt
 using web::WebMod
 using wisp::WispService
 
+** Call to start Wisp running a BedSheet app.
 class Main : AbstractMain {
 	
 	@Opt { help="Starts a proxy and launches the real web app on (<port> + 1)" }

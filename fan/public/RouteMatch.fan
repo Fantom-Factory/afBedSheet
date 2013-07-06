@@ -1,4 +1,5 @@
 
+** Returned from 'RouteMatchers'.
 class RouteMatch {
 	const Method	handler
 		  Obj[]		args

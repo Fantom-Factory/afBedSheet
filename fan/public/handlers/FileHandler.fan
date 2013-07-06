@@ -56,11 +56,13 @@ const class FileHandler {
 
 	** Returns a `File` on the file system, as mapped from the given route relative uri.
 	File service(Uri remainingUri := ``) {
+		
+		// use pathStr to knockout any unwanted query str
+		matchedUri := req.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri
+
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
 		// FUTURE: configure this behaviour once we've thought up a nice name for the config!
-		
-		matchedUri := req.modRel.toStr[0..<-remainingUri.toStr.size].toUri
 	    return dirMappings[matchedUri].plus(remainingUri, false)
 		
 		// currently it's the FileResponseProcessor that throws a 404 if the file doesn't exist
