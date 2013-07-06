@@ -61,7 +61,7 @@ const class CrossOriginResourceSharingFilter {
 
 	private const Regex[] domainGlobs
 
-	new make(|This|in) { 
+	internal new make(|This|in) { 
 		in(this) 
 		domainGlobs = (corsAllowedOrigins ?: "").split(',').map { Regex.glob(it) }
 	}

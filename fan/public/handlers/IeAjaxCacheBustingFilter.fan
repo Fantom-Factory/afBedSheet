@@ -17,12 +17,11 @@ const class IeAjaxCacheBustingFilter {
 	@Inject
 	private const BrowserDetection browserDetection
 	
-	new make(|This|in) { in(this) }
+	internal new make(|This|in) { in(this) }
 	
-	**
 	** 
 	** 'uri' param not used.
-	public Bool service(Uri? uri) {
+	public Bool service(Uri uri := ``) {
 
 		if (browserDetection.isInternetExplorer) {
 			// IE CORS requests from XDomainRequest don't set 'X-Requested-With' HTTP header. 

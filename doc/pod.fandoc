@@ -98,8 +98,8 @@ meta:
 
 pre>
 meta  = [ ...
-          "afIoc.module"  : "<fully-qualified-app-module-name>"
           ...
+          "afIoc.module"  : "<fully-qualified-app-module-name>"
         ]
 <pre
 
@@ -116,7 +116,6 @@ pre>
 static Void contributeRoutes(OrderedConfig conf) {
 
   conf.add(Route(`/index`, IndexPage#service))
-
 }
 <pre
 
@@ -124,15 +123,21 @@ BedSheet is bundled with the following Route objs:
  - `Route`: Matches against the request URI, converting deeper path segments into method arguments.
 
 If the handler returns 'Void' or 'null' then processing is passed onto the next matching route. This makes it possible to
-create filter like handlers that blanket pre-process a wide set of uris. To facilitate this, BedSheet contributes a placeholder
-called "Routes" that all routes (ordered or unordered) naturally come after. Example:
+create filter like handlers that pre-process a blanket wide set of uris. To do this, contribute a placeholder that all routes
+(ordered or unordered) naturally come after. Example:
 
 pre>
 @Contribute { serviceType=Routes# }
 static Void contributeRoutes(OrderedConfig conf) {
 
-  // add filter to check all requests under `/admin` are authorised
-  conf.addOrdered("AuthFilter", Route(`/admin/***`, AuthFilter#service), ["before: Routes"])
+  conf.addPlaceholder("routes")
+
+  // routes
+  conf.add(Route(`/index`, IndexPage#service))
+  ...
+
+  // filters - addOrdered to ensure they come before routes
+  conf.addOrdered("AuthFilter", Route(`/admin/***`, AuthFilter#service), ["before: routes"])
 }
 <pre
 
@@ -221,7 +226,7 @@ must contribute to the `GzipCompressible` service to enable gzip for specified [
 
 (Note: The GzipCompressible contrib type is actually `MimeType` - afIoc kindly coerces the Str to 'MimeType' for us.)
 
-By default BedSheet will compress plain text, css, html, javascript, xml and json responses.
+By default BedSheet will compress plain text, css, html, javascript, xml, json and other text responses.
 
 Gzip only when asked [#askNicely]
 ---------------------------------
@@ -268,6 +273,7 @@ DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.statu
 There's also some Err reporting, HTTP status handling and more besides. It's early days still...
 
 TODO: doc Internet Explorer Ajax Cache Buster
+
 TODO: doc CORS
 
 
@@ -289,7 +295,7 @@ Breaking Changes
 
 v0.0.6 [#v0.0.6]
 ----------------
- - `Route` URIs now need the suffix \'*\*\' to match all remaiing method arguments
+ - `Route` URIs now need the suffix '**' to match all remaiing method arguments
  - 'TextResult' has been renamed to 'TextRepsonse'
  - 'MoustacheSource' has been renamed to 'MoustacheTemplates'
  - All Services ending in 'Source' have renamed to their plural. Example: ValueEncoderSource -> ValueEncoders

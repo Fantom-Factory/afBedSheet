@@ -1,8 +1,7 @@
 
-**
 ** Matches uri paths to handler methods, converting any remaining path segments into method 
-** arguments. Use "*" to capture (non-greedy) method arguments, "**" to capture all 
-** remaining path segments and "***" to capture the remaining url Examples:
+** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all 
+** remaining path segments and '***' to capture the remaining url Examples:
 ** 
 ** pre>
 **   glob pattern     uri             arguments
@@ -18,7 +17,7 @@
 **   /user/**     --> /user/       => ""
 **   /user/**     --> /user/42     => "42"
 **   /user/**     --> /user/42/dee => "42", "dee"
-
+**
 **   /user/***    --> /user/       => ""
 **   /user/***    --> /user/42     => "42"
 **   /user/***    --> /user/42/dee => "42/dee"
@@ -81,7 +80,6 @@
 ** [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the instance is cached for 
 ** future use.
 ** 
-** Route only matches on the path
 ** Note: There is no special handling for nullable types in handler method arguments as BedSheet 
 ** can not determine when 'null' is a suitable replacement for an empty str. Instead contribute a
 ** `ValueEncoder` or use default values.

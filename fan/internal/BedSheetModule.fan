@@ -28,7 +28,7 @@ internal class BedSheetModule {
 
 		binder.bindImpl(CrossOriginResourceSharingFilter#)
 	}
-
+	
 	@Contribute { serviceType=RouteMatchers# }
 	static Void contributeRouteMatchers(MappedConfig conf) {
 		conf[Route#] 			= conf.autobuild(RouteMatcherImpl#)

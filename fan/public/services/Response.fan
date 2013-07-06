@@ -52,6 +52,7 @@ const mixin Response {
 	abstract Void disableGzip()
 	
 	** Send a redirect response to the client using the specified status code and url.
+	** If in doubt, use a status code of [303 See Other]`http://en.wikipedia.org/wiki/HTTP_303`.
 	**
 	** @see `web::WebRes.redirect`
 	abstract Void redirect(Uri uri, Int statusCode)
