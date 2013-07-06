@@ -15,7 +15,7 @@ internal class BedSheetModule {
 		binder.bindImpl(ValueEncoderSource#)
 		binder.bindImpl(FileHandler#)
 
-		binder.bindImpl(ResultProcessorSource#)
+		binder.bindImpl(ResponseProcessorSource#)
 		binder.bindImpl(ErrProcessorSource#)
 
 		binder.bindImpl(MoustacheSource#)
@@ -36,10 +36,10 @@ internal class BedSheetModule {
 //		config[ExactRoute#]		= config.autobuild(RouteMatcherExactImpl#)
 	}
 
-	@Contribute { serviceType=ResultProcessorSource# }
-	static Void contributeResultProcessorSource(MappedConfig conf) {
-		conf[File#]			= conf.autobuild(FileResultProcessor#)
-		conf[TextResult#]	= conf.autobuild(TextResultProcessor#)
+	@Contribute { serviceType=ResponseProcessorSource# }
+	static Void contributeResponseProcessorSource(MappedConfig conf) {
+		conf[File#]			= conf.autobuild(FileResponseProcessor#)
+		conf[TextResponse#]	= conf.autobuild(TextResponseProcessor#)
 	}
 	
 	@Contribute { serviceType=ErrProcessorSource# }

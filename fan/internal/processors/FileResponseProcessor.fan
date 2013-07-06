@@ -1,15 +1,15 @@
 using afIoc::Inject
 using web::FileWeblet
 
-internal const class FileResultProcessor : ResultProcessor {
+internal const class FileResponseProcessor : ResponseProcessor {
 	
 	@Inject
 	private const Request request
 	
 	new make(|This|in) { in(this) }
 	
-	override Void process(Obj result) {
-		file := (File) result
+	override Void process(Obj response) {
+		file := (File) response
 		
 		if (!file.exists)
 			throw HttpStatusErr(404, "File not found: $request.modRel")

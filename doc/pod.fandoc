@@ -70,7 +70,7 @@ optional 'Int iq'.
 Request handlers are typically what we, the app developers, write. They perform logic processing and render responses. Our
 'HelloPage' handler simply renders a `TextResponse`.
 
-A default `ResultProcessor` then sends our `TextResponse` to the client.
+A default `ResponseProcessor` then sends our `TextResponse` to the client.
 
 
 
@@ -176,16 +176,16 @@ By default, BedSheet handles the following handler responses:
 
 
 
-Result Processing [#resultProcessing]
+Response Processing [#responseProcessing]
 *************************************
-[ResultProcessors]`ResultProcessor` send responses to the client.
+[ResponseProcessors]`ResponseProcessor` send responses to the client.
 
-'ResultProcessors' deal with the results returned
+'ResponseProcessors' deal with the responses returned
 
 return values, e.g. void or null
 
-Instead handlers return objects that 'ResultProcessors' deal with. Current default handlers include 'TextResult' and
-'JsonResult'.
+Instead handlers return objects that 'ResponseProcessors' deal with. Current default handlers include 'TextResponse' and
+...
 
 If the response is over a given size, and is deemed compressible then it is gzipped before being sent to the user.
 
