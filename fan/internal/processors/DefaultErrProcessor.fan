@@ -50,7 +50,7 @@ internal const class DefaultErrProcessor : ErrProcessor {
 		out.htmlEnd
 		
 		res.setStatusCode(500)
-		return TextResult.fromHtml(buf.toStr)
+		return TextResponse.fromHtml(buf.toStr)
 	}
 
 	private Void logErr(Err err) {

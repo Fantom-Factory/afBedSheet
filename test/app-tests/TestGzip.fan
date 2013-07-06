@@ -6,7 +6,7 @@ internal class TestGzip : AppTest {
 		client.reqHeaders["Accept-encoding"] = "gzip"
 		client.writeReq
 		client.readRes
-		
+
 		verifyEq(client.resHeaders["Content-Encoding"], "gzip")
 		verifyEq(client.resHeaders["Content-Length"], 	"74")
 		

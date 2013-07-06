@@ -10,8 +10,6 @@ fantom afIoc on T5
  Route
 // TODO: look for special cases at the end of the arg list (in the loop), like splats
  
- rename textResult -> textResponse
- 
  - TypeCorercer, not a service but toStr / fromStr
   - use in OrderedConfig
   - use in MappedConfig
@@ -38,7 +36,7 @@ For BedSheet 0.0.8
 Proxy session
  - test, "you have made 3 reqs"
  
- - add charset to Text Result (if poss)
+ - add charset to TextResponse (if poss)
  
  - More custom Err handling
  

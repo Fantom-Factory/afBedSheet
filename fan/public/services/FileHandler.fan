@@ -63,6 +63,6 @@ const class FileHandler {
 		matchedUri := req.modRel.toStr[0..<-remainingUri.toStr.size].toUri
 	    return dirMappings[matchedUri].plus(remainingUri, false)
 		
-		// currently it's the FileResultProcessor that throws a 404 if the file doesn't exist
+		// currently it's the FileResponseProcessor that throws a 404 if the file doesn't exist
 	}
 }

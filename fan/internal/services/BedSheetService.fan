@@ -7,12 +7,12 @@ using afIoc::Registry
 const internal class BedSheetService {
 	private const static Log log := Utils.getLog(BedSheetService#)
 	
-	@Inject	private const Registry				registry
-	@Inject	private const ThreadStashManager 	stashManager
-	@Inject	private const Request 				req
-	@Inject	private const Routes				routes
-	@Inject	private const ResultProcessorSource	resProSrc
-	@Inject	private const ErrProcessorSource	errProSrc
+	@Inject	private const Registry					registry
+	@Inject	private const ThreadStashManager	 	stashManager
+	@Inject	private const Request 					req
+	@Inject	private const Routes					routes
+	@Inject	private const ResponseProcessorSource	resProSrc
+	@Inject	private const ErrProcessorSource		errProSrc
 	
 	new make(|This|in) { in(this) }
 	

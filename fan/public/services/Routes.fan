@@ -39,9 +39,9 @@ const class Routes {
 			if (routeMatch == null)
 				return null
 
-			result := handlerInvoker.invokeHandler(routeMatch)
+			response := handlerInvoker.invokeHandler(routeMatch)
 			
-			return (result == false) ? null : result
+			return (response == false) ? null : response
 		}
 		
 		// TODO: if no routes have been defined, route to a default 'BedSheet Welcome' page. Use config to turn on and off
