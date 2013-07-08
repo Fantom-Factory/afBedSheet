@@ -254,9 +254,12 @@ If (and only if!) your data passed all the tests above, then it will be lovingly
 
 Buffered Response
 *****************
-By default, BedSheet sets the 'Content-Length' http header in the http response.
+By default, BedSheet attempts to set the 'Content-Length' http header in the http response.(2) It does this by buffering
+'HttpResponse.out'. When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real http response.
 
-TODO: doc Buffered Response
+A threshold can be set, whereby if the buffer exeeds that value, all content is streamed direct to the client.
+
+See `BufferedOutStream` and `ConfigIds.responseBufferThreshold` for more details.
 
  - (2) `http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`
 

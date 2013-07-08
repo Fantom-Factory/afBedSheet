@@ -18,13 +18,14 @@ Res -> HttpRes
 
  - serve pod files
 
+Proxy session
+ - test, "you have made 3 reqs"
+ 
  - @Config { ... def="wotever" }
    - use TypeCoercer
 
  - PathMapRoute / RouteLikeDraft
 
-Proxy session
- - test, "you have made 3 reqs"
  
  - add charset to TextResponse (if poss)
  
