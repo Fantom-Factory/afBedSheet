@@ -168,7 +168,7 @@ By default, BedSheet handles the following handler responses:
 
 
 Response Processing [#responseProcessing]
-*************************************
+*****************************************
 [ResponseProcessors]`ResponseProcessor` process request handler responses (`File`, `TextResponse`, etc...) and send data to
 the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the http request. Or they
 may return another response object for further processing, such as a `TextResponse`.
@@ -252,10 +252,12 @@ If (and only if!) your data passed all the tests above, then it will be lovingly
 
 
 
-Buffered Response
-*****************
+Buffered Response [#bufferedResponse]
+*************************************
 By default, BedSheet attempts to set the 'Content-Length' http header in the http response.(2) It does this by buffering
 'HttpResponse.out'. When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real http response.
+
+Response buffering can be disabled on a per http response basis.
 
 A threshold can be set, whereby if the buffer exeeds that value, all content is streamed direct to the client.
 
