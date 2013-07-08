@@ -13,7 +13,8 @@ For BedSheet 0.0.8
  - (doc) ie cache buster
  - (doc) 404 and 500
 
- check wisp dies on reg startup err
+Req -> HttpReq
+Res -> HttpRes
 
  - serve pod files
 
