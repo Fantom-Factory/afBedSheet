@@ -1,3 +1,4 @@
+using concurrent::Actor
 using util::AbstractMain
 using util::Arg
 using util::Opt
@@ -34,9 +35,32 @@ class Main : AbstractMain {
 		// then check all your ENV vars are being passed to java.
 		// see http://forum.springsource.org/showthread.php?106504-Error-running-grails-project-on-alternative-port-with-STS2-6-0&highlight=Unrecognized%20Windows%20Sockets%20error
 		willow 	:= WispService { it.port=this.port; it.root=mod }
-		runServices([willow])
-			
-		return 0
+		return runServices([willow])
 	}
 
+	override Int runServices(Service[] services) {
+		Env.cur.addShutdownHook |->| { shutdownServices }
+		services.each |Service s| { s.install }
+		services.each |Service s| { s.start }
+		
+		// give services a change to init themselves
+		Actor.sleep(2sec)
+		
+		// exit if any service didn't start
+		services.each |Service s| { 
+			if (!s.isRunning) {
+				Env.cur.err.printLine("Service '${s.typeof}' did not start")
+				Env.cur.exit(69)
+			}
+		}
+		
+		// all good, so lets hang around for a bit...
+		Actor.sleep(Duration.maxVal)
+		return 0
+	}
+	
+	private static Void shutdownServices() {
+		Service.list.each |Service s| { s.stop }
+		Service.list.each |Service s| { s.uninstall }
+	}
 }
