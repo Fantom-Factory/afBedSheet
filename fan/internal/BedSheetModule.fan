@@ -54,7 +54,7 @@ internal class BedSheetModule {
 		conf[ConfigIds.pingInterval]			= 1sec
 		conf[ConfigIds.gzipDisabled]			= false
 		conf[ConfigIds.gzipThreshold]			= 376
-		conf[ConfigIds.responseBufferThreshold]	= 8 * 1024	// TODO: why not kB?
+		conf[ConfigIds.responseBufferThreshold]	= 32 * 1024	// TODO: why not kB?
 		
 		conf[ConfigIds.corsAllowedOrigins]		= "*"
 		conf[ConfigIds.corsExposeHeaders]		= null
