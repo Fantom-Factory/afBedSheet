@@ -4,7 +4,7 @@ using web::FileWeblet
 internal const class FileResponseProcessor : ResponseProcessor {
 	
 	@Inject
-	private const Request request
+	private const HttpRequest request
 	
 	new make(|This|in) { in(this) }
 	

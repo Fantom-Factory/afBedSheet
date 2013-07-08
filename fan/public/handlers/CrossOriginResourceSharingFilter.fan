@@ -36,10 +36,10 @@ const class CrossOriginResourceSharingFilter {
 	private const static Log log := Utils.getLog(CrossOriginResourceSharingFilter#)
 
 	@Inject
-	private const Request	req
+	private const HttpRequest	req
 
 	@Inject
-	private const Response	res
+	private const HttpResponse	res
 	
 	@Inject @Config{ id="afBedSheet.cors.allowedOrigins" }
 	private const Str? corsAllowedOrigins

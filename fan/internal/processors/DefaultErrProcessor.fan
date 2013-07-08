@@ -6,10 +6,10 @@ internal const class DefaultErrProcessor : ErrProcessor {
 	private const static Log log := Utils.getLog(DefaultErrProcessor#)
 	
 	@Inject
-	private const Request req
+	private const HttpRequest req
 
 	@Inject
-	private const Response res
+	private const HttpResponse res
 	
 	new make(|This|in) { in(this) }
 	

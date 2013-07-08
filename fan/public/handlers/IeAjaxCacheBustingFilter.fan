@@ -9,10 +9,10 @@ using afIoc::Inject
 const class IeAjaxCacheBustingFilter {
 	
 	@Inject
-	private const Request req
+	private const HttpRequest req
 
 	@Inject
-	private const Response res
+	private const HttpResponse res
 	
 	@Inject
 	private const BrowserDetection browserDetection

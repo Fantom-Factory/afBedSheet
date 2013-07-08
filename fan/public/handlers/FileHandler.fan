@@ -30,7 +30,7 @@ using afIoc::Inject
 const class FileHandler {
 	
 	@Inject
-	private const Request req
+	private const HttpRequest req
 
 	private const Uri:File dirMappings
 	

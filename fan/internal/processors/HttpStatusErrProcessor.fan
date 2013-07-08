@@ -6,7 +6,7 @@ using web::WebRes
 internal const class HttpStatusErrProcessor : ErrProcessor {
 
 	@Inject
-	private const Request req
+	private const HttpRequest req
 
 	@Inject
 	private const Registry registry

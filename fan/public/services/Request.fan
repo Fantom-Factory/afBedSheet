@@ -6,7 +6,7 @@ using inet::IpAddr
 ** An injectable 'const' version of [WebReq]`web::WebReq`.
 ** 
 ** This class is proxied and will always refer to the current web request.
-const mixin Request {
+const mixin HttpRequest {
 
 	** Returns 'true' if an 'XMLHttpRequest', as specified by the 'X-Requested-With' HTTP header.
 	abstract Bool isXmlHttpRequest()
@@ -77,7 +77,7 @@ const mixin Request {
 	
 }
 
-internal const class RequestImpl : Request {
+internal const class HttpRequestImpl : HttpRequest {
 	
 	@Inject
 	private const Registry registry
@@ -135,4 +135,10 @@ internal const class RequestImpl : Request {
 	private WebReq webReq() {
 		registry.dependencyByType(WebReq#)
 	}
+}
+
+@Deprecated
+const mixin Request : HttpRequest { }
+internal const class RequestImpl : HttpRequestImpl, Request { 
+	new make(|This|in) : super(in) { }
 }
