@@ -10,7 +10,7 @@ using web::WebOutStream
 ** An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
 ** This is proxied and always refers to the current request
-const mixin Response {
+const mixin HttpResponse {
 
 	** Set the HTTP status code for this response.
 	** 
@@ -59,7 +59,7 @@ const mixin Response {
 
 }
 
-internal const class ResponseImpl : Response {
+internal const class HttpResponseImpl : HttpResponse {
 	
 	@Inject
 	private const Registry registry
@@ -131,4 +131,10 @@ internal const class ResponseImpl : Response {
 	private WebRes webRes() {
 		registry.dependencyByType(WebRes#)
 	}
+}
+
+@Deprecated
+const mixin Response : HttpResponse { }
+internal const class ResponseImpl : HttpResponseImpl, Response { 
+	new make(ThreadStashManager threadStashManager, |This|in) : super(threadStashManager, in) { }
 }

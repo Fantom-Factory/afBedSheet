@@ -4,7 +4,7 @@ using afIoc::Inject
 internal const class BrowserDetection {
 
 	@Inject
-	internal const Request request
+	internal const HttpRequest request
 	
 	new make(|This|in) { in(this) }
 	

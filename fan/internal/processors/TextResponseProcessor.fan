@@ -3,7 +3,7 @@ using afIoc
 internal const class TextResponseProcessor : ResponseProcessor {
 	
 	@Inject
-	private const Response res
+	private const HttpResponse res
 	
 	new make(|This|in) { in(this) }
 	
