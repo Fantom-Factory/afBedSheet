@@ -8,7 +8,6 @@ fantom afIoc on T5
 For BedSheet 0.0.8
 ------------------
  - (doc) restarter
- - (doc) out buffer
  - res.disableOutBuffer
  - (doc) ie cache buster
  - (doc) 404 and 500

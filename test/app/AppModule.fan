@@ -24,6 +24,9 @@ internal const class AppModule {
 		conf.add(Route(`/gzip/small`,			GzipPage#gzipSmall))
 		conf.add(Route(`/gzip/disable`,			GzipPage#gzipDisable))
 
+		conf.add(Route(`/buff/buff`,			BuffPage#buff))
+		conf.add(Route(`/buff/nobuff`,			BuffPage#noBuff))
+
 		conf.add(Route(`/boom`,					BoomPage#boom))
 
 		// CORS filters

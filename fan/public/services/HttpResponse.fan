@@ -48,8 +48,15 @@ const mixin HttpResponse {
 	** @see `web::WebRes.out`
 	abstract OutStream out()
 	
-	** Disables gzip compression for this response
+	** Disables gzip compression for this response.
+	** 
+	** @see `GzipOutStream`
 	abstract Void disableGzip()
+
+	** Disables response buffering
+	** 
+	** @see `BufferedOutStream`
+	abstract Void disableBuffering()
 	
 	** Send a redirect response to the client using the specified status code and url.
 	** If in doubt, use a status code of [303 See Other]`http://en.wikipedia.org/wiki/HTTP_303`.
@@ -81,6 +88,10 @@ internal const class HttpResponseImpl : HttpResponse {
 		threadStash["disableGzip"] = true
 	}
 	
+	override Void disableBuffering() {
+		threadStash["disableBuffering"] = true		
+	}
+	
 	override Void setStatusCode(Int statusCode) {
 		webRes.statusCode = statusCode
 	}
@@ -103,12 +114,13 @@ internal const class HttpResponseImpl : HttpResponse {
 		mimeType	:= MimeType(contentType, false)
 
 		gzipCompressible.isCompressible(mimeType)
-		
+
 		encodings	:= QualityValues(webReq.headers["Accept-encoding"])
 		acceptGzip	:= encodings.accepts("gzip")
 		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)
+		doBuff		:= !threadStash.contains("disableBuffering")
 		webResOut	:= registry.autobuild(WebResOutProxy#)
-		bufferedOut	:= registry.autobuild(BufferedOutStream#, [webResOut])
+		bufferedOut	:= doBuff ? registry.autobuild(BufferedOutStream#, [webResOut]) : webResOut 
 		gzipOut		:= doGzip ? registry.autobuild(GzipOutStream#, [bufferedOut]) : bufferedOut 
 
 		// buffered goes on the inside so content-length is the gzipped size
