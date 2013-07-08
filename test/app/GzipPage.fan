@@ -3,7 +3,7 @@ using afIoc::Inject
 internal const class GzipPage {
 
 	@Inject
-	private const Response response
+	private const HttpResponse response
 	
 	new make(|This|in) { in(this) }
 	
