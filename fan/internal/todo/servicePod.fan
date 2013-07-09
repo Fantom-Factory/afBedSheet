@@ -18,5 +18,10 @@ internal class servicePod {
 //    FileWeblet(file).onService
 //  }
 
+	static Void main(Str[] args) {
+		f:=Pod.find("icons").file(`fan://icons/x16/cut.png`)
+		Env.cur.err.printLine(f.osPath)
+		Env.cur.err.printLine(f.toStr)
+	}
 	
 }
