@@ -71,7 +71,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 		since := headers["If-Modified-Since"]
 		if (since != null) {
 			sinceTime := DateTime.fromHttpStr(since, false)
-			if (modified(file) == sinceTime) // FIXME: == or > ???
+			if (modified(file) <= sinceTime)
 				return true
 		}
 	

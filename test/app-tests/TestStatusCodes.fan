@@ -4,9 +4,14 @@ internal class TestStatusCodes : AppTest {
 	
 	Void test404() {
 		verify404(`/e-r-r-o-r-4-0-4`)
+		
 		client = WebClient()
 		verify404(`/statuscode/404`)
+		
+		client = WebClient()
 		verify404(`/favicon.ico`)
+		
+		client = WebClient()
 		verify404(`/robots.txt`)
 	}
 
