@@ -51,7 +51,7 @@ internal class BufferedOutStream : OutStream {
 		// we're hoping we've not switched yet - the whole point of this class is to write the 
 		// 'Content-Length' header!
 		if (!switched) {
-			webRes.headers["Content-Length"] = buf?.size?.toStr ?: 0
+			webRes.headers["Content-Length"] = (buf?.size ?: 0).toStr
 			bufOut = realOut
 			writeBufToOut
 		}

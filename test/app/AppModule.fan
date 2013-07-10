@@ -35,7 +35,8 @@ internal const class AppModule {
 		
 		// CORS routes
 		conf.add(Route(`/cors/simple`,			CorsPage#simple))
-		conf.add(Route(`/cors/preflight`,		CorsPage#preflight, "OPTIONS"))
+		conf.add(Route(`/cors/preflight`,		CorsPage#preflight, "OPTIONS GET"))
+//		conf.add(Route(`/***`,		CorsPage#preflight, "*"))
 		
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
 	}

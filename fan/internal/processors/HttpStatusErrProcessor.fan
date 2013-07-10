@@ -15,12 +15,12 @@ internal const class HttpStatusErrProcessor : ErrProcessor {
 	
 	override Obj process(Err e) {
 		HttpStatusErr err := (HttpStatusErr) e
-		
+
 		// TODO: have status code handlers
-		
+
 		res := (WebRes) registry.dependencyByType(WebRes#)
 		res.sendErr(err.statusCode, err.msg)
-		
+
 		// TODO: log filter please!
 //		Env.cur.err.printLine("${err.statusCode} ${err.msg} - ${req.uri}")
 		
