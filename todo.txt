@@ -37,6 +37,9 @@ Proxy session
  - log filter (see Draft for format)
  
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
+Fantom - redirect HTTP 1.1 -> 303, HTTP 1.0 -> 302?
+
+reimplement FileWeblet so it uses gzip & buffering
 
  
 Future

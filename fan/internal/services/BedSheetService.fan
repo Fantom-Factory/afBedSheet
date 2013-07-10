@@ -12,6 +12,7 @@ const internal class BedSheetService {
 	@Inject	private const Routes				routes
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const ErrProcessors			errProcessors
+	@Inject	private const HttpResponse			httpResponse
 
 	new make(|This|in) { in(this) }
 
@@ -36,6 +37,7 @@ const internal class BedSheetService {
 			}
 			
 		} finally {
+			httpResponse.out.close
 			stashManager.cleanUpThread
 		}
 	}

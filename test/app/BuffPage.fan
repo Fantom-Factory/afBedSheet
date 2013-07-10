@@ -1,6 +1,6 @@
 using afIoc::Inject
 
-const class BuffPage {
+internal const class BuffPage {
 	
 	@Inject
 	private const HttpResponse response

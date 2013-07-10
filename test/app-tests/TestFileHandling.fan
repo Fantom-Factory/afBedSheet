@@ -2,11 +2,13 @@
 internal class TestFileHandling : AppTest {
 	
 	Void testFileIsServed() {
-		verifyEq(getAsStr(`/test-src/mr-file.txt`), "In da house!")
+		text := getAsStr(`/test-src/mr-file.txt`)
+		verifyEq(text, "In da house!")
 	}
 
 	Void testSpaceFileIsServed() {
-		verifyEq(getAsStr(`/test-src/name with spaces.txt`), "Spaces I got!")
+		text := getAsStr(`/test-src/name with spaces.txt`)
+		verifyEq(text, "Spaces I got!")
 	}
 
 	Void test404() {

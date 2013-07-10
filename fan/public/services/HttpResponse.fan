@@ -108,21 +108,23 @@ internal const class HttpResponseImpl : HttpResponse {
 		webRes.isCommitted
 	}
 
-	override OutStream out() {		
+	override OutStream out() {
+		out := threadStash["out"]
+		if (out != null)
+			return out
+		
 		// TODO: afIoc 1.3.10 - Could we make a delegate pipeline?
 		contentType := webRes.headers["Content-Type"]
-		mimeType	:= MimeType(contentType, false)
-
-		gzipCompressible.isCompressible(mimeType)
-
-		encodings	:= QualityValues(webReq.headers["Accept-encoding"])
-		acceptGzip	:= encodings.accepts("gzip")
+		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
+		acceptGzip	:= QualityValues(webReq.headers["Accept-encoding"]).accepts("gzip")
 		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)
 		doBuff		:= !threadStash.contains("disableBuffering")
 		webResOut	:= registry.autobuild(WebResOutProxy#)
 		bufferedOut	:= doBuff ? registry.autobuild(BufferedOutStream#, [webResOut]) : webResOut 
 		gzipOut		:= doGzip ? registry.autobuild(GzipOutStream#, [bufferedOut]) : bufferedOut 
-
+		
+		threadStash["out"] = gzipOut
+		
 		// buffered goes on the inside so content-length is the gzipped size
 		return gzipOut
 	}
