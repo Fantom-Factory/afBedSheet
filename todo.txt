@@ -15,16 +15,17 @@ For BedSheet 0.0.8
 Req -> HttpReq
 Res -> HttpRes
 
- - redirect
-
 Proxy session
  - test, "you have made 3 reqs"
+
+ - redirect
  
  - @Config { ... def="wotever" }
    - use TypeCoercer
 
  - PathMapRoute / RouteLikeDraft
 
+ - style BedSheet status pages 
   - More custom Err handling
   
  front all services with mixins
@@ -33,7 +34,7 @@ Proxy session
  - basic welcome page (see Draft)
  
  - log filter (see Draft for format)
- 
+
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 Fantom - redirect HTTP 1.1 -> 303, HTTP 1.0 -> 302?
 

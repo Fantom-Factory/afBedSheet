@@ -20,7 +20,7 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		out.docType
 		out.html
 		out.head
-			.title.esc(httpStatus.cause.msg).titleEnd
+			.title.esc(httpStatus.cause?.msg ?: httpStatus.msg).titleEnd
 			.style.w("pre,td { font-family:monospace; } td:first-child { color:#888; padding-right:1em; }").styleEnd
 		.headEnd
 			
@@ -29,7 +29,7 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		// TODO: only print the gubbins in devMode 
 		
 		// msg
-		out.h1.esc(httpStatus.cause.msg).h1End
+		out.h1.esc(httpStatus.cause?.msg ?: httpStatus.msg).h1End
 		out.hr
 			
 		// req headers
@@ -39,9 +39,11 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		out.hr
 			
 		// stack trace
-		out.pre
-		out.writeChars(Utils.traceErr(httpStatus.cause, 50))
-		out.preEnd
+		if (httpStatus.cause != null) {
+			out.pre
+			out.writeChars(Utils.traceErr(httpStatus.cause, 50))
+			out.preEnd
+		}
 
 		out.bodyEnd
 		out.htmlEnd
@@ -51,7 +53,9 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		return TextResponse.fromHtml(buf.toStr)
 	}
 
-	private Void logErr(Err err) {
+	private Void logErr(Err? err) {
+		if (err == null) return
+		
 		buf := StrBuf()
 		buf.add("$err.msg - $req.uri\n")
 		
