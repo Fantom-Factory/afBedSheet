@@ -35,6 +35,13 @@ const mixin HttpResponse {
 	** @see `web::WebRes.cookies`
 	abstract Cookie[] cookies()
 	
+	** Return true if this response has been commmited.  A committed response has written its 
+	** response headers, and can no longer modify its status code or headers.  A response is 
+	** committed the first time that `out` is called.
+	** 
+	** @see `web::WebRes.isCommitted`
+	abstract Bool isCommitted()
+	
 	** Returns the 'OutStream' for this response. Should current settings allow, the 'OutStream'
 	** is automatically gzipped.
 	** 
@@ -93,6 +100,10 @@ internal const class HttpResponseImpl : HttpResponse {
 
 	override Cookie[] cookies() {
 		webRes.cookies
+	}
+
+	override Bool isCommitted() {
+		webRes.isCommitted
 	}
 
 	override OutStream out() {

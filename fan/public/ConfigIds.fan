@@ -3,7 +3,7 @@
 ** Example:
 ** 
 ** pre>
-** @Contribute { serviceType=ConfigSource# } 
+** @Contribute { serviceType=ApplicationDefaults# } 
 ** static Void configureApplicationDefaults(MappedConfig conf) {
 **   conf[ConfigIds.gzipThreshold] = 500
 ** }

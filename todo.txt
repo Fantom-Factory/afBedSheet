@@ -8,6 +8,7 @@ fantom afIoc on T5
 For BedSheet 0.0.8
 ------------------
  - (doc) ie cache buster
+ - (doc) err handling
  - (doc) 404 and 500
  - (doc) Config
 
@@ -25,7 +26,6 @@ Proxy session
  - PathMapRoute / RouteLikeDraft
 
   - More custom Err handling
-   - status code handling?
   
  front all services with mixins
    - note that methods NEED to be public in order to be advised 

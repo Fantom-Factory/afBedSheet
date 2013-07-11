@@ -30,7 +30,6 @@ class GzipOutStream : OutStream {
 	@Config { id="afBedSheet.gzip.threshold" }
 	@Inject	private Int 			gzipThreadhold
 	@Inject	private HttpResponse	response
-	@Inject	private WebRes			webRes
 	
 	private OutStream	wrappedOut
 	private Bool		switched
@@ -86,7 +85,7 @@ class GzipOutStream : OutStream {
 			return
 		
 		if (((buf?.size ?: 0) + noOfBytes) > gzipThreadhold) {
-			if (!webRes.isCommitted)	// a sanity check
+			if (!response.isCommitted)	// a sanity check
 				response.headers["Content-Encoding"] = "gzip"	
 			bufOut = Zip.gzipOutStream(wrappedOut)
 			writeBufToOut

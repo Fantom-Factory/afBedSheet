@@ -46,7 +46,8 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		out.bodyEnd
 		out.htmlEnd
 		
-		res.setStatusCode(httpStatus.code)
+		if (!res.isCommitted)	// a sanity check
+			res.setStatusCode(httpStatus.code)
 		return TextResponse.fromHtml(buf.toStr)
 	}
 
