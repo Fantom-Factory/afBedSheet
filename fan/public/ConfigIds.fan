@@ -12,7 +12,7 @@ const class ConfigIds {
 	
 	** How often the `AppDestroyer` pings the proxy to keep the app alive.
 	** Defaults to '1sec'.
-	static const Str pingInterval				:= "afBedSheet.appDestroyer.pingInterval"
+	static const Str proxyPingInterval			:= "afBedSheet.appDestroyer.pingInterval"
 
 	** If set to 'true' then *all* gzipping is disabled, regardless of other configuration. 
 	** Defaults to 'false'.

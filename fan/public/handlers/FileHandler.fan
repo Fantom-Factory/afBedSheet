@@ -35,7 +35,7 @@ const class FileHandler {
 	private const Uri:File dirMappings
 	
 	internal new make(Uri:File dirMappings, |This|? in := null) {
-		in?.call(this)
+		in?.call(this)	// nullable for unit tests
 
 		// verify file and uri mappings
 		dirMappings.each |file, uri| {
@@ -54,7 +54,7 @@ const class FileHandler {
 		this.dirMappings = dirMappings.toImmutable
 	}
 
-	** Returns a `File` on the file system, as mapped from the given route relative uri.
+	** Returns a `File` on the file system, as mapped from the given uri.
 	File service(Uri remainingUri := ``) {
 		
 		// use pathStr to knockout any unwanted query str

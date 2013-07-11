@@ -15,7 +15,7 @@ internal const class TextResponseProcessor : ResponseProcessor {
 //		res.setStatusCode(200)
 		
 		res.headers["Content-Type"] = text.mimeType.toStr
-		res.out.printLine(text.text).close
+		res.out.print(text.text)
 		
 		return true
 	}
