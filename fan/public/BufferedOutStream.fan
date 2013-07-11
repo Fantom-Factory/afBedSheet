@@ -3,11 +3,10 @@ using web::WebRes
 
 internal class BufferedOutStream : OutStream {
 
-	@Inject @Config { id="afBedSheet.responseBuffer.threshold" }
-	private Int 		resBufThreadhold
-	
-	@Inject
-	private WebRes		response
+	@Config { id="afBedSheet.responseBuffer.threshold" }
+	@Inject private Int 			resBufThreadhold	
+	@Inject	private HttpResponse	response
+	@Inject	private WebRes			webRes
 	
 	private OutStream	realOut
 	private Bool		switched
@@ -51,7 +50,7 @@ internal class BufferedOutStream : OutStream {
 		// we're hoping we've not switched yet - the whole point of this class is to write the 
 		// 'Content-Length' header!
 		if (!switched) {
-			if (!response.isCommitted)	// a sanity check
+			if (!webRes.isCommitted)	// a sanity check
 				response.headers["Content-Length"] = (buf?.size ?: 0).toStr
 			bufOut = realOut
 			writeBufToOut
