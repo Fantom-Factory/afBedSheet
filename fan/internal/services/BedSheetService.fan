@@ -13,7 +13,6 @@ const internal class BedSheetService {
 	@Inject	private const ResponseProcessors		responseProcessors
 	@Inject	private const ErrProcessors				errProcessors
 	@Inject	private const HttpResponse				httpResponse
-//	@Inject	private const HttpStatusErrProcessor	statusErrProcessor
 
 	new make(|This|in) { in(this) }
 
@@ -34,9 +33,8 @@ const internal class BedSheetService {
 				log.err("  - Original Err", err)
 				
 				if (!webRes.isCommitted) {
-					// TODO: make service
-					statusErrProcessor := (HttpStatusErrProcessor) registry.autobuild(HttpStatusErrProcessor#)
-					statusErrProcessor.process(HttpStatusErr(500, doubleErr.msg)) 
+					errPage := (HttpStatusPage500) registry.autobuild(HttpStatusPage500#)
+					errPage.process(HttpStatus(500, doubleErr.msg)) 
 				}
 			}
 			

@@ -15,6 +15,7 @@ internal class BedSheetModule {
 		binder.bindImpl(ValueEncoders#)
 		binder.bindImpl(FileHandler#)
 
+		binder.bindImpl(HttpStatusProcessors#)
 		binder.bindImpl(ResponseProcessors#)
 		binder.bindImpl(ErrProcessors#)
 
@@ -31,30 +32,38 @@ internal class BedSheetModule {
 
 		binder.bindImpl(CrossOriginResourceSharingFilter#)
 	}
-	
+
 	@Contribute { serviceType=RouteMatchers# }
 	static Void contributeRouteMatchers(MappedConfig conf) {
 		conf[Route#] 			= conf.autobuild(RouteMatcherImpl#)
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
-	static Void contributeResponseProcessors(MappedConfig conf) {
+	static Void contributeResponseProcessors(MappedConfig conf, HttpStatusProcessors httpStatusProcessor) {
 		conf[File#]				= conf.autobuild(FileResponseProcessor#)
 		conf[TextResponse#]		= conf.autobuild(TextResponseProcessor#)
+		conf[HttpStatus#]		= httpStatusProcessor
 	}
-	
+
+	@Contribute { serviceType=HttpStatusProcessors# }
+	static Void contributeHttpStatusProcessor(MappedConfig conf) {
+		conf[500]				= conf.autobuild(HttpStatusPage500#)
+		conf[404]				= conf.autobuild(HttpStatusPageDefault#)
+	}
+
 	@Contribute { serviceType=ErrProcessors# }
 	static Void contributeErrProcessors(MappedConfig conf) {
 		conf[HttpStatusErr#]	= conf.autobuild(HttpStatusErrProcessor#)
 		conf[Err#]				= conf.autobuild(DefaultErrProcessor#)
 	}
-	
+
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf) {
 		conf[ConfigIds.proxyPingInterval]		= 1sec
 		conf[ConfigIds.gzipDisabled]			= false
 		conf[ConfigIds.gzipThreshold]			= 376
 		conf[ConfigIds.responseBufferThreshold]	= 32 * 1024	// TODO: why not kB?
+		conf[ConfigIds.httpStatusDefaultPage]	= conf.autobuild(HttpStatusPageDefault#)
 		
 		conf[ConfigIds.corsAllowedOrigins]		= "*"
 		conf[ConfigIds.corsExposeHeaders]		= null

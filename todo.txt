@@ -60,7 +60,10 @@ http://fantom.org/sidewalk/topic/1290
  - tales routing
 Look into integrating other tales stuff
 
+Move the non-standard filters (Cors / IE) out into an afBedSheetUtils pod
 
+Create an afBedSheetProtection pod, based on Rubys Rack::Protection
+ 
 
 Doc Comments
 ------------
