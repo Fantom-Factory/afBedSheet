@@ -9,7 +9,7 @@ using web::WebOutStream
 
 ** An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
-** This is proxied and always refers to the current request
+** This is proxied and will always refers to the current web response.
 const mixin HttpResponse {
 
 	** Set the HTTP status code for this response.

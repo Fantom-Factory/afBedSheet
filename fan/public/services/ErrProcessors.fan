@@ -10,12 +10,23 @@ const class ErrProcessors {
 	}
 	
 	internal Obj processErr(Err err) {
-		get(err.typeof).process(err)
+		// TODO: search the causes for an exact match first
+		
+//		causes(err).eachWhile |cause| {
+//			
+//		}
+
+		return get(err.typeof).process(err)
 	}
 
 	internal ErrProcessor get(Type errType) {
-		// TODO: search the causes for an exact match first
-		errProcessorStrategy.findBestFit(errType)
+		
+		return errProcessorStrategy.findBestFit(errType)
+	}
+	
+	private Err[] causes(Err err, Err[] errs:= [,]) {
+		errs.insert(0, err)
+		return (err.cause != null) ? causes(err.cause, errs) : errs
 	}
 	
 }

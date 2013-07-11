@@ -163,8 +163,9 @@ BedSheet bundles with the following request handlers:
 By default, BedSheet handles the following handler responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : A response has been sent to the client and no further processing should performed on the http request.
- - `File` : The file (on the file system) is sent to the client.
  - `TextResponse` : The text (be it plain, json or xml), with the given `MimeType` is sent to the client.
+ - `File` : The file (on the file system) is sent to the client.
+ - `HttpStatus` : Sets the http status and renders a mini html page with the status msg.
 
 
 
@@ -177,6 +178,7 @@ may return another response object for further processing, such as a `TextRespon
 BedSheet bundles with the following response processors:
  - 'TextResponseProcessor' for sending text to the client
  - 'FileResponseProcessor' for sending files (on the file system) to the client
+ - 'HttpStatusProcessors' for routing `HttpStatus` object to contributed `HttpStatusProcessor`s
 
 
 

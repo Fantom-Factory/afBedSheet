@@ -24,11 +24,12 @@ internal class BedSheetModule {
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
 		
-		binder.bindImpl(HttpRequest#).withScope(ServiceScope.perThread)
-		binder.bindImpl(HttpResponse#).withScope(ServiceScope.perThread)
+		binder.bindImpl(HttpRequest#)
+		binder.bindImpl(HttpResponse#)
+		binder.bindImpl(HttpSession#)
 
-		binder.bind(Request#, RequestImpl#).withScope(ServiceScope.perThread)
-		binder.bind(Response#, ResponseImpl#).withScope(ServiceScope.perThread)
+		binder.bind(Request#, RequestImpl#)
+		binder.bind(Response#, ResponseImpl#)
 
 		binder.bindImpl(CrossOriginResourceSharingFilter#)
 	}
