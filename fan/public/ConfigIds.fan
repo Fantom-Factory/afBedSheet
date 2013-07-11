@@ -28,6 +28,11 @@ const class ConfigIds {
 	** Defaults to '32Kb'.
 	static const Str responseBufferThreshold	:= "afBedSheet.responseBuffer.threshold"
 
+	** The default page (instance of HttpStatusProcessor) to show when no specific page has been 
+	** specified for a http status code.
+	** Defaults to 'conf.autobuild(HttpStatusPageDefault#)'
+	static const Str httpStatusDefaultPage		:= "afBedSheet.httpStatus.defaultPage"
+
 	** A CSV glob list of all origins (domains) allowed for Cross Origin Resource Sharing.
 	** Defaults to "*" (all domains).
 	** Example, "*.alienfactory.co.uk, *.heroku.com"

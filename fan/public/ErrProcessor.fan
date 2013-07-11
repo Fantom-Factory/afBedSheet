@@ -1,8 +1,9 @@
 
-** Responsible for processing Errs thrown from web handler methods and sending err pages to the client. 
+** Responsible for processing Errs thrown from request handler methods and sending err pages to the client. 
 const mixin ErrProcessor {
 	
-	** TOOD: I'm not convinced ErrProcessors should return a response to handle...
+	** Returns a response obj for further processing (such as a `TextResponse`) or 'true' if no 
+	** more request processing is required.
 	abstract Obj process(Err err)
 	
 }
