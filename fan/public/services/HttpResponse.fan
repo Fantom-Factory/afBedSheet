@@ -18,8 +18,7 @@ const mixin HttpResponse {
 	abstract Void setStatusCode(Int statusCode)
 	
 	** Map of HTTP response headers.  You must set all headers before you access out() for the 
-	** first time, which commits the response. Returns a read only map if response is already 
-	** committed.
+	** first time, which commits the response. Throws Err if response is already committed. 
 	** 
 	** @see 
 	**  - `web::WebRes.headers`
@@ -27,7 +26,7 @@ const mixin HttpResponse {
 	abstract Str:Str headers()
 	
 	** Get the list of cookies to set via header fields.  Add a Cookie to this list to set a 
-	** cookie.  Throw Err if response is already committed.
+	** cookie.  Throws Err if response is already committed.
 	**
 	** Example:
 	**   res.cookies.add(Cookie("foo", "123"))
@@ -62,11 +61,9 @@ const mixin HttpResponse {
 
 internal const class HttpResponseImpl : HttpResponse {
 	
-	@Inject
-	private const Registry registry
-
-	@Inject
-	private const GzipCompressible gzipCompressible
+	@Inject	private const Registry 			registry
+	@Inject	private const HttpRequest 		request
+	@Inject	private const GzipCompressible 	gzipCompressible
 
 	@Inject @Config { id="afBedSheet.gzip.disabled" }
 	private const Bool gzipDisabled
@@ -76,7 +73,6 @@ internal const class HttpResponseImpl : HttpResponse {
 	new make(ThreadStashManager threadStashManager, |This|in) { 
 		in(this) 
 		threadStash = threadStashManager.createStash("Response")
-		threadStash["headers"] = webRes.isCommitted ? [:] : webRes.headers
 	} 
 
 	override Void disableGzip() {
@@ -92,8 +88,7 @@ internal const class HttpResponseImpl : HttpResponse {
 	}
 
 	override Str:Str headers() {
-		hdrs := (Str:Str) threadStash["headers"]
-		return webRes.isCommitted ? hdrs.ro : hdrs
+		webRes.headers
 	}
 
 	override Cookie[] cookies() {
@@ -108,7 +103,7 @@ internal const class HttpResponseImpl : HttpResponse {
 		// TODO: afIoc 1.3.10 - Could we make a delegate pipeline?
 		contentType := headers["Content-Type"]
 		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
-		acceptGzip	:= QualityValues(webReq.headers["Accept-encoding"]).accepts("gzip")
+		acceptGzip	:= QualityValues(request.headers["Accept-encoding"]).accepts("gzip")
 		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)
 		doBuff		:= !threadStash.contains("disableBuffering")
 		webResOut	:= registry.autobuild(WebResOutProxy#)
@@ -128,10 +123,6 @@ internal const class HttpResponseImpl : HttpResponse {
 	
 	override Void redirect(Uri uri, Int statusCode) {
 		webRes.redirect(uri, statusCode)
-	}
-	
-	private WebReq webReq() {
-		registry.dependencyByType(WebReq#)
 	}
 	
 	private WebRes webRes() {
