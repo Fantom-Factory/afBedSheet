@@ -1,5 +1,5 @@
 
-** Holds a list of `MimeType`s that may be gzip'ed in a http response. A standard set of types are 
+** Holds a list of [MimeType]`sys::MimeType`s that may be gzip'ed in a http response. A standard set of types are 
 ** configured by default, to add to the list:
 ** 
 ** pre>

@@ -283,8 +283,8 @@ See `BufferedOutStream` and `ConfigIds.responseBufferThreshold` for more details
 
 
 
-More!
-*****
+More! [#more]
+*************
 All request handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
 DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the
 [BedSheet source]`XXX` for afIoc examples.
@@ -311,8 +311,8 @@ Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is t
 Release Notes [#releaseNotes]
 *****************************
 
-Breaking Changes
-================
+Breaking Changes [#breakingChanges]
+===================================
 
 v0.0.6 [#v0.0.6]
 ----------------

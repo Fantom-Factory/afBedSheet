@@ -15,7 +15,7 @@ internal const class HttpStatusPageDefault : HttpStatusProcessor {
 		// TODO: log filter please!
 //		Env.cur.err.printLine("${err.statusCode} ${err.msg} - ${req.uri}")
 
-		// print markup ourselves and not res.sendErr() so we have more control over closing res.out
+		// print the markup ourselves (i.e. don't call res.sendErr) so we have more control over closing res.out
 		buf := StrBuf()
 		bufOut := WebOutStream(buf.out)
 		bufOut.docType
@@ -26,8 +26,9 @@ internal const class HttpStatusPageDefault : HttpStatusProcessor {
 		bufOut.w(httpStatus.msg).nl
 		bufOut.bodyEnd
 		bufOut.htmlEnd
-		
-		res.setStatusCode(httpStatus.code)		
+
+		if (!res.isCommitted)	// a sanity check
+			res.setStatusCode(httpStatus.code)		
 		return TextResponse.fromHtml(buf.toStr)
 	}
 	

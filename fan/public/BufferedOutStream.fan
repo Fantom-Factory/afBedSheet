@@ -1,12 +1,12 @@
 using afIoc::Inject
 using web::WebRes
 
+** A stream that buffers its contents starts gzipping once data has accumulated past a given (minimum) threshold. When 
 internal class BufferedOutStream : OutStream {
 
 	@Config { id="afBedSheet.responseBuffer.threshold" }
 	@Inject private Int 			resBufThreadhold	
 	@Inject	private HttpResponse	response
-	@Inject	private WebRes			webRes
 	
 	private OutStream	realOut
 	private Bool		switched
@@ -44,13 +44,13 @@ internal class BufferedOutStream : OutStream {
 		// check lock, cos we should be able to call 'close()' more than once
 		if (lock.isLocked)
 			return true
-		
+
 		lock.lock
-		
+
 		// we're hoping we've not switched yet - the whole point of this class is to write the 
 		// 'Content-Length' header!
 		if (!switched) {
-			if (!webRes.isCommitted)	// a sanity check
+			if (!response.isCommitted)	// a sanity check
 				response.headers["Content-Length"] = (buf?.size ?: 0).toStr
 			bufOut = realOut
 			writeBufToOut

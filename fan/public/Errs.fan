@@ -1,30 +1,7 @@
-using web::WebRes
 
 ** As thrown by BedSheet
 const class BedSheetErr : Err {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) {}
-}
-
-** Throw at any point to return / handle the http status.
-** 
-** By default the Err msg is sent to the client. 
-** 
-** Note there's a fine line between helping the developer and helping a hacker, so be careful what 
-** msgs you construct your Err with!
-const class HttpStatusErr : Err {
-
-	** The HTTP (error) status code for this error.
-	** 
-	** @see `web::WebRes.statusMsg`
-	const HttpStatus httpStatus
-	
-	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super(msg, cause) {
-		this.httpStatus = HttpStatus(statusCode, statusMsg, cause)
-	}
-
-	new makeFromHttpStatus(HttpStatus httpStatus) : super.make(httpStatus.msg, httpStatus.cause) {
-		this.httpStatus = httpStatus
-	}
 }
 
 ** Throw by the routing mechanism when converting uri segments to method params 

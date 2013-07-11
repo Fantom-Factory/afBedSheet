@@ -2,7 +2,7 @@ using afIoc::ConcurrentState
 using afIoc::StrategyRegistry
 using afIoc::TypeCoercer
 
-** Holds a collection of `ValueEncoder`s.
+** Holds a list of `ValueEncoder`s.
 ** 
 ** pre>
 **   @Contribute { serviceType=ValueEncoderSource# }
@@ -11,7 +11,7 @@ using afIoc::TypeCoercer
 **   }
 ** <pre
 ** 
-** @uses a MappedConfig of 'Type':`ValueEncoder`s
+** @uses a MappedConfig of 'Type:ValueEncoder'
 const class ValueEncoders {
 	private const ConcurrentState 	conState	:= ConcurrentState(ValueEncoderSourceState#)
 	private const StrategyRegistry 	valueEncoderStrategy
