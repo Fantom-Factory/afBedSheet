@@ -38,6 +38,8 @@ internal const class AppModule {
 		conf.add(Route(`/cors/preflight`,		CorsPage#preflight, "OPTIONS"))
 		
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
+
+		conf.add(Route(`/pod/***`, 				PodHandler#service))
 	}
 
 	

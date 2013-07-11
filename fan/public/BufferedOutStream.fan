@@ -7,7 +7,7 @@ internal class BufferedOutStream : OutStream {
 	private Int 		resBufThreadhold
 	
 	@Inject
-	private WebRes		webRes
+	private WebRes		response
 	
 	private OutStream	realOut
 	private Bool		switched
@@ -51,7 +51,8 @@ internal class BufferedOutStream : OutStream {
 		// we're hoping we've not switched yet - the whole point of this class is to write the 
 		// 'Content-Length' header!
 		if (!switched) {
-			webRes.headers["Content-Length"] = (buf?.size ?: 0).toStr
+			if (!response.isCommitted)	// a sanity check
+				response.headers["Content-Length"] = (buf?.size ?: 0).toStr
 			bufOut = realOut
 			writeBufToOut
 		}

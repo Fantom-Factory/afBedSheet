@@ -7,14 +7,12 @@ fantom afIoc on T5
 
 For BedSheet 0.0.8
 ------------------
- - (doc) restarter
  - (doc) ie cache buster
  - (doc) 404 and 500
+ - (doc) Config
 
 Req -> HttpReq
 Res -> HttpRes
-
- - serve pod files
 
  - redirect
 
@@ -38,8 +36,6 @@ Proxy session
  
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 Fantom - redirect HTTP 1.1 -> 303, HTTP 1.0 -> 302?
-
-reimplement FileWeblet so it uses gzip & buffering
 
  
 Future
@@ -69,8 +65,7 @@ Look into integrating other tales stuff
 Doc Comments
 ------------
 
-There's a blury line between handlers and processors which I'm not happy about. It's not convienient for all handlers to return a Obj.
- - wot about redirects? Str is overused: mustache, html, xml, etc... 
+Wot should be returned for redirects? Str is overused: mustache, html, xml, etc... 
 e.g. what should each do? 
  - how to distinquish between pod resource and file resource -> is there?
   - both return a file, diff handlers for diff uris.

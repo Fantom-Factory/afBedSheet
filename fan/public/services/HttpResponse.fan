@@ -18,11 +18,12 @@ const mixin HttpResponse {
 	abstract Void setStatusCode(Int statusCode)
 	
 	** Map of HTTP response headers.  You must set all headers before you access out() for the 
-	** first time, which commits the response. Throw an err if response is already committed.
+	** first time, which commits the response. Returns a read only map if response is already 
+	** committed.
 	** 
-	** @see `web::WebRes.headers`
-	** 
-	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
+	** @see 
+	**  - `web::WebRes.headers`
+	**  - `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
 	abstract Str:Str headers()
 	
 	** Get the list of cookies to set via header fields.  Add a Cookie to this list to set a 
@@ -34,13 +35,6 @@ const mixin HttpResponse {
 	** 
 	** @see `web::WebRes.cookies`
 	abstract Cookie[] cookies()
-
-	** Return true if this response has been commmited.  A committed response has written its 
-	** response headers, and can no longer modify its status code or headers.  A response is 
-	** committed the first time that `out` is called.
-	** 
-	** @see `web::WebRes.isCommitted`
-	abstract Bool isCommitted()
 	
 	** Returns the 'OutStream' for this response. Should current settings allow, the 'OutStream'
 	** is automatically gzipped.
@@ -82,6 +76,7 @@ internal const class HttpResponseImpl : HttpResponse {
 	new make(ThreadStashManager threadStashManager, |This|in) { 
 		in(this) 
 		threadStash = threadStashManager.createStash("Response")
+		threadStash["headers"] = webRes.isCommitted ? [:] : webRes.headers
 	} 
 
 	override Void disableGzip() {
@@ -97,15 +92,12 @@ internal const class HttpResponseImpl : HttpResponse {
 	}
 
 	override Str:Str headers() {
-		webRes.headers
+		hdrs := (Str:Str) threadStash["headers"]
+		return webRes.isCommitted ? hdrs.ro : hdrs
 	}
 
 	override Cookie[] cookies() {
 		webRes.cookies
-	}
-	
-	override Bool isCommitted() {
-		webRes.isCommitted
 	}
 
 	override OutStream out() {
@@ -114,7 +106,7 @@ internal const class HttpResponseImpl : HttpResponse {
 			return out
 		
 		// TODO: afIoc 1.3.10 - Could we make a delegate pipeline?
-		contentType := webRes.headers["Content-Type"]
+		contentType := headers["Content-Type"]
 		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
 		acceptGzip	:= QualityValues(webReq.headers["Accept-encoding"]).accepts("gzip")
 		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)

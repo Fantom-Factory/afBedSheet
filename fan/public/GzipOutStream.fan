@@ -31,7 +31,7 @@ class GzipOutStream : OutStream {
 	private Int 		gzipThreadhold
 	
 	@Inject
-	private WebRes 		webRes
+	private WebRes		response
 	
 	private OutStream	wrappedOut
 	private Bool		switched
@@ -87,7 +87,8 @@ class GzipOutStream : OutStream {
 			return
 		
 		if (((buf?.size ?: 0) + noOfBytes) > gzipThreadhold) {
-			webRes.headers["Content-Encoding"] = "gzip"		
+			if (!response.isCommitted)	// a sanity check
+				response.headers["Content-Encoding"] = "gzip"	
 			bufOut = Zip.gzipOutStream(wrappedOut)
 			writeBufToOut
 			switched = true

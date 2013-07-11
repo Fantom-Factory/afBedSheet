@@ -158,6 +158,7 @@ Request handlers are where logic is processed and responses are rendered. Handle
 
 BedSheet bundles with the following request handlers:
  - `FileHandler`: Maps request URIs to files on file system.
+ - `PodHandler` : Maps request URIs to pod file resources.
 
 By default, BedSheet handles the following handler responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
@@ -185,17 +186,32 @@ TODO: doc 404, 500 pages and Err handling
 
 
 
-BedSheet Dev Proxy
-******************
-Never (manually) restart your app again! Use the Dev Proxy to auto re-start your app when your pod changes:
+Development Proxy [#DevelopmentProxy]
+*************************************
+Never (manually) restart your app again! Use the '-proxy' option to create a Development Proxy to auto re-start your app when
+any of your pods are updated:
 
 pre>
-$ fan afBedSheet -proxy <mypod> 8080
+$ fan afBedSheet -proxy <mypod> <port>
 <pre
 
-(Goes a step further than Draft 1.0.2 as) The real app dies if the proxy dies! No more lingering Fantom / Java processes.
+The proxy sits on <port>, starts your real app on '<port>+1' and forwards all requests to it.
 
-TODO: docApp Proxy Restarter
+pre>
+  Client <--> Proxy (port) <--> Web App (port+1)
+<pre
+
+A problem that other web development proxies suffer from, is that if the proxy dies, from say, killing the process on the F4
+console, your web app process is left hanging around; requiring you to manually kill it.
+
+pre>
+  Client <-->   ????????   <--> Web App (port+1)
+<pre
+
+BedSheet goes a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
+the proxy not respond, the web app kills itself.
+
+See `ConfigIds.proxyPingInterval` for more details.
 
 
 

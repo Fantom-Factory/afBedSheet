@@ -51,7 +51,7 @@ internal class BedSheetModule {
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf) {
-		conf[ConfigIds.pingInterval]			= 1sec
+		conf[ConfigIds.proxyPingInterval]		= 1sec
 		conf[ConfigIds.gzipDisabled]			= false
 		conf[ConfigIds.gzipThreshold]			= 376
 		conf[ConfigIds.responseBufferThreshold]	= 32 * 1024	// TODO: why not kB?

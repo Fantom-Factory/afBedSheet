@@ -7,12 +7,13 @@ using afIoc::Registry
 const internal class BedSheetService {
 	private const static Log log := Utils.getLog(BedSheetService#)
 
-	@Inject	private const Registry				registry
-	@Inject	private const ThreadStashManager	stashManager
-	@Inject	private const Routes				routes
-	@Inject	private const ResponseProcessors	responseProcessors
-	@Inject	private const ErrProcessors			errProcessors
-	@Inject	private const HttpResponse			httpResponse
+	@Inject	private const Registry					registry
+	@Inject	private const ThreadStashManager		stashManager
+	@Inject	private const Routes					routes
+	@Inject	private const ResponseProcessors		responseProcessors
+	@Inject	private const ErrProcessors				errProcessors
+	@Inject	private const HttpResponse				httpResponse
+//	@Inject	private const HttpStatusErrProcessor	statusErrProcessor
 
 	new make(|This|in) { in(this) }
 
@@ -32,8 +33,11 @@ const internal class BedSheetService {
 				log.err("ERROR in the ERR HANDLER!!!", doubleErr)
 				log.err("  - Original Err", err)
 				
-				if (!webRes.isCommitted)
-					webRes.sendErr(500, err.msg)
+				if (!webRes.isCommitted) {
+					// TODO: make service
+					statusErrProcessor := (HttpStatusErrProcessor) registry.autobuild(HttpStatusErrProcessor#)
+					statusErrProcessor.process(HttpStatusErr(500, doubleErr.msg)) 
+				}
 			}
 			
 		} finally {
