@@ -49,6 +49,10 @@ internal const class BsMsgs {
 		"Route `${modRel}` not found"
 	}
 	
+	static Str errProcessorsNotErrType(Type type) {
+		"Contributed ErrProcessor types must be subclasses of Err - ${type.qname}"
+	}
+	
 	// ---- CORS Msgs ----
 	
 	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str? allowedDomains) {
