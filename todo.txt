@@ -8,8 +8,6 @@ fantom afIoc on T5
 For BedSheet 0.0.8
 ------------------
  - (doc) ie cache buster
- - (doc) err handling
- - (doc) 404 and 500
  - (doc) Config
 
 Req -> HttpReq
@@ -17,13 +15,9 @@ Res -> HttpRes
 
  - redirect
  
- - @Config { ... def="wotever" }
-   - use TypeCoercer
-
  - PathMapRoute / RouteLikeDraft
 
  - style BedSheet status pages 
-  - More custom Err handling
   
  front all services with mixins
    - note that methods NEED to be public in order to be advised 

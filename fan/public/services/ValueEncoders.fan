@@ -13,7 +13,7 @@ using afIoc::TypeCoercer
 ** 
 ** @uses a MappedConfig of 'Type:ValueEncoder'
 const class ValueEncoders {
-	private const ConcurrentState 	conState	:= ConcurrentState(ValueEncoderSourceState#)
+	private const ConcurrentState 	conState	:= ConcurrentState(ValueEncodersState#)
 	private const StrategyRegistry 	valueEncoderStrategy
 	
 	internal new make(Type:ValueEncoder valueEncoders) {
@@ -67,11 +67,11 @@ const class ValueEncoders {
 		valueEncoderStrategy.findBestFit(valueType, false)
 	}
 
-	private Obj? getState(|ValueEncoderSourceState -> Obj| state) {
+	private Obj? getState(|ValueEncodersState -> Obj| state) {
 		conState.getState(state)
 	}
 }
 
-internal class ValueEncoderSourceState {
+internal class ValueEncodersState {
 	TypeCoercer	typeCoercer	:= TypeCoercer()
 }
