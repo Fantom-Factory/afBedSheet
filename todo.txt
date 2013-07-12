@@ -7,7 +7,6 @@ fantom afIoc on T5
 
 For BedSheet 0.0.8
 ------------------
- - (doc) ie cache buster
  - (doc) Config
 
 Req -> HttpReq
@@ -24,8 +23,6 @@ Res -> HttpRes
    
  - basic welcome page (see Draft)
  
- - log filter (see Draft for format)
-
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 Fantom - redirect HTTP 1.1 -> 303, HTTP 1.0 -> 302?
 

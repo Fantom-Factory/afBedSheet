@@ -40,12 +40,16 @@ internal const class AppModule {
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
 
 		conf.add(Route(`/pod/***`, 				PodHandler#service))
+		
+		// no logging for now!
+//		conf.add(Route(`/***`, 					RequestLogFilter#service))
 	}
 
 	
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
 		conf[ConfigIds.gzipThreshold] = 50
+		conf[ConfigIds.requestLogDir] = `./`.toFile
 	}
 	
 	@Contribute { serviceType=ValueEncoders# }

@@ -12,9 +12,6 @@ internal const class HttpStatusPageDefault : HttpStatusProcessor {
 
 	override Obj process(HttpStatus httpStatus) {
 
-		// TODO: log filter please!
-//		Env.cur.err.printLine("${err.statusCode} ${err.msg} - ${req.uri}")
-
 		// print the markup ourselves (i.e. don't call res.sendErr) so we have more control over closing res.out
 		buf := StrBuf()
 		bufOut := WebOutStream(buf.out)

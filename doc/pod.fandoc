@@ -141,6 +141,11 @@ static Void contributeRoutes(OrderedConfig conf) {
 }
 <pre
 
+BedSheet bundles with the following filters:
+ - `RequestLogFilter` : Generate a server log file of all HTTP requests.
+ - `CrossOriginResourceSharingFilter` : Allows ajax cross domain scripting.
+ - `IeAjaxCacheBustingFilter` : Prevents [Internet Explorer]`https://twitter.com/1Pr0grammer/status/238015103910420480/photo/1` from caching Ajax and CORS requests.
+
 Routes are not limited to matching against uris, you can create your own routes that match against anything, such as http
 headers or the time of day! Just create a `RouteMatcher` and contribute it to `RouteMatchers`.
 
@@ -318,12 +323,6 @@ DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.statu
 [BedSheet source]`XXX` for afIoc examples.
 
 > TIP: 'const' handler classes are cached by BedSheet and reused on every request.
-
-There's also some Err reporting, HTTP status handling and more besides. It's early days still...
-
-TODO: doc Internet Explorer Ajax Cache Buster
-
-TODO: doc CORS
 
 
 

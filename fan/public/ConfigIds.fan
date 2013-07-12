@@ -32,11 +32,32 @@ const class ConfigIds {
 	** specified for a http status code.
 	** Defaults to 'conf.autobuild(HttpStatusPageDefault#)'
 	static const Str httpStatusDefaultPage		:= "afBedSheet.httpStatus.defaultPage"
+	
+	** Directory where the request log files are written. Must be supplied.
+	** 
+	** @see `RequestLogFilter`
+	static const Str requestLogDir				:= "afBedSheet.requestLog.dir"
+
+	** Log filename pattern.
+	** The name may contain a pattern between '{}' using the pattern format of 'DateTime.toLocale'. 
+	** For example to maintain a log file per month, use a filename such as 'mylog-{YYYY-MM}.log'.
+	** 
+	** Defaults to 'afBedSheet-{YYYY-MM}.log'
+	** 
+	** @see `RequestLogFilter`
+	static const Str requestLogFilenamePattern	:= "afBedSheet.requestLog.filenamePattern" 
+
+	** Format of the web log records as a string of names.
+	** 
+	** Defaults to 'date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)'
+	** 
+	** @see `RequestLogFilter`
+	static const Str requestLogFields			:= "afBedSheet.requestLog.fields"
 
 	** A CSV glob list of all origins (domains) allowed for Cross Origin Resource Sharing.
 	** Defaults to "*" (all domains).
 	** Example, "*.alienfactory.co.uk, *.heroku.com"
-	** 
+	**
 	** @see `CrossOriginResourceSharingFilter`
 	static const Str corsAllowedOrigins			:= "afBedSheet.cors.allowedOrigins"
 
