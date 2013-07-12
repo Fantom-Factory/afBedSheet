@@ -164,8 +164,8 @@ By default, BedSheet handles the following handler responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : A response has been sent to the client and no further processing should performed on the http request.
  - `TextResponse` : The text (be it plain, json or xml), with the given `MimeType` is sent to the client.
- - `File` : The file (on the file system) is sent to the client.
- - `HttpStatus` : Sets the http status and renders a mini html page with the status msg.
+ - `File` : The file is sent to the client.
+ - `HttpStatus` : Sets the http status and renders a mini html page with the status msg. (See [Error Processing]`#errorProcessing`.)
 
 
 
@@ -176,16 +176,42 @@ the client. 'ResponseProcessors' should return 'true' if no further processing s
 may return another response object for further processing, such as a `TextResponse`.
 
 BedSheet bundles with the following response processors:
- - 'TextResponseProcessor' for sending text to the client
- - 'FileResponseProcessor' for sending files (on the file system) to the client
- - 'HttpStatusProcessors' for routing `HttpStatus` object to contributed `HttpStatusProcessor`s
+ - 'TextResponseProcessor' : Sends text to the client.
+ - 'FileResponseProcessor' : Sends files to the client.
+ - 'HttpStatusProcessors' : Routes `HttpStatus` to contributed [HttpStatusProcessors]`HttpStatusProcessors`.
 
 
 
 Error Processing [#errorProcessing]
 ***********************************
-TODO: doc 404, 500 pages and Err handling
+When BedSheet catches an Err it scans through its list of contributed [ErrProcessors]`ErrProcessor` to the closest match.
+ErrProcessor's takes an Err and return a response for further processing (Example, `TextResponse`). Or it may return 'true' if
+the error has been completely handled and no further processing is required.
 
+BedSheet bundles with Err processors for the following Errs:
+ - 'HttpStatusErr' : Returns the wrapped `HttpStatus`.
+ - 'Err' : A general catch all processor that wraps (and returns) the Err in a `HttpStatus`.
+
+'HttpStatus' responses are handled by `HttpStatusProcessors` which selects a contributed processor dependent on the http status
+code. The only specific `HttpStatusProcessor` that BedSheet bundles with is for a 500 Internal Server Error. To override this
+and set a 404 Not Found page:
+
+pre>
+  @Contribute { serviceType=HttpStatusProcessors# }
+  static Void contributeHttpStatusProcessors(MappedConfig conf) {
+    conf[404] = conf.autobuild(Page404#)
+
+    // need to override the 500 page because BedSheet supplies one by default
+    conf.setOverride(500, "MyErrPage", conf.autobuild(Page500#))
+  }
+<pre
+
+There is a default catch all 'HttpStatusProcessor' which sets the http status and sends a mini html page to the client. The
+page is set via the Config mechanism so to set your own, contribute to `ApplicationDefaults`:
+
+pre>
+  conf[ConfigIds.httpStatusDefaultPage] = MyStatusPage()
+<pre
 
 
 Development Proxy [#DevelopmentProxy]

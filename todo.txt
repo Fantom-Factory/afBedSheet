@@ -15,9 +15,6 @@ For BedSheet 0.0.8
 Req -> HttpReq
 Res -> HttpRes
 
-Proxy session
- - test, "you have made 3 reqs"
-
  - redirect
  
  - @Config { ... def="wotever" }

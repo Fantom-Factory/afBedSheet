@@ -49,7 +49,6 @@ internal class BedSheetModule {
 	@Contribute { serviceType=HttpStatusProcessors# }
 	static Void contributeHttpStatusProcessor(MappedConfig conf) {
 		conf[500]				= conf.autobuild(HttpStatusPage500#)
-		conf[404]				= conf.autobuild(HttpStatusPageDefault#)
 	}
 
 	@Contribute { serviceType=ErrProcessors# }
