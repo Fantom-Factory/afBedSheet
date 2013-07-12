@@ -53,6 +53,10 @@ internal const class BsMsgs {
 		"Contributed ErrProcessor types must be subclasses of Err - ${type.qname}"
 	}
 	
+	static Str requestLogFilterDirCannotBeNull() {
+		"Please contribute a RequestLogFilter dir! \nExample, conf[ConfigIds.requestLogDir] = `/my/log/dir/`.toFile"
+	}
+	
 	// ---- CORS Msgs ----
 	
 	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str? allowedDomains) {

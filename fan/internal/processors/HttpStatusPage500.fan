@@ -17,10 +17,13 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		out := WebOutStream(buf.out)
 			
 		// send HTML response
+		msg := httpStatus.cause?.msg ?: httpStatus.msg
+		titleMsg := msg[0..(msg.index("\n"))]	// keep the title small - remove Ioc's Operations Trace
+		
 		out.docType
 		out.html
 		out.head
-			.title.esc(httpStatus.cause?.msg ?: httpStatus.msg).titleEnd
+			.title.esc("${httpStatus.code} Error - $titleMsg").titleEnd
 			.style.w("pre,td { font-family:monospace; } td:first-child { color:#888; padding-right:1em; }").styleEnd
 		.headEnd
 			
@@ -29,7 +32,8 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		// TODO: only print the gubbins in devMode 
 		
 		// msg
-		out.h1.esc(httpStatus.cause?.msg ?: httpStatus.msg).h1End
+		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
+		out.h1.w(h1Msg).h1End
 		out.hr
 			
 		// req headers
@@ -37,6 +41,8 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		req.headers.each |v,k| { out.tr.td.w(k).tdEnd.td.w(v).tdEnd.trEnd }
 		out.tableEnd
 		out.hr
+		
+		// TODO: print thread locals
 			
 		// stack trace
 		if (httpStatus.cause != null) {
