@@ -46,6 +46,11 @@ class TestConfig : Test {
 		} catch (IocErr e) { }
 	}
 	
+	Void testCoerceValue() {
+		reg := RegistryBuilder().addModule(T_MyModule01#).build.startup
+		s01	:= (T_MyService01) reg.serviceById("s01")
+		verifyEq(s01.c08, 69)		
+	}
 }
 
 @SubModule { modules=[ConfigModule#] }
@@ -62,6 +67,8 @@ internal class T_MyModule01 {
 		
 		config.set("c05", null)			// null factory value
 		config.set("c07", "belgium")	// null factory value
+		
+		config.set("c08", "69")			// coerce fromStr
 	}
 
 	@Contribute { serviceType=ApplicationDefaults# }
@@ -82,6 +89,9 @@ internal class T_MyService01 {
 	@Inject @Config{ id="c05" }	Str? c05
 	@Inject @Config{ id="c06" }	Str? c06
 	@Inject @Config{ id="c07" }	Str? c07
+
+	@Inject @Config{ id="c08" }	Int? c08	// coerce fromStr
+	
 }
 
 internal class T_MyService02 {

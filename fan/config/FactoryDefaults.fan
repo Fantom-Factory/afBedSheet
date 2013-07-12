@@ -4,7 +4,7 @@ using afIoc::NotFoundErr
 ** contribute factory defaults. Web applications should override factory defaults by contributing
 ** to `ApplicationDefaults`. 
 ** 
-** @uses a MappedConfig of Str IDs to Objs. Config Obj values must be immutable.
+** @uses a MappedConfig of 'Str:Obj' of IDs to Objs. Obj values must be immutable.
 const class FactoryDefaults {
 	const Str:Obj? config
 	

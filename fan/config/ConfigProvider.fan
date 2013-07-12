@@ -1,9 +1,12 @@
+using afIoc::ConcurrentState
 using afIoc::DependencyProvider
 using afIoc::Inject
 using afIoc::ProviderCtx
+using afIoc::TypeCoercer
 
 internal const class ConfigProvider : DependencyProvider {
-
+	private const ConcurrentState 	conState	:= ConcurrentState(ConfigProviderState#)
+	
 	@Inject
 	private const ConfigSource configSource
 	
@@ -18,9 +21,19 @@ internal const class ConfigProvider : DependencyProvider {
 		if (configs.size > 1)
 			throw Err("WTF")
 		
-		config := configs[0] as Config
-		id := config.id // ?: ctx.paramname
+		config 	:= (Config) configs[0]
+		id 		:= config.id // ?: ctx.paramname
+		val 	:= configSource.get(id)
+		coerced	:= (val == null) ? null : getState() { it.typeCoercer.coerce(val, dependencyType) }
 		
-		return configSource.get(id)
+		return coerced
 	}
+	
+	private Obj? getState(|ConfigProviderState -> Obj| state) {
+		conState.getState(state)
+	}
+}
+
+internal class ConfigProviderState {
+	TypeCoercer	typeCoercer	:= TypeCoercer()
 }
