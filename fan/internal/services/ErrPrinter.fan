@@ -3,12 +3,12 @@ using web::WebOutStream
 
 internal const class ErrPrinter {
 
-	@Config { id="afBedSheet.errUtils.noOfStackFrames" }
+	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	@Inject	private const HttpRequest	request
 	
 	new make(|This|in) { in(this) }
-	
+
 	Str errToHtml(HttpStatus httpStatus) {
 		buf := StrBuf()
 		out := WebOutStream(buf.out)

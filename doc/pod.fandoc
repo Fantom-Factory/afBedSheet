@@ -70,8 +70,8 @@ $ fan afBedSheet <fully-qualified-app-module-name> <port-number>
 <pre
 
 Every BedSheet web application has an 'AppModule' class that defines and configures your
-[afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an afIoC concept that allows you centralise your app
-configuration in one place.
+[afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an
+[afIoc]`http://repo.status302.com/doc/afIoc/#overview` concept that allows you centralise your app configuration in one place.
 
 > TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the afIoc @SubModule facet.
 
@@ -156,49 +156,52 @@ Routing lesson over.
 
 Request Handling [#requestHandling]
 ***********************************
-Request handlers are where logic is processed and responses are rendered. Handlers generally shouldn't pipe anything to
-'Response.out'. Instead they should return a response object. Example: The above 'HelloPage' handler returns a
+Request handlers is where logic is processed and responses are rendered. Handlers generally shouldn't pipe anything to
+'Response.out'. Instead they should return a response object. Example, the above 'HelloPage' handler returns a
 `TextResponse`.
 
 BedSheet bundles with the following request handlers:
  - `FileHandler`: Maps request URIs to files on file system.
  - `PodHandler` : Maps request URIs to pod file resources.
 
-By default, BedSheet handles the following handler responses:
+By default, BedSheet handles the following responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : A response has been sent to the client and no further processing should performed on the http request.
- - `TextResponse` : The text (be it plain, json or xml), with the given `MimeType` is sent to the client.
- - `File` : The file is sent to the client.
- - `HttpStatus` : Sets the http status and renders a mini html page with the status msg. (See [Error Processing]`#errorProcessing`.)
+ - `TextResponse` : The text (be it plain, json or xml), with the given `sys::MimeType` is sent to the client.
+ - `sys::File` : The file is sent to the client.
+ - `HttpStatus` : Sets the http response status and renders a mini html page with the status msg. (See [Error Processing]`#errorProcessing`.)
+ - `Redirect` : Sends a 3xx redirect response to the client.
 
 
 
 Response Processing [#responseProcessing]
 *****************************************
-[ResponseProcessors]`ResponseProcessor` process request handler responses (`File`, `TextResponse`, etc...) and send data to
+[ResponseProcessors]`ResponseProcessor` process request handler responses (`sys::File`, `TextResponse`, etc...) and send data to
 the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the http request. Or they
 may return another response object for further processing, such as a `TextResponse`.
 
 BedSheet bundles with the following response processors:
  - 'TextResponseProcessor' : Sends text to the client.
  - 'FileResponseProcessor' : Sends files to the client.
- - 'HttpStatusProcessors' : Routes `HttpStatus` to contributed [HttpStatusProcessors]`HttpStatusProcessors`.
+ - 'RedirectResponseProcessor' : Sends a 3xx redirect responses to the client.
+ - `HttpStatusProcessors` : Routes `HttpStatus` to contributed 'HttpStatusProcessors'.
 
 
 
 Error Processing [#errorProcessing]
 ***********************************
-When BedSheet catches an Err it scans through its list of contributed [ErrProcessors]`ErrProcessor` to the closest match.
-ErrProcessor's takes an Err and return a response for further processing (Example, `TextResponse`). Or it may return 'true' if
-the error has been completely handled and no further processing is required.
+When BedSheet catches an Err it scans through its list of contributed [ErrProcessors]`ErrProcessor` to find the closest match.
+ErrProcessor's takes an Err and returns a response for further processing (example, `TextResponse`). Or it may return 'true'
+if the error has been completely handled and no further processing is required.
 
 BedSheet bundles with Err processors for the following Errs:
  - 'HttpStatusErr' : Returns the wrapped `HttpStatus`.
- - 'Err' : A general catch all processor that wraps (and returns) the Err in a `HttpStatus`.
+ - 'Err' : A general catch all processor that wraps (and returns) the Err in a `HttpStatus` 500.
 
 'HttpStatus' responses are handled by `HttpStatusProcessors` which selects a contributed processor dependent on the http status
-code. The only specific `HttpStatusProcessor` that BedSheet bundles with is for a 500 Internal Server Error. To override this
-and set a 404 Not Found page:
+code. The only specific `HttpStatusProcessor` that BedSheet bundles with is for a 500 Internal Server Error.
+
+Example code to override the 500 Internal Server Error handler and set a 404 Not Found page:
 
 pre>
   @Contribute { serviceType=HttpStatusProcessors# }
@@ -214,27 +217,70 @@ There is a default catch all 'HttpStatusProcessor' which sets the http status an
 page is set via the Config mechanism so to set your own, contribute to `ApplicationDefaults`:
 
 pre>
-  conf[ConfigIds.httpStatusDefaultPage] = MyStatusPage()
+  @Contribute { serviceType=ApplicationDefaults# }
+  static Void contributeApplicationDefaults(MappedConfig conf) {
+    ...
+    conf[ConfigIds.httpStatusDefaultPage] = MyStatusPage()
+    ...
+  }
 <pre
+
+
+
+Config [#config]
+****************
+BedSheet extends [afIoc]`http://repo.status302.com/doc/afIoc/#overview` to give injectable '@Config' values. '@Config' values
+are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up.
+
+BedSheet sets the initial config values by contributing to the `FactoryDefaults` service. An application may then override
+these values by contibuting to the `ApplicationDefaults` service.
+
+pre>
+  @Contribute { serviceType=ApplicationDefaults# }
+  static Void contributeApplicationDefaults(MappedConfig conf) {
+    ...
+    conf["afBedSheet.errPrinter.noOfStackFrames"] = 100
+    ...
+  }
+<pre
+
+All BedSheet config keys are listed in `ConfigIds` meaning the above can be more safely rewriten as:
+
+pre>
+    conf[ConfigIds.noOfStackFrames] = 100
+<pre
+
+To inject config values in your services, use the '@Config' facet with conjunction with
+[afIoc]`http://repo.status302.com/doc/afIoc/#overview`'s '@Inject':
+
+pre>
+	@Inject	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
+	Int noOfStackFrames
+<pre
+
+The config mechanism is not just for BedSheet, you can use it too when creating add-on libraries! Contributing to
+`FactoryDefaults` gives users of your library an easy way to override your values.
+
 
 
 Development Proxy [#DevelopmentProxy]
 *************************************
-Never (manually) restart your app again! Use the '-proxy' option to create a Development Proxy to auto re-start your app when
-any of your pods are updated:
+You need never (manually) restart your app again!
+
+Use the '-proxy' option to create a Development Proxy to auto re-start your app when any of your pods are updated:
 
 pre>
 $ fan afBedSheet -proxy <mypod> <port>
 <pre
 
-The proxy sits on <port>, starts your real app on '<port>+1' and forwards all requests to it.
+The proxy sits on '<port>', starts your real app on '<port>+1' and forwards all requests to it.
 
 pre>
   Client <--> Proxy (port) <--> Web App (port+1)
 <pre
 
-A problem that other web development proxies suffer from, is that if the proxy dies, from say, killing the process on the F4
-console, your web app process is left hanging around; requiring you to manually kill it.
+A problem other (Fantom) web development proxies suffer from, is that when the proxy dies your real web app is left hanging
+around; requiring you to manually kill it.
 
 pre>
   Client <-->   ????????   <--> Web App (port+1)
@@ -249,20 +295,20 @@ See `ConfigIds.proxyPingInterval` for more details.
 
 Gzip [#gzip]
 ************
-By default, BedSheet compresses HTTP responses where it can.(1) But it doesn't do this willy nilly, oh no! There are many
-hurdles to overcome...
+By default, BedSheet compresses HTTP responses with gzip where it can.(1) But it doesn't do this willy nilly, oh no! There are
+many hurdles to overcome...
 
 Disable All [#disablePerWebApp]
 -------------------------------
 Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
 
-    config.addOverride(ConfigIds.gzipDisabled, "my.gzip.disabled", true)
+    config[ConfigIds.gzipDisabled] = true
 
 Disable per Response [#disablePerResponse]
 ------------------------------------------
-Although enabled by default, gzip can be disabled on a per request / response basis by calling the following:
+Gzip can be disabled on a per request / response basis by calling the following:
 
-    response.disableGzip()
+    httpResponse.disableGzip()
 
 Gzip'able Mime Types [#mimeTypes]
 ---------------------------------
@@ -272,29 +318,28 @@ must contribute to the `GzipCompressible` service to enable gzip for specified [
 
     config["text/funky"] = true
 
-(Note: The GzipCompressible contrib type is actually `MimeType` - afIoc kindly coerces the Str to 'MimeType' for us.)
+(Note: The GzipCompressible contrib type is actually `MimeType` - [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
+kindly coerces the 'Str' to 'MimeType' for us.)
 
 By default BedSheet will compress plain text, css, html, javascript, xml, json and other text responses.
 
 Gzip only when asked [#askNicely]
 ---------------------------------
-It's guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such,
+Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such,
 and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, we only gzip the
 response if the client actually *asked* for it!
 
 Minimum content threshold [#minThreshold]
 -----------------------------------------
-Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is
-going to be bigger! Which kinda defeats the point of using gzip in the first place! For that reason the response data must
-reach a minimum size / threshold before it gets gzipped. Set the threshold config with the following `ApplicationDefaults`:
-
-    config[ConfigIds.gzipThreshold] = 768
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... the compressed version is
+going to be bigger, which kinda defeats the point of using gzip in the first place! For that reason the response data must
+reach a minimum size / threshold before it gets gzipped.
 
 See `GzipOutStream` and `ConfigIds.gzipThreshold` for more details.
 
 Phew! Made it! [#madeIt]
 ------------------------
-If (and only if!) your data passed all the tests above, then it will be lovingly gzipped and sent to the client.
+If (and only if!) your request passed all the tests above, will it then be lovingly gzipped and sent to the client.
 
  - (1) `http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/`
 
@@ -302,12 +347,12 @@ If (and only if!) your data passed all the tests above, then it will be lovingly
 
 Buffered Response [#bufferedResponse]
 *************************************
-By default, BedSheet attempts to set the 'Content-Length' http header in the http response.(2) It does this by buffering
+By default, BedSheet attempts to set the 'Content-Length' http response header.(2) It does this by buffering
 'HttpResponse.out'. When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real http response.
 
 Response buffering can be disabled on a per http response basis.
 
-A threshold can be set, whereby if the buffer exeeds that value, all content is streamed direct to the client.
+A threshold can be set, whereby if the buffer exeeds that value, all content is streamed directly to the client.
 
 See `BufferedOutStream` and `ConfigIds.responseBufferThreshold` for more details.
 
@@ -319,7 +364,7 @@ More! [#more]
 *************
 All request handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
 DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the
-[BedSheet source]`XXX` for afIoc examples.
+[BedSheet source]`XXX` for [afIoc]`http://repo.status302.com/doc/afIoc/#overview` examples.
 
 > TIP: 'const' handler classes are cached by BedSheet and reused on every request.
 
@@ -339,6 +384,11 @@ Release Notes [#releaseNotes]
 
 Breaking Changes [#breakingChanges]
 ===================================
+
+v0.0.8 [#v0.0.8]
+----------------
+ - 'Request' has been renamed to 'HttpRequest'
+ - 'Response' has been renamed to 'HttpResponse'
 
 v0.0.6 [#v0.0.6]
 ----------------

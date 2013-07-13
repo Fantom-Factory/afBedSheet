@@ -8,17 +8,13 @@ fantom afIoc on T5
 
 For BedSheet 0.0.8
 ------------------
- - (doc) Config
 
- - redirect
- 
  - PathMapRoute / RouteLikeDraft
 
  front all services with mixins
    - note that methods NEED to be public in order to be advised 
    
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
-Fantom - redirect HTTP 1.1 -> 303, HTTP 1.0 -> 302?
 
 
 
