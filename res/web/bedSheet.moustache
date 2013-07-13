@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ title }}</title>
+</head>
+<body>
+	<style>
+		{{{ bedSheetCss }}}
+	</style>
+	
+	<div class="navbar">
+		{{{ alienHeadSvg }}}
+		<span class="brand">{{ title }}</span>
+	</div>
+	
+	<div class="content">
+		{{{ content }}}
+	</div>
+</body>
+</html>

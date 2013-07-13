@@ -1,0 +1,47 @@
+
+body {
+	background-color:	#000000;
+	padding:			0;
+	margin:				0;
+}
+
+a {
+	text-decoration:	none;
+}
+
+a:hover {
+	text-decoration:	underline;
+}
+
+body, h1, a, p {
+    font-family:		"Lucida Console", Monaco, monospace;
+	color:				#FFFFFF;
+}
+
+.navbar {
+	padding:			8px 5% 0 5%;
+	border-bottom: 		2px solid #33B5E5;
+	position:			relative;
+	height:				45px;
+	line-height:		55px;
+}
+
+.pull-right {
+	float:				right;
+}
+
+.alienHead {
+	position:			absolute;
+	height:				60px;
+	width:				60px;
+}
+
+.brand {
+    font-size:			32px;
+    font-weight:		bold;
+    padding-left:		60px;
+}
+
+.content {
+	padding:			0 10%;
+}

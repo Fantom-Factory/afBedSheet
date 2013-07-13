@@ -12,7 +12,7 @@ const class MoustacheTemplates {
 	
 	private Mustache getTemplateFromFile(File templateFile) {
 		getState |state->Mustache| {
-			key	:= templateFile.osPath
+			key	:= templateFile.uri.toStr
 			now := DateTime.now
 			
 			temp := state.moustacheCache.getOrAdd(key) {
