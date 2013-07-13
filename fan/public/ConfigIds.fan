@@ -33,6 +33,10 @@ const class ConfigIds {
 	** Defaults to 'conf.autobuild(HttpStatusPageDefault#)'
 	static const Str httpStatusDefaultPage		:= "afBedSheet.httpStatus.defaultPage"
 	
+	** The number of stack frames to print in logs and error pages.
+	** Defaults to '50'
+	static const Str noOfStackFrames			:= "afBedSheet.errUtils.noOfStackFrames"
+	
 	** Directory where the request log files are written. Must be supplied.
 	** 
 	** @see `RequestLogFilter`

@@ -17,12 +17,13 @@ internal const class HttpStatusPageDefault : HttpStatusProcessor {
 		bedSheetCss		:= typeof.pod.file(`/res/web/bedSheet.css`).readAllStr
 		alienHeadSvg	:= typeof.pod.file(`/res/web/alienHead.svg`).readAllStr
 		bedSheetHtml	:= typeof.pod.file(`/res/web/bedSheet.moustache`)
-
-		html := moustaches.renderFromFile(bedSheetHtml, [
+		version			:= typeof.pod.version.toStr
+		html 			:= moustaches.renderFromFile(bedSheetHtml, [
 			"title"			: title,
 			"bedSheetCss"	: bedSheetCss,
 			"alienHeadSvg"	: alienHeadSvg,
-			"content"		: "<p>${httpStatus.msg}</p>"
+			"content"		: "<p>${httpStatus.msg}</p>",
+			"version"		: version
 		])
 		
 		if (!response.isCommitted)	// a sanity check
