@@ -12,7 +12,18 @@ using afIoc::TypeCoercer
 ** <pre
 ** 
 ** @uses a MappedConfig of 'Type:ValueEncoder'
-const class ValueEncoders {
+const mixin ValueEncoders {
+	
+	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
+	** found, 'toStr()' is used. 
+	abstract Str toClient(Type valType, Obj value)
+	
+	** Converts the given 'clientValue' into the given 'valType' via a contributed `ValueEncoder`. 
+	** If no 'ValueEncoder' is found the value is [coerced]`afIoc::TypeCoercer`.
+	abstract Obj toValue(Type valType, Str clientValue)
+}
+
+internal const class ValueEncodersImpl : ValueEncoders {
 	private const ConcurrentState 	conState	:= ConcurrentState(ValueEncodersState#)
 	private const StrategyRegistry 	valueEncoderStrategy
 	
@@ -20,9 +31,7 @@ const class ValueEncoders {
 		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
 	}
 	
-	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
-	** found, 'toStr()' is used. 
-	Str toClient(Type valType, Obj value) {
+	override Str toClient(Type valType, Obj value) {
 		// check the basics first!
 		if (value is Str)
 			return value
@@ -38,9 +47,7 @@ const class ValueEncoders {
 		return value.toStr
 	}
 
-	** Converts the given 'clientValue' into the given 'valType' via a contributed `ValueEncoder`. 
-	** If no 'ValueEncoder' is found the value is [coerced]`afIoc::TypeCoercer`.
-	Obj toValue(Type valType, Str clientValue) {
+	override Obj toValue(Type valType, Str clientValue) {
 		// check the basics first!
 		if (valType.fits(Str#))
 			return clientValue

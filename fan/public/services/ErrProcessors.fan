@@ -3,15 +3,21 @@ using afIoc::StrategyRegistry
 ** Holds a collection of `ErrProcessor`s.
 ** 
 ** pre>
-**   @Contribute { serviceType=HttpStatusProcessors# }
-**   static Void contributeHttpStatusProcessors(MappedConfig conf) {
-**     conf[404] = conf.autobuild(Page404#)
+**   @Contribute { serviceType=ErrProcessors# }
+**   static Void contributeErrProcessors(MappedConfig conf) {
+**     conf[Err#] = CatchAllErrHandler()
 **   }
 ** <pre
 ** 
 ** @uses a MappedConfig of 'Type:ErrProcessor' where 'Type' is a subclass of 'Err' or a mixin.
-const class ErrProcessors {
+const mixin ErrProcessors {
 	
+	@NoDoc
+	abstract Obj processErr(Err err)
+}
+
+internal const class ErrProcessorsImpl : ErrProcessors {
+
 	private const StrategyRegistry errProcessorStrategy
 	
 	internal new make(Type:ErrProcessor errProcessors) {
@@ -22,12 +28,11 @@ const class ErrProcessors {
 		this.errProcessorStrategy = StrategyRegistry(errProcessors)
 	}
 	
-	internal Obj processErr(Err err) {
+	override Obj processErr(Err err) {
 		get(err.typeof).process(err)
 	}
 
-	internal ErrProcessor get(Type errType) {
+	private ErrProcessor get(Type errType) {
 		return errProcessorStrategy.findBestFit(errType)
 	}
-	
 }

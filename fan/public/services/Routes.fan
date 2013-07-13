@@ -5,11 +5,19 @@ using afIoc::Registry
 ** Handles routing URIs to request handler methods.
 **
 ** If a uri can not be matched to a `Route` then a 404 HttpStatusErr is thrown.
-const class Routes {
+const mixin Routes {
+
+	** The ordered list of routes
+	abstract Obj[] routes()
+	
+	@NoDoc
+	abstract Obj? processRequest(Uri modRel, Str httpMethod)
+}
+
+internal const class RoutesImpl : Routes {
 	private const static Log log := Utils.getLog(Routes#)
 	
-	** The ordered list of routes
-	const Obj[] routes
+	override const Obj[] routes
 
 	@Inject
 	private const RouteMatchers routeMatchers
@@ -26,7 +34,7 @@ const class Routes {
 		this.routes = routes
 	}
 
-	internal Obj? processRequest(Uri modRel, Str httpMethod) {
+	override Obj? processRequest(Uri modRel, Str httpMethod) {
 		normalisedUri := normalise(modRel)
 		
 		response := routes.eachWhile |route| {
