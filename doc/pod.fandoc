@@ -87,8 +87,7 @@ class Main : AbstractMain {
   private Int port
 
   override Int run() {
-    afBedSheet::Main().main("<fully-qualified-app-module-name> $port".split)
-    return 0
+    return afBedSheet::Main().main("<fully-qualified-app-module-name> $port".split)
   }
 }
 <pre

@@ -18,7 +18,7 @@ internal const class ErrPrinter {
 		out.h1.w(h1Msg).h1End
 
 		out.h2.w("Request URI").h2End
-		out.p.w(request.uri).pEnd
+		out.p.b.w(request.uri).bEnd.pEnd
 		
 		out.h2.w("Request Headers").h2End
 		out.table

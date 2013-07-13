@@ -2,7 +2,8 @@
 internal class AppRun {
 	
 	static Void main(Str[] args) {
-		AppTest().setup
-		concurrent::Actor.sleep(Duration.maxVal)
+		Main().main("${T_AppModule#.qname} 8079".split)
+//		AppTest().setup
+//		concurrent::Actor.sleep(Duration.maxVal)
 	}
 }
