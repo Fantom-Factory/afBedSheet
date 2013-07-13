@@ -29,6 +29,10 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/boom`,					T_PageHandler#boom))
 
+		conf.add(Route(`/redirect/movedPerm`,	T_PageHandler#redirectPerm))
+		conf.add(Route(`/redirect/movedTemp`,	T_PageHandler#redirectTemp))
+		conf.add(Route(`/redirect/afterPost`,	T_PageHandler#afterPost))
+
 		// CORS filters
 		conf.add(Route(`/cors/simple`,			CrossOriginResourceSharingFilter#serviceSimple))
 		conf.add(Route(`/cors/preflight`,		CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS"))
@@ -36,6 +40,7 @@ internal const class T_AppModule {
 		// CORS routes
 		conf.add(Route(`/cors/simple`,			T_PageHandler#simple))
 		conf.add(Route(`/cors/preflight`,		T_PageHandler#preflight, "OPTIONS"))
+		
 		
 		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
 
