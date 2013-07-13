@@ -2,8 +2,8 @@ using afIoc::Inject
 
 internal const class T_PageHandler {
 	
-	@Inject
-	private const HttpResponse response
+	@Inject	private const HttpResponse response
+	@Inject	private const HttpSession session
 	
 	new make(|This|in) { in(this) }
 	
@@ -67,6 +67,15 @@ internal const class T_PageHandler {
 	
 	Obj uri(Uri uri) {
 		TextResponse.fromPlain("uri: $uri")
+	}
+
+	// ---- Session Pages ----
+	
+	Obj countReqs() {
+		count := (Int) session.get("count", 0)
+		count += 1
+		session["count"] = count
+		return TextResponse.fromPlain("count $count")
 	}
 	
 	// ---- Status Code Page ----
