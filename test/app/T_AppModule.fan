@@ -37,6 +37,8 @@ internal const class T_AppModule {
 		conf.add(Route(`/cors/simple`,			T_PageHandler#simple))
 		conf.add(Route(`/cors/preflight`,		T_PageHandler#preflight, "OPTIONS"))
 		
+		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
+
 		conf.add(Route(`/welcome`, 				WelcomePage#service))
 
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
