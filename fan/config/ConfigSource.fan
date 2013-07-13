@@ -19,6 +19,7 @@ internal const class ConfigSource {
 	new make(|This|in) {
 		in(this)
 		config := factoryDefaults.config.rw
+		// TODO: Err if overriding a non-existant factory value
 		config.setAll(applicationDefaults.config)
 		this.config = config.toImmutable
 	}

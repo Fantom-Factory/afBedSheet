@@ -1,6 +1,6 @@
 using util::JsonOutStream
 
-** Return from Handler methods to send a text response to the client. 
+** Return from handler methods to send a text response to the client. 
 ** 
 ** This is purposely a concrete final class so there is no ambiguity as to what it is. For example, 
 ** if a handler returned an Obj that was both a 'TextResponse' and a 'JsonResponse' what is BedSheet 

@@ -35,7 +35,7 @@ const class ConfigIds {
 	
 	** The number of stack frames to print in logs and error pages.
 	** Defaults to '50'
-	static const Str noOfStackFrames			:= "afBedSheet.errUtils.noOfStackFrames"
+	static const Str noOfStackFrames			:= "afBedSheet.errPrinter.noOfStackFrames"
 	
 	** Directory where the request log files are written. Must be supplied.
 	** 
