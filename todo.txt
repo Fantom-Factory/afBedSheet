@@ -5,12 +5,10 @@ For BedSheet 0.0.6
 fantom afIoc on T5
 
 
+
 For BedSheet 0.0.8
 ------------------
  - (doc) Config
-
-Req -> HttpReq
-Res -> HttpRes
 
  - redirect
  
@@ -19,12 +17,11 @@ Res -> HttpRes
  front all services with mixins
    - note that methods NEED to be public in order to be advised 
    
- - basic welcome page (see Draft)
- 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 Fantom - redirect HTTP 1.1 -> 303, HTTP 1.0 -> 302?
 
- 
+
+
 Future
 ------
  - have Dev / Prod mode (and other envs)
@@ -34,23 +31,21 @@ static files & pod files served under 'hash' folder
  
 template files served under version number
 
+read config from files
+
 RequireJS module support 
 
-use the tales JS compiler! A bloody neat idea!
-
-Pluggable Template generation
- - moustacheSource - to cache Moustaches 
- - tales
-
- Tales
-http://fantom.org/sidewalk/topic/1290
- - tales routing
-Look into integrating other tales stuff
-
+Tale integration - http://fantom.org/sidewalk/topic/1290
+ - templates
+ - routing
+ - the JS compiler! A bloody neat idea!
+ - anything else?
+ 
 Move the non-standard filters (Cors / IE) out into an afBedSheetUtils pod
 
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection
- 
+
+
 
 Doc Comments
 ------------
@@ -85,10 +80,3 @@ Simple.
 -------
 Developers are lazy. If it's complicated or difficult, they won't use it.
 
-
-
-
-Good Stuff
- - ajax responses are gzipped by default
- - cache headers are set from ajax calls from IE
- 

@@ -55,6 +55,21 @@ internal const class T_PageHandler {
 		TextResponse.fromJson("this is a json list".split)
 	}
 	
+	// ---- Redirect Pages ----
+
+	Obj redirectPerm() {
+		Redirect.movedPermanently(`/movedPermanently`)
+	}
+
+	Obj redirectTemp() {
+		Redirect.movedTemporarily(`/movedTemporarily`)
+	}
+	
+	Obj afterPost() {
+		Redirect.afterPost(`/afterPost`)
+	}
+	
+	
 	// ---- Route Pages ----
 	
 	Obj defaultParams(Str p1, Str p2 := "p2", Str p3 := "p3") {

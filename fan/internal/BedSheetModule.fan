@@ -43,6 +43,7 @@ internal class BedSheetModule {
 	static Void contributeResponseProcessors(MappedConfig conf, HttpStatusProcessors httpStatusProcessor) {
 		conf[File#]				= conf.autobuild(FileResponseProcessor#)
 		conf[TextResponse#]		= conf.autobuild(TextResponseProcessor#)
+		conf[Redirect#]			= conf.autobuild(RedirectResponseProcessor#)
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 
