@@ -140,9 +140,3 @@ internal const class HttpResponseImpl : HttpResponse {
 		registry.dependencyByType(WebRes#)
 	}
 }
-
-@Deprecated
-const mixin Response : HttpResponse { }
-internal const class ResponseImpl : HttpResponseImpl, Response { 
-	new make(ThreadStashManager threadStashManager, |This|in) : super(threadStashManager, in) { }
-}

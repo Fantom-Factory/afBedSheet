@@ -1,8 +1,57 @@
 
+body, h1, h2, p, td, a {
+    font-family:		"Lucida Console", Monaco, monospace;
+	color:				#FFFFFF;
+	font-size:			14px;
+}
+
 body {
 	background-color:	#000000;
 	padding:			0;
 	margin:				0;
+}
+
+header {
+	padding:			8px 5% 0 5%;
+	border-bottom: 		2px solid #33B5E5;
+	position:			relative;
+	height:				45px;
+	line-height:		55px;
+}
+
+footer {
+	margin-top:			3em;
+	padding:			0.5em 5%;
+	border-top: 		2px solid #33B5E5;
+	text-align:			right;
+}
+
+footer a {
+	font-size:			12px;
+}
+
+main {
+	padding:			0 10%;
+}
+
+h1 {
+	font-size:			32px;
+}
+
+h2 {
+	font-size:			24px;
+	border-bottom:		1px solid #33B5E5;
+	padding-top:		1em;
+}
+
+td:first-child {
+	color:				#AAAAE5;
+	white-space:		nowrap;
+	padding-right:		1em;
+}
+
+td.wrap {
+	white-space:		normal;
 }
 
 a {
@@ -11,19 +60,6 @@ a {
 
 a:hover {
 	text-decoration:	underline;
-}
-
-body, h1, a, p {
-    font-family:		"Lucida Console", Monaco, monospace;
-	color:				#FFFFFF;
-}
-
-.navbar {
-	padding:			8px 5% 0 5%;
-	border-bottom: 		2px solid #33B5E5;
-	position:			relative;
-	height:				45px;
-	line-height:		55px;
 }
 
 .pull-right {
@@ -42,6 +78,3 @@ body, h1, a, p {
     padding-left:		60px;
 }
 
-.content {
-	padding:			0 10%;
-}

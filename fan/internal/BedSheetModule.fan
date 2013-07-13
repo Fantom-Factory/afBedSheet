@@ -20,16 +20,13 @@ internal class BedSheetModule {
 		binder.bindImpl(ErrProcessors#)
 
 		binder.bindImpl(MoustacheTemplates#)
-
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
+		binder.bindImpl(ErrPrinter#)
 		
 		binder.bindImpl(HttpRequest#)
 		binder.bindImpl(HttpResponse#)
 		binder.bindImpl(HttpSession#)
-
-		binder.bind(Request#, RequestImpl#)
-		binder.bind(Response#, ResponseImpl#)
 
 		binder.bindImpl(CrossOriginResourceSharingFilter#)
 		binder.bindImpl(IeAjaxCacheBustingFilter#)
@@ -66,6 +63,7 @@ internal class BedSheetModule {
 		conf[ConfigIds.gzipThreshold]				= 376
 		conf[ConfigIds.responseBufferThreshold]		= 32 * 1024	// TODO: why not kB?
 		conf[ConfigIds.httpStatusDefaultPage]		= conf.autobuild(HttpStatusPageDefault#)
+		conf[ConfigIds.noOfStackFrames]				= 50
 				
 		conf[ConfigIds.requestLogDir]				= null
 		conf[ConfigIds.requestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"

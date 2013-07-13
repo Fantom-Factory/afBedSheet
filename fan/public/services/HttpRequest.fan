@@ -59,12 +59,8 @@ const mixin HttpRequest {
 	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests`
 	abstract Str:Str headers()
 	
-	** The accepted locales for this request based on the "Accept-Language" HTTP header. List is 
-	** sorted by preference, where 'locales.first' is best, and 'locales.last' is worst. This list 
-	** is guaranteed to contain Locale("en").
-	** 
-	** @see `web::WebReq.locales`
-	abstract Locale[] locales()
+	** Map of cookie values keyed by cookie name.  The cookies map is readonly and case insensitive.
+	abstract Str:Str cookies()
 	
 	** Get the key/value pairs of the form data.  The request content is read and parsed using 
 	** `sys::Uri.decodeQuery`.  
@@ -74,6 +70,14 @@ const mixin HttpRequest {
 	** 
 	** @see `web::WebReq.form`
 	abstract [Str:Str]? form()
+	
+	
+	** The accepted locales for this request based on the "Accept-Language" HTTP header. List is 
+	** sorted by preference, where 'locales.first' is best, and 'locales.last' is worst. This list 
+	** is guaranteed to contain Locale("en").
+	** 
+	** @see `web::WebReq.locales`
+	abstract Locale[] locales()
 	
 }
 
@@ -127,18 +131,16 @@ internal const class HttpRequestImpl : HttpRequest {
 	override [Str:Str]? form() {
 		webReq.form
 	}
-	
+
+	override Str:Str cookies() {
+		webReq.cookies
+	}
+
 	override Locale[] locales() {
-		webReq.locales		
+		webReq.locales
 	}
 	
 	private WebReq webReq() {
 		registry.dependencyByType(WebReq#)
 	}
-}
-
-@Deprecated
-const mixin Request : HttpRequest { }
-internal const class RequestImpl : HttpRequestImpl, Request { 
-	new make(|This|in) : super(in) { }
 }

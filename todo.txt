@@ -16,8 +16,6 @@ Res -> HttpRes
  
  - PathMapRoute / RouteLikeDraft
 
- - style BedSheet status pages 
-  
  front all services with mixins
    - note that methods NEED to be public in order to be advised 
    

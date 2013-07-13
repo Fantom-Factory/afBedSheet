@@ -2,19 +2,22 @@
 <html>
 <head>
 	<title>{{ title }}</title>
-</head>
-<body>
 	<style>
 		{{{ bedSheetCss }}}
 	</style>
-	
-	<div class="navbar">
+</head>
+<body>	
+	<header>
 		{{{ alienHeadSvg }}}
 		<span class="brand">{{ title }}</span>
-	</div>
+	</header>
 	
-	<div class="content">
+	<main>
 		{{{ content }}}
-	</div>
+	</main>
+
+	<footer>
+		<a href="http://repo.status302.com/doc/afBedSheet/#overview">Alien-Factory BedSheet {{ version }}</a>
+	</footer>
 </body>
 </html>
