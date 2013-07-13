@@ -23,6 +23,7 @@ internal class BedSheetModule {
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
 		binder.bindImpl(ErrPrinter#)
+		binder.bindImpl(BedSheetPage#)
 		
 		binder.bindImpl(HttpRequest#)
 		binder.bindImpl(HttpResponse#)

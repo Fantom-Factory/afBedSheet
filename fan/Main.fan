@@ -5,7 +5,16 @@ using util::Opt
 using web::WebMod
 using wisp::WispService
 
-** Call to start Wisp running a BedSheet app.
+** Call to start Wisp and run a BedSheet app. To run BedSheet from the command line:
+** 
+** pre>
+**   $ fan afBedSheet [-proxy] <appModule> <port>
+** <pre
+** 
+** Where:
+**  - proxy:        (optional) Starts a dev proxy and launches the real web app on (<port> + 1)
+**  - appModule:    The qname of the AppModule or pod which configures the BedSheet web app
+**  - port:         The HTTP port to run the app on
 class Main : AbstractMain {
 	
 	@Opt { help="Starts a proxy and launches the real web app on (<port> + 1)" }
@@ -23,22 +32,23 @@ class Main : AbstractMain {
 	@Arg { help="The HTTP port to run the app on" } 
 	private Int port
 
+	** Run baby, run!
 	override Int run() {
 		options	:= Utils.makeMap(Str#, Obj#)
 		options["startProxy"] 		= proxy
 		options["pingProxy"] 		= pingProxy
 		options["pingProxyPort"] 	= pingProxyPort ?: -1
-		
+
 		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port) : BedSheetWebMod(appModule, port ,options))
 
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
 		// then check all your ENV vars are being passed to java.
 		// see http://forum.springsource.org/showthread.php?106504-Error-running-grails-project-on-alternative-port-with-STS2-6-0&highlight=Unrecognized%20Windows%20Sockets%20error
 		willow 	:= WispService { it.port=this.port; it.root=mod }
-		return runServices([willow])
+		return startServices([willow])
 	}
 
-	override Int runServices(Service[] services) {
+	private Int startServices(Service[] services) {
 		Env.cur.addShutdownHook |->| { shutdownServices }
 		services.each |Service s| { s.install }
 		services.each |Service s| { s.start }

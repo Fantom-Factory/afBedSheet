@@ -1,5 +1,5 @@
 
-internal const class PinkyEncoder : ValueEncoder {
+internal const class T_PinkyEncoder : ValueEncoder {
 	
 	override Str toClient(Obj value) {
 		pinky := (Pinky) value

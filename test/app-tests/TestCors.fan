@@ -6,7 +6,7 @@ internal class TestCoors : AppTest {
 	override Void setup() { }
 
 	Void testSimpleReqWorks() {
-		iocModules = [T_CorsMod1#]
+		iocModules = [T_AppModule#, T_CorsMod1#]
 		super.setup
 
 		client.reqHeaders["origin"] = "http://api.bob.com"
@@ -21,7 +21,7 @@ internal class TestCoors : AppTest {
 	}
 	
 	Void testOriginMisMatch() {
-		iocModules = [T_CorsMod2#]
+		iocModules = [T_AppModule#, T_CorsMod2#]
 		super.setup
 		
 		client.reqHeaders["origin"] = "http://api.bob.com"
@@ -34,7 +34,7 @@ internal class TestCoors : AppTest {
 	}
 
 	Void testAllowedCredentials() {
-		iocModules = [T_CorsMod3#]
+		iocModules = [T_AppModule#, T_CorsMod3#]
 		super.setup
 		
 		client.reqHeaders["origin"] = "http://api.bob.com"
@@ -47,7 +47,7 @@ internal class TestCoors : AppTest {
 	}
 
 	Void testExposeHeaders() {
-		iocModules = [T_CorsMod4#]
+		iocModules = [T_AppModule#, T_CorsMod4#]
 		super.setup
 		
 		client.reqHeaders["origin"] = "http://api.bob.com"
@@ -60,7 +60,7 @@ internal class TestCoors : AppTest {
 	}
 
 	Void testPreflight() {
-		iocModules = [T_CorsMod5#]
+		iocModules = [T_AppModule#, T_CorsMod5#]
 		super.setup
 		
 		client.reqHeaders["origin"] = "http://api.bob.com"

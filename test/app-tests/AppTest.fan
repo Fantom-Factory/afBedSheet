@@ -4,16 +4,15 @@ using wisp::WispService
 internal class AppTest : Test {
 	
 	private Int				port	:= 8079 
-	private Str				modName	:= AppModule#.qname
 	private WispService? 	willow
 			WebClient	 	client	:= WebClient()
-	
+
 	override Void setup() {
-		mod 	:= BedSheetWebMod(modName, port, ["iocModules":iocModules])
+		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["iocModules":iocModules])
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 	}
-	
+
 	override Void teardown() {
 		willow?.uninstall
 	}
@@ -28,7 +27,7 @@ internal class AppTest : Test {
 			fail("$client.resCode $client.resPhrase \n$res")
 		return res
 	}
-	
+
 	Void verify404(Uri uri) {
 		verifyStatus(uri, 404)
 	}
@@ -62,5 +61,5 @@ internal class AppTest : Test {
 		"http://localhost:$port".toUri + uri
 	}
 	
-	virtual Type[] iocModules() { [,] }
+	virtual Type[] iocModules() { [T_AppModule#] }
 }

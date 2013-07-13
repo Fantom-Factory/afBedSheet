@@ -8,7 +8,8 @@ using afIoc::Registry
 const class Routes {
 	private const static Log log := Utils.getLog(Routes#)
 	
-	private const Obj[] routes
+	** The ordered list of routes
+	const Obj[] routes
 
 	@Inject
 	private const RouteMatchers routeMatchers
@@ -23,7 +24,6 @@ const class Routes {
 	internal new make(Obj[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
-//		routes.each { Env.cur.err.printLine(it) }
 	}
 
 	internal Obj? processRequest(Uri modRel, Str httpMethod) {
@@ -35,11 +35,14 @@ const class Routes {
 				return null
 
 			response := handlerInvoker.invokeHandler(routeMatch)
-			
+
 			return (response == false) ? null : response
 		}
-		
-		// TODO: if no routes have been defined, route to a default 'BedSheet Welcome' page. Use config to turn on and off
+
+		// if no routes have been defined, return the default 'BedSheet Welcome' page
+		if (response == null && routes.isEmpty)
+			return ((WelcomePage) registry.autobuild(WelcomePage#)).service
+
 		if (response == null)
 			throw HttpStatusErr(404, BsMsgs.route404(modRel, httpMethod))
 
