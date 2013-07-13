@@ -5,7 +5,7 @@ internal class TestResponseProcessors : BsTest {
 	Void testProcessOne() {
 		Actor.locals["respro02"] = null
 		map := [Str#:T_ResPro02()]
-		rp := ResponseProcessors(map)
+		rp := ResponseProcessorsImpl(map)
 		
 		rp.processResponse("Dude")
 		verify(Actor.locals["respro02"])
@@ -15,17 +15,16 @@ internal class TestResponseProcessors : BsTest {
 		Actor.locals["respro01"] = null
 		Actor.locals["respro02"] = null
 		map := [Int#:T_ResPro01(), Str#:T_ResPro02()]
-		rp := ResponseProcessors(map)
+		rp := ResponseProcessorsImpl(map)
 		
 		rp.processResponse(3)
 		verify(Actor.locals["respro01"])
 		verify(Actor.locals["respro02"])
 	}
 
-
 	Void testProcessErr() {
 		map := [Int#:T_ResPro01()]
-		rp := ResponseProcessors(map)
+		rp := ResponseProcessorsImpl(map)
 		
 		verifyErr(afIoc::NotFoundErr#) {
 			rp.processResponse("Die!")			

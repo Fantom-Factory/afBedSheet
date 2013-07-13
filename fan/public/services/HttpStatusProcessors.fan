@@ -24,7 +24,14 @@ using web::WebRes
 ** @see `ConfigIds.httpStatusDefaultPage`
 ** 
 ** @uses a MappedConfig of 'Int:HttpStatusProcessor'
-const class HttpStatusProcessors : ResponseProcessor {
+const mixin HttpStatusProcessors : ResponseProcessor {
+
+	** Returns the result of processing the given `HttpStatus` as per the contributed processors.
+	override abstract Obj process(Obj response)
+
+}
+
+internal const class HttpStatusProcessorsImpl : HttpStatusProcessors {
 
 	@Inject @Config { id="afBedSheet.httpStatus.defaultPage" }
 	private const HttpStatusProcessor defaultHttpStatusPage

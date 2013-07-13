@@ -1,7 +1,14 @@
 using afIoc::StrategyRegistry
 
 ** Holds a collection of `HandlerResponseProcessor`s.
-const class ResponseProcessors {
+const mixin ResponseProcessors {
+
+	@NoDoc
+	abstract Void processResponse(Obj response)
+
+}
+
+internal const class ResponseProcessorsImpl : ResponseProcessors {
 
 	private const StrategyRegistry processorStrategy
 
@@ -9,7 +16,7 @@ const class ResponseProcessors {
 		processorStrategy = StrategyRegistry(responseProcessors)
 	}
 
-	internal Void processResponse(Obj response) {
+	override Void processResponse(Obj response) {
 		while (response != true)
 			response = get(response.typeof).process(response)
 	}	

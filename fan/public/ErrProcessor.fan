@@ -1,5 +1,5 @@
 
-** Responsible for processing Errs thrown from request handler methods and sending err pages to the client. 
+** Processes Errs thrown from request handler methods and sends err pages to the client. 
 const mixin ErrProcessor {
 	
 	** Returns a response obj for further processing (such as a `TextResponse`) or 'true' if no 

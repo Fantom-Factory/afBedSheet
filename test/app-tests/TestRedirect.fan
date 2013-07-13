@@ -38,7 +38,8 @@ internal class TestRedirect : AppTest {
 		client.reqUri = reqUri(`/redirect/movedPerm`)
 		client.writeReq
 		client.readRes
-		verifyEq(client.resCode, 308, "$client.resCode "+ client.resPhrase)
+//		verifyEq(client.resCode, 308, "$client.resCode "+ client.resPhrase)
+		verifyEq(client.resCode, 301, "$client.resCode "+ client.resPhrase)
 		verifyEq(client.resHeaders["Location"], "/movedPermanently")
 	}
 
