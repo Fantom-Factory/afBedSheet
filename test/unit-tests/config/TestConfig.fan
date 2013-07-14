@@ -1,6 +1,6 @@
 using afIoc
 
-class TestConfig : Test {
+internal class TestConfig : ConfigTest {
 	
 	Void testFactoryDef() {
 		reg := RegistryBuilder().addModule(T_MyModule01#).build.startup
@@ -69,6 +69,10 @@ internal class T_MyModule01 {
 		config.set("c07", "belgium")	// null factory value
 		
 		config.set("c08", "69")			// coerce fromStr
+
+		// appDef must override facDefs
+		config.set("c02", null)
+		config.set("c06", null)
 	}
 
 	@Contribute { serviceType=ApplicationDefaults# }
@@ -90,8 +94,7 @@ internal class T_MyService01 {
 	@Inject @Config{ id="c06" }	Str? c06
 	@Inject @Config{ id="c07" }	Str? c07
 
-	@Inject @Config{ id="c08" }	Int? c08	// coerce fromStr
-	
+	@Inject @Config{ id="c08" }	Int? c08	// coerce fromStr	
 }
 
 internal class T_MyService02 {
