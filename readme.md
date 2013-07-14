@@ -1,12 +1,12 @@
 # afBedSheet
 
-A web application framework for [Fantom](http://fantom.org/) Built on top of [afIoc](http://repo.status302.com/doc/afIoc/#overview) and [Wisp](http://fantom.org/doc/wisp/index.html), BedSheet aims to be: Powerful, Flexible and Simple.
+A web application framework for [Fantom](http://fantom.org/) built on top of [afIoc](http://repo.status302.com/doc/afIoc/#overview) and [Wisp](http://fantom.org/doc/wisp/index.html).
 
 
 
 ## Usage
 
-Write your app:
+Write your fantom web app:
 
     using afBedSheet
     using afIoc
@@ -50,4 +50,4 @@ Download from [status302](http://repo.status302.com/browse/afBedSheet).
 
 Or install via fanr:
 
-    fanr install -r http://repo.status302.com/fanr/ afBedSheet
+    $ fanr install -r http://repo.status302.com/fanr/ afBedSheet
