@@ -5,8 +5,13 @@ using afIoc::NotFoundErr
 ** the user, to override. 
 ** 
 ** @see `Config` facet.
-** 
-internal const class ConfigSource {
+**
+@NoDoc 
+const mixin ConfigSource {	
+	abstract Obj? get(Str id)
+}
+
+internal const class ConfigSourceImpl : ConfigSource {
 	
 	private const Str:Obj config
 
@@ -24,7 +29,7 @@ internal const class ConfigSource {
 		this.config = config.toImmutable
 	}
 	
-	Obj? get(Str id) {
+	override Obj? get(Str id) {
 		if (!config.containsKey(id))
 			throw NotFoundErr(ConfigMsgs.configNotFound(id), config.keys)
 		return config[id]  
