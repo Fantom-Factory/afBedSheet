@@ -1,6 +1,6 @@
 # afBedSheet
 
-A web application framework for [Fantom]`http://fantom.org/` Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`, BedSheet aims to be: Powerful, Flexible and Simple.
+A web application framework for [Fantom](http://fantom.org/) Built on top of [afIoc](http://repo.status302.com/doc/afIoc/#overview) and [Wisp](http://fantom.org/doc/wisp/index.html), BedSheet aims to be: Powerful, Flexible and Simple.
 
 
 
