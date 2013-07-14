@@ -1,10 +1,17 @@
 using afIoc::ConcurrentState
+using afIoc::Inject
 using mustache::Mustache
 using mustache::MustacheParser
 
 ** A cache of 'Mustache' templates.
 const class MoustacheTemplates {
+	
+	@Inject @Config { id="afBedSheet.moustache.templateTimeout" }
+	private const Duration templateTimeout
+	
 	private const ConcurrentState 	conState	:= ConcurrentState(MoustacheTemplatesState#)
+	
+	new make(|This|in) { in(this) }
 	
 	Str renderFromFile(File templateFile, Obj? context:=null, [Str:Mustache] partials:=[:], Obj?[] callStack := [,], Str indentStr := "") {
 		getTemplateFromFile(templateFile).render(context, partials, callStack, indentStr)
@@ -19,8 +26,7 @@ const class MoustacheTemplates {
 				fromFile(templateFile, now)
 			}
 			
-			// TODO: configure timeout
-			if ((now - temp.lastChecked) > 10sec) {
+			if ((now - temp.lastChecked) > templateTimeout) {
 				if (templateFile.modified > temp.lastModified) {
 					temp = fromFile(templateFile, now)
 					state.moustacheCache[key] = temp
