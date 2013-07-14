@@ -17,7 +17,7 @@ const class BedSheetWebMod : WebMod {
 	
 	Registry reg {
 		get { registry.val }
-		set { }
+		set { throw Err() }
 	}
 	
 	new make(Str moduleName, Int port, [Str:Obj] bedSheetOptions, [Str:Obj]? registryOptions := null) {
