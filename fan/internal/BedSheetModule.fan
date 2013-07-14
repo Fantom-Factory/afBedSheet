@@ -66,6 +66,7 @@ internal class BedSheetModule {
 		conf[ConfigIds.responseBufferThreshold]		= 32 * 1024	// TODO: why not kB?
 		conf[ConfigIds.httpStatusDefaultPage]		= conf.autobuild(HttpStatusPageDefault#)
 		conf[ConfigIds.noOfStackFrames]				= 50
+		conf[ConfigIds.moustacheTemplateTimeout]	= 10sec
 				
 		conf[ConfigIds.requestLogDir]				= null
 		conf[ConfigIds.requestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
