@@ -13,7 +13,7 @@ For BedSheet 0.0.8
    
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 
-
+More mixins - disable the proxies.
 
 Future
 ------
