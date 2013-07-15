@@ -35,7 +35,7 @@ internal class BedSheetModule {
 		
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
-		binder.bind(HttpStatusProcessor#, HttpStatusPageDefault#).withId("HttpStatusPageDefault")
+		binder.bindImpl(HttpStatusPageDefault#)
 	}
 
 	@Contribute { serviceType=RouteMatchers# }
@@ -63,14 +63,13 @@ internal class BedSheetModule {
 	}
 
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig conf, Registry registry) {
-		defPage := registry.serviceById("HttpStatusPageDefault")
+	static Void contributeFactoryDefaults(MappedConfig conf, HttpStatusPageDefault defaultStatusPage) {
 		
 		conf[ConfigIds.proxyPingInterval]			= 1sec
 		conf[ConfigIds.gzipDisabled]				= false
 		conf[ConfigIds.gzipThreshold]				= 376
 		conf[ConfigIds.responseBufferThreshold]		= 32 * 1024	// TODO: why not kB?
-		conf[ConfigIds.httpStatusDefaultPage]		= defPage
+		conf[ConfigIds.httpStatusDefaultPage]		= defaultStatusPage
 		conf[ConfigIds.noOfStackFrames]				= 50
 		conf[ConfigIds.moustacheTemplateTimeout]	= 10sec
 				
