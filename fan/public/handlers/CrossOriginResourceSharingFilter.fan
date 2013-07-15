@@ -32,7 +32,20 @@ using afIoc::Inject
 **  - `http://www.html5rocks.com/en/tutorials/cors/`
 **  - `https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS`
 **  - `http://api.brain-map.org/examples/doc/scatter/javascripts/jquery.ie.cors.js.html`
-const class CrossOriginResourceSharingFilter {
+const mixin CrossOriginResourceSharingFilter {
+	
+	** Sets response headers if the request a simple CORS request. 
+	** Returns 'false'.
+	** Uri not used.
+	abstract Bool serviceSimple(Uri uri := ``)
+
+	** Map to an 'OPTIONS' http method to service complex CORS preflight reqs.
+	** Returns 'true' because the real request should follow with a different http method.
+	** Uri not used.
+	abstract Bool servicePrefilght(Uri uri := ``)
+}
+
+internal const class CrossOriginResourceSharingFilterImpl : CrossOriginResourceSharingFilter {
 	private const static Log log := Utils.getLog(CrossOriginResourceSharingFilter#)
 
 	@Inject
@@ -66,9 +79,7 @@ const class CrossOriginResourceSharingFilter {
 		domainGlobs = (corsAllowedOrigins ?: "").split(',').map { Regex.glob(it) }
 	}
 	
-	** Map to... 
-	** TODO: more docs
-	public Bool serviceSimple(Uri uri := ``) {
+	override Bool serviceSimple(Uri uri := ``) {
 		if (!isSimpleReq)
 			return false
 		
@@ -90,8 +101,7 @@ const class CrossOriginResourceSharingFilter {
 		return false
 	}
 
-	** Map to an 'OPTIONS' http method
-	public Bool servicePrefilght(Uri uri := ``) {
+	override Bool servicePrefilght(Uri uri := ``) {
 		if (!isPreflightReq)
 			return false
 

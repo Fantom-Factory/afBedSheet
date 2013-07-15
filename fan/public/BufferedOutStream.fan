@@ -1,8 +1,11 @@
 using afIoc::Inject
 using web::WebRes
 
-** A stream that buffers its contents starts gzipping once data has accumulated past a given (minimum) threshold. When 
-internal class BufferedOutStream : OutStream {
+** Buffers the stream content so it can set the 'Content-Length' http response header.
+** Data is buffered until it accumulates past a given (maximum) threshold, at which point the all data streamed direct.
+** 
+** @see `ConfigIds.responseBufferThreshold`
+class BufferedOutStream : OutStream {
 
 	@Config { id="afBedSheet.responseBuffer.threshold" }
 	@Inject private Int 			resBufThreadhold	

@@ -4,7 +4,14 @@ using mustache::Mustache
 using mustache::MustacheParser
 
 ** A cache of 'Mustache' templates.
-const class MoustacheTemplates {
+const mixin MoustacheTemplates {
+	
+	** Renders a Moustache template
+	abstract Str renderFromFile(File templateFile, Obj? context := null, [Str:Mustache] partials := [:], Obj?[] callStack := [,], Str indentStr := "")
+
+}
+
+internal const class MoustacheTemplatesImpl : MoustacheTemplates {
 	
 	@Inject @Config { id="afBedSheet.moustache.templateTimeout" }
 	private const Duration templateTimeout
@@ -13,7 +20,7 @@ const class MoustacheTemplates {
 	
 	new make(|This|in) { in(this) }
 	
-	Str renderFromFile(File templateFile, Obj? context:=null, [Str:Mustache] partials:=[:], Obj?[] callStack := [,], Str indentStr := "") {
+	override Str renderFromFile(File templateFile, Obj? context := null, [Str:Mustache] partials := [:], Obj?[] callStack := [,], Str indentStr := "") {
 		getTemplateFromFile(templateFile).render(context, partials, callStack, indentStr)
 	}
 	

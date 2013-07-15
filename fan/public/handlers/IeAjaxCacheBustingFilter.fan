@@ -6,7 +6,13 @@ using afIoc::Inject
 **   Cache-Control: max-age=0,no-cache,no-store,post-check=0,pre-check=0"
 **   Expires:       Mon, 26 Jul 1997 05:00:00 GMT"
 ** <pre
-const class IeAjaxCacheBustingFilter {
+const mixin IeAjaxCacheBustingFilter {
+	
+	** Uri not used.
+	abstract Bool service(Uri uri := ``)
+}
+
+internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {
 	
 	@Inject
 	private const HttpRequest req
@@ -19,9 +25,7 @@ const class IeAjaxCacheBustingFilter {
 	
 	internal new make(|This|in) { in(this) }
 	
-	** 
-	** 'uri' param not used.
-	public Bool service(Uri uri := ``) {
+	override Bool service(Uri uri := ``) {
 
 		if (browserDetection.isInternetExplorer) {
 			// IE CORS requests from XDomainRequest don't set 'X-Requested-With' HTTP header. 

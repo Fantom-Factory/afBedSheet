@@ -49,42 +49,50 @@ using webmod::LogMod
 **     "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10"
 **     "http://localhost/tag"
 ** 
-const class RequestLogFilter {
-	
+const mixin RequestLogFilter {
+
 	** Directory where the request log files are written.
 	** 
 	** @see `ConfigIds.requestLogDir`
-	@Inject @Config { id="afBedSheet.requestLog.dir" } 
-	const File? dir
+	abstract File dir()
 
 	** Log filename pattern. 
 	** 
 	** @see `ConfigIds.requestLogFilenamePattern`
-	@Inject @Config { id="afBedSheet.requestLog.filenamePattern" } 
-	const Str filenamePattern
+	abstract Str filenamePattern()
 
 	** Format of the web log records as a string of names.
 	** 
 	** @see `ConfigIds.requestLogFields`
+	abstract Str fields()
+
+	** Writes a request log entry.
+	abstract Void service(Uri remainingUri := ``)
+}
+
+internal const class RequestLogFilterImpl : RequestLogFilter {
+	
+	override const File dir
+
+	@Inject @Config { id="afBedSheet.requestLog.filenamePattern" } 
+	override const Str filenamePattern
+
 	@Inject @Config { id="afBedSheet.requestLog.fields" } 
-	const Str fields
+	override const Str fields
 
 	private const LogMod logMod
 	
-	internal new make(RegistryShutdownHub shutdownHub, |This|in) { 
+	internal new make(RegistryShutdownHub shutdownHub, ConfigSource configSource, |This|in) { 
 		in(this)
-		
-		if (dir == null)
-			throw BedSheetErr(BsMsgs.requestLogFilterDirCannotBeNull)
-		
-		logMod = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
+
+		dir 	= configSource.get("afBedSheet.requestLog.dir") ?: throw BedSheetErr(BsMsgs.requestLogFilterDirCannotBeNull)
+		logMod  = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
 		logMod.onStart
-		
+
 		shutdownHub.addRegistryShutdownListener("RequestLogFilter", [,], |->| { logMod.onStop })
 	}
 	
-	** Writes a request log entry.
-	Void service(Uri remainingUri := ``) {
+	override Void service(Uri remainingUri := ``) {
 		logMod.onService
 	}
 }
