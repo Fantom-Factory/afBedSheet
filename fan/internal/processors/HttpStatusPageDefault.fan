@@ -4,7 +4,14 @@ using web::WebOutStream
 using web::WebRes
 
 ** Sends the status code and msg from `HttpStatusErr` to the client. 
-internal const class HttpStatusPageDefault : HttpStatusProcessor {
+@NoDoc
+const mixin HttpStatusPageDefault : HttpStatusProcessor { 
+	
+	// TODO: afPlastic shouldn't need us to redefine mixin methods
+	override abstract Obj process(HttpStatus httpStatus)
+}
+
+internal const class HttpStatusPageDefaultImpl : HttpStatusPageDefault {
 
 	@Inject private const BedSheetPage 	bedSheetPage
 	@Inject	private const HttpResponse 	response
