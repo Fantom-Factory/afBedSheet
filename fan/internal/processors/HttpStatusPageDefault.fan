@@ -8,7 +8,7 @@ internal const class HttpStatusPageDefault : HttpStatusProcessor {
 
 	@Inject private const BedSheetPage 	bedSheetPage
 	@Inject	private const HttpResponse 	response
-	
+
 	internal new make(|This|in) { in(this) }
 
 	override TextResponse process(HttpStatus httpStatus) {
