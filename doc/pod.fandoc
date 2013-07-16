@@ -148,6 +148,58 @@ BedSheet bundles with the following filters:
 Routes are not limited to matching against uris, you can create your own routes that match against anything, such as http
 headers or the time of day! Just create a `RouteMatcher` and contribute it to `RouteMatchers`.
 
+
+
+Using Draft Routes [#usingDraftRoutes]
+======================================
+If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use draft Routes
+in BedSheet! Ensure draft is added as a dependency in your 'build.fan' then create the following class:
+
+pre>
+using afBedSheet::RouteMatcher
+using afBedSheet::RouteMatch
+using draft::Route as DraftRoute
+
+const class DraftRouteMatcher : RouteMatcher {
+  override RouteMatch? match(Obj objRoute, Uri uri, Str httpMethod) {
+    route := (DraftRoute) objRoute
+    args  := route.match(uri, httpMethod)
+    return (args == null) ? null : RouteMatch(route.handler, [args])
+  }
+}
+<pre
+
+Add the 'DraftRouteMatcher' to your 'AppModule':
+
+pre>
+using afIoc
+using afBedSheet::RouteMatchers
+using draft::Route as DraftRoute
+
+@Contribute { serviceType=RouteMatchers# }
+static Void contributeRouteMatchers(MappedConfig conf) {
+  conf[DraftRoute#] = conf.autobuild(DraftRouteMatcher#)
+}
+<pre
+
+Now you can contribute draft routes to BedSheet:
+
+pre>
+using draft::Route as DraftRoute
+
+...
+
+@Contribute { serviceType=Routes# }
+static Void contributeRoutes(OrderedConfig conf) {
+  conf.add(DraftRoute("/", "GET", PageHandler#index))
+  conf.add(DraftRoute("/echo/{name}/{age}", "GET", PageHandler#print))
+}
+<pre
+
+If creating the above 'DraftRouteMatcher' seems like too much work, then add
+[afBedSheetDraft]`https://bitbucket.org/SlimerDude/afbedsheetdraft` as a dependency to your project.
+See [afBedSheetDraft]`https://bitbucket.org/SlimerDude/afbedsheetdraft` for more details.
+
 Routing lesson over.
 
 (...you Aussies may stop giggling now.)
@@ -318,7 +370,7 @@ must contribute to the `GzipCompressible` service to enable gzip for specified [
 
     config["text/funky"] = true
 
-(Note: The GzipCompressible contrib type is actually `MimeType` - [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
+(Note: The GzipCompressible contrib type is actually `sys::MimeType` - [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
 kindly coerces the 'Str' to 'MimeType' for us.)
 
 By default BedSheet will compress plain text, css, html, javascript, xml, json and other text responses.
@@ -364,7 +416,7 @@ More! [#more]
 *************
 All request handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
 DAOs and other services. BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the
-[BedSheet source]`XXX` for [afIoc]`http://repo.status302.com/doc/afIoc/#overview` examples.
+[BedSheet source]`https://bitbucket.org/SlimerDude/afbedsheet/src` for [afIoc]`http://repo.status302.com/doc/afIoc/#overview` examples.
 
 > TIP: 'const' handler classes are cached by BedSheet and reused on every request.
 
@@ -382,18 +434,7 @@ Check out [Heroku]`http://www.heroku.com/` and see how ridiculously easy it is t
 Release Notes [#releaseNotes]
 *****************************
 
-Breaking Changes [#breakingChanges]
-===================================
-
-v0.0.8 [#v0.0.8]
+v1.0.0 [#v1.0.0]
 ----------------
- - 'Request' has been renamed to 'HttpRequest'
- - 'Response' has been renamed to 'HttpResponse'
-
-v0.0.6 [#v0.0.6]
-----------------
- - `Route` URIs now need the suffix '**' to match all remaiing method arguments
- - 'TextResult' has been renamed to 'TextRepsonse'
- - 'MoustacheSource' has been renamed to 'MoustacheTemplates'
- - All Services ending in 'Source' have renamed to their plural. Example: ValueEncoderSource -> ValueEncoders
+ - Initial release
 
