@@ -9,7 +9,7 @@ internal class BedSheetModule {
 		binder.bindImpl(BedSheetService#)
 		
 		binder.bindImpl(Routes#)
-		binder.bindImpl(RouteMatchers#)
+		binder.bindImpl(RouteMatchers#).withoutProxy
 		binder.bindImpl(ReqestHandlerInvoker#)
 
 		binder.bindImpl(ValueEncoders#)

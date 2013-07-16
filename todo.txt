@@ -1,19 +1,22 @@
 
-For BedSheet 0.0.6
+For BedSheet 1.0.0
 ------------------
-
 fantom afIoc on T5
 
-
-
-For BedSheet 0.0.8
-------------------
-
- - PathMapRoute / RouteLikeDraft
-   
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 
-More mixins - disable the proxies.
+
+
+For BedSheet 1.1.0
+------------------
+
+ filters or @Before and @After, but I like the idea of filters being able to intercept the req / res
+
+ - @Persist { strategy="session" } - how to access setter?
+ - @Persist { strategy="flash" }
+ - @Flash or have HttpFlash["msg"] = "Hello!"
+
+
 
 Future
 ------
