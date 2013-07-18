@@ -21,8 +21,8 @@ internal const class BsLogMsgs {
 		"Killing BedSheet WebApp '$appModule'"
 	}	
 
-	static Str appRestarterPodUpdatd(Pod pod, Duration timeDiff) {
-		"Pod '$pod.name' pod was updated $timeDiff.abs.toLocale ago"
+	static Str appRestarterPodUpdatd(Str podName, Duration timeDiff) {
+		"Pod '$podName' pod was updated $timeDiff.abs.toLocale ago"
 	}
 
 	// ---- AppDestroyer --------------------------------------------------------------------------
