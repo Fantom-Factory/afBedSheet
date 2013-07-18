@@ -47,18 +47,23 @@ internal const class AppRestarter {
 internal class AppRestarterState {
 	private const static Log log := Utils.getLog(AppRestarter#)
 	
-	Pod:DateTime?	podTimeStamps	:= [:]
+	Str:DateTime?	podTimeStamps	:= [:]
 	Process?		realWebApp
 
 	Void updateTimeStamps() {
-		Pod.list.each |pod| { podTimeStamps[pod] = podFile(pod).modified }
+		// BugFix: Pod.list throws an Err is any pod is invalid (wrong dependencies etc) 
+		// this way we don't even load the pod into memory!
+		Env.cur().findAllPodNames.each |podName| {
+			podTimeStamps[podName] = podFile(podName).modified
+		}
+		
 		log.info(BsLogMsgs.appRestarterCachedPodTimestamps(podTimeStamps.size))
 	}
 	
 	Bool podsModified()	{
-		true == Pod.list.eachWhile |pod| {
-			if (podFile(pod).modified > podTimeStamps[pod]) {
-				log.info(BsLogMsgs.appRestarterPodUpdatd(pod, podTimeStamps[pod] - podFile(pod).modified))
+		true == Env.cur().findAllPodNames.eachWhile |podName| {
+			if (podFile(podName).modified > podTimeStamps[podName]) {
+				log.info(BsLogMsgs.appRestarterPodUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
 				return true
 			}
 			return null
@@ -80,7 +85,7 @@ internal class AppRestarterState {
 		realWebApp.kill
 	}
 	
-	private File podFile(Pod pod) {
+	private File podFile(Str podName) {
 		Env? env := Env.cur
 		file := env.workDir + `_doesnotexist_`
 
@@ -88,18 +93,18 @@ internal class AppRestarterState {
 		while (!file.exists && env != null) {
 			if (env is PathEnv) {
 				((PathEnv)env).path.eachWhile |p| {
-					file = p + `lib/fan/${pod.name}.pod`
+					file = p + `lib/fan/${podName}.pod`
 					return file.exists ? true : null
 				}
 			} else {
-				file = env.workDir + `lib/fan/${pod.name}.pod`
+				file = env.workDir + `lib/fan/${podName}.pod`
 			}
 			env = env.parent
 		}
 
 		// verify exists and return
 		if (!file.exists)
-			throw Err("Pod file not found $pod.name")
+			throw Err("Pod file not found $podName")
 		return file
 	}	
 }
