@@ -6,6 +6,9 @@ using afIoc::Inject
 **   Cache-Control: max-age=0,no-cache,no-store,post-check=0,pre-check=0"
 **   Expires:       Mon, 26 Jul 1997 05:00:00 GMT"
 ** <pre
+** 
+** This is by far, much preferable, to the client setting a cache busting query string to the request url (yuck!). 
+// FIXME: turn into REAL filter
 const mixin IeAjaxCacheBustingFilter {
 	
 	** Uri not used.

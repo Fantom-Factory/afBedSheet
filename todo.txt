@@ -6,14 +6,17 @@ For BedSheet 1.0.0
 Err500 - add Env Properties
 Err500 - add Disable option until we have env modes.
 
+DelegateBuilder for
+ - HttpOutStream
+ - HttpRequest
+ - HttpResponse
+
+Logging filter
+
 fantom afIoc on T5
 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 
-filters 
- - need to run before all (*) routes and after (*) routes
- - nice if they can intercept the Req / Res to alter the req URI & route to a different handler 
- - (@Before and @After, but I like the idea of filters being able to intercept the req / res)
 
 For BedSheet 1.1.0
 ------------------
