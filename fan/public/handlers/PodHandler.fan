@@ -29,7 +29,7 @@ const class PodHandler {
 		// lookup file
 		file := pod.file(`/` + remainingUri[1..-1], false)
 		if (file == null)
-			throw HttpStatusErr(404, "File not found: $remainingUri")
+			throw HttpStatusErr(404, "Resource not found: ${pod.name}::/${remainingUri[1..-1]}")
 
 		return file
 	}

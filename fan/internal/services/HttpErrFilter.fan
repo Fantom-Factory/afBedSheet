@@ -1,28 +1,22 @@
-using web::WebReq
-using web::WebRes
 using afIoc::Inject
-using afIoc::ThreadStashManager
 using afIoc::Registry
+using afIoc::ThreadStashManager
 
-const internal class BedSheetService {
-	private const static Log log := Utils.getLog(BedSheetService#)
+internal const class HttpErrFilter : HttpPipelineFilter {
+	private const static Log log := Utils.getLog(HttpErrFilter#)
 
 	@Inject	private const Registry				registry
-	@Inject	private const ThreadStashManager	stashManager
-	@Inject	private const Routes				routes
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const ErrProcessors			errProcessors
 	@Inject	private const HttpResponse			httpResponse
 
 	new make(|This|in) { in(this) }
-
-	Void service() {
+	
+	override Bool service(HttpPipeline handler) {
 		try {
-			response := routes.processRequest(webReq.modRel, webReq.method)
-			responseProcessors.processResponse(response)
-
+			return handler.service
+			
 		} catch (Err err) {
-
 			try {
 				response := errProcessors.processErr(err)				
 				responseProcessors.processResponse(response)
@@ -32,23 +26,13 @@ const internal class BedSheetService {
 				log.err("ERR thrown when processing $err.typeof.qname", doubleErr)
 				log.err("  - Original Err", err)
 				
-				if (!webRes.isCommitted) {
+				if (!httpResponse.isCommitted) {
 					errPage := (HttpStatusPage500) registry.autobuild(HttpStatusPage500#)
 					errPage.process(HttpStatus(500, doubleErr.msg)) 
 				}
 			}
 			
-		} finally {
-			httpResponse.out.close
-			stashManager.cleanUpThread
+			return true
 		}
-	}
-	
-	private WebReq webReq() {
-		registry.dependencyByType(WebReq#)
-	}
-	
-	private WebRes webRes() {
-		registry.dependencyByType(WebRes#)
 	}
 }

@@ -17,25 +17,30 @@ internal const class ErrPrinter {
 		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
 		out.h1.w(h1Msg).h1End
 
-		out.h2.w("Request URI").h2End
-		out.p.b.w(request.uri).bEnd.pEnd
+		out.h2.w("Request").h2End
+		out.table
+		w(out, "URI",			request.uri)
+		w(out, "HTTP Method",	request.httpMethod)
+		w(out, "HTTP Version",	request.httpVersion)
+//		out.p.b.w(request.uri).bEnd.pEnd
+		out.tableEnd
 		
 		out.h2.w("Request Headers").h2End
 		out.table
-		request.headers.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { out.tr.td.w(k).tdEnd.td.w(v).tdEnd.trEnd }
+		request.headers.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
 		out.tableEnd
 
 		if (request.form != null) {
 			out.h2.w("Form Parameters").h2End
 			out.table
-			request.headers.each |v,k| { out.tr.td.w(k).tdEnd.td.w(v).tdEnd.trEnd }
+			request.headers.each |v,k| { w(out, k, v) }
 			out.tableEnd
 		}
 
 		if (!request.cookies.isEmpty) {
-			out.h2.w("Cookies").h2End
+			out.h2("class=\"cookies\"").w("Cookies").h2End
 			out.table
-			request.cookies.each |v,k| { out.tr.td("class=\"wrap\"").w(k).tdEnd.td.w(v).tdEnd.trEnd }
+			request.cookies.each |v,k| { w(out, k, v) }
 			out.tableEnd
 		}
 
@@ -53,6 +58,10 @@ internal const class ErrPrinter {
 
 		return buf.toStr
 	}
+	
+	private Void w(WebOutStream out, Str key, Obj val) {
+		out.tr.td.w(key).tdEnd.td.w(val).tdEnd.trEnd
+	}
 
 	Str errToStr(Err? err) {
 		if (err == null) return Str.defVal
@@ -60,8 +69,10 @@ internal const class ErrPrinter {
 		buf := StrBuf()
 		buf.add("$err.msg\n")
 
-		buf.add("\nRequest URI:\n")
-		buf.add("  ${request.uri}\n")
+		buf.add("\nRequest:\n")
+		buf.add("  URI: ${request.uri}\n")
+		buf.add("  HTTP Method: ${request.httpMethod}\n")
+		buf.add("  HTTP Version: ${request.httpVersion}\n")
 		
 		buf.add("\nHeaders:\n")
 		request.headers.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { buf.add("  $k: $v\n") }

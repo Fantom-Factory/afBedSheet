@@ -71,7 +71,6 @@ const mixin HttpRequest {
 	** @see `web::WebReq.form`
 	abstract [Str:Str]? form()
 	
-	
 	** The accepted locales for this request based on the "Accept-Language" HTTP header. List is 
 	** sorted by preference, where 'locales.first' is best, and 'locales.last' is worst. This list 
 	** is guaranteed to contain Locale("en").

@@ -6,7 +6,6 @@ using concurrent
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
-		binder.bindImpl(BedSheetService#)
 		
 		binder.bindImpl(Routes#)
 		binder.bindImpl(RouteMatchers#).withoutProxy
@@ -38,6 +37,19 @@ internal class BedSheetModule {
 		binder.bindImpl(HttpStatusPageDefault#)
 	}
 
+	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!
+	static HttpPipeline buildHttpPipeline(HttpPipelineFilter[] filters, PipelineBuilder bob, Registry reg) {
+		terminator := reg.autobuild(HttpRouteService#)
+		return bob.build(HttpPipeline#, HttpPipelineFilter#, filters, terminator)
+	}
+	
+	@Contribute { serviceType=HttpPipeline# }
+	static Void contributeHttpPipeline(OrderedConfig conf) {
+		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), ["before: BedSheetFilters", "before: HttpErrFilter"])
+		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters"])		
+		conf.addPlaceholder("BedSheetFilters")
+	}
+	
 	@Contribute { serviceType=RouteMatchers# }
 	static Void contributeRouteMatchers(MappedConfig conf) {
 		conf[Route#] 			= conf.autobuild(RouteMatcherImpl#)

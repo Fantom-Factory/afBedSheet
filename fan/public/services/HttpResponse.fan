@@ -128,14 +128,14 @@ internal const class HttpResponseImpl : HttpResponse {
 	}
 
 //	scope = perthread
-//	OutStream buildResponseOutStream(Type[] delegates) {
-//		DelegatePipelineBuilder(OutStream#, delegates)
+//	OutStream buildHttpOutStream(Type[] delegates) {
+//		DelegateBuilder.build(OutStream#, delegates, terminator)
 //	}
-	
+
 	override Void redirect(Uri uri, Int statusCode) {
 		webRes.redirect(uri, statusCode)
 	}
-	
+
 	private WebRes webRes() {
 		registry.dependencyByType(WebRes#)
 	}

@@ -5,7 +5,7 @@ using afIoc::ServiceStats
 using afIoc::ServiceStat
 
 internal const class ReqestHandlerInvoker {
-	private const static Log 		log 		:= Utils.getLog(BedSheetService#)
+	private const static Log 		log 		:= Utils.getLog(ReqestHandlerInvoker#)
 	private const ConcurrentState 	conState	:= ConcurrentState(RouteHandlerState#)
 	private const [Str:ServiceStat] serviceStats
 	
