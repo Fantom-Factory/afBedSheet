@@ -1,22 +1,35 @@
 
 For BedSheet 1.0.0
 ------------------
+ - (doc) add draft and tales to More! section.
+
+Err500 - add Env Properties
+Err500 - add Disable option until we have env modes.
+
 fantom afIoc on T5
 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 
-
+filters 
+ - need to run before all (*) routes and after (*) routes
+ - nice if they can intercept the Req / Res to alter the req URI & route to a different handler 
+ - (@Before and @After, but I like the idea of filters being able to intercept the req / res)
 
 For BedSheet 1.1.0
 ------------------
-
- filters or @Before and @After, but I like the idea of filters being able to intercept the req / res
-
  - @Persist { strategy="session" } - how to access setter?
  - @Persist { strategy="flash" }
  - @Flash or have HttpFlash["msg"] = "Hello!"
 
+Err500 - have filter stack frames checkbox?
 
+	static Void main(Str[] args) {
+		kB := Unit.fromStr("kB")
+		b := Unit.fromStr("byte")
+	
+		size := kB.convertTo(3f, b)
+		Env.cur.err.printLine(size)
+	}
 
 Future
 ------

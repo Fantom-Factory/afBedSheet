@@ -72,7 +72,7 @@ td:first-child {
 	padding-right:		1em;
 }
 
-td.wrap {
+.cookies td:first-child {
 	white-space:		normal;
 }
 

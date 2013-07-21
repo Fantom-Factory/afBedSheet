@@ -29,7 +29,7 @@ const class BedSheetWebMod : WebMod {
 
 	override Void onService() {
 		req.mod = this
-		((BedSheetService) reg.dependencyByType(BedSheetService#)).service
+		((HttpPipeline) reg.dependencyByType(HttpPipeline#)).service
 		res.done
 	}
 
