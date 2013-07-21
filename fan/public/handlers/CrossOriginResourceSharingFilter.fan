@@ -32,6 +32,7 @@ using afIoc::Inject
 **  - `http://www.html5rocks.com/en/tutorials/cors/`
 **  - `https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS`
 **  - `http://api.brain-map.org/examples/doc/scatter/javascripts/jquery.ie.cors.js.html`
+// FIXME: rename to Handler
 const mixin CrossOriginResourceSharingFilter {
 	
 	** Sets response headers if the request a simple CORS request. 

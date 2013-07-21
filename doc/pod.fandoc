@@ -4,8 +4,14 @@ BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applicat
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`,
 BedSheet aims to be: Powerful, Flexible and Simple.
 
+BedSheet's main concern is proving a rich mechanism for the routing and delivery of content over HTTP. The generation of
+content (i.e. templating) is currently a lesser concern. That said, BedSheet comes bundled with Moustache (from Xored) by default
+and integrating with other templating engines should only take a couple of lines of code.
+
 BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
 Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
+
+
 
 Quick Start [#quickStart]
 *************************
@@ -106,6 +112,32 @@ Note that 'AppModule' is named so out of convention but may be called anything y
 
 
 
+HTTP Pipeline [#httpPipeline]
+*****************************
+When a http request is received it is passed through a pipeline of filters. The terminating filter performs the standard
+BedSheet routing, see [Request Routing]`#requestRouting`. Filters can be used to address cross cutting concerns such as
+authorisation.
+
+Standard BedSheet filters are:
+ - 'HttpCleanupFilter': Ensures the `HttpOutStream` is closed and cleans up all request / thread scoped data.
+ - 'HttpErrFilter': Catches and processes Errs, see [Error Processing]`#errorProcessing`.
+ - `IeAjaxCacheBustingFilter`: Adds cache headers to the response to prevent IE from caching ajax responses.
+ - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+
+It is important that the first two filters are always first in the pipeline. As such, when contributing your own filters you are
+encouraged to add the ordering constraint of 'after: BedSheetFilters', example:
+
+pre>
+@Contribute { serviceType=HttpPipeline# }
+static Void contributeHttpPipeline(OrderedConfig conf, AuthFilter myAuthFilter) {
+
+    conf.addOrdered("AuthFilter", myAuthFilter, ["after: BedSheetFilters"])
+
+}
+<pre
+
+
+
 Request Routing [#requestRouting]
 *********************************
 When BedSheet receives a web request, it is matched to a handler for processing. This is configured through the `Routes` service.
@@ -115,35 +147,12 @@ pre>
 static Void contributeRoutes(OrderedConfig conf) {
 
   conf.add(Route(`/index`, IndexPage#service))
+
 }
 <pre
 
 BedSheet is bundled with the following Route objs:
  - `Route`: Matches against the request URI, converting deeper path segments into method arguments.
-
-If the handler returns 'Void' or 'null' then processing is passed onto the next matching route. This makes it possible to
-create filter like handlers that pre-process a blanket wide set of uris. To do this, contribute a placeholder that all routes
-(ordered or unordered) naturally come after. Example:
-
-pre>
-@Contribute { serviceType=Routes# }
-static Void contributeRoutes(OrderedConfig conf) {
-
-  conf.addPlaceholder("routes")
-
-  // routes
-  conf.add(Route(`/index`, IndexPage#service))
-  ...
-
-  // filters - addOrdered to ensure they come before routes
-  conf.addOrdered("AuthFilter", Route(`/admin/***`, AuthFilter#service), ["before: routes"])
-}
-<pre
-
-BedSheet bundles with the following filters:
- - `RequestLogFilter` : Generate a server log file of all HTTP requests.
- - `CrossOriginResourceSharingFilter` : Allows ajax cross domain scripting.
- - `IeAjaxCacheBustingFilter` : Prevents [Internet Explorer]`https://twitter.com/1Pr0grammer/status/238015103910420480/photo/1` from caching Ajax and CORS requests.
 
 Routes are not limited to matching against uris, you can create your own routes that match against anything, such as http
 headers or the time of day! Just create a `RouteMatcher` and contribute it to `RouteMatchers`.
@@ -153,41 +162,13 @@ headers or the time of day! Just create a `RouteMatcher` and contribute it to `R
 Using Draft Routes [#usingDraftRoutes]
 ======================================
 If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use draft Routes
-in BedSheet! Ensure draft is added as a dependency in your 'build.fan' then create the following class:
+in BedSheet!
 
-pre>
-using afBedSheet::RouteMatcher
-using afBedSheet::RouteMatch
-using draft::Route as DraftRoute
-
-const class DraftRouteMatcher : RouteMatcher {
-  override RouteMatch? match(Obj objRoute, Uri uri, Str httpMethod) {
-    route := (DraftRoute) objRoute
-    args  := route.match(uri, httpMethod)
-    return (args == null) ? null : RouteMatch(route.handler, [args])
-  }
-}
-<pre
-
-Add the 'DraftRouteMatcher' to your 'AppModule':
-
-pre>
-using afIoc
-using afBedSheet::RouteMatchers
-using draft::Route as DraftRoute
-
-@Contribute { serviceType=RouteMatchers# }
-static Void contributeRouteMatchers(MappedConfig conf) {
-  conf[DraftRoute#] = conf.autobuild(DraftRouteMatcher#)
-}
-<pre
-
-Now you can contribute draft routes to BedSheet:
+Just add [afBedSheetDraft]`https://bitbucket.org/SlimerDude/afbedsheetdraft` and [draft]`https://bitbucket.org/afrankvt/draft`
+as dependencies in your 'build.fan' (no config required!). Now you can contribute draft routes to BedSheet:
 
 pre>
 using draft::Route as DraftRoute
-
-...
 
 @Contribute { serviceType=Routes# }
 static Void contributeRoutes(OrderedConfig conf) {
@@ -195,10 +176,6 @@ static Void contributeRoutes(OrderedConfig conf) {
   conf.add(DraftRoute("/echo/{name}/{age}", "GET", PageHandler#print))
 }
 <pre
-
-If creating the above 'DraftRouteMatcher' seems like too much work, then add
-[afBedSheetDraft]`https://bitbucket.org/SlimerDude/afbedsheetdraft` as a dependency to your project.
-See [afBedSheetDraft]`https://bitbucket.org/SlimerDude/afbedsheetdraft` for more details.
 
 Routing lesson over.
 
@@ -209,7 +186,7 @@ Routing lesson over.
 Request Handling [#requestHandling]
 ***********************************
 Request handlers is where logic is processed and responses are rendered. Handlers generally shouldn't pipe anything to
-'Response.out'. Instead they should return a response object. Example, the above 'HelloPage' handler returns a
+http response out stream, instead they should return a response object. Example, the above 'HelloPage' handler returns a
 `TextResponse`.
 
 BedSheet bundles with the following request handlers:
@@ -299,15 +276,15 @@ pre>
 All BedSheet config keys are listed in `ConfigIds` meaning the above can be more safely rewriten as:
 
 pre>
-    conf[ConfigIds.noOfStackFrames] = 100
+  conf[ConfigIds.noOfStackFrames] = 100
 <pre
 
 To inject config values in your services, use the '@Config' facet with conjunction with
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview`'s '@Inject':
 
 pre>
-	@Inject	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
-	Int noOfStackFrames
+  @Inject	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
+  Int noOfStackFrames
 <pre
 
 The config mechanism is not just for BedSheet, you can use it too when creating add-on libraries! Contributing to
@@ -317,7 +294,7 @@ The config mechanism is not just for BedSheet, you can use it too when creating 
 
 Development Proxy [#DevelopmentProxy]
 *************************************
-You need never (manually) restart your app again!
+Never (manually) restart your app again!
 
 Use the '-proxy' option to create a Development Proxy to auto re-start your app when any of your pods are updated:
 
