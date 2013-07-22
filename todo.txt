@@ -11,12 +11,16 @@ DelegateBuilder for
  - HttpRequest
  - HttpResponse
 
+rename filters
+
 fantom afIoc on T5
 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
 
 Check content-length on large files - dun want bufferedOut to overwrite!!! 
  - (disable out buff - have it log a warn if it's about to cut over when content-length already set)
+
+
 
 For BedSheet 1.0.2
 ------------------
