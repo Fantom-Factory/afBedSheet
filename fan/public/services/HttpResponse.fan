@@ -52,28 +52,34 @@ const mixin HttpResponse {
 	** 
 	** @see `GzipOutStream`
 	abstract Void disableGzip()
+	
+	** Has gzip compression been disabled for this response? 
+	** Only returns 'true' if 'disableGzip()' has been called.
+	** 
+	** @see `GzipOutStream`
+	abstract Bool isGzipDisabled()	
 
 	** Disables response buffering
 	** 
 	** @see `BufferedOutStream`
 	abstract Void disableBuffering()
-	
-	** Send a redirect response to the client using the specified status code and url.
-	** If in doubt, use a status code of [303 See Other]`http://en.wikipedia.org/wiki/HTTP_303`.
-	**
-	** @see `web::WebRes.redirect`
-	abstract Void redirect(Uri uri, Int statusCode)
 
+	** Has response buffering been disabled for this response?
+	** Only returns 'true' if 'disableBuffering()' has been called.
+	** 
+	** @see `BufferedOutStream`
+	abstract Bool isBufferingDisabled()
 }
 
 internal const class HttpResponseImpl : HttpResponse {
 	
 	@Inject	private const Registry 			registry
-	@Inject	private const HttpRequest 		request
-	@Inject	private const GzipCompressible 	gzipCompressible
+	
+//	@Inject	private const HttpRequest 		request
+//	@Inject	private const GzipCompressible 	gzipCompressible
 
-	@Inject @Config { id="afBedSheet.gzip.disabled" }
-	private const Bool gzipDisabled
+//	@Inject @Config { id="afBedSheet.gzip.disabled" }
+//	private const Bool gzipDisabled
 
 	private const ThreadStash threadStash
 
@@ -85,9 +91,17 @@ internal const class HttpResponseImpl : HttpResponse {
 	override Void disableGzip() {
 		threadStash["disableGzip"] = true
 	}
+
+	override Bool isGzipDisabled() {
+		threadStash.contains("disableGzip")		
+	}
 	
 	override Void disableBuffering() {
-		threadStash["disableBuffering"] = true		
+		threadStash["disableBuffering"] = true
+	}
+	
+	override Bool isBufferingDisabled() {
+		threadStash.contains("disableBuffering")		
 	}
 	
 	override Void setStatusCode(Int statusCode) {
@@ -107,36 +121,77 @@ internal const class HttpResponseImpl : HttpResponse {
 	}
 
 	override OutStream out() {
-		out := threadStash["out"]
-		if (out != null)
-			return out
+		registry.serviceById("HttpOutStream")
 		
-		// TODO: afIoc 1.3.10 - Could we make a delegate pipeline?
-		contentType := headers["Content-Type"]
-		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
-		acceptGzip	:= QualityValues(request.headers["Accept-encoding"]).accepts("gzip")
-		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)
-		doBuff		:= !threadStash.contains("disableBuffering")
-		webResOut	:= registry.autobuild(WebResOutProxy#)
-		bufferedOut	:= doBuff ? registry.autobuild(BufferedOutStream#, [webResOut]) : webResOut 
-		gzipOut		:= doGzip ? registry.autobuild(GzipOutStream#, [bufferedOut]) : bufferedOut 
-		
-		threadStash["out"] = gzipOut
-		
-		// buffered goes on the inside so content-length is the gzipped size
-		return gzipOut
+//		out := threadStash["out"]
+//		if (out != null)
+//			return out
+//
+//		// TODO: afIoc 1.3.10 - Could we make a delegate pipeline?
+//		contentType := headers["Content-Type"]
+//		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
+//		acceptGzip	:= QualityValues(request.headers["Accept-encoding"]).accepts("gzip")
+//		doGzip 		:= !gzipDisabled && !threadStash.contains("disableGzip") && acceptGzip && gzipCompressible.isCompressible(mimeType)
+//		doBuff		:= !threadStash.contains("disableBuffering")
+//		webResOut	:= registry.autobuild(WebResOutProxy#)
+//		bufferedOut	:= doBuff ? registry.autobuild(BufferedOutStream#, [webResOut]) : webResOut 
+//		gzipOut		:= doGzip ? registry.autobuild(GzipOutStream#, [bufferedOut]) : bufferedOut 
+//		
+//		threadStash["out"] = gzipOut
+//		
+//		// buffered goes on the inside so content-length is the gzipped size
+//		return gzipOut
 	}
 
-//	scope = perthread
-//	OutStream buildHttpOutStream(Type[] delegates) {
+//	@Build { serviceId="HttpOutStream"; scope=ServiceScope.perthread }
+//	OutStream buildHttpOutStream(HttpOutStreamBuilder[] delegates) {
 //		DelegateBuilder.build(OutStream#, delegates, terminator)
 //	}
 
-	override Void redirect(Uri uri, Int statusCode) {
-		webRes.redirect(uri, statusCode)
-	}
-
 	private WebRes webRes() {
 		registry.dependencyByType(WebRes#)
+	}
+}
+
+const class DelegateServiceBuilder {
+	Obj build(DelegateChainBuilder[] delegateBuilders, Obj service) {
+		delegateBuilders.reduce(service) |Obj delegate, DelegateChainBuilder builder| { builder.build(delegate) }
+	}
+}
+
+const mixin DelegateChainBuilder {
+	abstract Obj build(Obj delegate) 
+}
+
+
+const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
+	@Inject	private const Registry 			registry
+	@Inject	private const HttpRequest 		request
+	@Inject	private const HttpResponse 		response
+	@Inject	private const GzipCompressible 	gzipCompressible
+
+	@Inject @Config { id="afBedSheet.gzip.disabled" }
+	private const Bool gzipDisabled
+
+	new make(|This|in) { in(this) } 
+	
+	override OutStream build(Obj delegate) {
+		contentType := response.headers["Content-Type"]
+		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
+		acceptGzip	:= QualityValues(request.headers["Accept-encoding"]).accepts("gzip")
+		doGzip 		:= !gzipDisabled && !response.isGzipDisabled && acceptGzip && gzipCompressible.isCompressible(mimeType)		
+		return		doGzip ? registry.autobuild(GzipOutStream#, [delegate]) : delegate
+	}
+}
+
+const class HttpOutStreamBuffBuilder : DelegateChainBuilder {
+	@Inject	private const Registry 			registry
+	@Inject	private const HttpResponse 		response
+
+	new make(|This|in) { in(this) } 
+	
+	override OutStream build(Obj delegate) {
+		doBuff	:= !response.isBufferingDisabled
+		return	doBuff ? registry.autobuild(BufferedOutStream#, [delegate]) : delegate 
 	}
 }

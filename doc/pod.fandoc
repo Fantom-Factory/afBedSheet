@@ -5,8 +5,8 @@ BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applicat
 BedSheet aims to be: Powerful, Flexible and Simple.
 
 BedSheet's main concern is proving a rich mechanism for the routing and delivery of content over HTTP. The generation of
-content (i.e. templating) is currently a lesser concern. That said, BedSheet comes bundled with Moustache (from Xored) by default
-and integrating with other templating engines should only take a couple of lines of code.
+content (i.e. templating) is currently a lesser concern. That said, BedSheet is bundled with Moustache from Xored
+and integrating with other templating engines should only require a few of lines of code.
 
 BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
 Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
@@ -16,7 +16,7 @@ Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
 Quick Start [#quickStart]
 *************************
 
-1. Create an 'AppModule', this is where all your service configuration will go.
+1. Create an 'AppModule', this is where all your service configuration will go
 2. Contribute to 'Routes' and other services
 3. Create some page / request handlers
 4. Start the app...
@@ -56,26 +56,26 @@ Hello! I'm Luci and I have an IQ of 666!
 Wow! That's awesome! But what just happened!?
 
 Every application has an 'AppModule' that is used to contribute to [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
-services. In our 'AppModule' we told the `Routes` service to route all request uris, that start with '/hello', to our
-'HelloPage' class. `Route` converts any extra uri path segments into method arguments, or in our case, a 'Str name' and an
+services. In our 'AppModule' we told the `Routes` service to route all request URIs that start with '/hello', to our
+'HelloPage' class. `Route` converts extra uri path segments into method arguments, or in our case, to 'Str name' and an
 optional 'Int iq'.
 
 Request handlers are typically what we, the app developers, write. They perform logic processing and render responses. Our
-'HelloPage' handler simply renders a `TextResponse`.
+'HelloPage' handler simply renders a plain `TextResponse`.
 
-A default `ResponseProcessor` then sends our `TextResponse` to the client.
+A default `ResponseProcessor` then sends the `TextResponse` to the client.
 
 
 
 Starting BedSheet [#startingBedSheet]
 *************************************
-BedSheet may be started from the command line using:
+BedSheet may be started from the command line with:
 
 pre>
 $ fan afBedSheet <fully-qualified-app-module-name> <port-number>
 <pre
 
-Every BedSheet web application has an 'AppModule' class that defines and configures your
+Every BedSheet application has an 'AppModule' class that defines and configures your
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview` concept that allows you centralise your app configuration in one place.
 
@@ -115,7 +115,7 @@ Note that 'AppModule' is named so out of convention but may be called anything y
 HTTP Pipeline [#httpPipeline]
 *****************************
 When a http request is received it is passed through a pipeline of filters. The terminating filter performs the standard
-BedSheet routing, see [Request Routing]`#requestRouting`. Filters can be used to address cross cutting concerns such as
+BedSheet routing (see [Request Routing]`#requestRouting`). Filters can be used to address cross cutting concerns such as
 authorisation.
 
 Standard BedSheet filters are:
@@ -125,7 +125,7 @@ Standard BedSheet filters are:
  - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 It is important that the first two filters are always first in the pipeline. As such, when contributing your own filters you are
-encouraged to add the ordering constraint of 'after: BedSheetFilters', example:
+encouraged to add the ordering constraint of '"after: BedSheetFilters"', example:
 
 pre>
 @Contribute { serviceType=HttpPipeline# }
@@ -172,8 +172,10 @@ using draft::Route as DraftRoute
 
 @Contribute { serviceType=Routes# }
 static Void contributeRoutes(OrderedConfig conf) {
+
   conf.add(DraftRoute("/", "GET", PageHandler#index))
   conf.add(DraftRoute("/echo/{name}/{age}", "GET", PageHandler#print))
+
 }
 <pre
 

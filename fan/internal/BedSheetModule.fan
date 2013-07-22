@@ -6,7 +6,6 @@ using concurrent
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
-		
 		binder.bindImpl(Routes#)
 		binder.bindImpl(RouteMatchers#).withoutProxy
 		binder.bindImpl(ReqestHandlerInvoker#)
@@ -43,13 +42,25 @@ internal class BedSheetModule {
 		return bob.build(HttpPipeline#, HttpPipelineFilter#, filters, terminator)
 	}
 	
+	@Build { serviceId="HttpOutStream"; disableProxy=true; scope=ServiceScope.perThread }
+	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
+		p:=reg.autobuild(WebResOutProxy#)
+		return makeDelegateChain(builders, p)
+	}
+	
 	@Contribute { serviceType=HttpPipeline# }
 	static Void contributeHttpPipeline(OrderedConfig conf) {
 		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), ["before: BedSheetFilters", "before: HttpErrFilter"])
 		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters"])		
 		conf.addPlaceholder("BedSheetFilters")
 	}
-	
+
+	@Contribute { serviceId="HttpOutStream" }
+	static Void contributeHttpOutStream(OrderedConfig conf) {
+		conf.addOrdered("HttpOutStreamBuffBuilder", 	conf.autobuild(HttpOutStreamBuffBuilder#), ["before: HttpOutStreamGzipBuilder"])		
+		conf.addOrdered("HttpOutStreamGzipBuilder", 	conf.autobuild(HttpOutStreamGzipBuilder#))
+	}
+
 	@Contribute { serviceType=RouteMatchers# }
 	static Void contributeRouteMatchers(MappedConfig conf) {
 		conf[Route#] 			= conf.autobuild(RouteMatcherImpl#)
@@ -127,5 +138,11 @@ internal class BedSheetModule {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")
+	}
+	
+	private static Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
+		delegateBuilders.reduce(service) |Obj delegate, DelegateChainBuilder builder -> Obj| { 		
+			return builder.build(delegate) 
+		}
 	}
 }
