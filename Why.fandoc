@@ -1,0 +1,59 @@
+Why Fantom?
+***********
+
+I can not lie. I like Fantom.
+
+Anyone who's spoken to me knows I'm even evangelical about it. Yes, as a programming language, I think it's *that* good! But why?
+
+Yes, you can read the official tour and the offical "Why Fantom" in the docs as written by the creators. But here's where I'm
+gonna tell you why I like it, as a converted Java user.
+
+It's Pragmatic
+==============
+No. 1 reason - It's Pragmatic! Yes, that's a psudonym for boring!
+
+Without a doubt, Fantom is a boring language. It is not esoteric, it does not let the user explore new programming paradigms
+in language extensions. It is dull. And that means I can put all my engergy and effort into writing exciting applications!
+
+
+The API - It Just Works!
+========================
+http://stackoverflow.com/questions/4716503/best-way-to-read-a-text-file
+Java is long in the tooth (read 'old') and so is the API it's bundled with. It makes simple things hard. Example, Want to read a file in Java?
+You're messing around with BufferedReaders, FileReaders and InputStreams and that's before you've considered stream closing and
+system dependant character encoding!
+
+Enter Fantom: 'File(`myFile.txt`).readAllStr' **BOOM!** Job. Done.
+
+Want it system independent? **BOOM!** Fantom is UTF-8 by default baby!
+
+Lists in Java? Well, there's an entire [Collections Framework]`http://docs.oracle.com/javase/tutorial/collections/` for that.
+There are Collections, Sets, Lists and Maps, all sorted (or not) with a prolific number of implementations. Which do you use?
+Still not sure? Look to apache, they have their own [collections framework]`http://commons.apache.org/proper/commons-collections/` too!
+
+"But I just want a bag of stuff?" I hear you cry!
+
+Enter Fantom: Choices are 'List' or 'Map' **BOOM!** Job. Done. No discussion. No brainer.
+
+So much thought went into what people need for everyday use. In every corner of the main API are clasees brimming with *useful* methods. *usefule* being key. Apache commons gives you loads of methods
+
+NPEs? Not here mate!
+====================
+Null Pointers... sigh. Every Java developer has been plauged by the dreaded NullPointerException or NPE. Even the inventer, Tony Hoare has publically apologised for inveting them, citing it [The Billion Dollar Mistake]`http://qconlondon.com/london-2009/speaker/Tony+Hoare`
+Java has classes and [frameworks]`http://code.google.com/p/guava-libraries/wiki/UsingAndAvoidingNullExplained#Optional` attempting to eradicate them - if you choose to use them.
+You can't even autobox safely without NPEs!
+
+Enter Fantom: 'Int myInt' **BOOM!** No nulls allowed! Want nulls? 'Int? myInt' **BOOM!** We got those too!
+
+What this means is, nulls are allowed, but you have code specifically for them. Everything is non-null by default. this doesn't eradicate NullErrs, but it goes a long way towards it!
+
+
+Serialisable
+============
+
+
+Reflection
+==========
+
+
+
