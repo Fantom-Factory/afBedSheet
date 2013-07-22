@@ -80,6 +80,24 @@ const mixin HttpRequest {
 	
 }
 
+const class HttpRequestDelegate : HttpRequest {
+	const 	 HttpRequest req
+	new 	 make(HttpRequest req) 		{ this.req = req 		} 
+	override Bool isXmlHttpRequest()	{ req.isXmlHttpRequest	}
+	override Version httpVersion()		{ req.httpVersion		}
+	override Str httpMethod()			{ req.httpMethod		}	
+	override IpAddr remoteAddr() 		{ req.remoteAddr		}
+	override Int remotePort() 			{ req.remotePort		}
+	override Uri uri() 					{ req.uri				}
+	override Uri absUri() 				{ req.absUri			}
+	override Uri modBase() 				{ req.modBase			}
+	override Uri modRel() 				{ req.modRel			}
+	override [Str:Str] headers() 		{ req.headers			}
+	override [Str:Str]? form() 			{ req.form				}
+	override Str:Str cookies() 			{ req.cookies			}
+	override Locale[] locales() 		{ req.locales			}
+}
+
 internal const class HttpRequestImpl : HttpRequest {
 	
 	@Inject

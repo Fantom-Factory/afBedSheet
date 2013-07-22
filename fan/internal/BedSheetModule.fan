@@ -23,8 +23,6 @@ internal class BedSheetModule {
 		binder.bindImpl(ErrPrinter#)
 		binder.bindImpl(BedSheetPage#)
 		
-		binder.bindImpl(HttpRequest#)
-		binder.bindImpl(HttpResponse#)
 		binder.bindImpl(HttpSession#)
 
 		binder.bindImpl(CrossOriginResourceSharingFilter#).withoutProxy	// has default method args
@@ -42,10 +40,19 @@ internal class BedSheetModule {
 		return bob.build(HttpPipeline#, HttpPipelineFilter#, filters, terminator)
 	}
 	
+	@Build { serviceId="HttpRequest" }
+	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Registry reg) {
+		makeDelegateChain(builders, reg.autobuild(HttpRequestImpl#))
+	}
+	
+	@Build { serviceId="HttpResponse" }
+	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Registry reg) {
+		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))
+	}
+
 	@Build { serviceId="HttpOutStream"; disableProxy=true; scope=ServiceScope.perThread }
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
-		p:=reg.autobuild(WebResOutProxy#)
-		return makeDelegateChain(builders, p)
+		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
 	}
 	
 	@Contribute { serviceType=HttpPipeline# }
@@ -87,7 +94,6 @@ internal class BedSheetModule {
 
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf, HttpStatusPageDefault defaultStatusPage) {
-		
 		conf[ConfigIds.proxyPingInterval]			= 1sec
 		conf[ConfigIds.gzipDisabled]				= false
 		conf[ConfigIds.gzipThreshold]				= 376

@@ -39,10 +39,12 @@ internal const class T_AppModule {
 		
 		// CORS routes
 		conf.add(Route(`/cors/simple`,			T_PageHandler#simple))
-		conf.add(Route(`/cors/preflight`,		T_PageHandler#preflight, "OPTIONS"))
-		
+		conf.add(Route(`/cors/preflight`,		T_PageHandler#preflight))
 		
 		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
+
+		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
+		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
 
 		conf.add(Route(`/welcome`, 				WelcomePage#service))
 

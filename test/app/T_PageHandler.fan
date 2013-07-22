@@ -113,4 +113,13 @@ internal const class T_PageHandler {
 		TextResponse.fromXml("This is xml text <honest!/>")
 	}
 
+	// ---- Http Request Wrapping ----
+	
+	Obj httpReq1() {
+		TextResponse.fromPlain("On page 1")
+	}
+
+	Obj httpReq2() {
+		TextResponse.fromPlain("On page 2")
+	}
 }
