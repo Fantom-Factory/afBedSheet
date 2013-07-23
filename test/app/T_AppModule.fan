@@ -49,6 +49,8 @@ internal const class T_AppModule {
 		conf.add(Route(`/welcome`, 				WelcomePage#service))
 
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
+		
+		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
 
 		conf.add(Route(`/pod/***`, 				PodHandler#service))
 		
@@ -59,8 +61,9 @@ internal const class T_AppModule {
 	
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
-		conf[ConfigIds.gzipThreshold] = 50
-		conf[ConfigIds.requestLogDir] = `./`.toFile
+		conf[ConfigIds.gzipThreshold] 			= 50
+		conf[ConfigIds.requestLogDir] 			= `./`.toFile
+		conf[ConfigIds.responseBufferThreshold]	= 1 * 1024
 	}
 	
 	@Contribute { serviceType=ValueEncoders# }

@@ -28,6 +28,17 @@ internal class AppTest : Test {
 		return res
 	}
 
+	Buf getAsBuf(Uri uri, Str method := "GET") {
+		client.reqUri = reqUri(uri) 
+		client.reqMethod = method
+		client.writeReq
+		client.readRes
+		res := client.resIn.readAllBuf
+		if (client.resCode != 200)
+			fail("$client.resCode $client.resPhrase \n$res")
+		return res
+	}
+
 	Void verify404(Uri uri) {
 		verifyStatus(uri, 404)
 	}

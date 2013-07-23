@@ -24,6 +24,11 @@ internal const class FileResponseProcessor : ResponseProcessor {
 		res.headers["ETag"] = etag(file)
 		res.headers["Last-Modified"] = modified(file).toHttpStr
 
+		// initially set the Content-Length 
+		// - GzipOutStream may reset this to zero if it kicks in 
+		// - BufferedOutStream may override this if needs be 
+		res.headers["Content-Length"] = file.size.toStr
+
 		// check if we can return a 304 Not Modified
 		if (notModified(req.headers, file)) {
 			res.setStatusCode(304)

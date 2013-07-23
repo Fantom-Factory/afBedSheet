@@ -122,4 +122,12 @@ internal const class T_PageHandler {
 	Obj httpReq2() {
 		TextResponse.fromPlain("On page 2")
 	}
+	
+	// ---- Dee Dee!!! ----
+
+	Obj deeDee(Uri uri) {
+		temp := File.createTemp("DeeDee", uri.toStr).deleteOnExit
+		typeof.pod.file(`/res/test/DeeDee.jpg`).copyTo(temp, ["overwrite":true])
+		return temp
+	}
 }

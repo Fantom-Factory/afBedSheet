@@ -41,7 +41,5 @@ internal const class T_HttpRequestWrapperBuilder : DelegateChainBuilder {
 
 internal const class T_MyHttpRequest : HttpRequestDelegate {
 	new make(HttpRequest req) : super(req) { }
-	override Uri modRel() {
-		`/httpReq2`
-	}
+	override Uri modRel() { `/httpReq2`	}
 }
