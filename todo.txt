@@ -22,6 +22,8 @@ Have StreamResponse / Download Attachment responses
  - @Persist { strategy="flash" }
  - @Flash or have HttpFlash["msg"] = "Hello!"
 
+Moustache - Intelligent Err
+
 Err500 - have filter stack frames checkbox?
 
 	static Void main(Str[] args) {
