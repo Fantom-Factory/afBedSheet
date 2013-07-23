@@ -94,24 +94,25 @@ internal class BedSheetModule {
 
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf, HttpStatusPageDefault defaultStatusPage) {
-		conf[ConfigIds.proxyPingInterval]			= 1sec
-		conf[ConfigIds.gzipDisabled]				= false
-		conf[ConfigIds.gzipThreshold]				= 376
-		conf[ConfigIds.responseBufferThreshold]		= 32 * 1024	// TODO: why not kB?
-		conf[ConfigIds.httpStatusDefaultPage]		= defaultStatusPage
-		conf[ConfigIds.noOfStackFrames]				= 50
-		conf[ConfigIds.moustacheTemplateTimeout]	= 10sec
+		conf[ConfigIds.proxyPingInterval]				= 1sec
+		conf[ConfigIds.gzipDisabled]					= false
+		conf[ConfigIds.gzipThreshold]					= 376
+		conf[ConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
+		conf[ConfigIds.httpStatusDefaultPage]			= defaultStatusPage
+		conf[ConfigIds.noOfStackFrames]					= 50
+		conf[ConfigIds.moustacheTemplateTimeout]		= 10sec
+		conf[ConfigIds.errPageDisabled]					= false
 				
-		conf[ConfigIds.requestLogDir]				= null
-		conf[ConfigIds.requestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
-		conf[ConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+		conf[ConfigIds.httpRequestLogDir]				= null
+		conf[ConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
+		conf[ConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 		
-		conf[ConfigIds.corsAllowedOrigins]			= "*"
-		conf[ConfigIds.corsExposeHeaders]			= null
-		conf[ConfigIds.corsAllowCredentials]		= false
-		conf[ConfigIds.corsAllowedMethods]			= "GET, POST"
-		conf[ConfigIds.corsAllowedHeaders]			= null
-		conf[ConfigIds.corsMaxAge]					= 60min
+		conf[ConfigIds.corsAllowedOrigins]				= "*"
+		conf[ConfigIds.corsExposeHeaders]				= null
+		conf[ConfigIds.corsAllowCredentials]			= false
+		conf[ConfigIds.corsAllowedMethods]				= "GET, POST"
+		conf[ConfigIds.corsAllowedHeaders]				= null
+		conf[ConfigIds.corsMaxAge]						= 60min
 	}
 
 	@Contribute { serviceType=ValueEncoders# }

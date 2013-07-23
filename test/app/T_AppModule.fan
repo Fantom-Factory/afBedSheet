@@ -62,7 +62,7 @@ internal const class T_AppModule {
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
 		conf[ConfigIds.gzipThreshold] 			= 50
-		conf[ConfigIds.requestLogDir] 			= `./`.toFile
+		conf[ConfigIds.httpRequestLogDir] 		= `./`.toFile
 		conf[ConfigIds.responseBufferThreshold]	= 1 * 1024
 	}
 	
