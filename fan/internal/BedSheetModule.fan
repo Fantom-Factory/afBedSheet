@@ -39,12 +39,12 @@ internal class BedSheetModule {
 		terminator := reg.autobuild(HttpRouteService#)
 		return bob.build(HttpPipeline#, HttpPipelineFilter#, filters, terminator)
 	}
-	
+
 	@Build { serviceId="HttpRequest" }
 	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(HttpRequestImpl#))
 	}
-	
+
 	@Build { serviceId="HttpResponse" }
 	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))

@@ -85,8 +85,12 @@ class GzipOutStream : OutStream {
 			return
 		
 		if (((buf?.size ?: 0) + noOfBytes) > gzipThreadhold) {
-			if (!response.isCommitted)	// a sanity check
-				response.headers["Content-Encoding"] = "gzip"	
+			if (!response.isCommitted) {	// a sanity check
+				// if gzip kicks in, we don't know the content length until stream closes 
+				// - so we remove any previously set length 
+				response.headers.remove("Content-Length")
+				response.headers["Content-Encoding"] = "gzip"
+			}
 			bufOut = Zip.gzipOutStream(wrappedOut)
 			writeBufToOut
 			switched = true

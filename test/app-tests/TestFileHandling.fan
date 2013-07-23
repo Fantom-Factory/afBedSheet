@@ -1,6 +1,6 @@
 
 internal class TestFileHandling : AppTest {
-	
+
 	Str 	 file1_eTag	:= "\"c-5defbca12df6080\""
 	DateTime file1_date	:= DateTime(2013, Month.may, 28, 10, 31, 00, 0, TimeZone.utc)
 	Str 	 file2_eTag	:= "\"f-5defbcf0039df00\""

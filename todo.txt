@@ -1,15 +1,9 @@
 
 For BedSheet 1.0.0
 ------------------
-Err500 - add Env Properties
+Err500 - add Env Properties - split on path
+Err500 - add Fantom.Env Properties 
 Err500 - add Disable option until we have env modes.
-
-Err500 - Add Thread Stash vals - we got locals right? Use IocUtils to sort.
-
-DelegateBuilder for
- - HttpOutStream
- - HttpRequest
- - HttpResponse
 
 rename filters
 
@@ -26,6 +20,8 @@ For BedSheet 1.0.2
 ------------------
 
 Logging filter with reqId, SessId and configurable userId
+
+Have StreamResponse / Download Attachment responses
 
  - @Persist { strategy="session" } - how to access setter?
  - @Persist { strategy="flash" }

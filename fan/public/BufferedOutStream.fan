@@ -58,7 +58,7 @@ class BufferedOutStream : OutStream {
 			bufOut = realOut
 			writeBufToOut
 		}
-		
+
 		bufOut.flush
 		bufOut.close
 		return true
