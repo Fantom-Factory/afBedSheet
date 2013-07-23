@@ -8,10 +8,7 @@ using afIoc::Inject
 ** <pre
 ** 
 ** This is by far, much preferable, to the client setting a cache busting query string to the request url (yuck!). 
-const mixin IeAjaxCacheBustingFilter : HttpPipelineFilter {
-	
-	abstract override Bool service(HttpPipeline handler)
-}
+const mixin IeAjaxCacheBustingFilter : HttpPipelineFilter { }
 
 internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {
 	

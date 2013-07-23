@@ -59,9 +59,6 @@ const mixin HttpRequestLogFilter : HttpPipelineFilter {
 	** 
 	** @see `ConfigIds.requestLogFields`
 	abstract Str fields()
-
-	** Writes a request log entry.
-	abstract override Bool service(HttpPipeline handler)
 }
 
 internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {

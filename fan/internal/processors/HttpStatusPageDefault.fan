@@ -5,10 +5,7 @@ using web::WebRes
 
 ** Sends the status code and msg from `HttpStatusErr` to the client. 
 @NoDoc
-const mixin HttpStatusPageDefault : HttpStatusProcessor { 
-	// TODO: afPlastic shouldn't need us to redefine mixin methods
-	override abstract Obj process(HttpStatus httpStatus)
-}
+const mixin HttpStatusPageDefault : HttpStatusProcessor { }
 
 internal const class HttpStatusPageDefaultImpl : HttpStatusPageDefault {
 
