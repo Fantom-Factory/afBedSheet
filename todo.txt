@@ -5,14 +5,9 @@ Err500 - add Env Properties - split on path
 Err500 - add Fantom.Env Properties 
 Err500 - add Disable option until we have env modes.
 
-rename filters
-
 fantom afIoc on T5
 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
-
-Check content-length on large files - dun want bufferedOut to overwrite!!! 
- - (disable out buff - have it log a warn if it's about to cut over when content-length already set)
 
 
 

@@ -34,8 +34,8 @@ internal const class T_AppModule {
 		conf.add(Route(`/redirect/afterPost`,	T_PageHandler#afterPost))
 
 		// CORS filters
-		conf.add(Route(`/cors/simple`,			CrossOriginResourceSharingFilter#serviceSimple))
-		conf.add(Route(`/cors/preflight`,		CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS"))
+		conf.add(Route(`/cors/simple`,			CorsHandler#serviceSimple))
+		conf.add(Route(`/cors/preflight`,		CorsHandler#servicePrefilght, "OPTIONS"))
 		
 		// CORS routes
 		conf.add(Route(`/cors/simple`,			T_PageHandler#simple))

@@ -6,18 +6,12 @@ using webmod::LogMod
 ** Uses [LogMod]`webmod::LogMod` to generate a server log file for all HTTP requests in the [W3C 
 ** Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. 
 ** 
-** To enable, contribute a `Route` for the filter (before all other routes) and set the log dir in 
-** the config:
+** To enable, contribute the filter to the HttpPipeline and set the log dir:
 ** 
 ** pre>
-**   @Contribute { serviceType=Routes# }
-**	 static Void contributeRoutes(OrderedConfig conf) {
-**     
-**     // put log filter first
-**     conf.add(Route(`/***`, RequestLogFilter#service))
-**     ...
-**     // other routes here
-**     ... 
+**   @Contribute { serviceType=HttpPipeline# }
+**	 static Void contributeHttpPipeline(OrderedConfig conf) {
+**     conf.addOrdered("HttpRequestLogFilter", conf.autobuild(HttpRequestLogFilter#), ["after: BedSheetFilters"])
 **   }
 ** 
 **   @Contribute { serviceType=ApplicationDefaults# } 
@@ -49,9 +43,7 @@ using webmod::LogMod
 **     "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10"
 **     "http://localhost/tag"
 ** 
-// FIXME: turn into REAL filter & update docs above
-// FIXME: rename to HttpRequestLogFilter
-const mixin RequestLogFilter {
+const mixin HttpRequestLogFilter : HttpPipelineFilter {
 
 	** Directory where the request log files are written.
 	** 
@@ -69,10 +61,10 @@ const mixin RequestLogFilter {
 	abstract Str fields()
 
 	** Writes a request log entry.
-	abstract Void service(Uri remainingUri := ``)
+	abstract override Bool service(HttpPipeline handler)
 }
 
-internal const class RequestLogFilterImpl : RequestLogFilter {
+internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 	
 	override const File dir
 
@@ -94,7 +86,8 @@ internal const class RequestLogFilterImpl : RequestLogFilter {
 		shutdownHub.addRegistryShutdownListener("RequestLogFilter", [,], |->| { logMod.onStop })
 	}
 	
-	override Void service(Uri remainingUri := ``) {
+	override Bool service(HttpPipeline handler) {
 		logMod.onService
+		return handler.service		
 	}
 }
