@@ -9,6 +9,9 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 	@Inject	private const HttpResponse 	response
 	@Inject	private const ErrPrinter 	errPrinter
 	
+	@Config { id="afBedSheet.errPage.disabled" }
+	@Inject private const Bool			errPageDisabled
+	
 	internal new make(|This|in) { in(this) }
 
 	override TextResponse process(HttpStatus httpStatus) {
@@ -18,9 +21,9 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		if (!response.isCommitted)	// a sanity check
 			response.setStatusCode(httpStatus.code)
 		
-		// TODO: only print the Err gubbins in devMode
+		// disable detailed err page reports in production mode
 		title			:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
-		content			:= errPrinter.errToHtml(httpStatus)
+		content			:= errPageDisabled ? "<p><b>Internal Server Error</b></p>" : errPrinter.errToHtml(httpStatus)
 		return bedSheetPage.render(title, content)
 	}		
 }

@@ -65,10 +65,10 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 	
 	override const File dir
 
-	@Inject @Config { id="afBedSheet.requestLog.filenamePattern" } 
+	@Inject @Config { id="afBedSheet.httpRequestLog.filenamePattern" } 
 	override const Str filenamePattern
 
-	@Inject @Config { id="afBedSheet.requestLog.fields" } 
+	@Inject @Config { id="afBedSheet.httpRequestLog.fields" } 
 	override const Str fields
 
 	private const LogMod logMod
@@ -76,7 +76,7 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 	internal new make(RegistryShutdownHub shutdownHub, ConfigSource configSource, |This|in) { 
 		in(this)
 
-		dir 	= configSource.get("afBedSheet.requestLog.dir") ?: throw BedSheetErr(BsMsgs.requestLogFilterDirCannotBeNull)
+		dir 	= configSource.get("afBedSheet.httpRequestLog.dir") ?: throw BedSheetErr(BsMsgs.requestLogFilterDirCannotBeNull)
 		logMod  = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
 		logMod.onStart
 
