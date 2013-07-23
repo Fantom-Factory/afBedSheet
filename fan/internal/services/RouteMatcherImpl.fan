@@ -7,7 +7,7 @@ internal const class RouteMatcherImpl : RouteMatcher {
 	
 	new make(|This|in) { in(this) }
 	
-	override RouteMatch? match(Obj objRoute, Uri uri, Str httpMethod) {
+	override RouteHandler? match(Obj objRoute, Uri uri, Str httpMethod) {
 		route := (Route) objRoute
 		
 		params	:= route.match(uri, httpMethod)
@@ -21,6 +21,6 @@ internal const class RouteMatcherImpl : RouteMatcher {
 			return value
 		}
 
-		return RouteMatch(route.handler, args)
+		return RouteHandler(route.handler, args)
 	}
 }

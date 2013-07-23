@@ -6,7 +6,7 @@ using afIoc::ServiceStat
 
 internal const class ReqestHandlerInvoker {
 	private const static Log 		log 		:= Utils.getLog(ReqestHandlerInvoker#)
-	private const ConcurrentState 	conState	:= ConcurrentState(RouteHandlerState#)
+	private const ConcurrentState 	conState	:= ConcurrentState(ReqestHandlerInvokerState#)
 	private const [Str:ServiceStat] serviceStats
 	
 	@Inject
@@ -19,8 +19,8 @@ internal const class ReqestHandlerInvoker {
 		this.serviceStats = serviceStats.stats
 	}
 	
-	Obj? invokeHandler(RouteMatch routeMatch) {
-		handlerType := routeMatch.handler.parent
+	Obj? invokeHandler(RouteHandler routeHandler) {
+		handlerType := routeHandler.method.parent
 
 		handler := getState |state->Obj| {
 
@@ -58,19 +58,19 @@ internal const class ReqestHandlerInvoker {
 				handler = registry.autobuild(handlerType)
 		}
 
-		return routeMatch.invokeHandler(handler)
+		return routeHandler.invokeOn(handler)
 	}
 	
-	private Void withState(|RouteHandlerState| state) {
+	private Void withState(|ReqestHandlerInvokerState| state) {
 		conState.withState(state)
 	}
 
-	private Obj? getState(|RouteHandlerState -> Obj| state) {
+	private Obj? getState(|ReqestHandlerInvokerState -> Obj| state) {
 		conState.getState(state)
 	}
 }
 
-internal class RouteHandlerState {
+internal class ReqestHandlerInvokerState {
 	Type[]		serviceTypes	:= [,]
 	Type[]		autobuildTypes	:= [,]
 	Type:Obj	handlerCache	:= [:]
