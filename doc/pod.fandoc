@@ -194,6 +194,7 @@ http response out stream, instead they should return a response object. Example,
 BedSheet bundles with the following request handlers:
  - `FileHandler`: Maps request URIs to files on file system.
  - `PodHandler` : Maps request URIs to pod file resources.
+ - `CorsHandler` : A pass through filter for handling Cross Origin Resource Sharing requests.
 
 By default, BedSheet handles the following responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.

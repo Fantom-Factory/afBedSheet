@@ -32,8 +32,7 @@ using afIoc::Inject
 **  - `http://www.html5rocks.com/en/tutorials/cors/`
 **  - `https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS`
 **  - `http://api.brain-map.org/examples/doc/scatter/javascripts/jquery.ie.cors.js.html`
-// FIXME: rename to Handler
-const mixin CrossOriginResourceSharingFilter {
+const mixin CorsHandler {
 	
 	** Sets response headers if the request a simple CORS request. 
 	** Returns 'false'.
@@ -46,8 +45,8 @@ const mixin CrossOriginResourceSharingFilter {
 	abstract Bool servicePrefilght(Uri uri := ``)
 }
 
-internal const class CrossOriginResourceSharingFilterImpl : CrossOriginResourceSharingFilter {
-	private const static Log log := Utils.getLog(CrossOriginResourceSharingFilter#)
+internal const class CorsHandlerImpl : CorsHandler {
+	private const static Log log := Utils.getLog(CorsHandler#)
 
 	@Inject
 	private const HttpRequest	req

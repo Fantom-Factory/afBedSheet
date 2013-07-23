@@ -25,9 +25,9 @@ internal class BedSheetModule {
 		
 		binder.bindImpl(HttpSession#)
 
-		binder.bindImpl(CrossOriginResourceSharingFilter#).withoutProxy	// has default method args
-		binder.bindImpl(IeAjaxCacheBustingFilter#).withoutProxy			// has default method args
-		binder.bindImpl(RequestLogFilter#).withoutProxy					// has default method args
+		binder.bindImpl(CorsHandler#).withoutProxy				// has default method args
+		binder.bindImpl(IeAjaxCacheBustingFilter#).withoutProxy	// has default method args
+		binder.bindImpl(HttpRequestLogFilter#).withoutProxy		// has default method args
 		
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!

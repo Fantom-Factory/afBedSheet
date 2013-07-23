@@ -8,11 +8,9 @@ using afIoc::Inject
 ** <pre
 ** 
 ** This is by far, much preferable, to the client setting a cache busting query string to the request url (yuck!). 
-// FIXME: turn into REAL filter
-const mixin IeAjaxCacheBustingFilter {
+const mixin IeAjaxCacheBustingFilter : HttpPipelineFilter {
 	
-	** Uri not used.
-	abstract Bool service(Uri uri := ``)
+	abstract override Bool service(HttpPipeline handler)
 }
 
 internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {
@@ -28,7 +26,7 @@ internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {
 	
 	internal new make(|This|in) { in(this) }
 	
-	override Bool service(Uri uri := ``) {
+	override Bool service(HttpPipeline handler) {
 
 		if (browserDetection.isInternetExplorer) {
 			// IE CORS requests from XDomainRequest don't set 'X-Requested-With' HTTP header. 
