@@ -70,6 +70,23 @@ const mixin HttpResponse {
 	abstract Bool isBufferingDisabled()
 }
 
+** Wraps a given `HttpResponse`, delegating all its methods. 
+** You may find it handy to use when contributing to the 'HttpResponse' delegate chain.
+const class HttpResponseWrapper : HttpResponse {
+	const 	 HttpResponse res
+	new 	 make(HttpResponse res) 		{ this.res = res 			} 
+	override Void disableGzip()				{ res.disableGzip			}
+	override Bool isGzipDisabled() 			{ res.isGzipDisabled		}
+	override Void disableBuffering() 		{ res.disableBuffering		}
+	override Bool isBufferingDisabled() 	{ res.isBufferingDisabled	}
+	override Void setStatusCode(Int sc) 	{ res.setStatusCode(sc)		}
+	override Str:Str headers() 				{ res.headers				}
+	override Cookie[] cookies() 			{ res.cookies				}
+	override Bool isCommitted() 			{ res.isCommitted			}
+	override OutStream out() 				{ res.out					}
+}
+
+
 internal const class HttpResponseImpl : HttpResponse {
 	
 	@Inject	private const Registry 			registry

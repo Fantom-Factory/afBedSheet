@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIoc::IocHelper
 using web::WebOutStream
 
 internal const class ErrPrinter {
@@ -22,7 +23,6 @@ internal const class ErrPrinter {
 		w(out, "URI",			request.uri)
 		w(out, "HTTP Method",	request.httpMethod)
 		w(out, "HTTP Version",	request.httpVersion)
-//		out.p.b.w(request.uri).bEnd.pEnd
 		out.tableEnd
 		
 		out.h2.w("Request Headers").h2End
@@ -38,8 +38,8 @@ internal const class ErrPrinter {
 		}
 
 		if (!request.cookies.isEmpty) {
-			out.h2("class=\"cookies\"").w("Cookies").h2End
-			out.table
+			out.h2.w("Cookies").h2End
+			out.table("class=\"cookies\"")
 			request.cookies.each |v,k| { w(out, k, v) }
 			out.tableEnd
 		}
@@ -48,6 +48,13 @@ internal const class ErrPrinter {
 		out.ol
 		request.locales.each { out.li.w(it).liEnd }
 		out.olEnd
+
+		if (!IocHelper.locals.isEmpty) {
+			out.h2.w("Thread Locals").h2End
+			out.table("class=\"threadLocals\"")
+			IocHelper.locals.each |v,k| { w(out, k, v) }
+			out.tableEnd
+		}
 		
 		if (httpStatus.cause != null) {
 			out.h2.w("Stack Trace").h2End
@@ -56,6 +63,13 @@ internal const class ErrPrinter {
 			out.preEnd
 		}
 
+		if (!Env.cur.vars.isEmpty) {
+			out.h2.w("Environment Vars").h2End
+			out.table
+			Env.cur.vars.keys.sort.each |k| { w(out, k, Env.cur.vars[k]) }
+			out.tableEnd
+		}
+		
 		return buf.toStr
 	}
 	
@@ -89,6 +103,11 @@ internal const class ErrPrinter {
 		
 		buf.add("\nLocales:\n")
 		request.locales.each { buf.add("  $it\n") }
+		
+		if (!IocHelper.locals.isEmpty) {
+			buf.add("\nThread Locals:\n")
+			IocHelper.locals.each |v,k| { buf.add("  $k: $v\n") }
+		}
 		
 		buf.add("\nStack Trace:\n")
 		Utils.traceErr(err, noOfStackFrames).splitLines.each |s| { buf.add("$s\n") }

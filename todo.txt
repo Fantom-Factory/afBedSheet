@@ -3,7 +3,6 @@ For BedSheet 1.0.0
 ------------------
 Err500 - add Env Properties - split on path
 Err500 - add Fantom.Env Properties 
-Err500 - add Disable option until we have env modes.
 
 fantom afIoc on T5
 
@@ -23,6 +22,9 @@ Have StreamResponse / Download Attachment responses
  - @Flash or have HttpFlash["msg"] = "Hello!"
 
 Moustache - Intelligent Err
+ - Line $line: Unbalanced...blah
+ - /^Line ([0-9]+): .+?$/
+ - check errs in partials...!?
 
 Err500 - have filter stack frames checkbox?
 

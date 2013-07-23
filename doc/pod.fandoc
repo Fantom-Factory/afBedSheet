@@ -5,8 +5,9 @@ BedSheet is a [Fantom]`http://fantom.org/` framework for delivering web applicat
 BedSheet aims to be: Powerful, Flexible and Simple.
 
 BedSheet's main concern is proving a rich mechanism for the routing and delivery of content over HTTP. The generation of
-content (i.e. templating) is currently a lesser concern. That said, BedSheet is bundled with Moustache from Xored
-and integrating with other templating engines should only require a few of lines of code.
+content (i.e. templating) is currently a lesser concern. That said, BedSheet is bundled with
+[Moustache]`https://bitbucket.org/xored/mustache/` from Xored and integrating with other templating engines should only
+require a few of lines of code.
 
 BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
 Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
@@ -119,7 +120,7 @@ BedSheet routing (see [Request Routing]`#requestRouting`). Filters can be used t
 authorisation.
 
 Standard BedSheet filters are:
- - 'HttpCleanupFilter': Ensures the `HttpOutStream` is closed and cleans up all request / thread scoped data.
+ - 'HttpCleanupFilter': Ensures the 'HttpOutStream' is closed and cleans up all request / thread scoped data.
  - 'HttpErrFilter': Catches and processes Errs, see [Error Processing]`#errorProcessing`.
  - `IeAjaxCacheBustingFilter`: Adds cache headers to the response to prevent IE from caching ajax responses.
  - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
@@ -367,7 +368,7 @@ Gzip is great when compressing large files, but if you've only got a few bytes t
 going to be bigger, which kinda defeats the point of using gzip in the first place! For that reason the response data must
 reach a minimum size / threshold before it gets gzipped.
 
-See `GzipOutStream` and `ConfigIds.gzipThreshold` for more details.
+See 'GzipOutStream' and `ConfigIds.gzipThreshold` for more details.
 
 Phew! Made it! [#madeIt]
 ------------------------
@@ -386,7 +387,7 @@ Response buffering can be disabled on a per http response basis.
 
 A threshold can be set, whereby if the buffer exeeds that value, all content is streamed directly to the client.
 
-See `BufferedOutStream` and `ConfigIds.responseBufferThreshold` for more details.
+See 'BufferedOutStream' and `ConfigIds.responseBufferThreshold` for more details.
 
  - (2) `http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`
 

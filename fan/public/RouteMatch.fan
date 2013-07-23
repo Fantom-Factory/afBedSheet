@@ -1,15 +1,15 @@
 
 ** Returned from 'RouteMatchers'.
-class RouteMatch {
-	const Method	handler
+class RouteHandler {
+	const Method	method
 		  Obj[]		args
 	
-	new make(Method handler, Obj[] args) {
-		this.handler	= handler
-		this.args		= args
+	new make(Method method, Obj[] args) {
+		this.method	= method
+		this.args	= args
 	}
 	
-	Obj? invokeHandler(Obj handlerInst) {
-		handlerInst.trap(handler.name, args)
+	Obj? invokeOn(Obj handlerInst) {
+		handlerInst.trap(method.name, args)
 	}
 }

@@ -66,13 +66,18 @@ b {
 	color:				#FFFFFF;
 }
 
+td {
+	vertical-align:		top;
+}
+
 td:first-child {
 	color:				#AAAAE5;
 	white-space:		nowrap;
 	padding-right:		1em;
 }
 
-.cookies td:first-child {
+.cookies td:first-child,
+.threadLocals td:first-child {
 	white-space:		normal;
 }
 

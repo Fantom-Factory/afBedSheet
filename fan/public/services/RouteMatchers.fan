@@ -6,7 +6,7 @@ using afIoc::StrategyRegistry
 const mixin RouteMatchers {
 	
 	@NoDoc
-	abstract RouteMatch? matchRoute(Obj route, Uri uri, Str httpMethod)
+	abstract RouteHandler? matchRoute(Obj route, Uri uri, Str httpMethod)
 }
 
 internal const class RouteMatchersImpl : RouteMatchers {
@@ -17,7 +17,7 @@ internal const class RouteMatchersImpl : RouteMatchers {
 		routeMatcherStrategy = StrategyRegistry(routeMatchers)
 	}
 
-	override RouteMatch? matchRoute(Obj route, Uri uri, Str httpMethod) {
+	override RouteHandler? matchRoute(Obj route, Uri uri, Str httpMethod) {
 		get(route.typeof).match(route, uri, httpMethod)
 	}
 	

@@ -5,7 +5,7 @@ using afIoc::TypeCoercer
 ** Holds a list of `ValueEncoder`s.
 ** 
 ** pre>
-**   @Contribute { serviceType=ValueEncoderSource# }
+**   @Contribute { serviceType=ValueEncoders# }
 **   static Void contributeValueEncoders(MappedConfig conf) {
 **     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)
 **   }
