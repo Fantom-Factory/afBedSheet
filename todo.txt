@@ -4,8 +4,6 @@ For BedSheet 1.0.0
 Err500 - add Env Properties - split on path
 Err500 - add Fantom.Env Properties 
 
-rename TextResponse -> Text (update docs)
-
 No need for streamResponse - just res.disableBuffer()!
 res.downloadAttachment
  - sets header
@@ -42,6 +40,8 @@ Err500 - have filter stack frames checkbox?
 		size := kB.convertTo(3f, b)
 		Env.cur.err.printLine(size)
 	}
+
+make HttpRequestWrapper / HttpResponseWrapper public?
 
 Future
 ------

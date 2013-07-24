@@ -16,43 +16,43 @@ internal const class T_PageHandler {
 	// ---- Buff Pages ----
 	
 	Obj buff() {
-		TextResponse.fromPlain("This is Buff!")
+		Text.fromPlain("This is Buff!")
 	}
 
 	Obj noBuff() {
 		response.disableBuffering
-		return TextResponse.fromPlain("This is not Buff!")
+		return Text.fromPlain("This is not Buff!")
 	}
 	
 	// ---- CORS Pages ----
 	
-	TextResponse simple() {
-		TextResponse.fromPlain("CORS!")
+	Text simple() {
+		Text.fromPlain("CORS!")
 	}
 
-	TextResponse preflight() {
-		TextResponse.fromPlain("Preflight!")
+	Text preflight() {
+		Text.fromPlain("Preflight!")
 	}
 	
 	// ---- GZIP Pages ----
 	
 	Obj gzipBig() {
-		TextResponse.fromPlain("This is a gzipped message. No really! Need 5 more bytes!")
+		Text.fromPlain("This is a gzipped message. No really! Need 5 more bytes!")
 	}
 
 	Obj gzipSmall() {
-		TextResponse.fromPlain("Too small for gzip")
+		Text.fromPlain("Too small for gzip")
 	}
 	
 	Obj gzipDisable() {
 		response.disableGzip
-		return TextResponse.fromPlain("This is NOT a gzipped message. No really! Need 5 more bytes!")
+		return Text.fromPlain("This is NOT a gzipped message. No really! Need 5 more bytes!")
 	}
 
 	// ---- Json Pages ----
 	
 	Obj list() {
-		TextResponse.fromJson("this is a json list".split)
+		Text.fromJson("this is a json list".split)
 	}
 	
 	// ---- Redirect Pages ----
@@ -73,15 +73,15 @@ internal const class T_PageHandler {
 	// ---- Route Pages ----
 	
 	Obj defaultParams(Str p1, Str p2 := "p2", Str p3 := "p3") {
-		TextResponse.fromPlain("$p1 $p2 $p3")
+		Text.fromPlain("$p1 $p2 $p3")
 	}
 
 	Obj valEnc(Pinky pinky) {
-		TextResponse.fromPlain(pinky.int.toStr)
+		Text.fromPlain(pinky.int.toStr)
 	}
 	
 	Obj uri(Uri uri) {
-		TextResponse.fromPlain("uri: $uri")
+		Text.fromPlain("uri: $uri")
 	}
 
 	// ---- Session Pages ----
@@ -90,7 +90,7 @@ internal const class T_PageHandler {
 		count := (Int) session.get("count", 0)
 		count += 1
 		session["count"] = count
-		return TextResponse.fromPlain("count $count")
+		return Text.fromPlain("count $count")
 	}
 	
 	// ---- Status Code Page ----
@@ -102,25 +102,25 @@ internal const class T_PageHandler {
 	// ---- Text Pages ----
 	
 	Obj plain() {
-		TextResponse.fromPlain("This is plain text")
+		Text.fromPlain("This is plain text")
 	}
 
 	Obj html() {
-		TextResponse.fromHtml("This is html text <honest!/>")
+		Text.fromHtml("This is html text <honest!/>")
 	}
 
 	Obj xml() {
-		TextResponse.fromXml("This is xml text <honest!/>")
+		Text.fromXml("This is xml text <honest!/>")
 	}
 
 	// ---- Http Request Wrapping ----
 	
 	Obj httpReq1() {
-		TextResponse.fromPlain("On page 1")
+		Text.fromPlain("On page 1")
 	}
 
 	Obj httpReq2() {
-		TextResponse.fromPlain("On page 2")
+		Text.fromPlain("On page 2")
 	}
 	
 	// ---- Dee Dee!!! ----

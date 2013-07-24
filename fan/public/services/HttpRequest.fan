@@ -82,7 +82,8 @@ const mixin HttpRequest {
 
 ** Wraps a given `HttpRequest`, delegating all its methods. 
 ** You may find it handy to use when contributing to the 'HttpRequest' delegate chain.
-internal const class HttpRequestWrapper : HttpRequest {
+@NoDoc
+const class HttpRequestWrapper : HttpRequest {
 	const 	 HttpRequest req
 	new 	 make(HttpRequest req) 		{ this.req = req 		} 
 	override Bool isXmlHttpRequest()	{ req.isXmlHttpRequest	}

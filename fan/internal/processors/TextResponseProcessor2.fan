@@ -1,6 +1,7 @@
-using afIoc::Inject
+using afIoc
 
-internal const class TextResponseProcessor : ResponseProcessor {
+@Deprecated
+internal const class TextResponseProcessor2 : ResponseProcessor {
 	
 	@Inject
 	private const HttpResponse res
@@ -8,10 +9,10 @@ internal const class TextResponseProcessor : ResponseProcessor {
 	new make(|This|in) { in(this) }
 	
 	override Obj process(Obj response) {
-		text := (Text) response
+		text := (TextResponse) response
 		
 		// 200 is set by default - we don't explicitly set it here 'cos error pages may return
-		// Text objs and we don't wanna override the 500 status code!
+		// TextResponses and we don't wanna override the 500 status code!
 //		res.setStatusCode(200)
 
 		res.headers["Content-Type"] = text.mimeType.toStr

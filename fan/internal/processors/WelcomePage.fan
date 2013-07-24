@@ -7,7 +7,7 @@ internal const class WelcomePage {
 	
 	internal new make(|This|in) { in(this) }
 	
-	TextResponse service() {
+	Text service() {
 
 		title	:= "BedSheet ${typeof.pod.version}"
 		buf 	:= StrBuf()

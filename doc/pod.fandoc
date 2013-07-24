@@ -34,8 +34,8 @@ class AppModule {
 }
 
 class HelloPage {
-  TextResponse hello(Str name, Int iq := 666) {
-    return TextResponse.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+  Text hello(Str name, Int iq := 666) {
+    return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
   }
 }
 <pre
@@ -62,9 +62,9 @@ services. In our 'AppModule' we told the `Routes` service to route all request U
 optional 'Int iq'.
 
 Request handlers are typically what we, the app developers, write. They perform logic processing and render responses. Our
-'HelloPage' handler simply renders a plain `TextResponse`.
+'HelloPage' handler simply renders a plain `Text` response.
 
-A default `ResponseProcessor` then sends the `TextResponse` to the client.
+A default `ResponseProcessor` then sends the `Text` response to the client.
 
 
 
@@ -190,7 +190,7 @@ Request Handling [#requestHandling]
 ***********************************
 Request handlers is where logic is processed and responses are rendered. Handlers generally shouldn't pipe anything to
 http response out stream, instead they should return a response object. Example, the above 'HelloPage' handler returns a
-`TextResponse`.
+`Text` obj.
 
 BedSheet bundles with the following request handlers:
  - `FileHandler`: Maps request URIs to files on file system.
@@ -200,7 +200,7 @@ BedSheet bundles with the following request handlers:
 By default, BedSheet handles the following responses:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : A response has been sent to the client and no further processing should performed on the http request.
- - `TextResponse` : The text (be it plain, json or xml), with the given `sys::MimeType` is sent to the client.
+ - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with the given `sys::MimeType`.
  - `sys::File` : The file is sent to the client.
  - `HttpStatus` : Sets the http response status and renders a mini html page with the status msg. (See [Error Processing]`#errorProcessing`.)
  - `Redirect` : Sends a 3xx redirect response to the client.
@@ -209,9 +209,9 @@ By default, BedSheet handles the following responses:
 
 Response Processing [#responseProcessing]
 *****************************************
-[ResponseProcessors]`ResponseProcessor` process request handler responses (`sys::File`, `TextResponse`, etc...) and send data to
+[ResponseProcessors]`ResponseProcessor` process request handler responses (`sys::File`, `Text`, etc...) and send data to
 the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the http request. Or they
-may return another response object for further processing, such as a `TextResponse`.
+may return another response object for further processing, such as a `Text` obj.
 
 BedSheet bundles with the following response processors:
  - 'TextResponseProcessor' : Sends text to the client.
@@ -224,7 +224,7 @@ BedSheet bundles with the following response processors:
 Error Processing [#errorProcessing]
 ***********************************
 When BedSheet catches an Err it scans through its list of contributed [ErrProcessors]`ErrProcessor` to find the closest match.
-ErrProcessor's takes an Err and returns a response for further processing (example, `TextResponse`). Or it may return 'true'
+ErrProcessor's takes an Err and returns a response for further processing (example, `Text`). Or it may return 'true'
 if the error has been completely handled and no further processing is required.
 
 BedSheet bundles with Err processors for the following Errs:
