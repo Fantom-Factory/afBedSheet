@@ -2,11 +2,13 @@ using afIoc
 
 internal class TestConfigSource : ConfigTest {
 	
-	Void testCannotOverrideNonExistantConfig() {
-		verifyConfigErrMsg(ConfigMsgs.configSourceDefaultOverride("c02")) {
-			reg := RegistryBuilder().addModule(T_MyModule03#).build.startup
-			s04	:= (T_MyService04) reg.serviceById("s04")
-		}
+	Void testCanOverrideNonExistantConfig() {
+		reg := RegistryBuilder().addModule(T_MyModule03#).build.startup
+		s04	:= (T_MyService04) reg.serviceById("s04")
+		
+		// we DO NOT want to throw an err if config is ONLY defined in AppDefaults, 'cos most web 
+		// apps (mine included!) will define their OWN config - it's not just about overiding! 
+		verifyEq(s04.c01, "Belgium")
 	}
 	
 }
@@ -17,11 +19,6 @@ internal class T_MyModule03 {
 		binder.bindImpl(T_MyService04#).withId("s04")
 	}	
 
-	@Contribute { serviceType=FactoryDefaults# }
-	static Void cuntFuct(MappedConfig config) {
-		config["c01"] = "Belgium"
-	}
-
 	@Contribute { serviceType=ApplicationDefaults# }
 	static Void cuntApp(MappedConfig config) {
 		config["c02"] = "Belgium"
@@ -29,5 +26,5 @@ internal class T_MyModule03 {
 }
 
 internal class T_MyService04 {
-	@Inject @Config{ id="c01" }	Str? c01
+	@Inject @Config{ id="c02" }	Str? c01
 }

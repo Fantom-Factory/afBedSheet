@@ -1,6 +1,6 @@
 
-** Return from handler methods to send a redirect 3xx status to the client. Handles the differences 
-** in HTTP 1.0 and HTTP 1.1. 
+** Return from request handler methods to send a redirect 3xx status to the client. Handles the 
+** differences in HTTP 1.0 and HTTP 1.1. 
 ** 
 ** @see
 **  - `http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection`

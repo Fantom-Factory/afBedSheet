@@ -6,29 +6,31 @@ using concurrent
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
+		
+		// Routing
 		binder.bindImpl(Routes#)
 		binder.bindImpl(RouteMatchers#).withoutProxy
 		binder.bindImpl(ReqestHandlerInvoker#)
-
 		binder.bindImpl(ValueEncoders#)
-		binder.bindImpl(FileHandler#)
+		
+		// Request handlers
+		binder.bindImpl(FileHandler#).withoutProxy				// has default method args
+		binder.bindImpl(PodHandler#).withoutProxy				// has default method args
+		binder.bindImpl(CorsHandler#).withoutProxy				// has default method args
 
-		binder.bindImpl(HttpStatusProcessors#)
+		// Collections (services with contributions)
 		binder.bindImpl(ResponseProcessors#)
 		binder.bindImpl(ErrProcessors#)
-
-		binder.bindImpl(MoustacheTemplates#).withoutProxy	// has default method args
+		binder.bindImpl(HttpStatusProcessors#) 
+		binder.bindImpl(MoustacheTemplates#).withoutProxy		// has default method args
+		
+		// Other services
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
 		binder.bindImpl(ErrPrinter#)
 		binder.bindImpl(BedSheetPage#)
-		
 		binder.bindImpl(HttpSession#)
 
-		binder.bindImpl(CorsHandler#).withoutProxy				// has default method args
-		binder.bindImpl(IeAjaxCacheBustingFilter#).withoutProxy	// has default method args
-		binder.bindImpl(HttpRequestLogFilter#).withoutProxy		// has default method args
-		
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
 		binder.bindImpl(HttpStatusPageDefault#)

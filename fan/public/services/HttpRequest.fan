@@ -78,6 +78,16 @@ const mixin HttpRequest {
 	** @see `web::WebReq.locales`
 	abstract Locale[] locales()
 	
+	** Get the stream to read request body.  See `WebUtil.makeContentInStream` to check under which 
+	** conditions request content is available. If request content is not available, then throw an 
+	** exception.
+	**
+	** If the client specified the "Expect: 100-continue" header, then the first access of the 
+	** request input stream will automatically send the client a '100 Continue' response.
+	**
+	** @see `web::WebReq.in`
+	abstract InStream in()
+	
 }
 
 ** Wraps a given `HttpRequest`, delegating all its methods. 
@@ -99,6 +109,7 @@ const class HttpRequestWrapper : HttpRequest {
 	override [Str:Str]? form() 			{ req.form				}
 	override Str:Str cookies() 			{ req.cookies			}
 	override Locale[] locales() 		{ req.locales			}
+	override InStream in() 				{ req.in				}	
 }
 
 internal const class HttpRequestImpl : HttpRequest {
@@ -158,6 +169,10 @@ internal const class HttpRequestImpl : HttpRequest {
 
 	override Locale[] locales() {
 		webReq.locales
+	}
+
+	override InStream in() {
+		webReq.in
 	}
 	
 	private WebReq webReq() {

@@ -26,8 +26,15 @@ using afIoc::Inject
 ** 
 ** Now all requests to '/pub/css/mystyle.css' will map to 'etc/web/css/mystyle.css'
 ** 
-** @uses MappedConfig of Uri:File
-const class FileHandler {
+** @uses MappedConfig of 'Uri:File'
+const mixin FileHandler {
+
+	** Returns a `File` on the file system, as mapped from the given uri.
+	abstract File service(Uri remainingUri := ``)
+
+}
+
+internal const class FileHandlerImpl : FileHandler {
 	
 	@Inject
 	private const HttpRequest req
@@ -54,8 +61,7 @@ const class FileHandler {
 		this.dirMappings = dirMappings.toImmutable
 	}
 
-	** Returns a `File` on the file system, as mapped from the given uri.
-	File service(Uri remainingUri := ``) {
+	override File service(Uri remainingUri := ``) {
 		
 		// use pathStr to knockout any unwanted query str
 		matchedUri := req.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri
