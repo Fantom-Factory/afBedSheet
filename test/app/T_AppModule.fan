@@ -5,6 +5,11 @@ internal const class T_AppModule {
 	static Void bind(ServiceBinder binder) {
 //		binder.bindImpl(Router#)
 	}
+	
+	@Contribute { serviceType=HttpPipeline# }
+	static Void contributeHttpPipeline(OrderedConfig config) {
+		config.addOrdered("IeAjaxCacheBustingFilter", config.autobuild(IeAjaxCacheBustingFilter#), ["after: BedSheetFilters"])
+	}	
 
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(OrderedConfig conf) {

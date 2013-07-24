@@ -35,7 +35,7 @@ internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {
 	internal new make(|This|in) { in(this) }
 	
 	override Bool service(HttpPipeline handler) {
-
+		
 		if (browserDetection.isInternetExplorer) {
 			// IE CORS requests from XDomainRequest don't set 'X-Requested-With' HTTP header. 
 			// Bloody typical!!
@@ -47,6 +47,6 @@ internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {
 			}
 		}
 		
-		return false
+		return handler.service
 	}
 }
