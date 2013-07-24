@@ -76,9 +76,11 @@ internal class BedSheetModule {
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(MappedConfig conf, HttpStatusProcessors httpStatusProcessor) {
 		conf[File#]				= conf.autobuild(FileResponseProcessor#)
-		conf[TextResponse#]		= conf.autobuild(TextResponseProcessor#)
+		conf[Text#]				= conf.autobuild(TextResponseProcessor#)
 		conf[Redirect#]			= conf.autobuild(RedirectResponseProcessor#)
 		conf[HttpStatus#]		= httpStatusProcessor
+		
+		conf[TextResponse#]		= conf.autobuild(TextResponseProcessor2#)
 	}
 
 	@Contribute { serviceType=HttpStatusProcessors# }

@@ -72,7 +72,8 @@ const mixin HttpResponse {
 
 ** Wraps a given `HttpResponse`, delegating all its methods. 
 ** You may find it handy to use when contributing to the 'HttpResponse' delegate chain.
-internal const class HttpResponseWrapper : HttpResponse {
+@NoDoc
+const class HttpResponseWrapper : HttpResponse {
 	const 	 HttpResponse res
 	new 	 make(HttpResponse res) 		{ this.res = res 			} 
 	override Void disableGzip()				{ res.disableGzip			}

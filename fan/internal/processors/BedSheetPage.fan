@@ -7,7 +7,7 @@ internal const class BedSheetPage {
 	
 	new make(|This|in) { in(this) }
 	
-	TextResponse render(Str title, Str content) {
+	Text render(Str title, Str content) {
 		bedSheetCss		:= typeof.pod.file(`/res/web/bedSheet.css`).readAllStr
 		alienHeadSvg	:= typeof.pod.file(`/res/web/alienHead.svg`).readAllStr
 		bedSheetHtml	:= typeof.pod.file(`/res/web/bedSheet.moustache`)
@@ -20,6 +20,6 @@ internal const class BedSheetPage {
 			"version"		: version
 		])
 		
-		return TextResponse.fromHtml(html)
+		return Text.fromHtml(html)
 	}	
 }

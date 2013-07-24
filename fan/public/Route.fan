@@ -38,8 +38,8 @@
 ** }
 ** 
 ** class HelloPage {
-**   TextResponse hello(Str name, Int iq := 666) {
-**     return TextResponse.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+**   Text hello(Str name, Int iq := 666) {
+**     return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
 **   }
 ** }
 ** 

@@ -1,6 +1,4 @@
 using afIoc::Inject
-using afIoc::Registry
-using web::WebOutStream
 using web::WebRes
 
 ** Sends the status code and msg from `HttpStatusErr` to the client. 
@@ -14,7 +12,7 @@ internal const class HttpStatusPageDefaultImpl : HttpStatusPageDefault {
 
 	internal new make(|This|in) { in(this) }
 
-	override TextResponse process(HttpStatus httpStatus) {
+	override Text process(HttpStatus httpStatus) {
 		if (!response.isCommitted)	// a sanity check
 			response.setStatusCode(httpStatus.code)
 

@@ -3,7 +3,7 @@
 const mixin ResponseProcessor {
 	
 	** Return 'true' if a response has been sent to the client and all processing has finished. 
-	** Else return a response  object for further processing, example, `TextResponse`. 
+	** Else return a response  object for further processing, example, `Text`. 
 	abstract Obj process(Obj response)
 		
 }

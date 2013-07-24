@@ -1,5 +1,4 @@
 using afIoc::Inject
-using web::WebOutStream
 using web::WebRes
 
 internal const class HttpStatusPage500 : HttpStatusProcessor {
@@ -14,7 +13,7 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 	
 	internal new make(|This|in) { in(this) }
 
-	override TextResponse process(HttpStatus httpStatus) {
+	override Text process(HttpStatus httpStatus) {
 		if (httpStatus.cause != null)
 			log.err(errPrinter.errToStr(httpStatus.cause))
 
