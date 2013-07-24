@@ -1,5 +1,5 @@
 
-** A Request Handler that maps uris to pod file resources. 
+** A Request Handler that maps URIs to file resources inside pods. 
 **
 ** pre>
 ** @Contribute { serviceType=Routes# }

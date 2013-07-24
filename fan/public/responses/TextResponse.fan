@@ -27,29 +27,29 @@ const final class TextResponse {
 		this.mimeType = mimeType
 	}
 
-	** Creates a 'TextResponse' with the `MimeType` 'text/plain'.
+	** Creates a 'TextResponse' with the mime type 'text/plain'.
 	static new fromPlain(Str text, Charset charset := Charset.utf8) {
 		fromMimeStr(text, "text/plain", charset)
 	}
 
-	** Creates a 'TextResponse' with the `MimeType` 'text/html'.
+	** Creates a 'TextResponse' with the mime type 'text/html'.
 	static new fromHtml(Str text, Charset charset := Charset.utf8) {
 		fromMimeStr(text, "text/html", charset)
 	}
 
-	** Creates a 'TextResponse' with the `MimeType` 'text/xml'.
+	** Creates a 'TextResponse' with the mime type 'text/xml'.
 	static new fromXml(Str text, Charset charset := Charset.utf8) {
 		fromMimeStr(text, "text/xml", charset)
 	}
 
-	** Creates a 'TextResponse' with the `MimeType` 'application/json'.
+	** Creates a 'TextResponse' with the mime type 'application/json'.
 	** 'jsonObj' should be serialisable into Json via `util::JsonOutStream`
 	static new fromJson(Obj jsonObj, Charset charset := Charset.utf8) {
 		json := JsonOutStream.writeJsonToStr(jsonObj)
 		return fromMimeStr(json, "application/json", charset)
 	}
 
-	** Creates a 'TextResponse' with the `MimeType` 'application/json'.
+	** Creates a 'TextResponse' with the mime type 'application/json'.
 	** The json is wrapped in the given callback function name. 
 	** 'jsonObj' should be serialisable into Json via `util::JsonOutStream`.
 	static new fromJsonP(Obj jsonObj, Str callbackFuncName, Charset charset := Charset.utf8) {
@@ -58,7 +58,7 @@ const final class TextResponse {
 		return fromMimeStr(text, "application/json", charset)
 	}
 
-	** Creates a 'TextResponse' with the given `MimeType`.
+	** Creates a 'TextResponse' with the given mime type.
 	static new fromMimeType(Str text, MimeType mimeType) {
 		TextResponse.make(text, mimeType)
 	}

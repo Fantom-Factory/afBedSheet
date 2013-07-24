@@ -12,11 +12,16 @@ using afIoc::Inject
 ** service the ajax requests:
 ** 
 ** pre>
-**  simpleRoute    := Route(`<simple-path>`,    CrossOriginResourceSharingFilter#serviceSimple,    "GET POST")
-**  preflightRoute := Route(`<preflight-path>`, CrossOriginResourceSharingFilter#servicePrefilght, "OPTIONS")
+** @Contribute { serviceType=Routes# }
+** static Void contributeRoutes(OrderedConfig conf) {
 ** 
-**  conf.add("corsSimple", 	  simpleRoute,    ["before: routes"])
-**  conf.add("corsPreflight", preflightRoute, ["before: routes"])
+**   simpleRoute    := Route(`<simple-path>`,    CorsHandler#serviceSimple,    "GET POST")
+**   preflightRoute := Route(`<preflight-path>`, CorsHandler#servicePrefilght, "OPTIONS")
+** 
+**   conf.add("corsSimple",    simpleRoute,    ["before: routes"])
+**   conf.add("corsPreflight", preflightRoute, ["before: routes"])
+** 
+** }
 ** <pre
 ** 
 ** And set the following config values:
@@ -27,7 +32,7 @@ using afIoc::Inject
 ** - `ConfigIds.corsAllowedHeaders`
 ** - `ConfigIds.corsMaxAge`
 ** 
-** @see Read the following for specifics:
+** @see the following for specifics:
 **  - `http://www.w3.org/TR/cors/`
 **  - `http://www.html5rocks.com/en/tutorials/cors/`
 **  - `https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS`
