@@ -8,7 +8,7 @@
 **   conf[ConfigIds.gzipThreshold] = 500
 ** }
 ** <pre
-const class ConfigIds {
+const mixin ConfigIds {
 	
 	** How often the `AppDestroyer` pings the proxy to keep the app alive.
 	** Defaults to '1sec'.

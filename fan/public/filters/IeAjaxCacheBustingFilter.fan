@@ -8,6 +8,17 @@ using afIoc::Inject
 ** <pre
 ** 
 ** This is by far, much preferable, to the client setting a cache busting query string to the request url (yuck!). 
+** 
+** To enable, just contribute the filter to the `HttpPipeline`:
+** 
+** pre>
+**   @Contribute { serviceType=HttpPipeline# }
+**     static Void contributeHttpPipeline(OrderedConfig conf) {
+**     ...
+**     conf.addOrdered("IeAjaxCacheBustingFilter", conf.autobuild(IeAjaxCacheBustingFilter#), ["after: BedSheetFilters"])
+**     ...
+**   }
+** <pre
 const mixin IeAjaxCacheBustingFilter : HttpPipelineFilter { }
 
 internal const class IeAjaxCacheBustingFilterImpl : IeAjaxCacheBustingFilter {

@@ -24,13 +24,7 @@ internal const class ConfigSourceImpl : ConfigSource {
 	new make(|This|in) {
 		in(this)
 		config := factoryDefaults.config.rw
-		
-		applicationDefaults.config.each |v, k| {
-			if (!config.containsKey(k))
-				throw ConfigErr(ConfigMsgs.configSourceDefaultOverride(k))
-			config[k] = v
-		}
-		
+		config.setAll(applicationDefaults.config)
 		this.config = config.toImmutable
 	}
 	
