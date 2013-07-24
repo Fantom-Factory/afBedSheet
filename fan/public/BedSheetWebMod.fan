@@ -29,8 +29,16 @@ const class BedSheetWebMod : WebMod {
 
 	override Void onService() {
 		req.mod = this
-		((HttpPipeline) reg.dependencyByType(HttpPipeline#)).service
-		res.done
+		try {
+			httpPipeline := (HttpPipeline) reg.dependencyByType(HttpPipeline#)
+			httpPipeline.service
+		} catch (Err err) {
+			// theoretically, this should have already been dealt with by our Err Pipeline Processor...
+			// ...but it's handy for BedSheet development!
+			errPrinter := (ErrPrinter) reg.dependencyByType(ErrPrinter#)
+			Env.cur.err.printLine(errPrinter.errToStr(err))
+			throw err
+		}
 	}
 
 	override Void onStart() {

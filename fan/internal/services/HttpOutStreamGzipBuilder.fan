@@ -13,7 +13,8 @@ internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
 	new make(|This|in) { in(this) } 
 	
 	override OutStream build(Obj delegate) {
-		contentType := response.headers["Content-Type"]
+		// do a sanity safety check - someone may have committed the stream behind our backs
+		contentType := response.isCommitted ? null : response.headers["Content-Type"]
 		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
 		acceptGzip	:= QualityValues(request.headers["Accept-encoding"]).accepts("gzip")
 		doGzip 		:= !gzipDisabled && !response.isGzipDisabled && acceptGzip && gzipCompressible.isCompressible(mimeType)		

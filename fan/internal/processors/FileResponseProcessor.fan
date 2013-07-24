@@ -39,7 +39,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 		if (mime != null) 
 			res.headers["Content-Type"] = mime.toStr
 
-		file.in.pipe(res.out, file.size)
+		file.in.pipe(res.out, file.size, true)
 
 		return true
 	}
