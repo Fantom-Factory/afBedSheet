@@ -4,6 +4,14 @@ For BedSheet 1.0.0
 Err500 - add Env Properties - split on path
 Err500 - add Fantom.Env Properties 
 
+rename TextResponse -> Text (update docs)
+
+No need for streamResponse - just res.disableBuffer()!
+res.downloadAttachment
+ - sets header
+ - test for dodgy chars
+
+
 fantom afIoc on T5
 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
@@ -15,7 +23,6 @@ For BedSheet 1.0.2
 
 Logging filter with reqId, SessId and configurable userId
 
-Have StreamResponse / Download Attachment responses
 
  - @Persist { strategy="session" } - how to access setter?
  - @Persist { strategy="flash" }

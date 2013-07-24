@@ -3,8 +3,8 @@
 ** in HTTP 1.0 and HTTP 1.1. 
 ** 
 ** @see
-**  - http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection
-**  - http://www.iana.org/assignments/http-status-codes/http-status-codes.xml
+**  - `http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection`
+**  - `http://www.iana.org/assignments/http-status-codes/http-status-codes.xml`
 const final class Redirect {
 	
 	** The URI to redirect to
@@ -25,7 +25,7 @@ const final class Redirect {
 	** 
 	** Note: Until Fantom 1.0.66 is released, 301 is also set for HTTP 1.1.
 	** 
-	** @see http://fantom.org/sidewalk/topic/2169#c14003
+	** @see `http://fantom.org/sidewalk/topic/2169#c14003`
 	static new movedPermanently(Uri redirectTo) {
 		Redirect.make(redirectTo, RedirectType.movedPermanently)
 	}
