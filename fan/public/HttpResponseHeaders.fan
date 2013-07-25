@@ -4,9 +4,9 @@
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 class HttpResponseHeaders {
 	
-	internal Str:Str headers
+	private Str:Str headers
 
-	new make(Str:Str headers) { this.headers = headers }
+	internal new make(Str:Str headers) { this.headers = headers }
 	
 	** Tells all caching mechanisms from server to client whether they may cache this object. It is 
 	** measured in seconds.

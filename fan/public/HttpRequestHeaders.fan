@@ -4,9 +4,9 @@
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 class HttpRequestHeaders {
 	
-	internal Str:Str headers
+	private Str:Str headers
 
-	new make(Str:Str headers) { this.headers = headers }
+	internal new make(Str:Str headers) { this.headers = headers }
 
 	** List of acceptable encodings.
 	** 
@@ -23,6 +23,14 @@ class HttpRequestHeaders {
 
 	Str? accessControlRequestMethod {
 		get { headers["Access-Control-Request-Method"]?.upper }
+		private set { }
+	}
+
+	** The MIME type of the body of the request (used with POST and PUT requests)
+	** 
+	** Example: 'Content-Type: application/x-www-form-urlencoded'
+	MimeType? contentType {
+		get { makeIfNotNull("Content-Type") { MimeType(it, true) }}
 		private set { }
 	}
 
@@ -57,6 +65,17 @@ class HttpRequestHeaders {
 	** Example: 'Origin: http://www.example-social-network.com'
 	Str? origin {
 		get { headers["Origin"] }
+		private set { }
+	}
+
+	** This is the address of the previous web page from which a link to the currently requested 
+	** page was followed. 
+	** 
+	** Example: 'Referer: http://en.wikipedia.org/wiki/Main_Page'
+	Uri? referrer {
+		// yeah, I know I've mispelt referrer!
+		// see `https://en.wikipedia.org/wiki/HTTP_referrer`
+		get { headers["Referer"]?.toUri }
 		private set { }
 	}
 
