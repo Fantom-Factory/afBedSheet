@@ -57,6 +57,8 @@ internal const class T_AppModule {
 		
 		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
 
+		conf.add(Route(`/saveAs/*`, 			T_PageHandler#saveAs))
+
 		conf.add(Route(`/pod/***`, 				PodHandler#service))
 		
 		// no logging for now!

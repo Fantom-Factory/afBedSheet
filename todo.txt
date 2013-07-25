@@ -4,10 +4,7 @@ For BedSheet 1.0.0
 Err500 - add Env Properties - split on path
 Err500 - add Fantom.Env Properties 
 
-No need for streamResponse - just res.disableBuffer()!
-res.downloadAttachment
- - sets header
- - test for dodgy chars
+res.saveAsAttachment(Str filename)
 
 
 fantom afIoc on T5
