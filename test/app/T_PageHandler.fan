@@ -130,4 +130,12 @@ internal const class T_PageHandler {
 		typeof.pod.file(`/res/test/DeeDee.jpg`).copyTo(temp, ["overwrite":true])
 		return temp
 	}
+	
+	// ---- save as ----
+	
+	Obj saveAs(Str saveAs) {
+		response.saveAsAttachment(saveAs)
+		response.headers.contentType = MimeType.forExt(".txt")
+		return Buf().print("Short Skirts!").flip.in
+	}
 }

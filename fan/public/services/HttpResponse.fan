@@ -68,6 +68,14 @@ const mixin HttpResponse {
 	** 
 	** @see `BufferedOutStream`
 	abstract Bool isBufferingDisabled()
+	
+	** Directs the client to display a 'save as' dialog. Sets the 'Content-Disposition' http 
+	** response header. 
+	** 
+	** Don't forget to set the 'Content-Type' header too!
+	** 
+	** @see `HttpResponseHeaders.contentDisposition`
+	abstract Void saveAsAttachment(Str fileName)
 }
 
 ** Wraps a given `HttpResponse`, delegating all its methods. 
@@ -85,6 +93,7 @@ const class HttpResponseWrapper : HttpResponse {
 	override Cookie[] cookies() 			{ res.cookies				}
 	override Bool isCommitted() 			{ res.isCommitted			}
 	override OutStream out() 				{ res.out					}
+	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
 }
 
 
@@ -135,8 +144,12 @@ internal const class HttpResponseImpl : HttpResponse {
 		registry.serviceById("HttpOutStream")
 	}
 	
+	override Void saveAsAttachment(Str fileName) {
+		headers.contentDisposition = "Attachment; filename=${fileName}"
+	}
+
 	private WebRes webRes() {
 		registry.dependencyByType(WebRes#)
-	}
+	}	
 }
 

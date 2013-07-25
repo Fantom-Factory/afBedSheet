@@ -22,7 +22,17 @@ class HttpResponseHeaders {
 	** Example: 'Content-Encoding: gzip'
 	Str? contentEncoding {
 		get { headers["Content-Encoding"] }
-		set { addOrRemove("Content-Encoding", it?.toStr) }
+		set { addOrRemove("Content-Encoding", it) }
+	}
+
+	** Usually used to direct the client to display a 'save as' dialog.
+	** 
+	** Example: 'Content-Disposition: Attachment; filename=example.html'
+	** 
+	** @see `http://tools.ietf.org/html/rfc6266`
+	Str? contentDisposition {
+		get { headers["Content-Disposition"] }
+		set { addOrRemove("Content-Disposition", it) }
 	}
 
 	** The length of the response body in octets (8-bit bytes).
