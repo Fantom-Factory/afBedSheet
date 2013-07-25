@@ -81,8 +81,6 @@ internal class BedSheetModule {
 		conf[Text#]				= conf.autobuild(TextResponseProcessor#)
 		conf[Redirect#]			= conf.autobuild(RedirectResponseProcessor#)
 		conf[HttpStatus#]		= httpStatusProcessor
-		
-		conf[TextResponse#]		= conf.autobuild(TextResponseProcessor2#)
 	}
 
 	@Contribute { serviceType=HttpStatusProcessors# }
