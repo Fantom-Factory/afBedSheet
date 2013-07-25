@@ -22,7 +22,7 @@ const mixin HttpResponse {
 	** @see 
 	**  - `web::WebRes.headers`
 	**  - `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
-	abstract Str:Str headers()
+	abstract HttpResponseHeaders headers()
 	
 	** Get the list of cookies to set via header fields.  Add a Cookie to this list to set a 
 	** cookie.  Throws Err if response is already committed.
@@ -81,7 +81,7 @@ const class HttpResponseWrapper : HttpResponse {
 	override Void disableBuffering() 		{ res.disableBuffering		}
 	override Bool isBufferingDisabled() 	{ res.isBufferingDisabled	}
 	override Void setStatusCode(Int sc) 	{ res.setStatusCode(sc)		}
-	override Str:Str headers() 				{ res.headers				}
+	override HttpResponseHeaders headers() 	{ res.headers				}
 	override Cookie[] cookies() 			{ res.cookies				}
 	override Bool isCommitted() 			{ res.isCommitted			}
 	override OutStream out() 				{ res.out					}
@@ -90,13 +90,13 @@ const class HttpResponseWrapper : HttpResponse {
 
 internal const class HttpResponseImpl : HttpResponse {
 	
-	@Inject	private const Registry 			registry
+	@Inject	private const Registry 	registry
 	
 	private const ThreadStash threadStash
 
 	new make(ThreadStashManager threadStashManager, |This|in) { 
 		in(this) 
-		threadStash = threadStashManager.createStash("Response")
+		threadStash = threadStashManager.createStash("HttpResponse")
 	} 
 
 	override Void disableGzip() {
@@ -119,8 +119,8 @@ internal const class HttpResponseImpl : HttpResponse {
 		webRes.statusCode = statusCode
 	}
 
-	override Str:Str headers() {
-		webRes.headers
+	override HttpResponseHeaders headers() {
+		threadStash.get("headers") |->Obj| { HttpResponseHeaders(webRes.headers) }
 	}
 
 	override Cookie[] cookies() {

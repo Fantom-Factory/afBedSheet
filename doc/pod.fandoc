@@ -132,7 +132,7 @@ pre>
 @Contribute { serviceType=HttpPipeline# }
 static Void contributeHttpPipeline(OrderedConfig conf, AuthFilter myAuthFilter) {
 
-    conf.addOrdered("AuthFilter", myAuthFilter, ["after: BedSheetFilters"])
+  conf.addOrdered("AuthFilter", myAuthFilter, ["after: BedSheetFilters"])
 
 }
 <pre
@@ -204,6 +204,7 @@ By default, BedSheet handles the following responses:
  - `sys::File` : The file is sent to the client.
  - `HttpStatus` : Sets the http response status and renders a mini html page with the status msg. (See [Error Processing]`#errorProcessing`.)
  - `Redirect` : Sends a 3xx redirect response to the client.
+ - `sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guarenteed to be closed.
 
 
 
@@ -216,8 +217,9 @@ may return another response object for further processing, such as a `Text` obj.
 BedSheet bundles with the following response processors:
  - 'TextResponseProcessor' : Sends text to the client.
  - 'FileResponseProcessor' : Sends files to the client.
- - 'RedirectResponseProcessor' : Sends a 3xx redirect responses to the client.
  - `HttpStatusProcessors` : Routes `HttpStatus` to contributed 'HttpStatusProcessors'.
+ - 'RedirectResponseProcessor' : Sends a 3xx redirect responses to the client.
+ - 'InStreamResponseProcessor' : Pipes an 'InStream' to the client and closes the stream.
 
 
 

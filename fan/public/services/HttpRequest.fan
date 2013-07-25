@@ -1,5 +1,7 @@
 using afIoc::Inject
 using afIoc::Registry
+using afIoc::ThreadStash
+using afIoc::ThreadStashManager
 using web::WebReq
 using inet::IpAddr
 
@@ -57,7 +59,7 @@ const mixin HttpRequest {
 	** @see `web::WebReq.headers`
 	** 
 	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests`
-	abstract Str:Str headers()
+	abstract HttpRequestHeaders headers()
 	
 	** Map of cookie values keyed by cookie name.  The cookies map is readonly and case insensitive.
 	abstract Str:Str cookies()
@@ -95,21 +97,21 @@ const mixin HttpRequest {
 @NoDoc
 const class HttpRequestWrapper : HttpRequest {
 	const 	 HttpRequest req
-	new 	 make(HttpRequest req) 		{ this.req = req 		} 
-	override Bool isXmlHttpRequest()	{ req.isXmlHttpRequest	}
-	override Version httpVersion()		{ req.httpVersion		}
-	override Str httpMethod()			{ req.httpMethod		}	
-	override IpAddr remoteAddr() 		{ req.remoteAddr		}
-	override Int remotePort() 			{ req.remotePort		}
-	override Uri uri() 					{ req.uri				}
-	override Uri absUri() 				{ req.absUri			}
-	override Uri modBase() 				{ req.modBase			}
-	override Uri modRel() 				{ req.modRel			}
-	override [Str:Str] headers() 		{ req.headers			}
-	override [Str:Str]? form() 			{ req.form				}
-	override Str:Str cookies() 			{ req.cookies			}
-	override Locale[] locales() 		{ req.locales			}
-	override InStream in() 				{ req.in				}	
+	new 	 make(HttpRequest req) 			{ this.req = req 		} 
+	override Bool isXmlHttpRequest()		{ req.isXmlHttpRequest	}
+	override Version httpVersion()			{ req.httpVersion		}
+	override Str httpMethod()				{ req.httpMethod		}	
+	override IpAddr remoteAddr() 			{ req.remoteAddr		}
+	override Int remotePort() 				{ req.remotePort		}
+	override Uri uri() 						{ req.uri				}
+	override Uri absUri() 					{ req.absUri			}
+	override Uri modBase() 					{ req.modBase			}
+	override Uri modRel() 					{ req.modRel			}
+	override HttpRequestHeaders headers() 	{ req.headers			}
+	override [Str:Str]? form() 				{ req.form				}
+	override Str:Str cookies() 				{ req.cookies			}
+	override Locale[] locales() 			{ req.locales			}
+	override InStream in() 					{ req.in				}	
 }
 
 internal const class HttpRequestImpl : HttpRequest {
@@ -117,7 +119,12 @@ internal const class HttpRequestImpl : HttpRequest {
 	@Inject
 	private const Registry registry
 	
-	new make(|This|in) { in(this) } 
+	private const ThreadStash threadStash
+
+	new make(ThreadStashManager threadStashManager, |This|in) { 
+		in(this) 
+		threadStash = threadStashManager.createStash("HttpRequest")
+	}
 
 	override Bool isXmlHttpRequest() {
 		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false
@@ -155,8 +162,8 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.modRel
 	}
 	
-	override [Str:Str] headers() {
-		webReq.headers
+	override HttpRequestHeaders headers() {
+		threadStash.get("headers") |->Obj| { HttpRequestHeaders(webReq.headers) }
 	}
 	
 	override [Str:Str]? form() {

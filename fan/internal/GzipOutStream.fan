@@ -89,7 +89,7 @@ internal class GzipOutStream : OutStream {
 				// if gzip kicks in, we don't know the content length until stream closes 
 				// - so we remove any previously set length 
 				response.headers.remove("Content-Length")
-				response.headers["Content-Encoding"] = "gzip"
+				response.headers.contentEncoding = "gzip"
 			}
 			bufOut = Zip.gzipOutStream(wrappedOut)
 			writeBufToOut
