@@ -14,10 +14,9 @@ internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
 	
 	override OutStream build(Obj delegate) {
 		// do a sanity safety check - someone may have committed the stream behind our backs
-		contentType := response.isCommitted ? null : response.headers["Content-Type"]
-		mimeType	:= (contentType == null) ? null : MimeType(contentType, false)
-		acceptGzip	:= QualityValues(request.headers["Accept-encoding"]).accepts("gzip")
-		doGzip 		:= !gzipDisabled && !response.isGzipDisabled && acceptGzip && gzipCompressible.isCompressible(mimeType)		
+		contentType := response.isCommitted ? null : response.headers.contentType
+		acceptGzip	:= request.headers.acceptEncoding.accepts("gzip")
+		doGzip 		:= !gzipDisabled && !response.isGzipDisabled && acceptGzip && gzipCompressible.isCompressible(contentType)		
 		return		doGzip ? registry.autobuild(GzipOutStream#, [delegate]) : delegate
 	}
 }

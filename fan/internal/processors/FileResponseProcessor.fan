@@ -21,13 +21,13 @@ internal const class FileResponseProcessor : ResponseProcessor {
 			throw HttpStatusErr(403, "Directory listing not allowed: $req.modRel")
 
 		// set identity headers
-		res.headers["ETag"] = etag(file)
-		res.headers["Last-Modified"] = modified(file).toHttpStr
+		res.headers.eTag = etag(file)
+		res.headers.lastModified = modified(file)
 
 		// initially set the Content-Length 
 		// - GzipOutStream may reset this to zero if it kicks in 
 		// - BufferedOutStream may override this if needs be 
-		res.headers["Content-Length"] = file.size.toStr
+		res.headers.contentLength = file.size
 
 		// check if we can return a 304 Not Modified
 		if (notModified(req.headers, file)) {
@@ -37,7 +37,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 
 		mime := file.mimeType
 		if (mime != null) 
-			res.headers["Content-Type"] = mime.toStr
+			res.headers.contentType = mime
 
 		file.in.pipe(res.out, file.size, true)
 
@@ -61,9 +61,9 @@ internal const class FileResponseProcessor : ResponseProcessor {
 	** 'true' If the file has not been modified.
 	** 
 	** This method supports ETag "If-None-Match" and "If-Modified-Since" modification time.
-	virtual Bool notModified(Str:Str headers, File file) {
+	virtual Bool notModified(HttpRequestHeaders headers, File file) {
 		// check If-Match-None
-		matchNone := headers["If-None-Match"]
+		matchNone := headers.ifNoneMatch
 		if (matchNone != null) {
 			etag := this.etag(file)
 			if ( WebUtil.parseList(matchNone).any |Str s->Bool| {
@@ -73,10 +73,9 @@ internal const class FileResponseProcessor : ResponseProcessor {
 		}
 		
 		// check If-Modified-Since
-		since := headers["If-Modified-Since"]
+		since := headers.ifModifiedSince
 		if (since != null) {
-			sinceTime := DateTime.fromHttpStr(since, false)
-			if (modified(file) <= sinceTime)
+			if (modified(file) <= since)
 				return true
 		}
 	

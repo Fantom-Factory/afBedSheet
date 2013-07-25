@@ -25,8 +25,8 @@ internal const class RedirectResponseProcessor : ResponseProcessor {
 			index = index + 3
 
 		res.setStatusCode(statusCodes[index])
-		res.headers["Location"] = redirect.uri.encode
-		res.headers["Content-Length"] = "0"
+		res.headers.location = redirect.uri
+		res.headers.contentLength = 0
 
 		return true
 	}

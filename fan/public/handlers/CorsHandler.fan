@@ -88,7 +88,7 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (!isSimpleReq)
 			return false
 		
-		origin := req.headers["Origin"]
+		origin := req.headers.origin
 		log.debug("CORS Simple request from origin '$origin'")
 		
 		if (!domainGlobs.any |domain| { domain.matches(origin) }) {
@@ -110,15 +110,15 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (!isPreflightReq)
 			return false
 
-		origin := req.headers["Origin"]
-		requestedMethod := req.headers["Access-Control-Request-Method"].upper
+		origin := req.headers.origin
+		requestedMethod := req.headers.accessControlRequestMethod
 		log.debug("CORS Preflight request from origin '$origin'")
 		
 		if (!domainGlobs.any |domain| { domain.matches(origin) }) {
 			log.warn(BsMsgs.corsOriginDoesNotMatchAllowedDomains(origin, corsAllowedOrigins))
 			return false
 		}
-		res.headers["Access-Control-Allow-Origin"]	 = origin
+		res.headers["Access-Control-Allow-Origin"]	 = origin.toStr
 
 		if (!corsAllowedMethods.upper.split(',').contains(requestedMethod))
 			log.warn(BsMsgs.corsOriginDoesNotMatchAllowedMethods(requestedMethod, corsAllowedMethods))
@@ -127,8 +127,8 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (corsAllowCredentials)
 			res.headers["Access-Control-Allow-Credentials"]	 = "true"
 
-		if (req.headers.containsKey("Access-Control-Request-Headers")) {
-			reqHeaders := req.headers["Access-Control-Request-Headers"]
+		if (req.headers.accessControlRequestHeaders != null) {
+			reqHeaders := req.headers.accessControlRequestHeaders
 			if (corsAllowedHeaders == null || !corsAllowedHeaders.split(',').containsAll(reqHeaders.split(',')))
 				log.warn(BsMsgs.corsRequestHeadersDoesNotMatchAllowedHeaders(reqHeaders, corsAllowedHeaders))
 			res.headers["Access-Control-Allow-Headers"]	 = corsAllowedHeaders
@@ -147,7 +147,7 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (!"HEAD GET POST".split.contains(req.httpMethod))
 			return false
 		
-		if (!req.headers.containsKey("Origin"))
+		if (req.headers.origin == null)
 			return false
 		
 		return true
@@ -158,10 +158,10 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if ("OPTIONS" != req.httpMethod)
 			return false
 
-		if (!req.headers.containsKey("Origin"))
+		if (req.headers.origin == null)
 			return false
 
-		if (!req.headers.containsKey("Access-Control-Request-Method"))
+		if (req.headers.accessControlRequestMethod == null)
 			return false
 
 		return true

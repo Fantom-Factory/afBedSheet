@@ -27,7 +27,7 @@ internal const class ErrPrinter {
 		
 		out.h2.w("Request Headers").h2End
 		out.table
-		request.headers.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
+		request.headers.map.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
 		out.tableEnd
 
 		if (request.form != null) {
@@ -89,7 +89,7 @@ internal const class ErrPrinter {
 		buf.add("  HTTP Version: ${request.httpVersion}\n")
 		
 		buf.add("\nHeaders:\n")
-		request.headers.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { buf.add("  $k: $v\n") }
+		request.headers.map.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { buf.add("  $k: $v\n") }
 
 		if (request.form != null) {
 			buf.add("\nForm:\n")

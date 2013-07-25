@@ -12,6 +12,6 @@ internal const class BrowserDetection {
 	** 
 	** @see `http://www.useragentstring.com/pages/Internet%20Explorer/`
 	Bool isInternetExplorer() {
-		request.headers["User-Agent"]?.contains(" MSIE ") ?: false
+		request.headers.userAgent?.contains(" MSIE ") ?: false
 	}
 }

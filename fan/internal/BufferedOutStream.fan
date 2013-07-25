@@ -54,7 +54,7 @@ internal class BufferedOutStream : OutStream {
 		// 'Content-Length' header!
 		if (!switched) {
 			if (!response.isCommitted)	// a sanity check
-				response.headers["Content-Length"] = (buf?.size ?: 0).toStr
+				response.headers.contentLength = buf?.size ?: 0
 			bufOut = realOut
 			writeBufToOut
 		}
