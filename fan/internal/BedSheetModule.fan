@@ -80,6 +80,7 @@ internal class BedSheetModule {
 		conf[File#]				= conf.autobuild(FileResponseProcessor#)
 		conf[Text#]				= conf.autobuild(TextResponseProcessor#)
 		conf[Redirect#]			= conf.autobuild(RedirectResponseProcessor#)
+		conf[InStream#]			= conf.autobuild(InStreamResponseProcessor#)
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 
