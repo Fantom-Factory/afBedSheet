@@ -4,7 +4,9 @@ For BedSheet 1.0.0
 Err500 - add Env Properties - split on path
 Err500 - add Fantom.Env Properties 
 
-res.saveAsAttachment(Str filename)
+Logging filter with reqId, SessId and configurable userId
+
+HttpFlash["msg"] = "Hello!"
 
 
 fantom afIoc on T5
@@ -15,13 +17,6 @@ Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip")
 
 For BedSheet 1.0.2
 ------------------
-
-Logging filter with reqId, SessId and configurable userId
-
-
- - @Persist { strategy="session" } - how to access setter?
- - @Persist { strategy="flash" }
- - @Flash or have HttpFlash["msg"] = "Hello!"
 
 Moustache - Intelligent Err
  - Line $line: Unbalanced...blah
@@ -39,6 +34,8 @@ Err500 - have filter stack frames checkbox?
 	}
 
 make HttpRequestWrapper / HttpResponseWrapper public?
+
+
 
 Future
 ------
