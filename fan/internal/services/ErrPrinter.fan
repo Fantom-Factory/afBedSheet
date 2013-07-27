@@ -27,20 +27,27 @@ internal const class ErrPrinter {
 		
 		out.h2.w("Request Headers").h2End
 		out.table
-		request.headers.map.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
+		request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
 		out.tableEnd
 
 		if (request.form != null) {
 			out.h2.w("Form Parameters").h2End
 			out.table
-			request.headers.each |v,k| { w(out, k, v) }
+			request.headers.each |v, k| { w(out, k, v) }
 			out.tableEnd
+		}
+		
+		if (httpStatus.cause != null) {
+			out.h2.w("Stack Trace").h2End
+			out.pre
+			out.writeChars(Utils.traceErr(httpStatus.cause, noOfStackFrames))
+			out.preEnd
 		}
 
 		if (!request.cookies.isEmpty) {
 			out.h2.w("Cookies").h2End
 			out.table("class=\"cookies\"")
-			request.cookies.each |v,k| { w(out, k, v) }
+			request.cookies.each |v, k| { w(out, k, v) }
 			out.tableEnd
 		}
 
@@ -52,26 +59,77 @@ internal const class ErrPrinter {
 		if (!IocHelper.locals.isEmpty) {
 			out.h2.w("Thread Locals").h2End
 			out.table("class=\"threadLocals\"")
-			IocHelper.locals.each |v,k| { w(out, k, v) }
+			IocHelper.locals.each |v, k| { w(out, k, v) }
 			out.tableEnd
 		}
-		
+
 		if (httpStatus.cause != null) {
-			out.h2.w("Stack Trace").h2End
-			out.pre
-			out.writeChars(Utils.traceErr(httpStatus.cause, noOfStackFrames))
-			out.preEnd
+			out.h2.w("Fantom Environment").h2End
+			out.table
+			w(out, "Cmd Args", 	Env.cur.args)
+			w(out, "Home Dir", 	Env.cur.homeDir)
+			w(out, "Host", 		Env.cur.host)
+			w(out, "Platform", 	Env.cur.platform)
+			w(out, "Runtime", 	Env.cur.runtime)
+			w(out, "Temp Dir", 	Env.cur.tempDir)
+			w(out, "User", 		Env.cur.user)
+			w(out, "Work Dir", 	Env.cur.workDir)
+			out.tableEnd
+		}
+
+		if (httpStatus.cause != null) {
+			out.h2.w("Fantom Indexed Properties").h2End
+			out.table
+			Env.cur.indexKeys.each |k| {
+				vals := Env.cur.index(k)
+				out.tr.td.w(k).tdEnd
+				out.td.ul
+				vals.each |v| {	out.li.w(v).liEnd }
+				out.ulEnd.tdEnd
+				out.trEnd				
+			}
+			out.tableEnd
 		}
 
 		if (!Env.cur.vars.isEmpty) {
-			out.h2.w("Environment Vars").h2End
+			pathSeparator := Env.cur.vars["path.separator"]?.getSafe(0)
+			out.h2.w("Environment Variables").h2End
 			out.table
-			Env.cur.vars.keys.sort.each |k| { w(out, k, Env.cur.vars[k]) }
+			Env.cur.vars.keys.sort.each |k| {
+				vals := Env.cur.vars[k].split(pathSeparator)
+				out.tr.td.w(k).tdEnd
+				out.td.ul
+				vals.each |v| {	out.li.w(v).liEnd }
+				out.ulEnd.tdEnd
+				out.trEnd
+			}
 			out.tableEnd
 		}
 		
+
+		if (httpStatus.cause != null) {
+			out.h2.w("Fantom Diagnostics").h2End
+			out.table
+			Env.cur.diagnostics.each |v, k| { w(out, k, v) }
+			out.tableEnd
+		}
+
 		return buf.toStr
 	}
+	
+//	private Void errSummaryToHtml(WebOutStream out, Err? err) {
+//		if (err == null) return
+//		
+//		out.div("class=\"cause\"")
+//		out.h3.w(err.typeof).h3End
+//		out.p.w(err.msg).pEnd
+//		if (!err.typeof.fields.isEmpty) {
+//			out.table
+//			err.typeof.fields.each |f| { w(out, f.name, f.get(err).toStr) }
+//			out.tableEnd
+//		}
+//		out.divEnd
+//	}
 	
 	private Void w(WebOutStream out, Str key, Obj val) {
 		out.tr.td.w(key).tdEnd.td.w(val).tdEnd.trEnd
@@ -95,12 +153,12 @@ internal const class ErrPrinter {
 			buf.add("\nForm:\n")
 			request.form.each |v,k| { buf.add("  $k: $v\n") }
 		}
-		
+
 		if (!request.cookies.isEmpty) {
 			buf.add("\nCookies:\n")
 			request.cookies.each |v,k| { buf.add("  $k: $v\n") }
 		}
-		
+
 		buf.add("\nLocales:\n")
 		request.locales.each { buf.add("  $it\n") }
 		
