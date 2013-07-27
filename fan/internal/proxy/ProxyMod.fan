@@ -1,3 +1,4 @@
+using concurrent::Actor
 using web::WebClient
 using web::WebMod
 
@@ -30,7 +31,9 @@ internal const class ProxyMod : WebMod {
 			return
 		}
 
-		restarter.checkPods
+		// if restarted, wait for it to start up
+		if (restarter.checkPods)
+			Actor.sleep(3sec)
 
 		// 13-Jan-2013
 		// Safari seems to have trouble creating seesion cookie

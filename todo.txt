@@ -1,13 +1,10 @@
 
 For BedSheet 1.0.0
 ------------------
-Err500 - add Env Properties - split on path
-Err500 - add Fantom.Env Properties 
-
-Logging filter with reqId, SessId and configurable userId
 
 HttpFlash["msg"] = "Hello!"
 
+EasterEgg
 
 fantom afIoc on T5
 
@@ -17,6 +14,8 @@ Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip")
 
 For BedSheet 1.0.2
 ------------------
+
+Logging filter with reqId, SessId and configurable userId
 
 Moustache - Intelligent Err
  - Line $line: Unbalanced...blah

@@ -28,14 +28,15 @@ internal const class AppRestarter {
 	}
 
 	** Check if pods have been modified.
-	Void checkPods() {
-		withState |state| {
-			if (state.podsModified) {
+	Bool checkPods() {
+		withState |state->Bool| {
+			modified := state.podsModified 
+			if (modified) {
 				state.killWebApp(appModule)
 				state.launchWebApp(appModule, appPort, proxyPort)
-				Actor.sleep(2sec)
 				state.updateTimeStamps
 			}
+			return modified
 		}.get(30sec)
 	}
 	
