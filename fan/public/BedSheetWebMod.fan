@@ -68,8 +68,7 @@ const class BedSheetWebMod : WebMod {
 			bob.addModule(mod)			
 		}
 		
-		// TODO: Easter Egg in the banner text please!
-		bannerText	:= "Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}"
+		bannerText	:= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
 		options 	:= Str:Obj["bannerText":bannerText]
 		if (registryOptions != null)
 			options.setAll(registryOptions)
@@ -90,5 +89,16 @@ const class BedSheetWebMod : WebMod {
 		reg := (Registry?) registry.val
 		reg?.shutdown
 		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
+	}
+	
+	private Str easterEgg(Str title) {
+		quotes := loadQuotes
+		if (quotes.isEmpty || (Int.random(0..8) != 2))
+			return title
+		return quotes[Int.random(0..<quotes.size)]
+	}
+	
+	private Str[] loadQuotes() {
+		typeof.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
 	}
 }

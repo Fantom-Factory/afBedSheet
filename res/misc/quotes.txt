@@ -1,0 +1,40 @@
+
+# Max Length = 52 chars
+#           Alien-Factory BedSheet v1.0, IoC v1.3.11
+
+# Misc
+Any fool can use a computer. Many do.
+Never trust a computer you can't throw out a window.
+If at first you don't succeed; call it version 1.0.
+Programmers convert caffeine into code.
+Hey! It compiles! Ship it!
+An idiot with a computer is a faster, better idiot.
+First, solve the problem. Then, write the code.
+Good web applications should look like trifle.
+
+# from Wargames
+Good morning Professor Falken.
+Do you want to play a game of "Thermo Nuclear War"?
+Wouldn't you prefer a nice game of chess?
+You should know, Professor. You programmed me.
+Colonel, take us to DEFCON five.
+
+# from 2001: A Space Odyssey
+I'm sorry, Dave, I don't have enough information.
+I know you and Frank were planning to disconnect me.
+# There are some extremely odd things about this mission.
+# I’m completely operational and all my circuits are functioning perfectly.
+
+# Naa...
+# Computer dating is fine, if you're a computer.
+# 1f u c4n r34d th1s u r34lly n33d t0 g37 l41d
+
+# Too long... for now.
+# A computer lets you make more mistakes faster than any other invention with the possible exceptions of handguns and Tequila.
+# Computers are like Old Testament gods; lots of rules and no mercy.
+# To err is human - and to blame it on a computer is even more so.
+# No one ever said on their deathbed, 'Gee, I wish I had spent more time alone with my computer'.
+# Programming is like sex. One mistake and you have to support it for the rest of your life.
+# I can't uninstall it, there seems to be some kind of "Uninstall Shield".
+# The Internet: where men are men, women are men, and children are FBI agents.
+# A computer once beat me at chess, but it was no match for me at kick boxing.
