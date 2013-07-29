@@ -7,6 +7,7 @@ internal const class ErrPrinter {
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	@Inject	private const HttpRequest	request
+	@Inject	private const HttpSession	session
 	
 	new make(|This|in) { in(this) }
 
@@ -42,6 +43,13 @@ internal const class ErrPrinter {
 			out.pre
 			out.writeChars(Utils.traceErr(httpStatus.cause, noOfStackFrames))
 			out.preEnd
+		}
+
+		if (!session.exists) {
+			out.h2.w("Session").h2End
+			out.table("class=\"session\"")
+			session.map.each |v, k| { w(out, k, v) }
+			out.tableEnd
 		}
 
 		if (!request.cookies.isEmpty) {
@@ -147,16 +155,16 @@ internal const class ErrPrinter {
 		buf.add("  HTTP Version: ${request.httpVersion}\n")
 		
 		buf.add("\nHeaders:\n")
-		request.headers.map.exclude |v,k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { buf.add("  $k: $v\n") }
+		request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }.each |v, k| { buf.add("  $k: $v\n") }
 
 		if (request.form != null) {
 			buf.add("\nForm:\n")
-			request.form.each |v,k| { buf.add("  $k: $v\n") }
+			request.form.each |v, k| { buf.add("  $k: $v\n") }
 		}
 
 		if (!request.cookies.isEmpty) {
 			buf.add("\nCookies:\n")
-			request.cookies.each |v,k| { buf.add("  $k: $v\n") }
+			request.cookies.each |v, k| { buf.add("  $k: $v\n") }
 		}
 
 		buf.add("\nLocales:\n")
@@ -164,7 +172,12 @@ internal const class ErrPrinter {
 		
 		if (!IocHelper.locals.isEmpty) {
 			buf.add("\nThread Locals:\n")
-			IocHelper.locals.each |v,k| { buf.add("  $k: $v\n") }
+			IocHelper.locals.each |v, k| { buf.add("  $k: $v\n") }
+		}
+		
+		if (!session.exists) {
+			buf.add("\nSession:\n")
+			session.map.each |v, k| { buf.add("  $k: $v\n") }
 		}
 		
 		buf.add("\nStack Trace:\n")
