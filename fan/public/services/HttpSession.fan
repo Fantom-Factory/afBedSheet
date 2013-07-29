@@ -8,6 +8,7 @@ using web::WebReq
 const mixin HttpSession {
 	
 	** Get the unique id used to identify this session.
+	** Calling this will create a session if it doesn't already exist.
 	** 
 	** @see `web::WebSession`
 	abstract Str id()
@@ -15,17 +16,22 @@ const mixin HttpSession {
 	** Convenience for 'map.get(name, def)'.
 	** 
 	** @see `web::WebSession`
-	@Operator 
+	@Operator
 	Obj? get(Str name, Obj? def := null) { map.get(name, def) }
 
 	** Convenience for 'map.set(name, val)'.
 	** 
 	** @see `web::WebSession`
 	@Operator 
-	Void set(Str name, Obj? val) { map[name] = val }
+	Void set(Str name, Obj? val) { 
+		if (val == null)
+			map.remove(name)
+		else
+			map[name] = val 
+	}
 
-	** Application name/value pairs which are persisted between HTTP requests.  The values stored in 
-	** this map must be serializable.
+	** Application name/value pairs which are persisted between HTTP requests. 
+	** The values stored in this map must be serializable.
 	** 
 	** @see `web::WebSession`
 	abstract Str:Obj? map()
@@ -36,6 +42,9 @@ const mixin HttpSession {
 	** 
 	** @see `web::WebSession`
 	abstract Void delete()
+	
+	** Returns 'true' if a session exists. 
+	abstract Bool exists()
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -55,6 +64,18 @@ internal const class HttpSessionImpl : HttpSession {
 
 	override Void delete() {
 		webReq.session.delete
+	}
+
+	override Bool exists() {		
+		HttpRequest req := registry.dependencyByType(HttpRequest#)
+		if (req.cookies.containsKey("fanws"))
+			return true
+
+		HttpResponse res := registry.dependencyByType(HttpResponse#)
+		if (res.cookies.any |cookie| { cookie.name == "fanws" })
+			return true
+		
+		return false
 	}
 	
 	private WebReq webReq() {
