@@ -30,6 +30,7 @@ internal class BedSheetModule {
 		binder.bindImpl(ErrPrinter#)
 		binder.bindImpl(BedSheetPage#)
 		binder.bindImpl(HttpSession#)
+		binder.bindImpl(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
 
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
@@ -56,11 +57,12 @@ internal class BedSheetModule {
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
 	}
-	
+
 	@Contribute { serviceType=HttpPipeline# }
 	static Void contributeHttpPipeline(OrderedConfig conf) {
 		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), ["before: BedSheetFilters", "before: HttpErrFilter"])
-		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters"])		
+		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters", "before: HttpFlashFilter"])		
+		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 	["before: BedSheetFilters"])
 		conf.addPlaceholder("BedSheetFilters")
 	}
 
@@ -105,11 +107,11 @@ internal class BedSheetModule {
 		conf[ConfigIds.noOfStackFrames]					= 50
 		conf[ConfigIds.moustacheTemplateTimeout]		= 10sec
 		conf[ConfigIds.errPageDisabled]					= false
-				
+
 		conf[ConfigIds.httpRequestLogDir]				= null
 		conf[ConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
 		conf[ConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
-		
+
 		conf[ConfigIds.corsAllowedOrigins]				= "*"
 		conf[ConfigIds.corsExposeHeaders]				= null
 		conf[ConfigIds.corsAllowCredentials]			= false

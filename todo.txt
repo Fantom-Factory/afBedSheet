@@ -2,10 +2,6 @@
 For BedSheet 1.0.0
 ------------------
 
-HttpFlash["msg"] = "Hello!"
-
-EasterEgg
-
 fantom afIoc on T5
 
 Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
@@ -34,7 +30,7 @@ Err500 - have filter stack frames checkbox?
 
 make HttpRequestWrapper / HttpResponseWrapper public?
 
-
+Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
 Future
 ------

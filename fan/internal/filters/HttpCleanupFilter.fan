@@ -17,7 +17,7 @@ internal const class HttpCleanupFilter : HttpPipelineFilter {
 			return handler.service
 		} finally {
 			httpResponse.out.close
-			stashManager.cleanUpThread			
+			stashManager.cleanUpThread
 		}
 	}
 }

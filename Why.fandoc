@@ -1,41 +1,111 @@
 Why Fantom?
-***********
+###########
 
 I can not lie. I like Fantom.
 
-Anyone who's spoken to me knows I'm even evangelical about it. Yes, as a programming language, I think it's *that* good! But why?
+I'm even a little evangelical about it, as you probably know if we've spoken. But why?
 
-Yes, you can read the official tour and the offical "Why Fantom" in the docs as written by the creators. But here's where I'm
-gonna tell you why I like it, as a converted Java user.
-
-It's Pragmatic
-==============
-No. 1 reason - It's Pragmatic! Yes, that's a psudonym for boring!
-
-Without a doubt, Fantom is a boring language. It is not esoteric, it does not let the user explore new programming paradigms
-in language extensions. It is dull. And that means I can put all my engergy and effort into writing exciting applications!
+Yes, you can read the official [Why Fantom]`docIntro::WhyFantom` as written by the creators, but that's nothing more than an un-inspired feature list. (Sorry guys!) So here I'm gonna tell you why, as a previous hardcore Java programmer, I'm now a Fantom convert.
 
 
-The API - It Just Works!
-========================
-http://stackoverflow.com/questions/4716503/best-way-to-read-a-text-file
-Java is long in the tooth (read 'old') and so is the API it's bundled with. It makes simple things hard. Example, Want to read a file in Java?
-You're messing around with BufferedReaders, FileReaders and InputStreams and that's before you've considered stream closing and
-system dependant character encoding!
+1. Fantom is Boring
+*******************
+The number one reason why I like Fantom is because it's boring. There's no denying it. The language is pragmatic and dull. 
 
-Enter Fantom: 'File(`myFile.txt`).readAllStr' **BOOM!** Job. Done.
+Fantom is not a new dynamic fad for hipsters. It is not excitingly esoteric and it does not explore new programming paradigms in language extensions. Instead, Fantom is safe, statically typed and predictable, which lets me put all my energy and effort into writing [exciting applications]`http://www.alienfactory.co.uk/gundam/`!
 
-Want it system independent? **BOOM!** Fantom is UTF-8 by default baby!
+It means I'm debugging my code, not the language.
 
-Lists in Java? Well, there's an entire [Collections Framework]`http://docs.oracle.com/javase/tutorial/collections/` for that.
-There are Collections, Sets, Lists and Maps, all sorted (or not) with a prolific number of implementations. Which do you use?
-Still not sure? Look to apache, they have their own [collections framework]`http://commons.apache.org/proper/commons-collections/` too!
 
-"But I just want a bag of stuff?" I hear you cry!
+2. The API - It Just Works!
+***************************
+Java is old. Even Java 1.3 was tunring into [bloatware]`http://www.theregister.co.uk/2001/06/04/end_this_java_bloatware_madness/` but now, several revisions later, the API is huge and extremely unwieldy. Java always did have a knack of making simple things, hard. Lets take an example, [reading a text file into a String]`http://stackoverflow.com/questions/4716503/best-way-to-read-a-text-file
+`:
 
-Enter Fantom: Choices are 'List' or 'Map' **BOOM!** Job. Done. No discussion. No brainer.
+** Java: **
 
-So much thought went into what people need for everyday use. In every corner of the main API are clasees brimming with *useful* methods. *usefule* being key. Apache commons gives you loads of methods
+    BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+    try {
+        StringBuilder sb = new StringBuilder();
+        String line = br.readLine();
+
+        while (line != null) {
+            sb.append(line);
+            sb.append("\n");
+            line = br.readLine();
+        }
+        String everything = sb.toString();
+    } finally {
+        br.close();
+    }
+
+You're messing around with 'BufferedReaders', 'FileReaders' and 'InputStreams' and that's before you've considered stream closing and system dependant character encoding!
+
+** Fantom: **
+
+    File(`file.txt`).readAllStr
+
+**BOOM!** Job done.
+
+Want it system independent? 
+
+**BOOM!** Fantom is 'UTF-8' by default baby!
+
+Fantom ships with a thoughtful and concise API that handles all those day-to-day tasks. Every corner of the core API is overflowing with *useful* methods. *Useful* being the key word. 
+
+Sure, Java has Apache commons, but most of it feels like "uncommon" usage and just an excercise in completeness.
+
+
+
+3. Type Inference - Less Code
+*****************************
+Why waste time telling the compiler what it already knows?
+
+** Java: **
+
+  String name = "Mr Dude";
+  
+  
+** Fantom: **
+
+  name := "Mr Dude"
+
+Fantom isn't dynamic, it has types. And in the above snippet, 'name' is a `sys::Str`. How does the compiler know? Because '"Mr Dude"' is a Str! Fantom can infer object types from what you assign to them. It's not rocket science. 
+
+Now lets apply this to lists and maps...
+
+** Java: **
+
+  Map<Integer, String> map = new HashMap<Integer, String>();
+  map.put(Integer.valueOf("1"), "Value");
+
+Lists and Maps in Java? Well, there's an entire [Collections Framework]`http://docs.oracle.com/javase/tutorial/collections/` for that! Knock yourself out with 'Collections', 'Sets', 'Lists' and 'Maps', all sorted (or not) and all with a prolific number of implementations. Gee! Which do you use? Still not sure? Look to Apache, they have their own [Commons Collection Framework]`http://commons.apache.org/proper/commons-collections/`!
+
+"Argh! But I just want a bag of stuff?!" I hear you cry! Enter Fantom.
+
+** Fantom: **
+
+  map := [1: "Value"]
+
+**BOOM!** Job done.
+
+Your default choices are 'List' or 'Map' No discussions. No frameworks. No brainer.
+
+"But what of concurrency, threads and mutable state?" I hear you cry. Well...
+
+
+4. Concurrency - Not An Issue
+*****************************
+** Java: **
+
+In Java there frameworks, articles and JSRs all dealing with the nebulus paradigm that is concurrency and shared mutable state. Working knowledge of the Java memory model and dudutious use of the 'volatile' keyword are all required just to safely pass data from one thread to another.
+
+** Fantom: **
+
+Concurrency is not an issue.
+
+I know, I know, it's hard to believe! But trust me on this, [it's not]`docIntro::WhyFantom#concurrency`. Fantom employs the Actor model for sending messgaes between threads but it goes beyond that. It simply does not allow mutable state to be sharted between threads. Not in messages and not in static data. To facilitate this, the concept of immutability and 'const' classes are build into the language.
+
 
 NPEs? Not here mate!
 ====================
@@ -56,4 +126,5 @@ Reflection
 ==========
 
 
-
+Closures
+========

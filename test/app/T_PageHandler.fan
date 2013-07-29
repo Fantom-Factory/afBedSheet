@@ -4,6 +4,7 @@ internal const class T_PageHandler {
 	
 	@Inject	private const HttpResponse response
 	@Inject	private const HttpSession session
+	@Inject	private const HttpFlash flash
 	
 	new make(|This|in) { in(this) }
 	
@@ -137,5 +138,18 @@ internal const class T_PageHandler {
 		response.saveAsAttachment(saveAs)
 		response.headers.contentType = MimeType.forExt(".txt")
 		return Buf().print("Short Skirts!").flip.in
+	}
+
+	// ---- Http Flash ----
+	
+	Obj saveFlashMsg(Str msg) {
+		oldMsg := flash["msg"]
+		flash["msg"] = msg
+		return Text.fromPlain("Msg = $oldMsg")
+	}
+
+	Obj showFlashMsg() {
+		oldMsg := flash["msg"]
+		return Text.fromPlain("Msg = $oldMsg")
 	}
 }

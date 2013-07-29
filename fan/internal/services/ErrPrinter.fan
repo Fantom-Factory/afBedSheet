@@ -45,7 +45,7 @@ internal const class ErrPrinter {
 			out.preEnd
 		}
 
-		if (!session.exists) {
+		if (session.exists) {
 			out.h2.w("Session").h2End
 			out.table("class=\"session\"")
 			session.map.each |v, k| { w(out, k, v) }
@@ -175,7 +175,7 @@ internal const class ErrPrinter {
 			IocHelper.locals.each |v, k| { buf.add("  $k: $v\n") }
 		}
 		
-		if (!session.exists) {
+		if (session.exists) {
 			buf.add("\nSession:\n")
 			session.map.each |v, k| { buf.add("  $k: $v\n") }
 		}
