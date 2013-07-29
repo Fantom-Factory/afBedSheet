@@ -1,5 +1,5 @@
 
-** Matches uri paths to handler methods, converting any remaining path segments into method 
+** Matches uri paths to request handler methods, converting any remaining path segments into method 
 ** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all 
 ** remaining path segments and '***' to capture the remaining url Examples:
 ** 

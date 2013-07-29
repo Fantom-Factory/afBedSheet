@@ -1,5 +1,5 @@
 
-** Returned from 'RouteMatchers'.
+** Return from 'RouteMatchers'.
 class RouteHandler {
 	const Method	method
 		  Obj[]		args

@@ -20,6 +20,7 @@ const mixin HttpPipeline {
 
 }
 
+** A filter for HTTP requests.
 const mixin HttpPipelineFilter {
 
 	** Return 'true' if the this filter handled the request

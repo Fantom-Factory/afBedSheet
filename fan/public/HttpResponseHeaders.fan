@@ -1,5 +1,5 @@
 
-** A wrapped for http response headers with accessors for some commonly used headings.
+** A wrapper for HTTP response headers with accessors for some commonly used headings.
 ** 
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 class HttpResponseHeaders {
