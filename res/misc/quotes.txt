@@ -23,11 +23,8 @@ Colonel, take us to DEFCON five.
 I'm sorry, Dave, I don't have enough information.
 I know you and Frank were planning to disconnect me.
 # There are some extremely odd things about this mission.
-# I’m completely operational and all my circuits are functioning perfectly.
+# Iâ€™m completely operational and all my circuits are functioning perfectly.
 
-# Naa...
-# Computer dating is fine, if you're a computer.
-# 1f u c4n r34d th1s u r34lly n33d t0 g37 l41d
 
 # Too long... for now.
 # A computer lets you make more mistakes faster than any other invention with the possible exceptions of handguns and Tequila.
