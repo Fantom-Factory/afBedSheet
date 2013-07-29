@@ -8,7 +8,7 @@ Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip")
 
 
 
-For BedSheet 1.0.2
+For BedSheet 1.0.4
 ------------------
 
 Logging filter with reqId, SessId and configurable userId
