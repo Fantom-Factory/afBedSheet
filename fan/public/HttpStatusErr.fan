@@ -1,6 +1,6 @@
 using web::WebRes
 
-** Throw at any point to process / handle the `HttpStatus`.
+** Throw at any point to process / handle the wrapped `HttpStatus`.
 const class HttpStatusErr : Err {
 
 	** The HTTP (error) status.
