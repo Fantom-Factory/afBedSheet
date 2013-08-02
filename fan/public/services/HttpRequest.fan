@@ -16,7 +16,7 @@ const mixin HttpRequest {
 	** The HTTP version of the request.
 	** 
 	** @see `web::WebReq.version`
-	abstract Version httpVersion()
+	abstract Version httpVersion
 	
 	** The HTTP request method in uppercase. Example: GET, POST, PUT.
 	** 
@@ -99,7 +99,7 @@ const class HttpRequestWrapper : HttpRequest {
 	const 	 HttpRequest req
 	new 	 make(HttpRequest req) 			{ this.req = req 		} 
 	override Bool isXmlHttpRequest()		{ req.isXmlHttpRequest	}
-	override Version httpVersion()			{ req.httpVersion		}
+	override Version httpVersion { get			{ req.httpVersion		} set { }}
 	override Str httpMethod()				{ req.httpMethod		}	
 	override IpAddr remoteAddr() 			{ req.remoteAddr		}
 	override Int remotePort() 				{ req.remotePort		}
@@ -130,9 +130,9 @@ internal const class HttpRequestImpl : HttpRequest {
 		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false
 	}
 
-	override Version httpVersion() {
+	override Version httpVersion { set{} get {
 		webReq.version		
-	}
+	}}
 	
 	override Str httpMethod() {
 		webReq.method
