@@ -4,9 +4,6 @@ For BedSheet 1.0.0
 
 fantom afIoc on T5
 
-Fantom - TRAP! FileWeblet - if (mime?.mediaType == "text" && ae.contains("gzip"))
-
-
 
 For BedSheet 1.0.4
 ------------------

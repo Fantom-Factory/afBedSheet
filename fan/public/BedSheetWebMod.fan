@@ -13,10 +13,11 @@ const class BedSheetWebMod : WebMod {
 	const [Str:Obj] 	bedSheetOptions
 	const [Str:Obj]? 	registryOptions
 	
-	private const AtomicRef	registry	:= AtomicRef()
+	private const AtomicRef	reg	:= AtomicRef()
 	
-	Registry reg {
-		get { registry.val }
+	** The 'afIoc' registry
+	Registry registry {
+		get { reg.val }
 		set { throw Err() }
 	}
 	
@@ -30,12 +31,12 @@ const class BedSheetWebMod : WebMod {
 	override Void onService() {
 		req.mod = this
 		try {
-			httpPipeline := (HttpPipeline) reg.dependencyByType(HttpPipeline#)
+			httpPipeline := (HttpPipeline) registry.dependencyByType(HttpPipeline#)
 			httpPipeline.service
 		} catch (Err err) {
 			// theoretically, this should have already been dealt with by our Err Pipeline Processor...
 			// ...but it's handy for BedSheet development!
-			errPrinter := (ErrPrinter) reg.dependencyByType(ErrPrinter#)
+			errPrinter := (ErrPrinter) registry.dependencyByType(ErrPrinter#)
 			Env.cur.err.printLine(errPrinter.errToStr(err))
 			throw err
 		}
@@ -76,17 +77,17 @@ const class BedSheetWebMod : WebMod {
 		if (bedSheetOptions.containsKey("iocModules"))
 			bob.addModules(bedSheetOptions["iocModules"])
 
-		registry.val = bob.build(options).startup
+		reg.val = bob.build(options).startup
 
 		if (bedSheetOptions["pingProxy"] == true) {
 			pingPort := (Int) bedSheetOptions["pingProxyPort"]
-			destroyer := reg.autobuild(AppDestroyer#, [ActorPool(), pingPort]) as AppDestroyer
+			destroyer := registry.autobuild(AppDestroyer#, [ActorPool(), pingPort]) as AppDestroyer
 			destroyer.start
 		}
 	}
 
 	override Void onStop() {
-		reg := (Registry?) registry.val
+		reg := (Registry?) reg.val
 		reg?.shutdown
 		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
 	}
