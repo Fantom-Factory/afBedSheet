@@ -31,7 +31,11 @@ class BedClient {
 		private set { }
 	}
 
+	** The cookies currently amassed by this client.
+	** Currently they are not cleared / deleted when max-age runs out.
 	Str:Cookie 	cookies	:= Utils.makeMap(Str#, Cookie#)
+	
+	** The http headers to be sent on the next request. These are cleared after each request. 
 	Str:Str		headers	:= Utils.makeMap(Str#, Str#)
 	
 	** The HTTP version this client should announce to the server. 
