@@ -490,7 +490,11 @@ Just check in your code (with Git) and Heroku will build your web app from sourc
 Release Notes [#releaseNotes]
 *****************************
 
+v1.0.4 [#v1.0.4]
+----------------
+ - New: Added `BedServer` and `BedClient` to test BedSheet apps without using a real web server.
+
 v1.0.2 [#v1.0.2]
 ----------------
- - Initial release
+ - New: Initial release
 
