@@ -11,40 +11,70 @@ using inet::IpAddr
 using inet::SocketOptions
 using inet::TcpSocket
 
-// TODO: let client shutdown the server?
+** For testing: Make (fake) http calls against `BedServer`. Unlike 'WebClient', 'BedClient' is 
+** designed for re-use, it auto tracks your 'Cookies' and lets you inspect your session.  
+** 
+** @since 1.0.4
 class BedClient {
 	
 	private TcpSocket socket	:= TcpSocket()
 	private BedServer bedServer
 	
-	WebSession session	:= BedSession()
+	** The session used by the client. Returns 'null' if it has not yet been created.
+	WebSession?	session	:= BedSession() {
+		get {
+			// technically this is not perfect wisp behaviour, for if an obj were to be added then 
+			// immediately removed, a wisp session would still be created - pfft! Edge case! 
+			// Besides if you need exact wisp behaviour, then use wisp!
+			&session.map.isEmpty ? null : &session 
+		}
+		private set { }
+	}
+
+	Str:Cookie 	cookies	:= Utils.makeMap(Str#, Cookie#)
+	Str:Str		headers	:= Utils.makeMap(Str#, Str#)
 	
+	** The HTTP version this client should announce to the server. 
+	** Defaults to 'HTTP 1.1' 
 	Version version			:= Version("1.1")
-	// TODO: use!
-	Bool followRedirects	:= false
 	
+	// TODO: followRedirects
+//	Bool followRedirects	:= false
+	
+	** Create a BedClient attached to the given `BedServer`
 	new make(BedServer bedServer) {
 		this.bedServer = bedServer
 	}
 	
+	** Makes a (fake) http request against the `BedServer` and returns the response. 
 	BedClientRes get(Uri uri, Str method := "GET") {		
-		makeReq(BedClientReq {
-			it.version	= this.version
-			it.uri		= uri
-			it.method	= method
-			it.session	= this.session
-		})
+		makeReq(
+			BedClientReq(cookies.vals) {
+				it.version	= this.version
+				it.uri		= uri
+				it.method	= method
+				it.headers	= this.headers
+				it.session	= this.&session			
+			}			
+		)
 	}
 
-	** TODO: Post params
-	BedClientRes post(Uri uri, Str method := "POST") {		
-		makeReq(BedClientReq {
-			it.version	= this.version
-			it.uri		= uri
-			it.session	= this.session
-		})
-	}
+	// TODO: Post params
+//	BedClientRes post(Uri uri, Str method := "POST") {		
+//		makeReq(BedClientReq(cookies) {
+//			it.version	= this.version
+//			it.uri		= uri
+//			it.method	= method
+//			it.headers	= this.headers
+//			it.session	= this.&session
+//		})
+//	}
 
+	** Shuts down the associated 'BedServer'
+	Void shutdown() {
+		bedServer.shutdown
+	}
+	
 	private BedClientRes makeReq(BedClientReq bedClientReq) {		
 		try {
 			bedClientRes := BedClientRes()
@@ -55,33 +85,36 @@ class BedClient {
 			httpPipeline := (HttpPipeline) bedServer.registry.dependencyByType(HttpPipeline#)
 			httpPipeline.service
 			
+			bedClientRes.cookies.each |cookie| { this.cookies[cookie.name] = cookie }
+
 			return bedClientRes
 
 		} finally {
 			Actor.locals.remove("web.req")
 			Actor.locals.remove("web.res")
+			headers = Utils.makeMap(Str#, Str#)
 		}
-	}
-	
-	private Void reset() {
-		
 	}
 }
 
-class BedClientReq {
-	// TODO: need cookies
-	Version version
-	Str method := "GET"
+// this could prob be deleted
+internal class BedClientReq {
 	Uri uri := `/` {
-		// TODO: set check has no scheme and is absolute
+		set { 
+			if (it.auth != null)
+				throw Err("URIs must NOT have an authority (scheme, host or port) - $it")
+			&uri = it
+		}
 	}
-	Str:Str headers := Utils.makeMap(Str#, Str#)	
+	Version 	version
+	Str 		method
+	Str:Str 	headers	
+	WebSession 	session
 	
-	internal WebSession session
-	
-	new make(|This|in) { 
+	new make(Cookie[] cookies, |This|in) { 
 		in(this) 
 		headers["Host"] = "localhost:80"
+		headers["Cookie"] = cookies.join(";")
 	}
 	
 	internal WebReq toWebReq(TcpSocket socket, BedServer bedServer) {
@@ -91,31 +124,9 @@ class BedClientReq {
 			it.uri		= this.uri
 			it.headers	= this.headers
 			it.session	= this.session
-			it.in		= "".in	// TODO: wots this? 
+			it.in		= "".in	//throw Err("No content")	// TODO: post reqs & req.inStream 
 			it.socket	= socket
 		}		
-	}
-}
-
-class BedClientRes {
-	// TODO: need cookies, status, headers, out
-	
-	private Buf buf	:= Buf()
-	
-	Str asStr() {
-		buf.flip.in.readAllStr
-	}
-
-	Buf asBuf() {
-		buf.flip
-	}
-
-	InStream asIn() {
-		buf.flip.in
-	}
-	
-	internal WebRes toWebRes() {
-		BedClientWebRes(buf.out)
 	}
 }
 
@@ -137,13 +148,55 @@ internal class BedClientWebReq : WebReq {
 	new make(|This|in) { in(this) }
 }
 
+** For testing: Holds response data from a (fake) HTTP call to `BedServer`. 
+** 
+** @since 1.0.4
+class BedClientRes {
+
+	** Return the http status code (read-only).
+	Int statusCode {
+		get { webRes.statusCode }
+		private set { }
+	}
+	
+	** Return the http response headers (read-only).
+	Str:Str headers		:= Utils.makeMap(Str#, Str#) 	{ private set }
+
+	** Return the http response cookies (read-only).
+	** Use this rather than looking for 'Set-Cookie' headers. 
+	Cookie[] cookies	:= Cookie[,] 					{ private set }
+	
+	private Buf 		buf			:= Buf()
+	private WebRes 		webRes		:= BedClientWebRes(buf.out) { it.cookies = this.cookies; it.headers = this.headers }
+	
+	** Return the response stream as a 'Str'.
+	Str asStr() {
+		buf.flip.in.readAllStr
+	}
+
+	** Return the response stream as a 'Buf'.
+	Buf asBuf() {
+		buf.flip
+	}
+
+	** Return the response stream.
+	InStream asInStream() {
+		buf.flip.in
+	}
+	
+	internal WebRes toWebRes() {
+		webRes
+	}
+}
+
 internal const class BedClientDefaultMod : WebMod { }
 
 ** Adapted from WispReq to mimic the same uncommitted behaviour 
 internal class BedClientWebRes : WebRes {
 	internal WebOutStream webOut
 
-	new make(OutStream outStream) {
+	new make(OutStream outStream, |This|in ) {
+		in(this)
 		this.headers.caseInsensitive = true
 		this.webOut = WebOutStream(outStream)
 	}
@@ -156,11 +209,11 @@ internal class BedClientWebRes : WebRes {
 		}
 	}
 
-	override Str:Str headers := Str:Str[:] {
+	override Str:Str headers {
 		get { checkUncommitted; return &headers }
 	}
 
-	override Cookie[] cookies := Cookie[,] {
+	override Cookie[] cookies {
 		get { checkUncommitted; return &cookies }
 	}
 
@@ -220,11 +273,10 @@ internal class BedClientWebRes : WebRes {
 	}
 }
 
-
 internal class BedSession : WebSession {
 	override const Str id := "69"
 	override Str:Obj? map := Str:Obj[:]
-	override Void delete()	{
+	override Void delete() {
 		map.clear
 	}
 }

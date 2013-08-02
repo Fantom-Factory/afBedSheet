@@ -5,7 +5,7 @@ abstract internal class BsTest : Test {
 		verifyErrTypeMsg(BedSheetErr#, errMsg, func)
 	}
 
-	private Void verifyErrTypeMsg(Type errType, Str errMsg, |Obj| func) {
+	protected Void verifyErrTypeMsg(Type errType, Str errMsg, |Obj| func) {
 		try {
 			func(4)
 		} catch (Err e) {

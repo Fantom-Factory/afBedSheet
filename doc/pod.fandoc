@@ -17,10 +17,10 @@ Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
 Quick Start [#quickStart]
 *************************
 
-1. Create an 'AppModule', this is where all your service configuration will go
+1. Create an 'AppModule'
 2. Contribute to 'Routes' and other services
 3. Create some page / request handlers
-4. Start the app...
+4. Start your web app...
 
 pre>
 using afBedSheet
@@ -56,9 +56,9 @@ Hello! I'm Luci and I have an IQ of 666!
 
 Wow! That's awesome! But what just happened!?
 
-Every application has an 'AppModule' that is used to contribute to [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
-services. In our 'AppModule' we told the `Routes` service to route all request URIs that start with '/hello', to our
-'HelloPage' class. `Route` converts extra uri path segments into method arguments, or in our case, to 'Str name' and an
+Every application has an 'AppModule' that configures [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
+services. Here we told the `Routes` service to send all request URIs that start with '/hello' to the 'HelloPage#hello' method.
+`Route` converts extra URI path segments into method arguments, or in our case, to 'Str name' and an
 optional 'Int iq'.
 
 Request handlers are typically what we, the app developers, write. They perform logic processing and render responses. Our
@@ -76,14 +76,20 @@ pre>
 $ fan afBedSheet <fully-qualified-app-module-name> <port-number>
 <pre
 
+For example:
+
+pre>
+$ fan afBedSheet myWebApp::AppModule 80
+<pre
+
 Every BedSheet application has an 'AppModule' class that defines and configures your
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an
-[afIoc]`http://repo.status302.com/doc/afIoc/#overview` concept that allows you centralise your app configuration in one place.
+[afIoc]`http://repo.status302.com/doc/afIoc/#overview` concept that allows you centralise your application configuration in
+one place.
 
 > TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the afIoc @SubModule facet.
 
-You may find it more convenient to create your own BedSheet Main wrapper. (In fact, if using
-[Heroku]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom` you have to.)
+You may find it convenient to create your own BedSheet Main wrapper.
 
 pre>
 using util
@@ -156,7 +162,7 @@ BedSheet is bundled with the following Route objs:
  - `Route`: Matches against the request URI, converting deeper path segments into method arguments.
 
 Routes are not limited to matching against uris, you can create your own routes that match against anything, such as http
-headers or the time of day! Just create a `RouteMatcher` and contribute it to `RouteMatchers`.
+headers or time of day! Just create a `RouteMatcher` and contribute it to `RouteMatchers`.
 
 
 
@@ -192,29 +198,31 @@ Request handlers is where logic is processed and responses are rendered. Handler
 http response out stream, instead they should return a response object. Example, the above 'HelloPage' handler returns a
 `Text` obj.
 
-BedSheet bundles with the following request handlers:
+You usually write the handlers yourself, but BedSheet also bundles with the following request handlers:
  - `FileHandler`: Maps request URIs to files on file system.
  - `PodHandler` : Maps request URIs to pod file resources.
  - `CorsHandler` : A pass through filter for handling Cross Origin Resource Sharing requests.
 
-By default, BedSheet handles the following responses:
+Request handlers should always return an object to the processed and sent to the client.
+
+
+
+Response Processing [#responseProcessing]
+*****************************************
+[ResponseProcessors]`ResponseProcessor` process the return values from request handlers (`sys::File`, `Text`, etc...) and send
+data to the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the http request. Or they
+may return another response object for further processing, such as a `Text` obj.
+
+By default, BedSheet handles the following response objects:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
- - 'true' : A response has been sent to the client and no further processing should performed on the http request.
+ - 'true' : No further processing is required.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with the given `sys::MimeType`.
  - `sys::File` : The file is sent to the client.
  - `HttpStatus` : Sets the http response status and renders a mini html page with the status msg. (See [Error Processing]`#errorProcessing`.)
  - `Redirect` : Sends a 3xx redirect response to the client.
  - `sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guarenteed to be closed.
 
-
-
-Response Processing [#responseProcessing]
-*****************************************
-[ResponseProcessors]`ResponseProcessor` process request handler responses (`sys::File`, `Text`, etc...) and send data to
-the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the http request. Or they
-may return another response object for further processing, such as a `Text` obj.
-
-BedSheet bundles with the following response processors:
+For handling the above, BedSheet bundles with the following response processors:
  - 'TextResponseProcessor' : Sends text to the client.
  - 'FileResponseProcessor' : Sends files to the client.
  - `HttpStatusProcessors` : Routes `HttpStatus` to contributed 'HttpStatusProcessors'.
@@ -265,7 +273,8 @@ pre>
 Config [#config]
 ****************
 BedSheet extends [afIoc]`http://repo.status302.com/doc/afIoc/#overview` to give injectable '@Config' values. '@Config' values
-are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up.
+are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
+config values to be immutable once the app has started).
 
 BedSheet sets the initial config values by contributing to the `FactoryDefaults` service. An application may then override
 these values by contibuting to the `ApplicationDefaults` service.
