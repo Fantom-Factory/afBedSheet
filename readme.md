@@ -2,9 +2,18 @@
 
 A web application framework for [Fantom](http://fantom.org/) built on top of [afIoc](http://repo.status302.com/doc/afIoc/#overview) and [Wisp](http://fantom.org/doc/wisp/index.html).
 
+BedSheet is a [Fantom](http://fantom.org/) framework for delivering web applications. Built on top of
+[afIoc](https://bitbucket.org/SlimerDude/afioc) and [Wisp](http://fantom.org/doc/wisp/index.html),
+BedSheet aims to be: Powerful, Flexible and Simple.
 
+BedSheet's main concern is proving a rich mechanism for the routing and delivery of content over HTTP. The generation of
+content (i.e. templating) is currently a lesser concern. That said, BedSheet integrates with
+[Moustache](https://bitbucket.org/xored/mustache/) from [Xored](http://www.xored.com/) and integrating with other templating engines should only require a few of lines of code.
 
-## Usage
+BedSheet is inspired by Java's [Tapestry5](http://tapestry.apache.org/), Ruby's [Sinatra](http://www.sinatrarb.com/) and
+Fantom's [Draft](https://bitbucket.org/afrankvt/draft).
+
+## Quick Start
 
 Write your fantom web app:
 
