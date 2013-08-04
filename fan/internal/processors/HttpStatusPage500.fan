@@ -18,7 +18,7 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 			log.err(errPrinter.errToStr(httpStatus.cause))
 
 		if (!response.isCommitted)	// a sanity check
-			response.setStatusCode(httpStatus.code)
+			response.statusCode = httpStatus.code
 		
 		// disable detailed err page reports in production mode
 		title			:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]

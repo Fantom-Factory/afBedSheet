@@ -14,7 +14,7 @@ internal const class HttpStatusPageDefaultImpl : HttpStatusPageDefault {
 
 	override Text process(HttpStatus httpStatus) {
 		if (!response.isCommitted)	// a sanity check
-			response.setStatusCode(httpStatus.code)
+			response.statusCode = httpStatus.code
 
 		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
 		content	:= "<p><b>${httpStatus.msg}</b></p>"

@@ -54,6 +54,7 @@ class HttpResponseHeaders {
 	** An identifier for a specific version of a resource, often a message digest.
 	** 
 	** Example: 'ETag: "737060cd8c284d8af7ad3082f209582d"'
+	// FIXME: use WebUtil.quotedStr
 	Str? eTag {
 		get { headers["ETag"] }
 		set { addOrRemove("ETag", it) }

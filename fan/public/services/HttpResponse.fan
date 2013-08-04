@@ -9,12 +9,13 @@ using web::WebRes
 ** An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
 ** This is proxied and will always refers to the current web response.
+// FIXME: set some fields!
 const mixin HttpResponse {
 
 	** Set the HTTP status code for this response.
 	** 
 	** @see `web::WebRes.statusCode`
-	abstract Void setStatusCode(Int statusCode)
+	abstract Int statusCode
 	
 	** Map of HTTP response headers.  You must set all headers before you access out() for the 
 	** first time, which commits the response. Throws Err if response is already committed. 
@@ -88,12 +89,15 @@ const class HttpResponseWrapper : HttpResponse {
 	override Bool isGzipDisabled() 			{ res.isGzipDisabled		}
 	override Void disableBuffering() 		{ res.disableBuffering		}
 	override Bool isBufferingDisabled() 	{ res.isBufferingDisabled	}
-	override Void setStatusCode(Int sc) 	{ res.setStatusCode(sc)		}
 	override HttpResponseHeaders headers() 	{ res.headers				}
 	override Cookie[] cookies() 			{ res.cookies				}
 	override Bool isCommitted() 			{ res.isCommitted			}
 	override OutStream out() 				{ res.out					}
 	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
+	override Int statusCode {
+		get { res.statusCode }
+		set { res.statusCode = it }
+	}
 }
 
 
@@ -124,9 +128,10 @@ internal const class HttpResponseImpl : HttpResponse {
 		threadStash.contains("disableBuffering")		
 	}
 	
-	override Void setStatusCode(Int statusCode) {
-		webRes.statusCode = statusCode
-	}
+	override Int statusCode {
+		get { webRes.statusCode }
+		set { webRes.statusCode = it }
+	}	
 
 	override HttpResponseHeaders headers() {
 		threadStash.get("headers") |->Obj| { HttpResponseHeaders(webRes.headers) }
