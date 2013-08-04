@@ -515,6 +515,12 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 Release Notes [#releaseNotes]
 *****************************
 
+v1.0.6 [#v1.0.6]
+----------------
+ - Chg: `HttpResponse.statusCode` is now a field.
+ - Chg: `HttpResponse.disableGzip` is now a field.
+ - Chg: `HttpResponse.disableBuffering` is now a field.
+
 v1.0.4 [#v1.0.4]
 ----------------
  - New: Added `BedServer` and `BedClient` to test BedSheet apps without using a real web server.

@@ -8,7 +8,7 @@ internal const class HttpOutStreamBuffBuilder : DelegateChainBuilder {
 	new make(|This|in) { in(this) } 
 	
 	override OutStream build(Obj delegate) {
-		doBuff	:= !response.isBufferingDisabled
+		doBuff	:= !response.disableBuffering
 		return	doBuff ? registry.autobuild(BufferedOutStream#, [delegate]) : delegate 
 	}
 }

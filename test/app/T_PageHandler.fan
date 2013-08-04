@@ -21,7 +21,7 @@ internal const class T_PageHandler {
 	}
 
 	Obj noBuff() {
-		response.disableBuffering
+		response.disableBuffering = true
 		return Text.fromPlain("This is not Buff!")
 	}
 	
@@ -46,7 +46,7 @@ internal const class T_PageHandler {
 	}
 	
 	Obj gzipDisable() {
-		response.disableGzip
+		response.disableGzip = true
 		return Text.fromPlain("This is NOT a gzipped message. No really! Need 5 more bytes!")
 	}
 
