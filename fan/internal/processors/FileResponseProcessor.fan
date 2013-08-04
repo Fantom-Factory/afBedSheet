@@ -31,7 +31,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 
 		// check if we can return a 304 Not Modified
 		if (notModified(req.headers, file)) {
-			res.setStatusCode(304)
+			res.statusCode = 304
 			return true
 		}
 

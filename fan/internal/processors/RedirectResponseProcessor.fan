@@ -24,7 +24,7 @@ internal const class RedirectResponseProcessor : ResponseProcessor {
 		if (req.httpVersion > ver10)
 			index = index + 3
 
-		res.setStatusCode(statusCodes[index])
+		res.statusCode = statusCodes[index]
 		res.headers.location = redirect.uri
 		res.headers.contentLength = 0
 
