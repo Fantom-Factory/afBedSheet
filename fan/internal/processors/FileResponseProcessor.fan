@@ -54,7 +54,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 	** default implementation is a hash of the modified time and the file size. The result of this 
 	** method must conform to the ETag syntax and be wrapped in quotes.
 	virtual Str etag(File file) {
-		"\"${file.size.toHex}-${file.modified.ticks.toHex}\""
+		"${file.size.toHex}-${file.modified.ticks.toHex}"
 	}
 	
 	** Check if the request passed headers indicating it has cached version of the file. Return 
