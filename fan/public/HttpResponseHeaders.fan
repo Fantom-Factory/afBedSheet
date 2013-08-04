@@ -1,3 +1,4 @@
+using web::WebUtil
 
 ** A wrapper for HTTP response headers with accessors for some commonly used headings.
 ** 
@@ -54,10 +55,9 @@ class HttpResponseHeaders {
 	** An identifier for a specific version of a resource, often a message digest.
 	** 
 	** Example: 'ETag: "737060cd8c284d8af7ad3082f209582d"'
-	// FIXME: use WebUtil.quotedStr
 	Str? eTag {
-		get { headers["ETag"] }
-		set { addOrRemove("ETag", it) }
+		get { makeIfNotNull("ETag") { WebUtil.fromQuotedStr(it) }}
+		set { addOrRemove("ETag", (it==null) ? null : WebUtil.toQuotedStr(it)) }
 	}
 	
 	** Gives the date/time after which the response is considered stale.

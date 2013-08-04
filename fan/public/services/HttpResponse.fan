@@ -9,7 +9,6 @@ using web::WebRes
 ** An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
 ** This is proxied and will always refers to the current web response.
-// FIXME: set some fields!
 const mixin HttpResponse {
 
 	** Set the HTTP status code for this response.
