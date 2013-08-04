@@ -51,25 +51,13 @@ const mixin HttpResponse {
 	** Disables gzip compression for this response.
 	** 
 	** @see `GzipOutStream`
-	abstract Void disableGzip()
+	abstract Bool disableGzip
 	
-	** Has gzip compression been disabled for this response? 
-	** Only returns 'true' if 'disableGzip()' has been called.
-	** 
-	** @see `GzipOutStream`
-	abstract Bool isGzipDisabled()	
-
 	** Disables response buffering
 	** 
 	** @see `BufferedOutStream`
-	abstract Void disableBuffering()
+	abstract Bool disableBuffering
 
-	** Has response buffering been disabled for this response?
-	** Only returns 'true' if 'disableBuffering()' has been called.
-	** 
-	** @see `BufferedOutStream`
-	abstract Bool isBufferingDisabled()
-	
 	** Directs the client to display a 'save as' dialog. Sets the 'Content-Disposition' http 
 	** response header. 
 	** 
@@ -85,15 +73,19 @@ const mixin HttpResponse {
 const class HttpResponseWrapper : HttpResponse {
 	const 	 HttpResponse res
 	new 	 make(HttpResponse res) 		{ this.res = res 			} 
-	override Void disableGzip()				{ res.disableGzip			}
-	override Bool isGzipDisabled() 			{ res.isGzipDisabled		}
-	override Void disableBuffering() 		{ res.disableBuffering		}
-	override Bool isBufferingDisabled() 	{ res.isBufferingDisabled	}
 	override HttpResponseHeaders headers() 	{ res.headers				}
 	override Cookie[] cookies() 			{ res.cookies				}
 	override Bool isCommitted() 			{ res.isCommitted			}
 	override OutStream out() 				{ res.out					}
 	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
+	override Bool disableGzip {
+		get { res.disableGzip }
+		set { res.disableGzip = it}
+	}
+	override Bool disableBuffering {
+		get { res.disableBuffering }
+		set { res.disableBuffering = it}		
+	}
 	override Int statusCode {
 		get { res.statusCode }
 		set { res.statusCode = it }
@@ -112,22 +104,16 @@ internal const class HttpResponseImpl : HttpResponse {
 		threadStash = threadStashManager.createStash("HttpResponse")
 	} 
 
-	override Void disableGzip() {
-		threadStash["disableGzip"] = true
+	override Bool disableGzip {
+		get { threadStash["disableGzip"] ?: false }
+		set { threadStash["disableGzip"] = it}
+	}
+	
+	override Bool disableBuffering {
+		get { threadStash["disableBuffering"] ?: false }
+		set { threadStash["disableBuffering"] = it}
 	}
 
-	override Bool isGzipDisabled() {
-		threadStash.contains("disableGzip")		
-	}
-	
-	override Void disableBuffering() {
-		threadStash["disableBuffering"] = true
-	}
-	
-	override Bool isBufferingDisabled() {
-		threadStash.contains("disableBuffering")		
-	}
-	
 	override Int statusCode {
 		get { webRes.statusCode }
 		set { webRes.statusCode = it }
