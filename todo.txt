@@ -56,34 +56,21 @@ Create an afBedSheetProtection pod, based on Rubys Rack::Protection
 
 Doc Comments
 ------------
-
-Wot should be returned for redirects? Str is overused: mustache, html, xml, etc... 
-e.g. what should each do? 
- - how to distinquish between pod resource and file resource -> is there?
-  - both return a file, diff handlers for diff uris.
-
-how to return a redirect?
- - should uri's be resolved?  
-
 Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
 
 "A web app framework that gets you horizontal. What's your favourite position?"
 
-horizonal not vertical - other frameworks make you extend their classes, not BedSheet!
-
+horizonal not vertical - other frameworks make you extend their classes, not BedSheet.
 
 
 Powerful.
----------
 Built in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped,
 decorated, replaced or deleted! It makes hard tasks, easy.
 
 Flexible.
----------
 Show a developer a really cool feature and the first response is usually, "Wow, that's awewome! ... But how do I turn it off?"
 With that in mind, BedSheet is reluctant
 
 Simple.
--------
 Developers are lazy. If it's complicated or difficult, they won't use it.
 

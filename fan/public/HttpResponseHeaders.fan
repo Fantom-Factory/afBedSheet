@@ -84,6 +84,32 @@ class HttpResponseHeaders {
 		set { addOrRemove("Location", it?.encode) }
 	}
 
+	** Implementation-specific headers.
+	** 
+	** Example: 'Pragma: no-cache'
+	Str? pragma {
+		get { headers["Pragma"] }
+		set { addOrRemove("Pragma", it) }
+	}
+
+	** Clickjacking protection, set to:
+	**  - 'deny' - no rendering within a frame, 
+	**  - 'sameorigin' - no rendering if origin mismatch
+	** 
+	** Example: 'X-Frame-Options: deny'
+	Str? xFrameOptions {
+		get { headers["X-Frame-Options"] }
+		set { addOrRemove("X-Frame-Options", it) }
+	}
+
+	** Cross-site scripting (XSS) filter.
+	** 
+	** Example: 'X-XSS-Protection: 1; mode=block'
+	Str? xXssProtection {
+		get { headers["X-XSS-Protection"] }
+		set { addOrRemove("X-XSS-Protection", it) }
+	}
+
 	@Operator
 	Str? get(Str name) {
 		headers[name]

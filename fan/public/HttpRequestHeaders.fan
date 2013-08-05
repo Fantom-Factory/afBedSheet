@@ -1,12 +1,20 @@
 
 ** A wrapper for HTTP request headers with accessors for some commonly used headings.
 ** 
-** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
+** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 class HttpRequestHeaders {
 	
 	private Str:Str headers
 
 	internal new make(Str:Str headers) { this.headers = headers }
+
+	** Content-Types that are acceptable for the response.
+	** 
+	** Example: 'Accept: audio/*; q=0.2, audio/basic'
+	QualityValues accept {
+		get { QualityValues(headers["Accept"]) }
+		private set { }
+	}
 
 	** List of acceptable encodings.
 	** 
@@ -16,13 +24,11 @@ class HttpRequestHeaders {
 		private set { }
 	}
 
-	Str? accessControlRequestHeaders {
-		get { headers["Access-Control-Request-Headers"] }
-		private set { }
-	}
-
-	Str? accessControlRequestMethod {
-		get { headers["Access-Control-Request-Method"]?.upper }
+	** List of acceptable human languages for response.
+	** 
+	** Example: 'Accept-Language: da, en-gb;q=0.8, en;q=0.7'
+	QualityValues acceptLanguage {
+		get { QualityValues(headers["Accept-Language"]) }
 		private set { }
 	}
 
@@ -92,6 +98,14 @@ class HttpRequestHeaders {
 	** Example: 'X-Requested-With: XMLHttpRequest'
 	Str? xRequestedWith {
 		get { headers["X-Requested-With"] }
+		private set { }
+	}
+
+	** Identifies the originating IP address of a client connecting through an HTTP proxy. 
+	** 
+	** Example: 'X-Forwarded-For: client, proxy1, proxy2'
+	Str[]? xForwardedFor {
+		get { headers["X-Forwarded-For"]?.split(',') }
 		private set { }
 	}
 

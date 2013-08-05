@@ -111,7 +111,7 @@ internal const class CorsHandlerImpl : CorsHandler {
 			return false
 
 		origin := req.headers.origin
-		requestedMethod := req.headers.accessControlRequestMethod
+		requestedMethod := req.headers["Access-Control-Request-Method"]
 		log.debug("CORS Preflight request from origin '$origin'")
 		
 		if (!domainGlobs.any |domain| { domain.matches(origin) }) {
@@ -127,8 +127,8 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (corsAllowCredentials)
 			res.headers["Access-Control-Allow-Credentials"]	 = "true"
 
-		if (req.headers.accessControlRequestHeaders != null) {
-			reqHeaders := req.headers.accessControlRequestHeaders
+		if (req.headers["Access-Control-Request-Headers"] != null) {
+			reqHeaders := req.headers["Access-Control-Request-Headers"]
 			if (corsAllowedHeaders == null || !corsAllowedHeaders.split(',').containsAll(reqHeaders.split(',')))
 				log.warn(BsMsgs.corsRequestHeadersDoesNotMatchAllowedHeaders(reqHeaders, corsAllowedHeaders))
 			res.headers["Access-Control-Allow-Headers"]	 = corsAllowedHeaders
@@ -161,7 +161,7 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (req.headers.origin == null)
 			return false
 
-		if (req.headers.accessControlRequestMethod == null)
+		if (req.headers["Access-Control-Request-Method"] == null)
 			return false
 
 		return true
