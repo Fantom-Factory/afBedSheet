@@ -47,7 +47,7 @@ internal class AppTest : Test {
 		client.reqUri = reqUri(uri) 
 		client.writeReq
 		client.readRes
-		verifyEq(client.resCode, status, client.resPhrase)
+		verifyEq(client.resCode, status, "$client.resCode - $client.resPhrase")
 	}
 	
 	Void verifyLastModified(DateTime lastModified) {

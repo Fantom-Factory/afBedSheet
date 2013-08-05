@@ -66,9 +66,7 @@ internal const class FileResponseProcessor : ResponseProcessor {
 		matchNone := headers.ifNoneMatch
 		if (matchNone != null) {
 			etag := this.etag(file)
-			if ( WebUtil.parseList(matchNone).any |Str s->Bool| {
-				return s == etag || s == "*"
-			})
+			if (WebUtil.parseList(matchNone).map { WebUtil.fromQuotedStr(it) }.any { it == etag || it == "*" })
 				return true
 		}
 		
