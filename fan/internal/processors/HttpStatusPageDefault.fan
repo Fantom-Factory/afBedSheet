@@ -17,7 +17,8 @@ internal const class HttpStatusPageDefaultImpl : HttpStatusPageDefault {
 			response.statusCode = httpStatus.code
 
 		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
-		content	:= "<p><b>${httpStatus.msg}</b></p>"
+		// if the msg is html, leave it as is
+		content	:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>"
 		return bedSheetPage.render(title, content)
 	}	
 }
