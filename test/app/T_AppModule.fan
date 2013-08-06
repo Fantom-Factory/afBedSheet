@@ -54,6 +54,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/welcome`, 				WelcomePage#service))
 
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
+		conf.add(Route(`/test-src2/***`, 		FileHandler#service))
 		
 		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
 

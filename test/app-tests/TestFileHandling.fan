@@ -34,6 +34,10 @@ internal class TestFileHandling : AppTest {
 		verifyStatus(`/test-src/folder/`, 403)
 	}
 
+	Void testSillyUser() {
+		verifyStatus(`/test-src2/folder/`, 501)
+	}
+	
 	Void testMatchingEtagGives304() {
 		client.reqHeaders["If-None-Match"] = "\"c-5defbca12df6080\""
 		
