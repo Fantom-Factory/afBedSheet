@@ -6,11 +6,11 @@ using web::WebClient
 
 internal const class AppDestroyer {
 	private static const Log 	log 			:= Utils.getLog(AppDestroyer#)
-	private static const Int	maxNoOfStrikes	:= 2
 	
-	private const Actor	actor
-	private const Int proxyPort
+	private const Actor		actor
+	private const Int 		proxyPort
 	private const AtomicInt strikes
+	private const Int		maxNoOfStrikes	:= 2
 
 	@Inject @Config { id="afBedSheet.appDestroyer.pingInterval" }
 	private const Duration pingInterval

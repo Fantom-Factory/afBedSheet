@@ -45,15 +45,37 @@ const class BedSheetWebMod : WebMod {
 	override Void onStart() {
 		log.info(BsLogMsgs.bedSheetWebModStarting(moduleName, port))
 
-		// pod name given...
 		Pod? pod
+		Type? mod
+		
+		// pod name given...
+		// lots of start up checks looking for pods and modules... 
+		// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
 		if (!moduleName.contains("::")) {
 			pod = Pod.find(moduleName, true)
-			log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
+			if (pod != null) {
+				log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
+				modName := pod.meta["afIoc.module"]
+				if (modName != null) {
+					mod = Type.find(moduleName, false)
+					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+					// reset back to null - so we add the whole module with trans deps
+					mod = null
+				} else {
+					// we have a pod name with no module meta... guess a type of AppModule
+					mod = pod.type("AppModule", false)
+					if (mod != null) {
+						log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+						log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
+					} else {
+						// we're screwed! No module = no web app!
+						log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
+					}
+				}				
+			}
 		}
 
 		// mod name given...
-		Type? mod
 		if (moduleName.contains("::")) {
 			mod = Type.find(moduleName, true)
 			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
@@ -65,9 +87,13 @@ const class BedSheetWebMod : WebMod {
 			bob.addModulesFromDependencies(pod, true)
 		}
 		if (mod != null) {
-			bob.addModule(BedSheetModule#)
 			bob.addModule(mod)			
 		}
+
+		// A simple thing - ensure the BedSheet module is added!
+		if (!bob.moduleTypes.contains(BedSheetModule#))
+			// wrap in an 'if' to avoid dup warnings
+			bob.addModule(BedSheetModule#)
 		
 		bannerText	:= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
 		options 	:= Str:Obj["bannerText":bannerText]
@@ -81,7 +107,7 @@ const class BedSheetWebMod : WebMod {
 
 		if (bedSheetOptions["pingProxy"] == true) {
 			pingPort := (Int) bedSheetOptions["pingProxyPort"]
-			destroyer := registry.autobuild(AppDestroyer#, [ActorPool(), pingPort]) as AppDestroyer
+			destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
 			destroyer.start
 		}
 	}

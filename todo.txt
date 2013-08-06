@@ -5,8 +5,10 @@ For BedSheet 1.0.0
 fantom afIoc on T5
 
 
-For BedSheet 1.0.6
+For BedSheet 1.0.8
 ------------------
+
+BedClient (test) post reqs and req.in
 
 Logging filter with reqId, SessId and configurable userId
 
