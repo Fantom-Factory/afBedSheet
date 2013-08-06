@@ -54,7 +54,7 @@ internal const class RoutesImpl : Routes {
 			return ((WelcomePage) registry.autobuild(WelcomePage#)).service
 
 		if (response == null)
-			throw HttpStatusErr(404, BsMsgs.route404(modRel, httpMethod))
+			throw HttpStatusErr(404, BsErrMsgs.route404(modRel, httpMethod))
 
 		return response
 	}
