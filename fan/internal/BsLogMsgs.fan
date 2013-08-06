@@ -54,14 +54,29 @@ internal const class BsLogMsgs {
 	}
 
 	static Str bedSheetWebModFoundPod(Pod pod) {
-		" - Found pod '$pod.name'"
+		"Found pod '$pod.name'"
 	}
 
 	static Str bedSheetWebModFoundType(Type type) {
-		" - Found type '$type.qname' "
+		"Found mod '$type.qname' "
+	}
+
+	static Str bedSheetWebModAddModuleToPodMeta(Pod pod, Type mod) {
+		"Pod '${pod.name}' should define the following meta - \"afIoc.module\" : \"${mod.qname}\""
+	}
+
+	static Str bedSheetWebModNoModuleFound() {
+		"Could not find any AppModules!"
 	}
 
 	static Str bedSheetWebModStopping(Str appModule) {
 		"\"Goodbye!\" from afBedSheet!"
 	}
+
+	// ---- Other ---------------------------------------------------------------------------------
+	
+	static Str routesGotNone() {
+		"No contributions have been made to the Routes service!"
+	}
+	
 }

@@ -20,11 +20,17 @@ internal const class WelcomePage {
 			 .a(`http://repo.status302.com/doc/afBedSheet/#overview`).w("status302 repository").aEnd
 			 .w(".").pEnd
 		out.p.w("&nbsp;").pEnd
-		out.p.w("To disable this welcome page, contribute a Route in your App Module:").pEnd
+		out.p.w("To disable this welcome page, either contribute a Route in your App Module:").pEnd
 		out.code.w("""@Contribute
 		              static Void contributeRoutes(OrderedConfig conf) {
 		                conf.add(Route(`/hello`, HelloPage#hello))
 		              }
+		              """).codeEnd
+		out.p.w("Or ensure BedSheet can find your AppModule. Do this by adding meta to your pod's build.fan:").pEnd
+		out.code.w("""meta = [ ...
+		                       "afIoc.module" : "myPod::AppModule",
+		                       ...
+		                     ]
 		              """).codeEnd
 
 		return bedSheetPage.render(title, buf.toStr)

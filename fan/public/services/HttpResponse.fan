@@ -11,7 +11,8 @@ using web::WebRes
 ** This is proxied and will always refers to the current web response.
 const mixin HttpResponse {
 
-	** Set the HTTP status code for this response.
+	** Get / set the HTTP status code for this response.
+	** Setter throws Err if response is already committed.
 	** 
 	** @see `web::WebRes.statusCode`
 	abstract Int statusCode
@@ -24,8 +25,9 @@ const mixin HttpResponse {
 	**  - `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
 	abstract HttpResponseHeaders headers()
 	
-	** Get the list of cookies to set via header fields.  Add a Cookie to this list to set a 
-	** cookie.  Throws Err if response is already committed.
+	** Get the list of cookies to set via header fields.  
+	** Add a Cookie to this list to set a cookie. 
+	** Throws Err if response is already committed.
 	**
 	** Example:
 	**   res.cookies.add(Cookie("foo", "123"))
@@ -41,24 +43,24 @@ const mixin HttpResponse {
 	** @see `web::WebRes.isCommitted`
 	abstract Bool isCommitted()
 	
-	** Returns the 'OutStream' for this response. Should current settings allow, the 'OutStream'
-	** is automatically gzipped.
+	** Returns the 'OutStream' for this response. 
+	** Should current settings allow, the 'OutStream' is automatically gzipped.
 	** 
 	** @see `web::WebRes.out`
 	abstract OutStream out()
 	
-	** Disables gzip compression for this response.
+	** Set to 'true' to disable gzip compression for this response.
 	** 
 	** @see `GzipOutStream`
 	abstract Bool disableGzip
 	
-	** Disables response buffering
+	** Set to 'true' to disable buffering for this response.
 	** 
 	** @see `BufferedOutStream`
 	abstract Bool disableBuffering
 
-	** Directs the client to display a 'save as' dialog. Sets the 'Content-Disposition' http 
-	** response header. 
+	** Directs the client to display a 'save as' dialog. 
+	** Sets the 'Content-Disposition' http response header. 
 	** 
 	** Don't forget to set the 'Content-Type' header too!
 	** 

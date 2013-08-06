@@ -32,6 +32,8 @@ internal const class RoutesImpl : Routes {
 	internal new make(Obj[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
+		if (routes.isEmpty)
+			log.warn(BsLogMsgs.routesGotNone)
 	}
 
 	override Obj? processRequest(Uri modRel, Str httpMethod) {
