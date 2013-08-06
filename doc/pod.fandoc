@@ -515,6 +515,11 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 Release Notes [#releaseNotes]
 *****************************
 
+v1.0.8 [#v1.0.8]
+----------------
+ - Chg: Better Err handling when a dir is not mapped to 'FileHandler'
+ - Chg: Warnings on startup if an AppModule could not be found - see [Issue #1]`https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed`
+
 v1.0.6 [#v1.0.6]
 ----------------
  - Chg: `HttpResponse.statusCode` is now a field.
