@@ -1,10 +1,4 @@
 
-For BedSheet 1.0.0
-------------------
-
-fantom afIoc on T5
-
-
 For BedSheet 1.0.8
 ------------------
 
