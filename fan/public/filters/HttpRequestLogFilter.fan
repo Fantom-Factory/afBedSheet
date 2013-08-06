@@ -76,7 +76,7 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 	internal new make(RegistryShutdownHub shutdownHub, ConfigSource configSource, |This|in) { 
 		in(this)
 
-		dir 	= configSource.get("afBedSheet.httpRequestLog.dir") ?: throw BedSheetErr(BsMsgs.requestLogFilterDirCannotBeNull)
+		dir 	= configSource.get("afBedSheet.httpRequestLog.dir") ?: throw BedSheetErr(BsErrMsgs.requestLogFilterDirCannotBeNull)
 		logMod  = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
 		logMod.onStart
 

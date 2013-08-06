@@ -92,7 +92,7 @@ internal const class CorsHandlerImpl : CorsHandler {
 		log.debug("CORS Simple request from origin '$origin'")
 		
 		if (!domainGlobs.any |domain| { domain.matches(origin) }) {
-			log.warn(BsMsgs.corsOriginDoesNotMatchAllowedDomains(origin, corsAllowedOrigins))
+			log.warn(BsLogMsgs.corsOriginDoesNotMatchAllowedDomains(origin, corsAllowedOrigins))
 			return false
 		}
 		res.headers["Access-Control-Allow-Origin"]	 = origin
@@ -115,13 +115,13 @@ internal const class CorsHandlerImpl : CorsHandler {
 		log.debug("CORS Preflight request from origin '$origin'")
 		
 		if (!domainGlobs.any |domain| { domain.matches(origin) }) {
-			log.warn(BsMsgs.corsOriginDoesNotMatchAllowedDomains(origin, corsAllowedOrigins))
+			log.warn(BsLogMsgs.corsOriginDoesNotMatchAllowedDomains(origin, corsAllowedOrigins))
 			return false
 		}
 		res.headers["Access-Control-Allow-Origin"]	 = origin.toStr
 
 		if (!corsAllowedMethods.upper.split(',').contains(requestedMethod))
-			log.warn(BsMsgs.corsOriginDoesNotMatchAllowedMethods(requestedMethod, corsAllowedMethods))
+			log.warn(BsLogMsgs.corsOriginDoesNotMatchAllowedMethods(requestedMethod, corsAllowedMethods))
 		res.headers["Access-Control-Allow-Methods"]	 = corsAllowedMethods
 		
 		if (corsAllowCredentials)
@@ -130,7 +130,7 @@ internal const class CorsHandlerImpl : CorsHandler {
 		if (req.headers["Access-Control-Request-Headers"] != null) {
 			reqHeaders := req.headers["Access-Control-Request-Headers"]
 			if (corsAllowedHeaders == null || !corsAllowedHeaders.split(',').containsAll(reqHeaders.split(',')))
-				log.warn(BsMsgs.corsRequestHeadersDoesNotMatchAllowedHeaders(reqHeaders, corsAllowedHeaders))
+				log.warn(BsLogMsgs.corsRequestHeadersDoesNotMatchAllowedHeaders(reqHeaders, corsAllowedHeaders))
 			res.headers["Access-Control-Allow-Headers"]	 = corsAllowedHeaders
 		}
 		

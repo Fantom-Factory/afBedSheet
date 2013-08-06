@@ -105,10 +105,10 @@ class Main : AbstractMain {
 meta:
 
 pre>
-meta  = [ ...
-          ...
-          "afIoc.module"  : "<fully-qualified-app-module-name>"
-        ]
+meta = [ ...
+         "afIoc.module" : "<fully-qualified-app-module-name>",
+         ...
+       ]
 <pre
 
 Note that 'AppModule' is named so out of convention but may be called anything you like.

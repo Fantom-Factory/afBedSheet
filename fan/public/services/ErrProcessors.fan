@@ -23,7 +23,7 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 	internal new make(Type:ErrProcessor errProcessors) {
 		errProcessors.keys.each |type| {
 			if (type.isClass && !type.fits(Err#))
-				throw BedSheetErr(BsMsgs.errProcessorsNotErrType(type))
+				throw BedSheetErr(BsErrMsgs.errProcessorsNotErrType(type))
 		}
 		this.errProcessorStrategy = StrategyRegistry(errProcessors)
 	}

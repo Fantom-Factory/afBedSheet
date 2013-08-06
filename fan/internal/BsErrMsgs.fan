@@ -1,6 +1,5 @@
 
-//TODO: ewname to ErrMsgs
-internal const class BsMsgs {
+internal const class BsErrMsgs {
 
 	static Str routeNotFound(Uri notFound) {
 		"No route found for '$notFound'"
@@ -57,18 +56,5 @@ internal const class BsMsgs {
 	static Str requestLogFilterDirCannotBeNull() {
 		"Please contribute a RequestLogFilter dir! \nExample, conf[ConfigIds.requestLogDir] = `/my/log/dir/`.toFile"
 	}
-	
-	// ---- CORS Msgs ----
-	
-	static Str corsOriginDoesNotMatchAllowedDomains(Str origin, Str? allowedDomains) {
-		"CORS request with origin '${origin}' does not match allowed domains: ${allowedDomains}"
-	}
 
-	static Str corsRequestHeadersDoesNotMatchAllowedHeaders(Str reqHeaders, Str? allowedHeaders) {
-		"CORS request with headers '${reqHeaders}' did not match allowed headers: ${allowedHeaders}"
-	}
-
-	static Str corsOriginDoesNotMatchAllowedMethods(Str reqMethod, Str? allowedMethods) {
-		"CORS request for method '${reqMethod}' did not match allowed methods: ${allowedMethods}"
-	}
 }

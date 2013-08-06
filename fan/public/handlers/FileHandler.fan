@@ -47,20 +47,21 @@ internal const class FileHandlerImpl : FileHandler {
 		// verify file and uri mappings
 		dirMappings.each |file, uri| {
 			if (!file.exists)
-				throw BedSheetErr(BsMsgs.fileHandlerFileNotExist(file))
+				throw BedSheetErr(BsErrMsgs.fileHandlerFileNotExist(file))
 			if (!file.isDir)
-				throw BedSheetErr(BsMsgs.fileHandlerFileNotDir(file))
+				throw BedSheetErr(BsErrMsgs.fileHandlerFileNotDir(file))
 			if (!uri.isPathOnly)
-				throw BedSheetErr(BsMsgs.fileHandlerUriNotPathOnly(uri))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUriNotPathOnly(uri))
 			if (!uri.isPathAbs)
-				throw BedSheetErr(BsMsgs.fileHandlerUriMustStartWithSlash(uri))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(uri))
 			if (!uri.isDir)
-				throw BedSheetErr(BsMsgs.fileHandlerUriMustEndWithSlash(uri))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustEndWithSlash(uri))
 		}
 
 		this.dirMappings = dirMappings.toImmutable
 	}
 
+	// FIXME: what happens if no matched URI is found? need to die with nice error msg (or return 404 - or both!?)
 	override File service(Uri remainingUri := ``) {
 		
 		// use pathStr to knockout any unwanted query str

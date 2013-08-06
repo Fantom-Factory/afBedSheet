@@ -9,13 +9,13 @@ internal class TestRoute : BsTest {
 	Void handler5(Str? p1 := null, Obj p2 := 69) { }
 
 	Void testUriPathOnly() {
-		verifyBsErrMsg(BsMsgs.routeShouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
+		verifyBsErrMsg(BsErrMsgs.routeShouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
 			r := Route(`http://www.alienfactory.co.uk/`, #foo)
 		}
 	}
 
 	Void testUriStartWithSlash() {
-		verifyBsErrMsg(BsMsgs.routeShouldStartWithSlash(`foo/bar`)) {
+		verifyBsErrMsg(BsErrMsgs.routeShouldStartWithSlash(`foo/bar`)) {
 			r := Route(`foo/bar`, #foo)
 		}
 	}	

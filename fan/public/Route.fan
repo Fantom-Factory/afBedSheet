@@ -107,9 +107,9 @@ const class Route {
 	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
 	new makeFromGlob(Uri glob, Method handler, Str httpMethod := "GET") {
 	    if (glob.scheme != null || glob.host != null || glob.port!= null )
-			throw BedSheetErr(BsMsgs.routeShouldBePathOnly(glob))
+			throw BedSheetErr(BsErrMsgs.routeShouldBePathOnly(glob))
 	    if (!glob.isPathAbs)
-			throw BedSheetErr(BsMsgs.routeShouldStartWithSlash(glob))
+			throw BedSheetErr(BsErrMsgs.routeShouldStartWithSlash(glob))
 
 		uriGlob	:= glob.toStr
 		regex	:= "(?i)^"
