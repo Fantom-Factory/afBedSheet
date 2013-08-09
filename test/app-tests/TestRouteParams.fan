@@ -8,7 +8,7 @@ internal class TestRouteParams : AppTest {
 
 	Void testP02() {
 		res := getAsStr(`/route/optional/`)
-		verifyEq(res, "p2 p3")
+		verifyEq(res, "null p2 p3")
 	}
 
 	Void testP1() {
