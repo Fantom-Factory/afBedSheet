@@ -15,7 +15,7 @@ internal const class RouteMatcherImpl : RouteMatcher {
 			return null
 		
 		// watch out for ->Obj nulls here if ValEnc sig changes
-		args := params.map |arg, i -> Obj| {
+		args := params.map |arg, i -> Obj?| {
 			paramType	:= route.handler.params[i].type
 			value		:= valueEncoders.toValue(paramType, arg)
 			return value

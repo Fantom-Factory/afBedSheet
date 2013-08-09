@@ -2,9 +2,9 @@
 ** Return from 'RouteMatchers'.
 class RouteHandler {
 	const Method	method
-		  Obj[]		args
+		  Obj?[]	args
 	
-	new make(Method method, Obj[] args) {
+	new make(Method method, Obj?[] args) {
 		this.method	= method
 		this.args	= args
 	}

@@ -24,7 +24,7 @@ internal class TestRoute : BsTest {
 			r := Route(`foo/bar`, #foo)
 		}
 	}	
-	
+
 	Void testHttpMethodMismatch() {
 		match := Route(`/index`, #foo).match(`/index`, "POST")
 		verifyNull(match)
@@ -307,4 +307,18 @@ internal class TestRoute : BsTest {
 		match = Route(`/`, #bar4).matchArgs(Str?["--", "--"])
 		verifyEq(match.size, 2)
 	}
+	
+	Void testFromModule() {
+		Str?[]? match
+
+		match = Route(`/route/optional/**`, #defaultParams).matchUri(`/route/optional/`)
+		verifyEq(match.size, 1)
+		verifyEq(match[0],	null)
+
+		match = Route(`/route/optional/**`, #defaultParams).matchArgs(match)
+		verifyEq(match.size, 1)
+		verifyEq(match[0],	null)
+	}
+	
+	Void defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") { }
 }

@@ -16,11 +16,11 @@ const mixin ValueEncoders {
 	
 	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
 	** found, 'toStr()' is used. 
-	abstract Str toClient(Type valType, Obj value)
+	abstract Str? toClient(Type valType, Obj? value)
 	
 	** Converts the given 'clientValue' into the given 'valType' via a contributed `ValueEncoder`. 
 	** If no 'ValueEncoder' is found the value is [coerced]`afIoc::TypeCoercer`.
-	abstract Obj toValue(Type valType, Str clientValue)
+	abstract Obj? toValue(Type valType, Str? clientValue)
 }
 
 internal const class ValueEncodersImpl : ValueEncoders {
@@ -31,7 +31,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
 	}
 	
-	override Str toClient(Type valType, Obj value) {
+	override Str? toClient(Type valType, Obj? value) {
 		// check the basics first!
 		if (value is Str)
 			return value
@@ -44,14 +44,15 @@ internal const class ValueEncodersImpl : ValueEncoders {
 				throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(value, Str#), cause)
 			}
 		
-		return value.toStr
+		return value?.toStr
 	}
 
-	override Obj toValue(Type valType, Str clientValue) {
+	override Obj? toValue(Type valType, Str? clientValue) {
 		// check the basics first!
 		if (valType.fits(Str#))
 			return clientValue
 
+		// give the val encs a chance to handle nulls
 		valEnc := get(valType)
 		if (valEnc != null)
 			try {
@@ -59,6 +60,9 @@ internal const class ValueEncodersImpl : ValueEncoders {
 			} catch (Err cause) {
 				throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(clientValue, valType), cause)
 			}
+		
+		if (clientValue == null)
+			return null
 		
 		if (getState() { it.typeCoercer.canCoerce(Str#, valType) } == false)
 			throw ValueEncodingErr(BsErrMsgs.valueEncodingNotFound(valType))
