@@ -7,6 +7,11 @@ internal class TestRoute : BsTest {
 	Void handler3(Str p1, Int p2) { }
 	Void handler4(Str p1, Int p2 := 69) { }
 	Void handler5(Str? p1 := null, Obj p2 := 69) { }
+	
+	Void bar1(Str a, Str b) { }
+	Void bar2(Str? a, Str? b) { }
+	Void bar3(Str? a, Str? b := "") { }
+	Void bar4(Str? a, Str b := "") { }
 
 	Void testUriPathOnly() {
 		verifyBsErrMsg(BsErrMsgs.routeShouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
@@ -26,7 +31,7 @@ internal class TestRoute : BsTest {
 	}
 	
 	Void testMatchRegex() {
-		Str[]? match
+		Str?[]? match
 		
 		match = Route(Regex<|(?i)^\/index$|>, #foo).matchUri(`/index`)
 		verifyEq(match.size,	0)
@@ -44,14 +49,16 @@ internal class TestRoute : BsTest {
 	}
 	
 	Void testMatchGlobFromDocs() {
-		Str[]? match
+		Str?[]? match
 
 		match = Route(`/user/*`, #foo).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		match = Route(`/user/*`, #foo).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
+		match = Route(`/user/*`, #foo).matchUri(`/user/42/`)
+		verifyNull(match)
 		match = Route(`/user/*`, #foo).matchUri(`/user/42/dee`)
 		verifyNull(match)
 
@@ -59,6 +66,10 @@ internal class TestRoute : BsTest {
 		verifyNull(match)
 		match = Route(`/user/*/*`, #foo).matchUri(`/user/42`)
 		verifyNull(match)
+		match = Route(`/user/*/*`, #foo).matchUri(`/user/42/`)
+		verifyEq(match.size,	2)
+		verifyEq(match[0],		"42")
+		verifyEq(match[1],		null)
 		match = Route(`/user/*/*`, #foo).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
@@ -66,8 +77,11 @@ internal class TestRoute : BsTest {
 
 		match = Route(`/user/**`, #foo).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		match = Route(`/user/**`, #foo).matchUri(`/user/42`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"42")
+		match = Route(`/user/**`, #foo).matchUri(`/user/42/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
 		match = Route(`/user/**`, #foo).matchUri(`/user/42/dee`)
@@ -77,17 +91,20 @@ internal class TestRoute : BsTest {
 
 		match = Route(`/user/***`, #foo).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		match = Route(`/user/***`, #foo).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
+		match = Route(`/user/***`, #foo).matchUri(`/user/42/`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"42/")
 		match = Route(`/user/***`, #foo).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42/dee")
 	}
-	
+
 	Void testMatchGlob() {
-		Str[]? match
+		Str?[]? match
 		
 		match = Route(`/index`, #foo).matchUri(`/wotever`)
 		verifyNull(match)
@@ -103,18 +120,18 @@ internal class TestRoute : BsTest {
 
 		match = Route(`/foo*`, #foo).matchUri(`/foo`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		
 		match = Route(`/foo/*`, #foo).matchUri(`/foo`)
 		verifyNull(match)
 
 		match = Route(`/foo/*`, #foo).matchUri(`/foo/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		match = Route(`/foo/*/`, #foo).matchUri(`/foo//`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		// case-insensitive
 		match = Route(`/foo`, #foo).matchUri(`/fOO`)
@@ -161,11 +178,11 @@ internal class TestRoute : BsTest {
 
 		match = Route(`/index*`, #foo).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		match = Route(`/index**`, #foo).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		match = Route(`/wot/*/ever/*`, #foo).matchUri(`/wot/3/ever/4`)
 		verifyEq(match.size,	2)
@@ -174,7 +191,7 @@ internal class TestRoute : BsTest {
 	}
 	
 	Void testArgList() {
-		Str[]? match
+		Str?[]? match
 		
 		// ---- handler1 ----
 		
@@ -245,5 +262,49 @@ internal class TestRoute : BsTest {
 		
 		match = Route(`/wotever/`, #handler5).matchArgs(["wot", "ever", "dude"])
 		verifyNull(match)
+	}
+
+	Void testMatchArgsFromDocs() {
+		Str?[]? match
+
+		// Void bar1(Str a, Str b) { }
+		match = Route(`/`, #bar1).matchArgs(Str?[,])
+		verifyNull(match)
+		match = Route(`/`, #bar1).matchArgs(Str?[null])
+		verifyNull(match)
+		match = Route(`/`, #bar1).matchArgs(Str?[null, null])
+		verifyNull(match)
+		match = Route(`/`, #bar1).matchArgs(Str?["--", "--"])
+		verifyEq(match.size, 2)
+
+		// Void bar2(Str? a, Str? b) { }
+		match = Route(`/`, #bar2).matchArgs(Str?[,])
+		verifyNull(match)
+		match = Route(`/`, #bar2).matchArgs(Str?[null])
+		verifyNull(match)
+		match = Route(`/`, #bar2).matchArgs(Str?[null, null])
+		verifyEq(match.size, 2)
+		match = Route(`/`, #bar2).matchArgs(Str?["--", "--"])
+		verifyEq(match.size, 2)
+
+		// Void bar3(Str? a, Str? b := "") { }
+		match = Route(`/`, #bar3).matchArgs(Str?[,])
+		verifyNull(match)
+		match = Route(`/`, #bar3).matchArgs(Str?[null])
+		verifyEq(match.size, 1)
+		match = Route(`/`, #bar3).matchArgs(Str?[null, null])
+		verifyEq(match.size, 2)
+		match = Route(`/`, #bar3).matchArgs(Str?["--", "--"])
+		verifyEq(match.size, 2)
+
+		// Void bar4(Str? a, Str b := "") { }
+		match = Route(`/`, #bar4).matchArgs(Str?[,])
+		verifyNull(match)
+		match = Route(`/`, #bar4).matchArgs(Str?[null])
+		verifyEq(match.size, 1)
+		match = Route(`/`, #bar4).matchArgs(Str?[null, null])
+		verifyNull(match)
+		match = Route(`/`, #bar4).matchArgs(Str?["--", "--"])
+		verifyEq(match.size, 2)
 	}
 }
