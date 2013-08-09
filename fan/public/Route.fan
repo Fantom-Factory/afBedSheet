@@ -1,68 +1,69 @@
 
+**
 ** Matches uri paths to request handler methods, converting any remaining path segments into method 
-** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all 
-** remaining path segments and '***' to capture the remaining url Examples:
+** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all remaining path 
+** segments and '***' to capture the remaining url. Examples:
 ** 
 ** pre>
 **   glob pattern     uri             arguments
-**   -----------------------------------------------------
-**   /user/*      --> /user/       => ""
+**   --------------------------------------------
+**   /user/*      --> /user/       => null
 **   /user/*      --> /user/42     => "42"
+**   /user/*      --> /user/42/    => no match
 **   /user/*      --> /user/42/dee => no match
 **
 **   /user/*/*    --> /user/       => no match
 **   /user/*/*    --> /user/42     => no match
+**   /user/*/*    --> /user/42/    => "42", null
 **   /user/*/*    --> /user/42/dee => "42", "dee"
 ** 
-**   /user/**     --> /user/       => ""
+**   /user/**     --> /user/       => null
 **   /user/**     --> /user/42     => "42"
+**   /user/**     --> /user/42/    => "42"
 **   /user/**     --> /user/42/dee => "42", "dee"
 **
-**   /user/***    --> /user/       => ""
+**   /user/***    --> /user/       => null
 **   /user/***    --> /user/42     => "42"
+**   /user/***    --> /user/42/    => "42/"
 **   /user/***    --> /user/42/dee => "42/dee"
 ** <pre
 ** 
-** Method arguments with default values are mapped to optional path segments. Use '**' to capture 
-** optional segments in the uri. Example:
+** The argument list is then matched to the method parameters, taking into account nullable types 
+** and default values. Examples:
 ** 
 ** pre>
-** using afBedSheet
-** using afIoc
-** 
-** class AppModule {
-**   @Contribute
-**   static Void contributeRoutes(OrderedConfig conf) {
-**     conf.add(Route(`/hello/**`, HelloPage#hello))
-**   }
-** }
-** 
-** class HelloPage {
-**   Text hello(Str name, Int iq := 666) {
-**     return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
-**   }
-** }
-** 
-** '/hello/Traci/69' => helloPage.hello("Traci", 69) => "Hello! I'm Traci and I have an IQ of 69"
-** 'hello/Luci'      => helloPage.hello("Luci")      => "Hello! I'm Luci and I have an IQ of 666"
-** 'dude/'           => no match
-** 'hello/'          => no match
-** 'hello/1/2/3      => no match
+**   method params             arguments       match
+**   --------------------------------------------------
+**   Str a, Str b         -->               => no match  
+**   Str a, Str b         -->  null         => no match
+**   Str a, Str b         -->  null,  null  => no match 
+**   Str a, Str b         --> "wot", "ever" => match
+**   
+**   Str? a, Str? b       -->               => no match
+**   Str? a, Str? b       -->  null         => no match
+**   Str? a, Str? b       -->  null,  null  => match
+**   Str? a, Str? b       --> "wot", "ever" => match
+**
+**   Str? a, Str? b := "" -->               => no match
+**   Str? a, Str? b := "" -->  null         => match
+**   Str? a, Str? b := "" -->  null,  null  => match
+**   Str? a, Str? b := "" --> "wot", "ever" => match
+**
+**   Str? a, Str b := ""  -->               => no match
+**   Str? a, Str b := ""  -->  null         => match
+**   Str? a, Str b := ""  -->  null,  null  => no match
+**   Str? a, Str b := ""  --> "wot", "ever" => match
 ** <pre
 ** 
-** Path segments are converted to Objs via the [ValueEncoder]`ValueEncoder` service.
+** Method parameters can be any Obj (and not just 'Str') as they are converted using the  
+** [ValueEncoder]`ValueEncoder` service.
 **  
-** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. BedSheet can then call 
-** handlers with real Entities, not just str IDs!
+** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. BedSheet will then  
+** call handlers with real Entities, not just str IDs!
 ** 
 ** Parameters of type 'Str[]' are *capture all* parameters and match the remaining uri (split on '/').
 **
-** Request uri's (for matching purposes) are treated as case-insensitive. In the example above, both
-** 
-**  - 'hello/Luci' and 
-**  - 'HELLO/Luci' 
-**
-** would be matched.
+** Request uri's (for matching purposes) are treated as case-insensitive. 
 ** 
 ** Use '?' to optional match the last character. Use to optionally match a trailing slash. e.g.
 ** 
@@ -79,10 +80,6 @@
 ** If a handler class is a service, it is obtained from the IoC registry, otherwise it is
 ** [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the instance is cached for 
 ** future use.
-** 
-** Note: There is no special handling for nullable types in handler method arguments as BedSheet 
-** can not determine when 'null' is a suitable replacement for an empty str. Instead contribute a
-** `ValueEncoder` or use default values.
 ** 
 const class Route {
 	private static const Str star	:= "(.*?)"
@@ -162,7 +159,7 @@ const class Route {
 		this.isGlob			= false
 	}
 
-	internal Str[]? match(Uri uri, Str httpMethod) {
+	internal Str?[]? match(Uri uri, Str httpMethod) {
 		if (!httpMethodGlob.any { it.matches(httpMethod) })
 			return null
 
@@ -178,7 +175,7 @@ const class Route {
 	}
 
 	** Returns null if the given uri does not match the uri regex
-	internal Str[]? matchUri(Uri uri) {
+	internal Str?[]? matchUri(Uri uri) {
 		matcher := routeRegex.matcher(uri.pathOnly.toStr)
 		find := matcher.find 
 		if (!find)
@@ -207,20 +204,33 @@ const class Route {
 		
 		if (isGlob && !matchToEnd && !matchAllArgs && groups[-1].contains("/"))
 			return null
-						
-		return groups
-	}
-	
-	** Returns null if uriSegments do not match (optional) method handler arguments
-	internal Str[]? matchArgs(Str[] uriSegments) {
-		if (handler.params.size == uriSegments.size)
-			return uriSegments
-		
-		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
-		if (paramRange.contains(uriSegments.size))
-			return uriSegments
 
-		return null
+		// convert empty Strs to nulls
+		// see http://fantom.org/sidewalk/topic/2178#c14077
+		return groups.map { it.isEmpty ? null : it }
+	}
+
+	** Returns null if uriSegments do not match (optional) method handler arguments
+	internal Str?[]? matchArgs(Str?[] args) {
+		if (args.size > handler.params.size)
+			return null
+		
+		match := handler.params.all |Param param, i->Bool| {
+			if (i >= args.size)
+				return param.hasDefault
+			return (args[i] == null) ? param.type.isNullable : true
+		}
+		
+		return match ? args : null
+		
+//		if (handler.params.size == uriSegments.size)
+//			return uriSegments
+//		
+//		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
+//		if (paramRange.contains(uriSegments.size))
+//			return uriSegments
+//
+//		return null
 	}
 
 	override Str toStr() {
