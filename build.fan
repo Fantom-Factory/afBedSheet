@@ -5,14 +5,14 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version([1,0,9])
+		version = Version([1,0,10])
 
 		meta	= [	"org.name"		: "Alien-Factory",
 					"org.uri"		: "http://www.alienfactory.co.uk/",
 					"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
 					"proj.name"		: "AF-BedSheet",
 					"license.name"	: "BSD 2-Clause License",
-					"repo.private"	: "true",
+					"repo.private"	: "false",
 
 					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
@@ -30,6 +30,6 @@ class Build : BuildPod {
 		
 		// exclude test code when building the pod
 		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
-		resDirs = resDirs.exclude { it.toStr.contains("/test/") }
+//		resDirs = resDirs.exclude { it.toStr.contains("/test/") }
 	}
 }
