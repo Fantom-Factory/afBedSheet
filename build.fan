@@ -27,5 +27,9 @@ class Build : BuildPod {
 
 		docApi = true
 		docSrc = true
+		
+		// exclude test code when building the pod
+		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
+		resDirs = resDirs.exclude { it.toStr.contains("/test/") }
 	}
 }

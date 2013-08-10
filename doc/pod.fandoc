@@ -522,6 +522,7 @@ v1.0.8 [#v1.0.8]
  - Chg: Warnings on startup if an AppModule could not be found - see [Issue #1]`https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed`. Thanks go to Jorge Ortiz.
  - Chg: Better Err handling when a dir is not mapped to 'FileHandler'
  - Chg: Transferred VCS ownership to [AlienFactory]`https://bitbucket.org/AlienFactory`
+ - Chg: Test code is no longer distributed with the afBedSheet.pod.
 
 v1.0.6 [#v1.0.6]
 ----------------
