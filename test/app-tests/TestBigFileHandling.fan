@@ -47,6 +47,6 @@ internal class TestBigFileHandling : AppTest {
 internal class T_TestBigFileHandlingBigBuffMod {
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
-		conf.setOverride(ConfigIds.responseBufferThreshold, "resBuff", 20 * 1024)
+		conf.setOverride(ConfigIds.responseBufferThreshold, 20 * 1024)
 	}
 }

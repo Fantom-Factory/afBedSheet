@@ -4,7 +4,9 @@ using afIoc::Registry
 using afIoc::ServiceStats
 using afIoc::ServiceStat
 
-internal const class ReqestHandlerInvoker {
+// TODO: make internal again once WebSockets has been amalgamated
+@NoDoc
+const class ReqestHandlerInvoker {
 	private const static Log 		log 		:= Utils.getLog(ReqestHandlerInvoker#)
 	private const ConcurrentState 	conState	:= ConcurrentState(ReqestHandlerInvokerState#)
 	private const [Str:ServiceStat] serviceStats
