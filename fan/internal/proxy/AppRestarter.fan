@@ -52,7 +52,7 @@ internal class AppRestarterState {
 	Process?		realWebApp
 
 	Void updateTimeStamps() {
-		// BugFix: Pod.list throws an Err is any pod is invalid (wrong dependencies etc) 
+		// BugFix: Pod.list throws an Err if any pod is invalid (wrong dependencies etc) 
 		// this way we don't even load the pod into memory!
 		Env.cur().findAllPodNames.each |podName| {
 			podTimeStamps[podName] = podFile(podName).modified
@@ -62,7 +62,7 @@ internal class AppRestarterState {
 	}
 	
 	Bool podsModified()	{
-		true == Env.cur().findAllPodNames.eachWhile |podName| {
+		true == Env.cur.findAllPodNames.eachWhile |podName| {
 			if (podFile(podName).modified > podTimeStamps[podName]) {
 				log.info(BsLogMsgs.appRestarterPodUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
 				return true
@@ -87,25 +87,6 @@ internal class AppRestarterState {
 	}
 	
 	private File podFile(Str podName) {
-		Env? env := Env.cur
-		file := env.workDir + `_doesnotexist_`
-
-		// walk envs looking for pod file
-		while (!file.exists && env != null) {
-			if (env is PathEnv) {
-				((PathEnv)env).path.eachWhile |p| {
-					file = p + `lib/fan/${podName}.pod`
-					return file.exists ? true : null
-				}
-			} else {
-				file = env.workDir + `lib/fan/${podName}.pod`
-			}
-			env = env.parent
-		}
-
-		// verify exists and return
-		if (!file.exists)
-			throw Err("Pod file not found $podName")
-		return file
+		Env.cur.findPodFile(podName)
 	}	
 }
