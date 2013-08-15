@@ -4,8 +4,8 @@ using afIoc::Inject
 using afIoc::IocHelper
 using web::WebOutStream
 
-// FIXME: test when err is null, throw a httpstatus500 with no cause 
 internal const class ErrPrinterStr {
+	private const static Log log := Utils.getLog(ErrPrinterStr#)
 	
 	private const |StrBuf buf, Err? err|[]	printers
 
@@ -15,12 +15,33 @@ internal const class ErrPrinterStr {
 	}
 
 	Str errToStr(Err? err) {
-		if (err == null) return Str.defVal
-		
 		buf := StrBuf()
-		buf.add("$err.typeof.qname - $err.msg\n")
+		msg	:= (err == null) ? "Err!\n" : "${err?.typeof?.qname} - ${err?.msg}\n" 
+		buf.add(msg)
 
-		printers.each |print| { print.call(buf, err) }
+		printers.each |print| { 
+			try {
+				print.call(buf, err)
+			} catch (Err e) {
+				log.warn("Err when printing Err...", e)
+			}
+		}
+		
+		return buf.toStr.trim
+	}
+
+	Str httpStatusToStr(HttpStatus httpStatus) {
+		buf	:= StrBuf()
+		msg	:= httpStatus.cause?.msg ?: httpStatus.msg
+		buf.add("${httpStatus.code} - ${msg}\n")
+
+		printers.each |print| { 
+			try {
+				print.call(buf, httpStatus.cause)
+			} catch (Err err) {
+				log.warn("Err when printing Err...", err)
+			}
+		}
 		
 		return buf.toStr.trim
 	}
@@ -81,7 +102,9 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printStackTrace(StrBuf buf, Err? err) {
-		buf.add("\nStack Trace:\n")
-		Utils.traceErr(err, noOfStackFrames).splitLines.each |s| { buf.add("$s\n") }
+		if (err != null) {
+			buf.add("\nStack Trace:\n")
+			Utils.traceErr(err, noOfStackFrames).splitLines.each |s| { buf.add("$s\n") }
+		}
 	}
 }

@@ -2,8 +2,8 @@ using afIoc::Inject
 using afIoc::IocHelper
 using web::WebOutStream
 
-// FIXME: test when err is null, throw a httpstatus500 with no cause 
 internal const class ErrPrinterHtml {
+	private const static Log log := Utils.getLog(ErrPrinterHtml#)
 	
 	private const |WebOutStream out, Err? err|[]	printers
 
@@ -12,7 +12,7 @@ internal const class ErrPrinterHtml {
 		this.printers = printers
 	}
 	
-	Str errToHtml(HttpStatus httpStatus) {
+	Str httpStatusToHtml(HttpStatus httpStatus) {
 		buf := StrBuf()
 		out := WebOutStream(buf.out)
 
@@ -20,7 +20,13 @@ internal const class ErrPrinterHtml {
 		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
 		out.h1.w(h1Msg).h1End
 		
-		printers.each |print| { print.call(out, httpStatus.cause) }
+		printers.each |print| { 
+			try {
+				print.call(out, httpStatus.cause)
+			} catch (Err err) {
+				log.warn("Err when printing Err...", err)
+			}
+		}
 
 		return buf.toStr
 	}

@@ -14,6 +14,10 @@ internal const class T_PageHandler {
 		throw Err("BOOM!")
 	}
 	
+	Obj err500() {
+		return HttpStatus(500)
+	}
+	
 	// ---- Buff Pages ----
 	
 	Obj buff() {
