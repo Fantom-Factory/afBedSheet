@@ -27,7 +27,8 @@ internal class BedSheetModule {
 		// Other services
 		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
-		binder.bindImpl(ErrPrinter#)
+		binder.bindImpl(ErrPrinterHtml#)
+		binder.bindImpl(ErrPrinterStr#)
 		binder.bindImpl(BedSheetPage#)
 		binder.bindImpl(HttpSession#)
 		binder.bindImpl(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
@@ -136,6 +137,40 @@ internal class BedSheetModule {
 		conf["text/xml"]					= true
 		conf["application/rss+xml"]			= true
 		conf["application/json"]			= true
+	}
+	
+	@Contribute { serviceType=ErrPrinterHtml# }
+	static Void contributeErrPrinterHtml(OrderedConfig config) {
+		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
+		
+		// these are all the sections you see on the Err500 page
+		config.addOrdered("Request",				|WebOutStream out, Err? err| { printer.printRequest					(out, err) })
+		config.addOrdered("RequestHeaders",			|WebOutStream out, Err? err| { printer.printRequestHeaders			(out, err) })
+		config.addOrdered("FormParameters",			|WebOutStream out, Err? err| { printer.printFormParameters			(out, err) })
+		config.addOrdered("StackTrace",				|WebOutStream out, Err? err| { printer.printStackTrace				(out, err) })
+		config.addOrdered("Session",				|WebOutStream out, Err? err| { printer.printSession					(out, err) })
+		config.addOrdered("Cookies",				|WebOutStream out, Err? err| { printer.printCookies					(out, err) })
+		config.addOrdered("Locales",				|WebOutStream out, Err? err| { printer.printLocales					(out, err) })
+		config.addOrdered("Locals",					|WebOutStream out, Err? err| { printer.printLocals					(out, err) })
+		config.addOrdered("FantomEnvironment",		|WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) })
+		config.addOrdered("FantomIndexedProps",		|WebOutStream out, Err? err| { printer.printFantomIndexedProps		(out, err) })
+		config.addOrdered("EnvironmentVariables",	|WebOutStream out, Err? err| { printer.printEnvironmentVariables	(out, err) })
+		config.addOrdered("FantomDiagnostics",		|WebOutStream out, Err? err| { printer.printFantomDiagnostics		(out, err) })
+	}
+
+	@Contribute { serviceType=ErrPrinterStr# }
+	static Void contributeErrPrinterStr(OrderedConfig config) {
+		printer := (ErrPrinterStrSections) config.autobuild(ErrPrinterStrSections#)
+		
+		// these are all the sections you see on the Err log
+		config.addOrdered("Request",				|StrBuf out, Err? err| { printer.printRequest			(out, err) })
+		config.addOrdered("RequestHeaders",			|StrBuf out, Err? err| { printer.printRequestHeaders	(out, err) })
+		config.addOrdered("FormParameters",			|StrBuf out, Err? err| { printer.printFormParameters	(out, err) })
+		config.addOrdered("Session",				|StrBuf out, Err? err| { printer.printSession			(out, err) })
+		config.addOrdered("Cookies",				|StrBuf out, Err? err| { printer.printCookies			(out, err) })
+		config.addOrdered("Locales",				|StrBuf out, Err? err| { printer.printLocales			(out, err) })
+		config.addOrdered("Locals",					|StrBuf out, Err? err| { printer.printLocals			(out, err) })
+		config.addOrdered("StackTrace",				|StrBuf out, Err? err| { printer.printStackTrace		(out, err) })
 	}
 	
 	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	

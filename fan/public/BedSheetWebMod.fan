@@ -36,7 +36,7 @@ const class BedSheetWebMod : WebMod {
 		} catch (Err err) {
 			// theoretically, this should have already been dealt with by our Err Pipeline Processor...
 			// ...but it's handy for BedSheet development!
-			errPrinter := (ErrPrinter) registry.dependencyByType(ErrPrinter#)
+			errPrinter := (ErrPrinterStr) registry.dependencyByType(ErrPrinterStr#)
 			Env.cur.err.printLine(errPrinter.errToStr(err))
 			throw err
 		}
