@@ -25,6 +25,9 @@ make HttpRequestWrapper / HttpResponseWrapper public?
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
+Investigate why bs-proxy takes 10s to render page through Firefox.
+
+Doc customising the ErrPrinters!
 
 
 Future

@@ -75,7 +75,7 @@ internal const class HttpSessionImpl : HttpSession {
 			return true
 
 		HttpResponse res := registry.dependencyByType(HttpResponse#)
-		if (res.cookies.any |cookie| { cookie.name == "fanws" })
+		if (!res.isCommitted && res.cookies.any |cookie| { cookie.name == "fanws" })
 			return true
 		
 		return false
