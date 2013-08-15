@@ -45,6 +45,9 @@ const mixin HttpSession {
 	
 	** Returns 'true' if a session exists. 
 	abstract Bool exists()
+
+	** Returns 'true' if the session map is empty. 
+	abstract Bool isEmpty()
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -78,6 +81,10 @@ internal const class HttpSessionImpl : HttpSession {
 		return false
 	}
 	
+	override Bool isEmpty() {
+		webReq.session.map.isEmpty
+	}
+
 	private WebReq webReq() {
 		registry.dependencyByType(WebReq#)
 	}
