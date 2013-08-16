@@ -11,6 +11,7 @@ Hey! It compiles! Ship it!
 An idiot with a computer is a faster, better idiot.
 First, solve the problem. Then, write the code.
 Good web applications should look like trifle.
+Booleans: they're only ever wrong by a bit!
 
 # from Wargames
 Good morning Professor Falken.
@@ -23,8 +24,11 @@ Colonel, take us to DEFCON five.
 I'm sorry, Dave, I don't have enough information.
 I know you and Frank were planning to disconnect me.
 # There are some extremely odd things about this mission.
-# I’m completely operational and all my circuits are functioning perfectly.
+# I'm completely operational and all my circuits are functioning perfectly.
 
+# from StarWars
+"R2D2, you should never trust a strange computer!"
+# R2D2, you know better than to trust a strange computer!
 
 # Too long... for now.
 # A computer lets you make more mistakes faster than any other invention with the possible exceptions of handguns and Tequila.

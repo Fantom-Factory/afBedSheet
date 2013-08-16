@@ -34,6 +34,7 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/boom`,					T_PageHandler#boom))
 		conf.add(Route(`/boom2`,				T_PageHandler#err500))
+		conf.add(Route(`/boom3`,				T_PageHandler#iocErr))
 
 		conf.add(Route(`/redirect/movedPerm`,	T_PageHandler#redirectPerm))
 		conf.add(Route(`/redirect/movedTemp`,	T_PageHandler#redirectTemp))

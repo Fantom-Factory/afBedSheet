@@ -2,6 +2,8 @@
 For BedSheet 1.0.8
 ------------------
 
+Print IocErr OpStack
+
 BedClient (test) post reqs and req.in
 
 Logging filter with reqId, SessId and configurable userId

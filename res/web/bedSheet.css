@@ -64,6 +64,9 @@ h2 {
 ul, li {
 	margin:				0;
 	padding:			0;
+}
+
+ul, ul li  {
 	list-style-type:	none;
 }
 
