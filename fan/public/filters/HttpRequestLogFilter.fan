@@ -10,13 +10,14 @@ using webmod::LogMod
 ** 
 ** pre>
 **   @Contribute { serviceType=HttpPipeline# }
-**	 static Void contributeHttpPipeline(OrderedConfig conf) {
+**   static Void contributeHttpPipeline(OrderedConfig conf) {
 **     conf.addOrdered("HttpRequestLogFilter", conf.autobuild(HttpRequestLogFilter#), ["after: BedSheetFilters"])
 **   }
 ** 
 **   @Contribute { serviceType=ApplicationDefaults# } 
 **   static Void contributeApplicationDefaults(MappedConfig conf) {
-**     conf[ConfigIds.requestLogDir] = `/my/log/dir/`.toFile
+**     conf[ConfigIds.httpRequestLogDir]             = `/my/log/dir/`
+**     conf[ConfigIds.httpRequestLogFilenamePattern] = "afBedSheet-{YYYY-MM}.log"
 **   }
 ** <pre
 ** 
@@ -39,25 +40,23 @@ using webmod::LogMod
 ** 
 ** If any unknown fields are specified or not available then "-" is logged. Example log record:
 ** 
-**   2011-02-25 03:22:45 0:0:0:0:0:0:0:1 - GET /doc - 200 247
-**     "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10"
-**     "http://localhost/tag"
+**   2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 ** 
 const mixin HttpRequestLogFilter : HttpPipelineFilter {
 
 	** Directory where the request log files are written.
 	** 
-	** @see `ConfigIds.requestLogDir`
+	** @see `ConfigIds.httpRequestLogDir`
 	abstract File dir()
 
 	** Log filename pattern. 
 	** 
-	** @see `ConfigIds.requestLogFilenamePattern`
+	** @see `ConfigIds.httpRequestLogFilenamePattern`
 	abstract Str filenamePattern()
 
 	** Format of the web log records as a string of names.
 	** 
-	** @see `ConfigIds.requestLogFields`
+	** @see `ConfigIds.httpRequestLogFields`
 	abstract Str fields()
 }
 

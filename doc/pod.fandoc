@@ -125,8 +125,8 @@ authorisation.
 Standard BedSheet filters are:
  - 'HttpCleanupFilter': Ensures the 'HttpOutStream' is closed and cleans up all request / thread scoped data.
  - 'HttpErrFilter': Catches and processes Errs, see [Error Processing]`#errorProcessing`.
- - `IeAjaxCacheBustingFilter`: Adds cache headers to the response to prevent IE from caching ajax responses.
- - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+ - `IeAjaxCacheBustingFilter`: Adds http cache headers to the response to prevent IE from caching ajax responses. (Not enabled by default.)
+ - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. (Not enabled by default.)
 
 It is important that the first two filters are always first in the pipeline. As such, when contributing your own filters you are
 encouraged to add the ordering constraint of '"after: BedSheetFilters"', example:
@@ -276,8 +276,8 @@ pre>
 
 
 
-Inject Config [#injectConfig]
-*****************************
+Config Injection [#injectConfig]
+********************************
 BedSheet extends [afIoc]`http://repo.status302.com/doc/afIoc/#overview` to give injectable '@Config' values. '@Config' values
 are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
 config values to be immutable once the app has started).
@@ -310,6 +310,40 @@ pre>
 
 The config mechanism is not just for BedSheet, you can use it too when creating add-on libraries! Contributing to
 `FactoryDefaults` gives users of your library an easy way to override your values.
+
+
+
+Request Logging [#requestLogging]
+*********************************
+BedSheet can generate standard HTTP request logs in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+
+To enable,
+ - contribute the `HttpRequestLogFilter` to the HttpPipeline
+ - configure the directory where the logs should be written
+ - set the log filename, or filename pattern for log rotation.
+
+pre>
+  @Contribute { serviceType=HttpPipeline# }
+  static Void contributeHttpPipeline(OrderedConfig conf) {
+
+    conf.addOrdered("HttpRequestLogFilter", conf.autobuild(HttpRequestLogFilter#), ["after: BedSheetFilters"])
+
+  }
+
+  @Contribute { serviceType=ApplicationDefaults# }
+  static Void contributeApplicationDefaults(MappedConfig conf) {
+
+    conf[ConfigIds.httpRequestLogDir]             = `/my/log/dir/`
+    conf[ConfigIds.httpRequestLogFilenamePattern] = "afBedSheet-{YYYY-MM}.log"
+
+  }
+<pre
+
+The fields writen to the logs may be set by configuring 'ConfigIds.httpRequestLogFields', but default to looking like:
+pre>
+2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
+
+<pre
 
 
 
