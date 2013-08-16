@@ -1,5 +1,6 @@
 using afIoc::Contribute
 using afIoc::OrderedConfig
+using afIoc::IocErr
 using afIoc::Inject
 using afIoc::IocHelper
 using web::WebOutStream
@@ -101,10 +102,20 @@ internal const class ErrPrinterStrSections {
 		}		
 	}
 
+	Void printIocOperationTrace(StrBuf buf, Err? err) {
+		if (err != null && (err is IocErr) && ((IocErr) err).operationTrace != null) {
+			iocErr := (IocErr) err
+			buf.add("\nIoC Operation Trace:\n")
+			iocErr.operationTrace.splitLines.each |op, i| { buf.add("  [${(i+1).toStr.justr(2)}] $op\n") }
+		}
+	}
+
 	Void printStackTrace(StrBuf buf, Err? err) {
 		if (err != null) {
 			buf.add("\nStack Trace:\n")
-			Utils.traceErr(err, noOfStackFrames).splitLines.each |s| { buf.add("$s\n") }
+			buf.add("  ${err.typeof.qname} : ${err.msg}\n")
+			trace := "  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim
+			buf.add(trace)
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIoc::IocErr
 using afIoc::IocHelper
 using web::WebOutStream
 
@@ -66,12 +67,22 @@ internal const class ErrPrinterHtmlSections {
 		}
 	}
 
+	Void printIocOperationTrace(WebOutStream out, Err? err) {
+		if (err != null && (err is IocErr) && ((IocErr) err).operationTrace != null) {
+			iocErr := (IocErr) err
+			out.h2.w("IoC Operation Trace").h2End
+			out.ol
+			iocErr.operationTrace.splitLines.each { out.li.w(it).liEnd }
+			out.olEnd			
+		}
+	}
+
 	Void printStackTrace(WebOutStream out, Err? err) {
-		// TODO: remove opTrace etc... leave just the frame
 		if (err != null) {
 			out.h2.w("Stack Trace").h2End
 			out.pre
-			out.writeChars(Utils.traceErr(err, noOfStackFrames))
+			out.writeChars("${err.typeof.qname} : ${err.msg}\n")
+			out.writeChars("  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim)
 			out.preEnd
 		}
 	}

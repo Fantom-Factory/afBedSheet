@@ -1,7 +1,9 @@
 using afIoc::Inject
+using afIoc::Registry
 
 internal const class T_PageHandler {
 	
+	@Inject	private const Registry registry
 	@Inject	private const HttpResponse response
 	@Inject	private const HttpSession session
 	@Inject	private const HttpFlash flash
@@ -16,6 +18,10 @@ internal const class T_PageHandler {
 	
 	Obj err500() {
 		return HttpStatus(500)
+	}
+	
+	Obj iocErr() {
+		registry.autobuild(AutoBoom#)
 	}
 	
 	// ---- Buff Pages ----
@@ -155,5 +161,11 @@ internal const class T_PageHandler {
 	Obj showFlashMsg() {
 		oldMsg := flash["msg"]
 		return Text.fromPlain("Msg = $oldMsg")
+	}
+}
+
+internal class AutoBoom {
+	new make() {
+		throw Err("AutoBoom!")
 	}
 }
