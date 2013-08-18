@@ -13,7 +13,7 @@ internal const class MoustacheErrPrinter {
 			srcLoc := ((MoustacheErr) err).srcLoc
 			out.h2.w("Moustache Compilation Err").h2End
 			
-			out.p.w(srcLoc.location).w(": Line ${srcLoc.errLine}").br
+			out.p.w(srcLoc.location).w(" : Line ${srcLoc.errLine}").br
 			out.w("&nbsp&nbsp;-&nbsp;").writeXml(srcLoc.errMsg).pEnd
 			
 			out.div("class=\"srcLoc\"")
@@ -28,8 +28,18 @@ internal const class MoustacheErrPrinter {
 		}
 	}
 
-	Void printStr(StrBuf out, Err? err) {
+	Void printStr(StrBuf buf, Err? err) {
 		if (err != null && err is MoustacheErr) {
+			srcLoc := ((MoustacheErr) err).srcLoc
+			buf.add("\nMoustache Compilation Err:\n")
+			
+			buf.add("  ${srcLoc.location}").add(" : Line ${srcLoc.errLine}\n")
+			buf.add("    - ${srcLoc.errMsg}\n\n")
+			
+			srcLoc.srcCode(linesOfSrcCode).each |src, line| {
+				if (line == srcLoc.errLine) { buf.add("==>") } else { buf.add("   ") }
+				buf.add("${line.toStr.justr(3)}: ${src}\n".replace("\t", "    "))
+			}
 		}
-	}
+	}	
 }

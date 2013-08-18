@@ -19,12 +19,15 @@ internal const class MoustacheTemplatesImpl : MoustacheTemplates {
 	@Inject @Config { id="afBedSheet.moustache.templateTimeout" }
 	private const Duration templateTimeout
 	
+	@Inject	@Config { id="afBedSheet.moustache.linesOfSrcCode" } 	
+	private const Int linesOfSrcCode
+
 	private const FileCache 	cache	:= FileCache(templateTimeout)
 	
 	new make(|This|in) { in(this) }
 	
 	override Str renderFromStr(Str template, Obj? context := null, [Str:Mustache] partials := [:], Obj?[] callStack := [,], Str indentStr := "") {
-		moustache := compile(`str`, template)
+		moustache := compile(`Rendered from Str`, template)
 		return moustache.render(context, partials, callStack, indentStr)
 	}
 
@@ -52,7 +55,7 @@ internal const class MoustacheTemplatesImpl : MoustacheTemplates {
 			line 	:= reg.group(1).toInt
 			msg 	:= reg.group(2).splitLines.join.replace("\t", " ")	// take out the new line chars
 			srcLoc	:= SrcLocation(loc, line, msg, src)
-			throw MoustacheErr(srcLoc, msg)
+			throw MoustacheErr(srcLoc, msg, linesOfSrcCode)
 		}
 	}
 }

@@ -37,6 +37,8 @@ internal class TestMoustacheErr : BsTest {
 			templates.renderFromStr(src)
 			fail
 		} catch (MoustacheErr err) {
+			err.trace
+//			Env.cur.err.printLine(err)
 			verifyEq(err.srcLoc.errLine, 10)
 		}
 	}	
