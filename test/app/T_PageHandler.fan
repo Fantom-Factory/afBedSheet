@@ -3,10 +3,11 @@ using afIoc::Registry
 
 internal const class T_PageHandler {
 	
-	@Inject	private const Registry registry
-	@Inject	private const HttpResponse response
-	@Inject	private const HttpSession session
-	@Inject	private const HttpFlash flash
+	@Inject	private const Registry 			registry
+	@Inject	private const HttpResponse 		response
+	@Inject	private const HttpSession 		session
+	@Inject	private const HttpFlash 		flash
+	@Inject	private const MoustacheTemplates moustacheTemplates
 	
 	new make(|This|in) { in(this) }
 	
@@ -161,6 +162,11 @@ internal const class T_PageHandler {
 	Obj showFlashMsg() {
 		oldMsg := flash["msg"]
 		return Text.fromPlain("Msg = $oldMsg")
+	}
+
+	// ---- Moustache ----
+	Obj moustacheErr() {
+		moustacheTemplates.renderFromFile(`res/test/compilationErr.moustache`.toFile.normalize, [:])
 	}
 }
 

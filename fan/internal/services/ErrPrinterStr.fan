@@ -57,8 +57,8 @@ internal const class ErrPrinterStrSections {
 
 	new make(|This|in) { in(this) }
 
-	Void printRequest(StrBuf buf, Err? err) {
-		buf.add("\nRequest:\n")
+	Void printRequestDetails(StrBuf buf, Err? err) {
+		buf.add("\nRequest Details:\n")
 		buf.add("  URI: ${request.uri}\n")
 		buf.add("  HTTP Method: ${request.httpMethod}\n")
 		buf.add("  HTTP Version: ${request.httpVersion}\n")

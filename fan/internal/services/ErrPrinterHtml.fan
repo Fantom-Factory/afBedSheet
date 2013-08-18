@@ -42,8 +42,8 @@ internal const class ErrPrinterHtmlSections {
 
 	new make(|This|in) { in(this) }
 	
-	Void printRequest(WebOutStream out, Err? err) {
-		out.h2.w("Request").h2End
+	Void printRequestDetails(WebOutStream out, Err? err) {
+		out.h2.w("Request Details").h2End
 		out.table
 		w(out, "URI",			request.uri)
 		w(out, "HTTP Method",	request.httpMethod)
@@ -72,7 +72,7 @@ internal const class ErrPrinterHtmlSections {
 			iocErr := (IocErr) err
 			out.h2.w("IoC Operation Trace").h2End
 			out.ol
-			iocErr.operationTrace.splitLines.each { out.li.w(it).liEnd }
+			iocErr.operationTrace.splitLines.each { out.li.writeXml(it).liEnd }
 			out.olEnd			
 		}
 	}
@@ -81,8 +81,8 @@ internal const class ErrPrinterHtmlSections {
 		if (err != null) {
 			out.h2.w("Stack Trace").h2End
 			out.pre
-			out.writeChars("${err.typeof.qname} : ${err.msg}\n")
-			out.writeChars("  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim)
+			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
+			out.writeXml("  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim)
 			out.preEnd
 		}
 	}
@@ -108,7 +108,7 @@ internal const class ErrPrinterHtmlSections {
 	Void printLocales(WebOutStream out, Err? err) {
 		out.h2.w("Locales").h2End
 		out.ol
-		request.locales.each { out.li.w(it).liEnd }
+		request.locales.each { out.li.writeXml(it.toStr).liEnd }
 		out.olEnd
 	}
 	
@@ -140,9 +140,9 @@ internal const class ErrPrinterHtmlSections {
 		out.table
 		Env.cur.indexKeys.each |k| {
 			vals := Env.cur.index(k)
-			out.tr.td.w(k).tdEnd
+			out.tr.td.writeXml(k).tdEnd
 			out.td.ul
-			vals.each |v| {	out.li.w(v).liEnd }
+			vals.each |v| {	out.li.writeXml(v).liEnd }
 			out.ulEnd.tdEnd
 			out.trEnd				
 		}
@@ -156,9 +156,9 @@ internal const class ErrPrinterHtmlSections {
 			out.table
 			Env.cur.vars.keys.sort.each |k| {
 				vals := Env.cur.vars[k].split(pathSeparator)
-				out.tr.td.w(k).tdEnd
+				out.tr.td.writeXml(k).tdEnd
 				out.td.ul
-				vals.each |v| {	out.li.w(v).liEnd }
+				vals.each |v| {	out.li.writeXml(v).liEnd }
 				out.ulEnd.tdEnd
 				out.trEnd
 			}
@@ -173,22 +173,7 @@ internal const class ErrPrinterHtmlSections {
 		out.tableEnd
 	}
 	
-	
-//	private Void errSummaryToHtml(WebOutStream out, Err? err) {
-//		if (err == null) return
-//		
-//		out.div("class=\"cause\"")
-//		out.h3.w(err.typeof).h3End
-//		out.p.w(err.msg).pEnd
-//		if (!err.typeof.fields.isEmpty) {
-//			out.table
-//			err.typeof.fields.each |f| { w(out, f.name, f.get(err).toStr) }
-//			out.tableEnd
-//		}
-//		out.divEnd
-//	}
-	
 	private Void w(WebOutStream out, Str key, Obj val) {
-		out.tr.td.w(key).tdEnd.td.w(val).tdEnd.trEnd
+		out.tr.td.writeXml(key).tdEnd.td.writeXml(val.toStr).tdEnd.trEnd
 	}	
 }

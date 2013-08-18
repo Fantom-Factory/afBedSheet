@@ -553,6 +553,8 @@ Release Notes [#releaseNotes]
 
 v1.0.12 [#v1.0.12]
 ------------------
+ - New: 'MoustacheErr' gives specific info on compilation Errs.
+ - Chg: Moved Moustache out into it's own project.
  - Chg: Anyone may now contribute sections to the default verbose Err500 page.
 
 v1.0.10 [#v1.0.10]
