@@ -2,7 +2,7 @@ using afIoc
 using web
 using concurrent
 
-@SubModule { modules=[ConfigModule#, MoustacheModule#] }
+@SubModule { modules=[ConfigModule#] }
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
