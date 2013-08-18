@@ -2,7 +2,7 @@
 For BedSheet 1.0.8
 ------------------
 
-Print IocErr OpStack
+Have afIoc call the RouteHandlers so they can take services.
 
 BedClient (test) post reqs and req.in
 

@@ -18,9 +18,9 @@ const class BedSheetWebMod : WebMod {
 	** The 'afIoc' registry
 	Registry registry {
 		get { reg.val }
-		set { throw Err() }
+		private set { }
 	}
-	
+
 	new make(Str moduleName, Int port, [Str:Obj] bedSheetOptions, [Str:Obj]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
@@ -126,6 +126,7 @@ const class BedSheetWebMod : WebMod {
 	}
 	
 	private Str[] loadQuotes() {
-		typeof.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
+		["hhh"]
+//		typeof.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
 	}
 }
