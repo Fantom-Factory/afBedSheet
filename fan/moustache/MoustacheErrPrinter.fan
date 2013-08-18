@@ -3,8 +3,10 @@ using web::WebOutStream
 
 internal const class MoustacheErrPrinter {
 	
-//	@Inject	// TODO: config	
-	private const Int linesOfSrcCode	:= 5
+	@Inject	@Config { id="afBedSheet.moustache.linesOfSrcCode" } 	
+	private const Int linesOfSrcCode
+	
+	new make(|This|in) { in(this) }
 	
 	Void printHtml(WebOutStream out, Err? err) {
 		if (err != null && err is MoustacheErr) {
@@ -16,7 +18,7 @@ internal const class MoustacheErrPrinter {
 			
 			out.div("class=\"srcLoc\"")
 			out.table
-			srcLoc.srcCode(5).each |src, line| {
+			srcLoc.srcCode(linesOfSrcCode).each |src, line| {
 				if (line == srcLoc.errLine) { out.tr("class=\"errLine\"") } else { out.tr }
 				out.td.w(line).tdEnd.td.w(src.toXml).tdEnd
 				out.trEnd
@@ -27,5 +29,7 @@ internal const class MoustacheErrPrinter {
 	}
 
 	Void printStr(StrBuf out, Err? err) {
+		if (err != null && err is MoustacheErr) {
+		}
 	}
 }
