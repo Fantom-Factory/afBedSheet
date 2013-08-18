@@ -35,7 +35,7 @@ internal class TestBoom : AppTest {
 		client.reqUri = reqUri(`/boom`)
 		client.writeReq
 		client.readRes
-		
+
 		verifyEq(client.resCode, 500)
 		verify(client.resStr.contains("Fantom Diagnostics"))
 	}
@@ -43,11 +43,11 @@ internal class TestBoom : AppTest {
 	Void testBoomPageInProdModeIsNotScary() {
 		iocModules	= [T_AppModule#, T_TestBoomMod#]
 		super.setup
-		
+
 		client.reqUri = reqUri(`/boom`)
 		client.writeReq
 		client.readRes
-		
+
 		verifyEq(client.resCode, 500)
 		verifyFalse(client.resStr.contains("Stack Trace"))
 	}
@@ -63,11 +63,11 @@ internal class T_TestBoomMod {
 internal class T_TestBoomMod2 {
 	@Contribute { serviceType=ErrPrinterHtml# } 
 	static Void contributeErrPrinterHtml(OrderedConfig config) {
-		config.addOrdered("Die", |WebOutStream out, Err? err| { throw Err("Ouch!") }, ["before: Request"])
+		config.addOrdered("Die", |WebOutStream out, Err? err| { throw Err("Ouch!") }, ["before: RequestDetails"])
 	}
 
 	@Contribute { serviceType=ErrPrinterStr# } 
 	static Void contributeErrPrinterStr(OrderedConfig config) {
-		config.addOrdered("Die", |StrBuf out, Err? err| { throw Err("Ouch!") }, ["before: Request"])
+		config.addOrdered("Die", |StrBuf out, Err? err| { throw Err("Ouch!") }, ["before: RequestDetails"])
 	}
 }

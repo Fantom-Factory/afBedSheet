@@ -2,16 +2,13 @@
 For BedSheet 1.0.8
 ------------------
 
+Doc customising the ErrPrinters! Make them public?
+
 Have afIoc call the RouteHandlers so they can take services.
 
 BedClient (test) post reqs and req.in
 
 Logging filter with reqId, SessId and configurable userId
-
-Moustache - Intelligent Err
- - Line $line: Unbalanced...blah
- - /^Line ([0-9]+): .+?$/
- - check errs in partials...!?
 
 Err500 - have filter stack frames checkbox?
 
@@ -28,8 +25,6 @@ make HttpRequestWrapper / HttpResponseWrapper public?
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
 Investigate why bs-proxy takes 10s to render page through Firefox.
-
-Doc customising the ErrPrinters!
 
 
 Future
