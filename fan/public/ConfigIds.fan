@@ -37,9 +37,6 @@ const mixin ConfigIds {
 	** Defaults to '50'
 	static const Str noOfStackFrames				:= "afBedSheet.errPrinter.noOfStackFrames"
 	
-	** The time before the file system is checked for template updates.
-	static const Str moustacheTemplateTimeout		:= "afBedSheet.moustache.templateTimeout"
-	
 	** Directory where the request log files are written. Must be supplied.
 	** 
 	** @see `RequestLogFilter`

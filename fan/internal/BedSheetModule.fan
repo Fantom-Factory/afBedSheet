@@ -2,7 +2,7 @@ using afIoc
 using web
 using concurrent
 
-@SubModule { modules=[ConfigModule#] }
+@SubModule { modules=[ConfigModule#, MoustacheModule#] }
 internal class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
@@ -22,7 +22,6 @@ internal class BedSheetModule {
 		binder.bindImpl(ResponseProcessors#)
 		binder.bindImpl(ErrProcessors#)
 		binder.bindImpl(HttpStatusProcessors#) 
-		binder.bindImpl(MoustacheTemplates#).withoutProxy		// has default method args
 		
 		// Other services
 		binder.bindImpl(BrowserDetection#)
@@ -106,7 +105,6 @@ internal class BedSheetModule {
 		conf[ConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
 		conf[ConfigIds.httpStatusDefaultPage]			= defaultStatusPage
 		conf[ConfigIds.noOfStackFrames]					= 50
-		conf[ConfigIds.moustacheTemplateTimeout]		= 10sec
 		conf[ConfigIds.errPageDisabled]					= false
 
 		conf[ConfigIds.httpRequestLogDir]				= null
