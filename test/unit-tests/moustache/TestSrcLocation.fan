@@ -7,7 +7,7 @@ class TestSrcErrInfo : Test {
 		          l 3
 		          l 4
 		          l 5"""
-		info := SrcLocation(``, src, 3)
+		info := SrcLocation(``, 3, "", src)
 
 		srcy := info.srcCode(0)
 		verifyEq(srcy.size, 1)
@@ -43,7 +43,7 @@ class TestSrcErrInfo : Test {
 		           \t   l 3
 		           \t  l 4
 		           \t l 5"""
-		info := SrcLocation(``, src, 3)
+		info := SrcLocation(``, 3, "", src)
 		
 		srcy := info.srcCode(2)
 		verifyEq(srcy.size, 5)

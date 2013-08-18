@@ -44,13 +44,15 @@ internal const class MoustacheTemplatesImpl : MoustacheTemplates {
 			return Mustache(src.in)
 			
 		} catch (ParseErr err) {
-			reg := Regex<|^Line ([0-9]+?): .+|>.matcher(err.msg)
+			// the (?s) is to allow '.' to match \n
+			reg := Regex<|(?s)^Line ([0-9]+?): (.+)|>.matcher(err.msg)
 			if (!reg.find)
 				throw err
 			
 			line 	:= reg.group(1).toInt
-			srcLoc	:= SrcLocation(loc, src, line)
-			throw MoustacheErr(srcLoc, err.msg, err)
+			msg 	:= reg.group(2).splitLines.join.replace("\t", " ")	// take out the new line chars
+			srcLoc	:= SrcLocation(loc, line, msg, src)
+			throw MoustacheErr(srcLoc, msg)
 		}
 	}
 }

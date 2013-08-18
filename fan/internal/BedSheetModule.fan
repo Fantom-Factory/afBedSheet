@@ -142,7 +142,8 @@ internal class BedSheetModule {
 		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
 		
 		// these are all the sections you see on the Err500 page
-		config.addOrdered("Request",				|WebOutStream out, Err? err| { printer.printRequest					(out, err) })
+		// TODO: causes
+		config.addOrdered("RequestDetails",			|WebOutStream out, Err? err| { printer.printRequestDetails			(out, err) })
 		config.addOrdered("RequestHeaders",			|WebOutStream out, Err? err| { printer.printRequestHeaders			(out, err) })
 		config.addOrdered("FormParameters",			|WebOutStream out, Err? err| { printer.printFormParameters			(out, err) })
 		config.addOrdered("IocOperationTrace",		|WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) })
@@ -162,7 +163,7 @@ internal class BedSheetModule {
 		printer := (ErrPrinterStrSections) config.autobuild(ErrPrinterStrSections#)
 		
 		// these are all the sections you see on the Err log
-		config.addOrdered("Request",				|StrBuf out, Err? err| { printer.printRequest			(out, err) })
+		config.addOrdered("RequestDetails",			|StrBuf out, Err? err| { printer.printRequestDetails	(out, err) })
 		config.addOrdered("RequestHeaders",			|StrBuf out, Err? err| { printer.printRequestHeaders	(out, err) })
 		config.addOrdered("FormParameters",			|StrBuf out, Err? err| { printer.printFormParameters	(out, err) })
 		config.addOrdered("Session",				|StrBuf out, Err? err| { printer.printSession			(out, err) })

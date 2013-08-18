@@ -107,11 +107,43 @@ td:first-child {
 code {
 	display:			block;
 	color:				#333333;
-	white-space:		pre;
 	background-color: 	#EEEEFF;
+	white-space:		pre;
 	border: 			1px solid rgba(0, 0, 0, 0.15);
 	border-radius: 		4px;
 	margin:				0 4em;
 	padding:			1em;
 }
 
+.srcLoc {
+	margin:				0 4em;
+}
+
+.srcLoc table {
+	width:				100%;
+	white-space:		pre;
+	color:				#333333;
+	background-color: 	#EEEEFF;
+	border: 			1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 		4px;
+}
+
+.srcLoc td:first-child {
+	border-right:	1px solid #333333;
+}
+
+.srcLoc td {
+	color:				#333333;
+	padding:			0 0.5em;
+}
+
+.srcLoc .errLine {
+	background-color: 	#EEEEFF;
+	background-color: 	rgba(255, 255, 255, 0.99);
+}
+.srcLoc .errLine td {
+	padding-top:		2px;
+	padding-bottom:		2px;
+	border-top: 		1px solid rgba(0, 0, 0, 0.15);
+	border-bottom:		1px solid rgba(0, 0, 0, 0.15);
+}

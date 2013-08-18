@@ -1,18 +1,20 @@
 
 const class SrcLocation {
-	const Uri	resource
-	const Int 	line
+	const Uri	location
+	const Int 	errLine
+	const Str 	errMsg
 	private const Str[]	src
 	
-	internal new make(Uri resource, Str src, Int line) {
-		this.resource	= resource
+	internal new make(Uri location, Int errLine, Str errMsg, Str src) {
+		this.location	= location
+		this.errLine	= errLine	
+		this.errMsg		= errMsg
 		this.src 		= src.splitLines
-		this.line		= line	
 	}
 	
 	Int:Str srcCode(Int extra) {
-		min := (line - 1 - extra).max(0)	// -1 so "Line 1" == src[0]
-		max := (line - 1 + extra + 1).min(src.size)
+		min := (errLine - 1 - extra).max(0)	// -1 so "Line 1" == src[0]
+		max := (errLine - 1 + extra + 1).min(src.size)
 		lines := Utils.makeMap(Int#, Str#)
 		(min..<max).each { lines[it+1] = src[it] }
 		
