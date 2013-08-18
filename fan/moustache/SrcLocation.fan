@@ -1,5 +1,5 @@
 
-const class SrcLocation {
+internal const class SrcLocation {
 	const Uri	location
 	const Int 	errLine
 	const Str 	errMsg
@@ -11,7 +11,7 @@ const class SrcLocation {
 		this.errMsg		= errMsg
 		this.src 		= src.splitLines
 	}
-	
+
 	Int:Str srcCode(Int extra) {
 		min := (errLine - 1 - extra).max(0)	// -1 so "Line 1" == src[0]
 		max := (errLine - 1 + extra + 1).min(src.size)

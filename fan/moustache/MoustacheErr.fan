@@ -1,9 +1,14 @@
 
 const class MoustacheErr : Err {
 
-	const SrcLocation srcLoc
+	internal const SrcLocation srcLoc
 
-	new make(SrcLocation srcLoc, Str msg, Err? cause := null) : super(msg, cause) {
+	internal new make(SrcLocation srcLoc, Str msg, Err? cause := null) : super(msg, cause) {
 		this.srcLoc = srcLoc
+	}
+	
+	override Str toStr() {
+		// TODO: print srcLoc
+		super.toStr
 	}
 }
