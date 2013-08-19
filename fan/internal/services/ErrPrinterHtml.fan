@@ -17,7 +17,7 @@ internal const class ErrPrinterHtml {
 		buf := StrBuf()
 		out := WebOutStream(buf.out)
 
-		msg	  := httpStatus.cause?.msg ?: httpStatus.msg
+		msg	  := (httpStatus.cause != null) ? "${httpStatus.cause.typeof}\n - ${httpStatus.cause.msg}" : httpStatus.msg
 		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
 		out.h1.w(h1Msg).h1End
 		

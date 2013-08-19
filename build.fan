@@ -14,10 +14,10 @@ class Build : BuildPod {
 					"license.name"	: "BSD 2-Clause License",
 					"repo.private"	: "true",
 
-					"afIoc.module"	: "afBedSheet::MoustacheModule"
+					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
 
-		index	= [	"afIoc.module"	: "afBedSheet::MoustacheModule"
+		index	= [	"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
 
 		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0", "wisp 1.0", "util 1.0", "inet 1.0", 

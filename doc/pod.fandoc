@@ -557,6 +557,7 @@ v1.0.12 [#v1.0.12]
  - New: Added 'Moustache Compilation Err' section to Err500 page.
  - Chg: Moved Moustache out into it's own project.
  - Chg: Anyone may now contribute sections to the default verbose Err500 page.
+ - Bug: Module name was not always found correctly on startup.
 
 v1.0.10 [#v1.0.10]
 ------------------
