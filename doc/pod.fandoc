@@ -553,7 +553,8 @@ Release Notes [#releaseNotes]
 
 v1.0.12 [#v1.0.12]
 ------------------
- - New: 'MoustacheErr' gives specific info on compilation Errs.
+ - New: Added 'IoC Operation Trace' section to Err500 page.
+ - New: Added 'Moustache Compilation Err' section to Err500 page.
  - Chg: Moved Moustache out into it's own project.
  - Chg: Anyone may now contribute sections to the default verbose Err500 page.
 

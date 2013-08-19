@@ -57,7 +57,7 @@ const class BedSheetWebMod : WebMod {
 				log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
 				modName := pod.meta["afIoc.module"]
 				if (modName != null) {
-					mod = Type.find(moduleName, false)
+					mod = Type.find(modName, false)
 					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
 					// reset back to null - so we add the whole module with trans deps
 					mod = null
