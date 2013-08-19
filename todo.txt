@@ -1,10 +1,13 @@
 
-For BedSheet 1.0.8
-------------------
+For BedSheet 1.0.12
+-------------------
+
+Add Templates section to doc
 
 Doc customising the ErrPrinters! Make them public?
 
 Have afIoc call the RouteHandlers so they can take services.
+ - not urgent as handlers can @Inject services
 
 BedClient (test) post reqs and req.in
 
