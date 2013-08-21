@@ -26,11 +26,11 @@ internal const class BsErrMsgs {
 	}
 
 	static Str fileHandlerUriMustStartWithSlash(Uri uri) {
-		"Uri '${uri}' must start with a path. e.g. `/foo/bar/`"
+		"Uri '${uri}' must start with a slash. e.g. `/foo/bar/`"
 	}
 
 	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
-		"Uri '${uri}' must end with a path. e.g. `/foo/bar/`"
+		"Uri '${uri}' must end with a slash. e.g. `/foo/bar/`"
 	}
 	
 	static Str valueEncodingBuggered(Obj value, Type toType) {
