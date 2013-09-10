@@ -34,7 +34,7 @@ const mixin HttpRequest {
 	abstract Int remotePort()
 
 	** The request URI including the query string relative to this authority. Also see `absUri`, 
-	** `modBase`, `modRel`, `routeBase` and `routeRel`.
+	** `modBase`, `modRel`.
 	** 
 	** @see `web::WebReq.uri`
 	abstract Uri uri()
@@ -44,12 +44,12 @@ const mixin HttpRequest {
 	** @see `web::WebReq.absUri`
 	abstract Uri absUri()
 	
-	** Base uri of the current WebMod
+	** Base uri of the current WebMod. Starts and ends with a '/'. Example, '/pub/'
 	** 
 	** @see `web::WebReq.modBase`
 	abstract Uri modBase()
 
-	** The uri relative to `BedSheetWebMod`
+	** The uri relative to `BedSheetWebMod`. Starts with a '/'. Example, '/index.html'
 	** 
 	** @see `web::WebReq.modRel`
 	abstract Uri modRel()

@@ -20,8 +20,8 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 		while (response != true)
 			response = get(response.typeof).process(response)
 	}	
-	
+
 	private ResponseProcessor get(Type responseType) {
 		processorStrategy.findBestFit(responseType)
-	}	
+	}
 }
