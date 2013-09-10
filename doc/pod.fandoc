@@ -551,6 +551,10 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 Release Notes [#releaseNotes]
 *****************************
 
+v1.0.14 [#v1.0.14]
+------------------
+ - New: Added [ConfigSource.getCoerced()]`ConfigSource.getCoerced` method
+
 v1.0.12 [#v1.0.12]
 ------------------
  - New: Added 'IoC Operation Trace' section to Err500 page.
