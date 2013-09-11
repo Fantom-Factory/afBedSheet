@@ -4,6 +4,7 @@ using afIoc::IocErr
 using afIoc::Inject
 using afIoc::IocHelper
 using web::WebOutStream
+using afPlastic::SrcCodeErr
 
 internal const class ErrPrinterStr {
 	private const static Log log := Utils.getLog(ErrPrinterStr#)
@@ -50,8 +51,12 @@ internal const class ErrPrinterStr {
 
 internal const class ErrPrinterStrSections {
 
+	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
+	@Inject	private const Int			srcCodePadding	
+	
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
+	
 	@Inject	private const HttpRequest	request
 	@Inject	private const HttpSession	session
 
@@ -109,6 +114,20 @@ internal const class ErrPrinterStrSections {
 			iocErr.operationTrace.splitLines.each |op, i| { buf.add("  [${(i+1).toStr.justr(2)}] $op\n") }
 		}
 	}
+
+	Void printSrcCodeErrs(StrBuf buf, Err? err) {
+		while (err != null) {
+			if (err is SrcCodeErr) {
+				srcCodeErr 	:= ((SrcCodeErr) err)
+				srcCode 	:= srcCodeErr.srcCode
+				title		:= err.typeof.name.toDisplayName
+				
+				buf.add("\n${title}:\n")
+				buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, err.msg, srcCodePadding))	
+			}
+			err = err.cause
+		}
+	}	
 
 	Void printStackTrace(StrBuf buf, Err? err) {
 		if (err != null) {

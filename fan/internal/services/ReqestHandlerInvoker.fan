@@ -4,7 +4,7 @@ using afIoc::Registry
 using afIoc::ServiceStats
 using afIoc::ServiceStat
 
-// TODO: make internal again once WebSockets has been amalgamated
+// TODO: make internal again once WebSockets has been amalgamated - maybe not, also used by afPillow. 
 @NoDoc
 const class ReqestHandlerInvoker {
 	private const static Log 		log 		:= Utils.getLog(ReqestHandlerInvoker#)

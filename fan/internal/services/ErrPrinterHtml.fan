@@ -2,10 +2,11 @@ using afIoc::Inject
 using afIoc::IocErr
 using afIoc::IocHelper
 using web::WebOutStream
+using afPlastic::SrcCodeErr
 
 internal const class ErrPrinterHtml {
 	private const static Log log := Utils.getLog(ErrPrinterHtml#)
-	
+		
 	private const |WebOutStream out, Err? err|[]	printers
 
 	new make(|WebOutStream out, Err? err|[] printers, |This|in) {
@@ -35,8 +36,12 @@ internal const class ErrPrinterHtml {
 
 internal const class ErrPrinterHtmlSections {
 
+	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
+	@Inject	private const Int			srcCodePadding	
+	
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
+	
 	@Inject	private const HttpRequest	request
 	@Inject	private const HttpSession	session
 
@@ -74,6 +79,32 @@ internal const class ErrPrinterHtmlSections {
 			out.ol
 			iocErr.operationTrace.splitLines.each { out.li.writeXml(it).liEnd }
 			out.olEnd			
+		}
+	}
+
+	Void printSrcCodeErrs(WebOutStream out, Err? err) {
+		while (err != null) {
+			if (err is SrcCodeErr) {
+				srcCodeErr 	:= ((SrcCodeErr) err)
+				srcCode 	:= srcCodeErr.srcCode
+				title		:= err.typeof.name.toDisplayName
+				
+				out.h2.w(title).h2End
+				
+				out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
+				out.w("&nbsp;&nbsp;-&nbsp;").writeXml(err.msg).pEnd
+				
+				out.div("class=\"srcLoc\"")
+				out.table
+				srcCode.srcCodeSnippetMap(srcCodeErr.errLineNo, srcCodePadding).each |src, line| {
+					if (line == srcCodeErr.errLineNo) { out.tr("class=\"errLine\"") } else { out.tr }
+					out.td.w(line).tdEnd.td.w(src.toXml).tdEnd
+					out.trEnd
+				}
+				out.tableEnd
+				out.divEnd				
+			}
+			err = err.cause
 		}
 	}
 
@@ -173,7 +204,7 @@ internal const class ErrPrinterHtmlSections {
 		out.tableEnd
 	}
 	
-	private Void w(WebOutStream out, Str key, Obj val) {
-		out.tr.td.writeXml(key).tdEnd.td.writeXml(val.toStr).tdEnd.trEnd
+	private Void w(WebOutStream out, Str key, Obj? val) {
+		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}	
 }
