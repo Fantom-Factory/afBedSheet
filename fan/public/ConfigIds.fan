@@ -103,4 +103,8 @@ const mixin ConfigIds {
 	** @see `CrossOriginResourceSharingFilter` 
 	static const Str corsMaxAge						:= "afBedSheet.cors.maxAge"
 	
+	** When printing 'SrcCodeErrs', this is the number of lines of code to print before and 
+	** after the line in error. 
+	** Defaults to '5'
+	static const Str srcCodeErrPadding				:= "afBedSheet.plastic.srcCodeErrPadding"
 }

@@ -554,6 +554,7 @@ Release Notes [#releaseNotes]
 v1.0.14 [#v1.0.14]
 ------------------
  - New: Added [ConfigSource.getCoerced()]`ConfigSource.getCoerced` method
+ - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages
 
 v1.0.12 [#v1.0.12]
 ------------------

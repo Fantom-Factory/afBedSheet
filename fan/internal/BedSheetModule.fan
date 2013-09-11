@@ -106,6 +106,7 @@ internal class BedSheetModule {
 		conf[ConfigIds.httpStatusDefaultPage]			= defaultStatusPage
 		conf[ConfigIds.noOfStackFrames]					= 50
 		conf[ConfigIds.errPageDisabled]					= false
+		conf[ConfigIds.srcCodeErrPadding]				= 5
 
 		conf[ConfigIds.httpRequestLogDir]				= null
 		conf[ConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
@@ -147,6 +148,7 @@ internal class BedSheetModule {
 		config.addOrdered("RequestHeaders",			|WebOutStream out, Err? err| { printer.printRequestHeaders			(out, err) })
 		config.addOrdered("FormParameters",			|WebOutStream out, Err? err| { printer.printFormParameters			(out, err) })
 		config.addOrdered("IocOperationTrace",		|WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) })
+		config.addOrdered("SrcCodeErrs", 			|WebOutStream out, Err? err| { printer.printSrcCodeErrs				(out, err) })
 		config.addOrdered("StackTrace",				|WebOutStream out, Err? err| { printer.printStackTrace				(out, err) })
 		config.addOrdered("Session",				|WebOutStream out, Err? err| { printer.printSession					(out, err) })
 		config.addOrdered("Cookies",				|WebOutStream out, Err? err| { printer.printCookies					(out, err) })
@@ -171,6 +173,7 @@ internal class BedSheetModule {
 		config.addOrdered("Locales",				|StrBuf out, Err? err| { printer.printLocales			(out, err) })
 		config.addOrdered("Locals",					|StrBuf out, Err? err| { printer.printLocals			(out, err) })
 		config.addOrdered("IocOperationTrace",		|StrBuf out, Err? err| { printer.printIocOperationTrace	(out, err) })
+		config.addOrdered("SrcCodeErrs", 			|StrBuf out, Err? err| { printer.printSrcCodeErrs		(out, err) })		
 		config.addOrdered("StackTrace",				|StrBuf out, Err? err| { printer.printStackTrace		(out, err) })
 	}
 	

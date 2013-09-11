@@ -21,7 +21,7 @@ class Build : BuildPod {
 				]
 
 		depends = ["sys 1.0", "concurrent 1.0", "web 1.0", "webmod 1.0", "wisp 1.0", "util 1.0", "inet 1.0", 
-					"afIoc 1.4.4+"]
+					"afIoc 1.4.4+", "afPlastic 0+"]
 		srcDirs = [`test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/utils/`, `test/unit-tests/public/test/`, `test/unit-tests/public/services/`, `test/unit-tests/internal/`, `test/unit-tests/internal/utils/`, `test/unit-tests/config/`, `test/app-tests/`, `test/app/`, `fan/`, `fan/public/`, `fan/public/utils/`, `fan/public/test/`, `fan/public/services/`, `fan/public/responses/`, `fan/public/handlers/`, `fan/public/filters/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/services/`, `fan/internal/proxy/`, `fan/internal/processors/`, `fan/internal/filters/`, `fan/config/`]
 		resDirs = [`doc/`, `res/web/`, `res/misc/`, `res/test/`]
 
