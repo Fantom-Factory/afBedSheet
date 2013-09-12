@@ -1,8 +1,6 @@
 
-For BedSheet 1.0.12
+For BedSheet 1.0.14
 -------------------
-
-Add Templates section to doc
 
 Doc customising the ErrPrinters! Make them public?
 
