@@ -229,6 +229,37 @@ For handling the above, BedSheet bundles with the following response processors:
 
 
 
+Template Rendering [#templateRendering]
+***************************************
+Templating, or generating content (of HTML or otherwise) is left for other 3rd party libraries and is not a conern of afBedSheet.
+That said, integrating them into BedSheet should be relatively simple. Already there are 2 dedicated libraries:
+
+ - [afBedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` for integrating [efan (Embedded Fantom)]`http://repo.status302.com/doc/afEfan/#overview` templates and
+ - [afBedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
+
+Taking [afBedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` as an example, to use it simply add it as a
+dependency in your 'build.fan':
+
+    depends = ["sys 1.0", "afIoc 1.4+", "afBedSheet 1.0+", "afBedSheetEfan 1.0+", ... ]
+
+Then use it in your request handlers:
+
+pre>
+using afBedSheet
+using afBedSheetEfan
+using afIoc
+
+class IndexPage {
+  @Inject EfanTemplates? efan
+
+  Text render() {
+    html := efan.renderFromFile(`xmas.html.efan`.toFile)
+    return Text.fromHtml(html)
+  }
+}
+<pre
+
+
 Error Processing [#errorProcessing]
 ***********************************
 When BedSheet catches an Err it scans through its list of contributed [ErrProcessors]`ErrProcessor` to find the closest match.
@@ -553,8 +584,9 @@ Release Notes [#releaseNotes]
 
 v1.0.14 [#v1.0.14]
 ------------------
- - New: Added [ConfigSource.getCoerced()]`ConfigSource.getCoerced` method
- - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages
+ - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages.
+ - New: Added [ConfigSource.getCoerced()]`ConfigSource.getCoerced` method.
+ - New: Added [Template Rendering]`#templateRendering` to fandoc.
 
 v1.0.12 [#v1.0.12]
 ------------------
