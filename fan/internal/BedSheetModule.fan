@@ -1,6 +1,7 @@
 using afIoc
 using web
 using concurrent
+using afPlastic::PlasticCompiler
 
 @SubModule { modules=[ConfigModule#] }
 internal class BedSheetModule {
@@ -35,6 +36,13 @@ internal class BedSheetModule {
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
 		binder.bindImpl(HttpStatusPageDefault#)
+	}
+
+	@Build { serviceId="PlasticCompiler" }
+	static PlasticCompiler buildPlasticCompiler(ConfigSource configSrc) {
+		PlasticCompiler() {
+			it.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
+		}
 	}
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!

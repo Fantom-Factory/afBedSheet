@@ -581,6 +581,9 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+v1.0.15 [#v1.0.15]
+------------------
+ - Chg: Added afPlastic::PlasticCompiler as a service
 
 v1.0.14 [#v1.0.14]
 ------------------
