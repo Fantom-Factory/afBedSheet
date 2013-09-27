@@ -3,6 +3,7 @@ using afIoc::OrderedConfig
 using afIoc::IocErr
 using afIoc::Inject
 using afIoc::IocHelper
+using afIoc::NotFoundErr
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
@@ -81,6 +82,13 @@ internal const class ErrPrinterStrSections {
 		}
 	}
 
+	Void printAvailableValues(StrBuf buf, Err? err) {
+		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {
+			buf.add("\nAvailable Values:\n")
+			notFoundErr.availableValues.each { buf.add("  $it\n") }
+		}
+	}
+	
 	Void printCookies(StrBuf buf, Err? err) {
 		if (!request.cookies.isEmpty) {
 			buf.add("\nCookies:\n")
@@ -116,16 +124,11 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printSrcCodeErrs(StrBuf buf, Err? err) {
-		while (err != null) {
-			if (err is SrcCodeErr) {
-				srcCodeErr 	:= ((SrcCodeErr) err)
-				srcCode 	:= srcCodeErr.srcCode
-				title		:= err.typeof.name.toDisplayName
-				
-				buf.add("\n${title}:\n")
-				buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, err.msg, srcCodePadding))	
-			}
-			err = err.cause
+		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
+			srcCode 	:= srcCodeErr.srcCode
+			title		:= err.typeof.name.toDisplayName	
+			buf.add("\n${title}:\n")
+			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, err.msg, srcCodePadding))	
 		}
 	}	
 
@@ -137,4 +140,12 @@ internal const class ErrPrinterStrSections {
 			buf.add(trace)
 		}
 	}
+	
+	private Void forEachCause(Err? err, Type causeType, |Obj| f) {
+		while (err != null) {
+			if (err.typeof.fits(causeType))
+				f(err)
+			err = err.cause			
+		}		
+	}	
 }
