@@ -48,31 +48,6 @@ internal const class ErrPrinterHtmlSections {
 
 	new make(|This|in) { in(this) }
 	
-	Void printRequestDetails(WebOutStream out, Err? err) {
-		out.h2.w("Request Details").h2End
-		out.table
-		w(out, "URI",			request.uri)
-		w(out, "HTTP Method",	request.httpMethod)
-		w(out, "HTTP Version",	request.httpVersion)
-		out.tableEnd
-	}
-
-	Void printRequestHeaders(WebOutStream out, Err? err) {
-		out.h2.w("Request Headers").h2End
-		out.table
-		request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
-		out.tableEnd
-	}
-
-	Void printFormParameters(WebOutStream out, Err? err) {
-		if (request.form != null) {
-			out.h2.w("Form Parameters").h2End
-			out.table
-			request.headers.each |v, k| { w(out, k, v) }
-			out.tableEnd
-		}
-	}
-
 	Void printAvailableValues(WebOutStream out, Err? err) {
 		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {
 			out.h2.w("Available Values").h2End
@@ -116,11 +91,39 @@ internal const class ErrPrinterHtmlSections {
 
 	Void printStackTrace(WebOutStream out, Err? err) {
 		if (err != null) {
+			// special case for wrapped IocErrs, unwrap the err if it adds nothing 
+			if (err is IocErr && err.msg == err.cause?.msg)
+				err = err.cause			
 			out.h2.w("Stack Trace").h2End
 			out.pre
 			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
 			out.writeXml("  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim)
 			out.preEnd
+		}
+	}
+
+	Void printRequestDetails(WebOutStream out, Err? err) {
+		out.h2.w("Request Details").h2End
+		out.table
+		w(out, "URI",			request.uri)
+		w(out, "HTTP Method",	request.httpMethod)
+		w(out, "HTTP Version",	request.httpVersion)
+		out.tableEnd
+	}
+
+	Void printRequestHeaders(WebOutStream out, Err? err) {
+		out.h2.w("Request Headers").h2End
+		out.table
+		request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
+		out.tableEnd
+	}
+
+	Void printFormParameters(WebOutStream out, Err? err) {
+		if (request.form != null) {
+			out.h2.w("Form Parameters").h2End
+			out.table
+			request.headers.each |v, k| { w(out, k, v) }
+			out.tableEnd
 		}
 	}
 	
