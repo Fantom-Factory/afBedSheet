@@ -581,10 +581,13 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+
 v1.0.15 [#v1.0.15]
 ------------------
- - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'
- - Chg: Added afPlastic::PlasticCompiler as a service
+ - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
+ - Chg: Added a skull logo to the 'Err500' page.
+ - Chg: Rejigged the 'Err500' section layout.
+ - Chg: Added 'afPlastic::PlasticCompiler' as a service.
 
 v1.0.14 [#v1.0.14]
 ------------------

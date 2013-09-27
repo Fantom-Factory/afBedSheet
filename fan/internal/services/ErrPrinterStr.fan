@@ -63,6 +63,43 @@ internal const class ErrPrinterStrSections {
 
 	new make(|This|in) { in(this) }
 
+	Void printAvailableValues(StrBuf buf, Err? err) {
+		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {
+			buf.add("\nAvailable Values:\n")
+			notFoundErr.availableValues.each { buf.add("  $it\n") }
+		}
+	}
+
+	Void printIocOperationTrace(StrBuf buf, Err? err) {
+		if (err != null && (err is IocErr) && ((IocErr) err).operationTrace != null) {
+			iocErr := (IocErr) err
+			buf.add("\nIoC Operation Trace:\n")
+			iocErr.operationTrace.splitLines.each |op, i| { buf.add("  [${(i+1).toStr.justr(2)}] $op\n") }
+		}
+	}
+
+	Void printSrcCodeErrs(StrBuf buf, Err? err) {
+		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
+			srcCode 	:= srcCodeErr.srcCode
+			title		:= err.typeof.name.toDisplayName	
+			buf.add("\n${title}:\n")
+			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, err.msg, srcCodePadding))	
+		}
+	}	
+
+	Void printStackTrace(StrBuf buf, Err? err) {
+		if (err != null) {
+			// special case for wrapped IocErrs, unwrap the err if it adds nothing
+			if (err is IocErr && err.msg == err.cause?.msg)
+				err = err.cause
+			buf.add("\nStack Trace:\n")
+			buf.add("  ${err.typeof.qname} : ${err.msg}\n")
+			trace := "  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim
+			buf.add(trace)
+			buf.add("\n")
+		}
+	}
+
 	Void printRequestDetails(StrBuf buf, Err? err) {
 		buf.add("\nRequest Details:\n")
 		buf.add("  URI: ${request.uri}\n")
@@ -79,13 +116,6 @@ internal const class ErrPrinterStrSections {
 		if (request.form != null) {
 			buf.add("\nForm:\n")
 			request.form.each |v, k| { buf.add("  $k: $v\n") }
-		}
-	}
-
-	Void printAvailableValues(StrBuf buf, Err? err) {
-		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {
-			buf.add("\nAvailable Values:\n")
-			notFoundErr.availableValues.each { buf.add("  $it\n") }
 		}
 	}
 	
@@ -113,32 +143,6 @@ internal const class ErrPrinterStrSections {
 			buf.add("\nSession:\n")
 			session.map.each |v, k| { buf.add("  $k: $v\n") }
 		}		
-	}
-
-	Void printIocOperationTrace(StrBuf buf, Err? err) {
-		if (err != null && (err is IocErr) && ((IocErr) err).operationTrace != null) {
-			iocErr := (IocErr) err
-			buf.add("\nIoC Operation Trace:\n")
-			iocErr.operationTrace.splitLines.each |op, i| { buf.add("  [${(i+1).toStr.justr(2)}] $op\n") }
-		}
-	}
-
-	Void printSrcCodeErrs(StrBuf buf, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
-			srcCode 	:= srcCodeErr.srcCode
-			title		:= err.typeof.name.toDisplayName	
-			buf.add("\n${title}:\n")
-			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, err.msg, srcCodePadding))	
-		}
-	}	
-
-	Void printStackTrace(StrBuf buf, Err? err) {
-		if (err != null) {
-			buf.add("\nStack Trace:\n")
-			buf.add("  ${err.typeof.qname} : ${err.msg}\n")
-			trace := "  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim
-			buf.add(trace)
-		}
 	}
 	
 	private Void forEachCause(Err? err, Type causeType, |Obj| f) {
