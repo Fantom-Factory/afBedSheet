@@ -91,10 +91,13 @@ td:first-child {
 	white-space:		normal;
 }
 
-.alienHead {
+.bedSheetLogo {
 	position:			absolute;
 	height:				60px;
 	width:				60px;
+}
+.bedSheetLogo.skull {
+	top:				2px;
 }
 
 .brand {

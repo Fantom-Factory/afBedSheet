@@ -30,6 +30,7 @@ Remove req.cookies and res.cookies and replace with intelligent HttpCookies serv
 
 Investigate why bs-proxy takes 10s to render page through Firefox.
 
+Front more services with mixins
 
 Future
 ------
@@ -50,7 +51,7 @@ Tale integration - http://fantom.org/sidewalk/topic/1290
  - the JS compiler! A bloody neat idea!
  - anything else?
  
-Move the non-standard filters (Cors / IE) out into an afBedSheetUtils pod
+Move the non-standard filters (Cors / IE) out into an afBedSheetUtils pod / afBedSheetContrib
 
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection
 
