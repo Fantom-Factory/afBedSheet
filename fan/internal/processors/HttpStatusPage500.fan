@@ -23,6 +23,6 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		// disable detailed err page reports in production mode
 		title			:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
 		content			:= errPageDisabled ? "<p><b>Internal Server Error</b></p>" : errPrinterHtml.httpStatusToHtml(httpStatus)
-		return bedSheetPage.render(title, content)
-	}		
+		return bedSheetPage.render(title, content, BedSheetLogo.skull)
+	}
 }
