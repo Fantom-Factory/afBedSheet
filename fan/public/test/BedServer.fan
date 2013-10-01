@@ -21,9 +21,10 @@ using wisp::WispSessionStore
 ** 
 ** @since 1.0.4
 const class BedServer {
-	private const AtomicRef		reg		:= AtomicRef()
-	private const AtomicBool	started	:= AtomicBool()
-	private const AtomicRef		modules	:= AtomicRef()
+	private const AtomicRef		reg			:= AtomicRef()
+	private const AtomicBool	started		:= AtomicBool()
+	private const AtomicRef		modules		:= AtomicRef(Type#.emptyList)
+	private const AtomicRef		moduleDeps	:= AtomicRef(Pod#.emptyList)
 
 	** The 'afIoc' registry - read only.
 	Registry registry {
@@ -32,11 +33,16 @@ const class BedServer {
 	}
 
 	** Create a instance of 'afBedSheet' with the given afIoc module (usually your web app)
-	new make(Type? iocModule := null) {
-		modules.val = Type#.emptyList
+	new makeWithModule(Type? iocModule := null) {
 		addModule(BedSheetModule#)
 		if (iocModule != null)
 			addModule(iocModule)
+	}
+
+	** Create a instance of 'afBedSheet' with afIoc dependencies from the given pod (usually your web app)
+	new makeWithPod(Pod webApp) {
+		addModule(BedSheetModule#)
+		addModulesFromDependencies(webApp)
 	}
 
 	** Add extra (test) modules should you wish to override behaviour in your tests
@@ -47,14 +53,27 @@ const class BedServer {
 		return this
 	}
 
+	BedServer addModulesFromDependencies(Pod dependency) {
+		checkHasNotStarted
+		deps := (Pod[]) moduleDeps.val
+		moduleDeps.val = deps.rw.add(dependency).toImmutable
+		return this
+	}
+
 	** Startup 'afBedSheet'
 	BedServer startup() {
 		checkHasNotStarted
 		bannerText := "Alien-Factory BedServer v${typeof.pod.version}, IoC v${Registry#.pod.version}"
 		
-		mods := (Type[]) modules.val
 		bob := RegistryBuilder()
+		
+		((Pod[]) moduleDeps.val).each |pod| {
+			bob.addModulesFromDependencies(pod)			
+		}
+		
+		mods := (Type[]) modules.val
 		bob.addModules(mods)
+
 		registry = bob.build(["bannerText":bannerText]).startup
 		
 		started.val = true
