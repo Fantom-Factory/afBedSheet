@@ -109,26 +109,26 @@ td:first-child {
 
 code {
 	display:			block;
-	color:				#333333;
-	background-color: 	#EEEEFF;
-	white-space:		pre;
-	border: 			1px solid rgba(0, 0, 0, 0.15);
-	border-radius: 		4px;
-	margin:				0 4em;
 	padding:			1em;
+	box-sizing: 		border-box;
 }
 
+code,
 .srcLoc {
-	margin:				0 4em;
-}
-
-.srcLoc table {
 	width:				100%;
+	overflow-x:			auto;
+	
 	white-space:		pre;
 	color:				#333333;
 	background-color: 	#EEEEFF;
 	border: 			1px solid rgba(0, 0, 0, 0.15);
 	border-radius: 		4px;
+
+	-moz-tab-size:		4;
+	-o-tab-size:		4;
+	-webkit-tab-size:	4;
+	-ms-tab-size:		4;
+	tab-size:			4;
 }
 
 .srcLoc td:first-child {

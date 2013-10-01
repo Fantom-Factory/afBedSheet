@@ -336,7 +336,7 @@ To inject config values in your services, use the '@Config' facet with conjuncti
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview`'s '@Inject':
 
 pre>
-  @Inject	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
+  @Inject @Config { id="afBedSheet.errPrinter.noOfStackFrames" }
   Int noOfStackFrames
 <pre
 
@@ -586,7 +586,7 @@ v1.0.15 [#v1.0.15]
 ------------------
  - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
  - Chg: Added a skull logo to the 'Err500' page.
- - Chg: Rejigged the 'Err500' section layout.
+ - Chg: Rejigged the 'Err500' section layout and tweaked the source code styling.
  - Chg: Added 'afPlastic::PlasticCompiler' as a service.
 
 v1.0.14 [#v1.0.14]
