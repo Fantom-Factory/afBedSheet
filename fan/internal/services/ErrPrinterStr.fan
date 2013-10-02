@@ -81,9 +81,9 @@ internal const class ErrPrinterStrSections {
 	Void printSrcCodeErrs(StrBuf buf, Err? err) {
 		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
 			srcCode 	:= srcCodeErr.srcCode
-			title		:= err.typeof.name.toDisplayName	
+			title		:= srcCodeErr.typeof.name.toDisplayName	
 			buf.add("\n${title}:\n")
-			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, err.msg, srcCodePadding))	
+			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, srcCodeErr.msg, srcCodePadding))	
 		}
 	}	
 
