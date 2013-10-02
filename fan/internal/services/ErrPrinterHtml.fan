@@ -70,12 +70,12 @@ internal const class ErrPrinterHtmlSections {
 	Void printSrcCodeErrs(WebOutStream out, Err? err) {
 		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
 			srcCode 	:= srcCodeErr.srcCode
-			title		:= err.typeof.name.toDisplayName
+			title		:= srcCodeErr.typeof.name.toDisplayName
 			
 			out.h2.w(title).h2End
 			
 			out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
-			out.w("&nbsp;&nbsp;-&nbsp;").writeXml(err.msg).pEnd
+			out.w("&nbsp;&nbsp;-&nbsp;").writeXml(srcCodeErr.msg).pEnd
 			
 			out.div("class=\"srcLoc\"")
 			out.table
