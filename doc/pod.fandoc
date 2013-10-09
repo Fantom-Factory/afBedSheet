@@ -313,12 +313,12 @@ pre>
 
 Config Injection [#injectConfig]
 ********************************
-BedSheet extends [afIoc]`http://repo.status302.com/doc/afIoc/#overview` to give injectable '@Config' values. '@Config' values
+BedSheet uses [afIocConfig]`http://repo.status302.com/doc/afIocConfig/#overview` to give injectable '@Config' values. '@Config' values
 are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
 config values to be immutable once the app has started).
 
-BedSheet sets the initial config values by contributing to the `FactoryDefaults` service. An application may then override
-these values by contibuting to the `ApplicationDefaults` service.
+BedSheet sets the initial config values by contributing to the 'FactoryDefaults' service. An application may then override
+these values by contibuting to the 'ApplicationDefaults' service.
 
 pre>
   @Contribute { serviceType=ApplicationDefaults# }
@@ -343,8 +343,8 @@ pre>
   Int noOfStackFrames
 <pre
 
-The config mechanism is not just for BedSheet, you can use it too when creating add-on libraries! Contributing to
-`FactoryDefaults` gives users of your library an easy way to override your values.
+The config mechanism is not just for BedSheet, you can use it too when creating 3rd Party libraries! Contributing to
+'FactoryDefaults' gives users of your library an easy way to override your values.
 
 
 
@@ -595,7 +595,7 @@ v1.0.16 [#v1.0.16]
 v1.0.14 [#v1.0.14]
 ------------------
  - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages.
- - New: Added [ConfigSource.getCoerced()]`ConfigSource.getCoerced` method.
+ - New: Added 'ConfigSource.getCoerced()' method.
  - New: Added [Template Rendering]`#templateRendering` to fandoc.
 
 v1.0.12 [#v1.0.12]
