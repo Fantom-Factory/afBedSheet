@@ -1,6 +1,7 @@
 using afIoc::Inject
 using afIoc::RegistryShutdownHub
 using webmod::LogMod
+using afIocConfig::IocConfigSource
 
 **
 ** Uses [LogMod]`webmod::LogMod` to generate a server log file for all HTTP requests in the [W3C 
@@ -72,7 +73,7 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 
 	private const LogMod logMod
 	
-	internal new make(RegistryShutdownHub shutdownHub, ConfigSource configSource, |This|in) { 
+	internal new make(RegistryShutdownHub shutdownHub, IocConfigSource configSource, |This|in) { 
 		in(this)
 
 		dir 	= configSource.get("afBedSheet.httpRequestLog.dir") ?: throw BedSheetErr(BsErrMsgs.requestLogFilterDirCannotBeNull)

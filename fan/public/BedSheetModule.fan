@@ -2,9 +2,13 @@ using afIoc
 using web
 using concurrent
 using afPlastic::PlasticCompiler
+using afIocConfig::FactoryDefaults
+using afIocConfig::IocConfigSource
 
-@SubModule { modules=[ConfigModule#] }
-internal class BedSheetModule {
+** The [afIoc]`http://repo.status302.com/doc/afIoc/#overview` module class.
+** 
+** This class is public so it may be referenced explicitly in test code.
+const class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
 		
@@ -36,13 +40,6 @@ internal class BedSheetModule {
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
 		binder.bindImpl(HttpStatusPageDefault#)
-	}
-
-	@Build { serviceId="PlasticCompiler" }
-	static PlasticCompiler buildPlasticCompiler(ConfigSource configSrc) {
-		PlasticCompiler() {
-			it.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
-		}
 	}
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!
@@ -199,6 +196,19 @@ internal class BedSheetModule {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")
+	}
+	
+	@Contribute 
+	static Void contributeDependencyProviderSource(OrderedConfig conf) {
+		configProvider := conf.autobuild(ConfigProvider#)
+		conf.add(configProvider)
+	}
+
+	@Contribute { serviceType=RegistryStartup# }
+	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
+		conf.add |->| {
+			plasticCompiler.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
+		}
 	}
 	
 	private static Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {

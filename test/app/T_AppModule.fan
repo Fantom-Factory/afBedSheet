@@ -1,4 +1,5 @@
 using afIoc
+using afIocConfig::ApplicationDefaults
 
 internal const class T_AppModule {
 	

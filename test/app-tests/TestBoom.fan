@@ -1,5 +1,10 @@
-using afIoc
 using web
+using afIoc::Contribute
+using afIoc::Inject
+using afIoc::OrderedConfig
+using afIoc::MappedConfig
+using afIocConfig::ApplicationDefaults
+
 
 internal class TestBoom : AppTest {
 

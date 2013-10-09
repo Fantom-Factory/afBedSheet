@@ -1,14 +1,15 @@
 using afIoc::DependencyProvider
 using afIoc::Inject
 using afIoc::ProviderCtx
+using afIocConfig::IocConfigSource
 
 internal const class ConfigProvider : DependencyProvider {
-	
+
 	@Inject
-	private const ConfigSource configSource
-	
+	private const IocConfigSource configSource
+
 	new make(|This|in) { in(this) }
-	
+
 	override Bool canProvide(ProviderCtx ctx, Type dependencyType) {
 		!ctx.facets.findType(Config#).isEmpty
 	}
