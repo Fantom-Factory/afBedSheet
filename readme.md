@@ -55,3 +55,7 @@ Download from [status302](http://repo.status302.com/browse/afBedSheet).
 Or install via fanr:
 
     $ fanr install -r http://repo.status302.com/fanr/ afBedSheet
+
+To use in a project, add a dependency in your `build.fan`:
+
+    depends = ["sys 1.0", ..., "afBedSheet 1.0+"]

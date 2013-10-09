@@ -34,7 +34,7 @@ const class BedServer {
 
 	** Create a instance of 'afBedSheet' with the given afIoc module (usually your web app)
 	new makeWithModule(Type? iocModule := null) {
-		addModule(BedSheetModule#)
+		addModulesFromDependencies(BedSheetModule#.pod)
 		if (iocModule != null)
 			addModule(iocModule)
 	}

@@ -232,8 +232,11 @@ For handling the above, BedSheet bundles with the following response processors:
 Template Rendering [#templateRendering]
 ***************************************
 Templating, or generating content (of HTML or otherwise) is left for other 3rd party libraries and is not a conern of afBedSheet.
-That said, integrating them into BedSheet should be relatively simple. Already there are 2 dedicated libraries:
+That said, integrating them into BedSheet should be relatively simple.
 
+Alien-Factory provides 3 dedicated libraries:
+
+ - [afSlim]`http://repo.status302.com/doc/afSlim/#overview` for rendering HTML,
  - [afBedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` for integrating [efan (Embedded Fantom)]`http://repo.status302.com/doc/afEfan/#overview` templates and
  - [afBedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
 
@@ -582,12 +585,12 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 Release Notes [#releaseNotes]
 *****************************
 
-v1.0.15 [#v1.0.15]
+v1.0.16 [#v1.0.16]
 ------------------
  - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
+ - Chg: Broke @Config code out into its own module: [afIocConfig]`http://repo.status302.com/doc/afIoc/#overview`.
  - Chg: Added a skull logo to the 'Err500' page.
  - Chg: Rejigged the 'Err500' section layout and tweaked the source code styling.
- - Chg: Added 'afPlastic::PlasticCompiler' as a service.
 
 v1.0.14 [#v1.0.14]
 ------------------

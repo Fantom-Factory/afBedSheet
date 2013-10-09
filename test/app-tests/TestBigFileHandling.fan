@@ -1,5 +1,8 @@
 using web::WebClient
-using afIoc
+using afIoc::Contribute
+using afIoc::Inject
+using afIoc::MappedConfig
+using afIocConfig::ApplicationDefaults
 
 ** FileResponseProcessor sets the Content_Length, need to make sure it gets overwritten properly
 internal class TestBigFileHandling : AppTest {

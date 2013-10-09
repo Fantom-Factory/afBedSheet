@@ -1,5 +1,6 @@
 using web::WebClient
 using wisp::WispService
+using afIocConfig::IocConfigModule
 
 internal class AppTest : Test {
 	
@@ -8,7 +9,7 @@ internal class AppTest : Test {
 			WebClient	 	client	:= WebClient()
 
 	override Void setup() {
-		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["iocModules":iocModules])
+		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["iocModules":iocModules.add(IocConfigModule#)])
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 	}
