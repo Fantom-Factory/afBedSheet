@@ -126,7 +126,6 @@ const class BedSheetWebMod : WebMod {
 	}
 	
 	private Str[] loadQuotes() {
-		["hhh"]
-//		typeof.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
+		typeof.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
 	}
 }
