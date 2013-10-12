@@ -584,6 +584,9 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+v1.0.17 [#v1.0.17]
+------------------
+ - Bug: Re-enabled quotes.
 
 v1.0.16 [#v1.0.16]
 ------------------
