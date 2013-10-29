@@ -1,3 +1,4 @@
+using concurrent::AtomicRef
 
 ** @Inject - MetaData for BedSheet, gleaned from startup.
 const mixin BedSheetMetaData {
@@ -10,6 +11,9 @@ const mixin BedSheetMetaData {
 }
 
 internal const class BedSheetMetaDataImpl : BedSheetMetaData {
+
+	// this is a bit naff, but I'm outa options!
+	static const AtomicRef? initValue	:= AtomicRef()
 	
 	** The pod that contains the initial 'AppModule'.
 	override const Pod? 	appPod
