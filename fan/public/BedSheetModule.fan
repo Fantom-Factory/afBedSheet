@@ -1,6 +1,6 @@
 using afIoc
 using web
-using concurrent
+using concurrent::Actor
 using afPlastic::PlasticCompiler
 using afIocConfig::FactoryDefaults
 using afIocConfig::IocConfigSource
@@ -40,6 +40,13 @@ const class BedSheetModule {
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
 		binder.bindImpl(HttpStatusPageDefault#)
+	}
+
+	@Build { serviceId="BedSheetMetaData" }
+	static BedSheetMetaData buildBedSheetMetaData() {
+		// we rely on eager loading to ensure this is build while we're still on the startup thread
+		Env.cur.err.printLine(IocHelper.locals)
+		return Actor.locals["afBedSheet.metaData"]
 	}
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!
@@ -205,9 +212,13 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
+	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc, Registry registry) {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
+		}
+		conf.add |->| {
+			// eager load the meta while we're still on the startup thread 
+			registry.dependencyByType(BedSheetMetaData#)
 		}
 	}
 	

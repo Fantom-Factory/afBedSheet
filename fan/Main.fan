@@ -53,8 +53,8 @@ class Main : AbstractMain {
 		services.each |Service s| { s.install }
 		services.each |Service s| { s.start }
 		
-		// give services a change to init themselves
-		Actor.sleep(2sec)
+		// give services a chance to init themselves
+		Actor.sleep(1sec)
 		
 		// exit if any service didn't start
 		services.each |Service s| { 

@@ -1,17 +1,21 @@
 using web::WebClient
 using wisp::WispService
 using afIocConfig::IocConfigModule
+using afIoc::Registry
 
 internal class AppTest : Test {
 	
 	private Int				port	:= 8079 
 	private WispService? 	willow
 			WebClient	 	client	:= WebClient()
+			Registry?		registry
 
 	override Void setup() {
 		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["iocModules":iocModules.add(IocConfigModule#)])
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
+		
+		registry = mod.registry
 	}
 
 	override Void teardown() {
