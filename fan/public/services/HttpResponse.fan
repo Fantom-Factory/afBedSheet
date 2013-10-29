@@ -6,7 +6,7 @@ using web::Cookie
 using web::WebReq
 using web::WebRes
 
-** An injectable 'const' version of [WebRes]`web::WebRes`.
+** @Inject - An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
 ** This is proxied and will always refers to the current web response.
 const mixin HttpResponse {

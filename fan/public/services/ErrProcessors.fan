@@ -1,6 +1,6 @@
 using afIoc::StrategyRegistry
 
-** Holds a collection of `ErrProcessor`s.
+** @Inject - Holds a collection of `ErrProcessor`s.
 ** 
 ** pre>
 **   @Contribute { serviceType=ErrProcessors# }

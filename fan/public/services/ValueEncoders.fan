@@ -2,7 +2,7 @@ using afIoc::ConcurrentState
 using afIoc::StrategyRegistry
 using afIoc::TypeCoercer
 
-** Holds a list of `ValueEncoder`s.
+** @Inject - Holds a list of `ValueEncoder`s.
 ** 
 ** pre>
 **   @Contribute { serviceType=ValueEncoders# }

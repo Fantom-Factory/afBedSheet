@@ -1,12 +1,21 @@
 
-** MetaData for BedSheet, gleaned from startup.
-const class BedSheetMetaData {
+** @Inject - MetaData for BedSheet, gleaned from startup.
+const mixin BedSheetMetaData {
 	
 	** The pod that contains the initial 'AppModule'.
-	const Pod? 	appPod
+	abstract Pod? 	appPod()
 	
 	** The 'AppModule'.
-	const Type?	appModule
+	abstract Type?	appModule()	
+}
+
+internal const class BedSheetMetaDataImpl : BedSheetMetaData {
+	
+	** The pod that contains the initial 'AppModule'.
+	override const Pod? 	appPod
+	
+	** The 'AppModule'.
+	override const Type?	appModule
 	
 	internal new make(Pod? appPod, Type? appModule) {
 		this.appPod = appPod

@@ -5,6 +5,7 @@ using afIoc::NotFoundErr
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
+** @Inject - 
 internal const class ErrPrinterHtml {
 	private const static Log log := Utils.getLog(ErrPrinterHtml#)
 		

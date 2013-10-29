@@ -111,7 +111,7 @@ const class BedSheetWebMod : WebMod {
 		// stick meta on the thread to be picked up by the eager loading Builder
 		appMod = (appMod != null) ? appMod : mod
 		appPod = (pod    != null) ?    pod : appMod?.pod
-		meta  := BedSheetMetaData(appPod, appMod)
+		meta  := BedSheetMetaDataImpl(appPod, appMod)
 		Actor.locals["afBedSheet.metaData"] = meta
 		
 		// startup afIoc

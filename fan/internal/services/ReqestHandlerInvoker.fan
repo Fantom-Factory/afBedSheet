@@ -4,6 +4,7 @@ using afIoc::Registry
 using afIoc::ServiceStats
 using afIoc::ServiceStat
 
+** @Inject - 
 // TODO: make internal again once WebSockets has been amalgamated - maybe not, also used by afPillow. 
 @NoDoc
 const class ReqestHandlerInvoker {

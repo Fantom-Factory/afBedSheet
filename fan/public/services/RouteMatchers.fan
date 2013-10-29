@@ -1,6 +1,6 @@
 using afIoc::StrategyRegistry
 
-** Holds a strategy of routing types to their handlers.
+** @Inject - Holds a strategy of routing types to their handlers.
 ** 
 ** @uses MappedConfig of 'Type:RouteMatcher' where 'Type' is what's contributed to 'Routes' 
 const mixin RouteMatchers {
