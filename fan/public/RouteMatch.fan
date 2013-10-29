@@ -1,4 +1,5 @@
 
+// FIXME: rename to RouteMatch / MethodInvoker?
 ** Return from 'RouteMatchers'.
 class RouteHandler {
 	const Method	method
@@ -12,4 +13,6 @@ class RouteHandler {
 	Obj? invokeOn(Obj handlerInst) {
 		handlerInst.trap(method.name, args)
 	}
+
+	
 }

@@ -1,3 +1,4 @@
+using concurrent::Actor
 using concurrent::ActorPool
 using concurrent::AtomicRef
 using web::WebMod
@@ -13,12 +14,13 @@ const class BedSheetWebMod : WebMod {
 	const [Str:Obj] 	bedSheetOptions
 	const [Str:Obj]? 	registryOptions
 	
-	private const AtomicRef	reg	:= AtomicRef()
+	private const AtomicRef	atomicReg		:= AtomicRef()
+	private const AtomicRef	atomicAppPod	:= AtomicRef()
 	
-	** The 'afIoc' registry
-	Registry registry {
-		get { reg.val }
-		private set { }
+	** The 'afIoc' registry. Maybe 'null' if BedSheet did not startup properly.
+	Registry? registry {
+		get { atomicReg.val }
+		private set { atomicReg.val = it }
 	}
 
 	new make(Str moduleName, Int port, [Str:Obj] bedSheetOptions, [Str:Obj]? registryOptions := null) {
@@ -45,8 +47,10 @@ const class BedSheetWebMod : WebMod {
 	override Void onStart() {
 		log.info(BsLogMsgs.bedSheetWebModStarting(moduleName, port))
 
-		Pod? pod
+		Pod?  pod
 		Type? mod
+		Pod?  appPod
+		Type? appMod
 		
 		// pod name given...
 		// lots of start up checks looking for pods and modules... 
@@ -60,6 +64,7 @@ const class BedSheetWebMod : WebMod {
 					mod = Type.find(modName, false)
 					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
 					// reset back to null - so we add the whole module with trans deps
+					appMod = mod
 					mod = null
 				} else {
 					// we have a pod name with no module meta... guess a type of AppModule
@@ -103,8 +108,20 @@ const class BedSheetWebMod : WebMod {
 		if (bedSheetOptions.containsKey("iocModules"))
 			bob.addModules(bedSheetOptions["iocModules"])
 
-		reg.val = bob.build(options).startup
+		// stick meta on the thread to be picked up by the eager loading Builder
+		appMod = (appMod != null) ? appMod : mod
+		appPod = (pod    != null) ?    pod : appMod?.pod
+		meta  := BedSheetMetaData(appPod, appMod)
+		Actor.locals["afBedSheet.metaData"] = meta
+		
+		// startup afIoc
+		try {
+			registry = bob.build(options).startup
+		} finally {
+			Actor.locals.remove("afBedSheet.metaData")
+		}
 
+		// start the destroyer!
 		if (bedSheetOptions["pingProxy"] == true) {
 			pingPort := (Int) bedSheetOptions["pingProxyPort"]
 			destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
@@ -113,8 +130,7 @@ const class BedSheetWebMod : WebMod {
 	}
 
 	override Void onStop() {
-		reg := (Registry?) reg.val
-		reg?.shutdown
+		registry?.shutdown
 		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
 	}
 	
