@@ -1,7 +1,6 @@
 
-**
-** The HTTP Pipeline that 'HttpPipelineFilters' should be contributed to. The terminator at the 
-** end of the pipeline is the default routing service.
+** @Inject - The HTTP Pipeline that 'HttpPipelineFilters' should be contributed to. The terminator 
+** at the end of the pipeline is the default routing service.
 **
 ** Example:
 ** 

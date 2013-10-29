@@ -1,6 +1,6 @@
 using afIoc::ConcurrentState
 
-** Stores values from one http request to the next. 
+** @Inject - Stores values from one http request to the next. 
 ** The values stored must be serializable.
 const mixin HttpFlash {
 	

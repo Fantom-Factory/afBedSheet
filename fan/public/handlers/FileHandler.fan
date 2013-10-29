@@ -1,7 +1,7 @@
 using web::WebReq
 using afIoc::Inject
 
-** A Request Handler that maps uris to files on the file system.
+** @Inject - A Request Handler that maps uris to files on the file system.
 ** 
 ** Example, to map all uris prefixed with '/pub/' to files under the '<app>/etc/web/' directory, 
 ** in your AppModule:

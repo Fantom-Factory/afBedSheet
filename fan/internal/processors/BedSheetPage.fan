@@ -1,5 +1,6 @@
 using afIoc::Inject
 
+** @Inject - 
 internal const class BedSheetPage {
 
 	new make(|This|in) { in(this) }

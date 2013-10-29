@@ -45,7 +45,6 @@ const class BedSheetModule {
 	@Build { serviceId="BedSheetMetaData" }
 	static BedSheetMetaData buildBedSheetMetaData() {
 		// we rely on eager loading to ensure this is build while we're still on the startup thread
-		Env.cur.err.printLine(IocHelper.locals)
 		return Actor.locals["afBedSheet.metaData"]
 	}
 

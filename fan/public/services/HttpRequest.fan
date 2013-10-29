@@ -5,7 +5,7 @@ using afIoc::ThreadStashManager
 using web::WebReq
 using inet::IpAddr
 
-** An injectable 'const' version of [WebReq]`web::WebReq`.
+** @Inject - An injectable 'const' version of [WebReq]`web::WebReq`.
 ** 
 ** This class is proxied and will always refer to the current web request.
 const mixin HttpRequest {

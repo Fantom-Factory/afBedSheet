@@ -1,5 +1,6 @@
 using afIoc::Inject
 
+** @Inject - 
 ** @see `https://developer.mozilla.org/en-US/docs/Browser_detection_using_the_user_agent`
 internal const class BrowserDetection {
 

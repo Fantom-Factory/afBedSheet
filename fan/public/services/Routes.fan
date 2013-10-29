@@ -2,7 +2,7 @@ using web
 using afIoc::Inject
 using afIoc::Registry
 
-** Handles routing URIs to request handler methods.
+** @Inject - Handles routing URIs to request handler methods.
 **
 ** If a uri can not be matched to a `Route` then a 404 HttpStatusErr is thrown.
 const mixin Routes {
