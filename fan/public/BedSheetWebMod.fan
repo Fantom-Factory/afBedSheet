@@ -1,4 +1,3 @@
-using concurrent::Actor
 using concurrent::ActorPool
 using concurrent::AtomicRef
 using web::WebMod
@@ -92,6 +91,8 @@ const class BedSheetWebMod : WebMod {
 			bob.addModulesFromDependencies(pod, true)
 		}
 		if (mod != null) {
+			// TODO: Should we include deps here? Use case?
+//			bob.addModulesFromDependencies(mod.pod, true)
 			bob.addModule(mod)			
 		}
 
@@ -112,14 +113,10 @@ const class BedSheetWebMod : WebMod {
 		appMod = (appMod != null) ? appMod : mod
 		appPod = (pod    != null) ?    pod : appMod?.pod
 		meta  := BedSheetMetaDataImpl(appPod, appMod)
-		Actor.locals["afBedSheet.metaData"] = meta
+		BedSheetMetaDataImpl.initValue.val = meta
 		
 		// startup afIoc
-		try {
-			registry = bob.build(options).startup
-		} finally {
-			Actor.locals.remove("afBedSheet.metaData")
-		}
+		registry = bob.build(options).startup
 
 		// start the destroyer!
 		if (bedSheetOptions["pingProxy"] == true) {

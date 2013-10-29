@@ -44,8 +44,9 @@ const class BedSheetModule {
 
 	@Build { serviceId="BedSheetMetaData" }
 	static BedSheetMetaData buildBedSheetMetaData() {
-		// we rely on eager loading to ensure this is build while we're still on the startup thread
-		return Actor.locals["afBedSheet.metaData"]
+		meta := BedSheetMetaDataImpl.initValue.val
+		BedSheetMetaDataImpl.initValue.val = null
+		return meta 
 	}
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!

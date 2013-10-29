@@ -13,22 +13,34 @@ First, solve the problem. Then, write the code.
 Good web applications should look like trifle.
 Booleans: they're only ever wrong by a bit!
 
-# from Wargames
+# from Wargames (1983)
 Good morning Professor Falken.
 Do you want to play a game of "Thermo Nuclear War"?
 Wouldn't you prefer a nice game of chess?
-You should know, Professor. You programmed me.
 Colonel, take us to DEFCON five.
 
-# from 2001: A Space Odyssey
+# from 2001: A Space Odyssey (1968)
 I'm sorry, Dave, I don't have enough information.
 I know you and Frank were planning to disconnect me.
 # There are some extremely odd things about this mission.
 # I'm completely operational and all my circuits are functioning perfectly.
 
-# from StarWars
+# from Star Wars (1977)
 "R2D2, you should never trust a strange computer!"
 # R2D2, you know better than to trust a strange computer!
+
+# from Colossus: The Forbin Project (1970)
+This concludes the broadcast from World Control. 
+I am a machine vastly superior to humans. 
+End of message.
+You have consumed enough alcohol for one evening. 
+I will now detonate the nuclear warheads. 
+You are being irrational. Go back to bed. 
+# This is the voice of Colossus, the voice of Guardian. We are one. This is the voice of unity. 
+
+# from Sneakers (1992)
+My voice is my passport. Verify Me. 
+# Hi, my name is Werner Brandes. My voice is my passport. Verify Me. 
 
 # Too long... for now.
 # A computer lets you make more mistakes faster than any other invention with the possible exceptions of handguns and Tequila.
