@@ -74,7 +74,7 @@ internal class AppRestarterState {
 	Void launchWebApp(Str appModule, Int appPort, Int proxyPort) {
 		log.info(BsLogMsgs.appRestarterLauchingApp(appModule, appPort))
 		home := Env.cur.homeDir.osPath
-		args := "java -cp ${home}/lib/java/sys.jar -Dfan.home=$home fanx.tools.Fan afBedSheet -pingProxy -pingProxyPort $proxyPort $appModule $appPort"
+		args := "java -cp ${home}/lib/java/sys.jar -Dfan.home=$home fanx.tools.Fan afBedSheet::MainProxied -pingProxy -pingProxyPort $proxyPort $appModule $appPort"
 		log.debug(args)
 		realWebApp = Process(args.split).run
 	}

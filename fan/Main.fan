@@ -20,25 +20,20 @@ class Main : AbstractMain {
 	@Opt { help="Starts a proxy and launches the real web app on (<port> + 1)" }
 	private Bool proxy
 
-	@Opt { help="[internal] Starts a thread that periodically pings the proxy to stay alive" }
-	private Bool pingProxy
-
-	@Opt { help="[internal] The port the proxy runs under" }
-	private Int? pingProxyPort
+	@Opt { help="No not load transitive dependencies." }
+	private Bool noTransDeps
 
 	@Arg { help="The qname of the AppModule or pod which configures the BedSheet web app" }
 	private Str? appModule
 	
+	// I could make this an @Opt but then it'd break backwards dependency and I'd have to update all
+	// the docs - meh!
 	@Arg { help="The HTTP port to run the app on" } 
 	private Int port
 
+
 	** Run baby, run!
 	override Int run() {
-		options	:= Utils.makeMap(Str#, Obj#)
-		options["startProxy"] 		= proxy
-		options["pingProxy"] 		= pingProxy
-		options["pingProxyPort"] 	= pingProxyPort ?: -1
-
 		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port) : BedSheetWebMod(appModule, port ,options))
 
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
@@ -48,13 +43,21 @@ class Main : AbstractMain {
 		return startServices([willow])
 	}
 
+	@NoDoc
+	virtual Str:Obj? options() {
+		options	:= Utils.makeMap(Str#, Obj?#)
+		options["startProxy"] 	= proxy
+		options["noTransDeps"] 	= noTransDeps
+		return options
+	}
+	
 	private Int startServices(Service[] services) {
 		Env.cur.addShutdownHook |->| { shutdownServices }
 		services.each |Service s| { s.install }
 		services.each |Service s| { s.start }
 		
 		// give services a chance to init themselves
-		Actor.sleep(1sec)
+		Actor.sleep(2sec)
 		
 		// exit if any service didn't start
 		services.each |Service s| { 
