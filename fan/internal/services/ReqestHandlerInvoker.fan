@@ -22,8 +22,8 @@ const class ReqestHandlerInvoker {
 		this.serviceStats = serviceStats.stats
 	}
 	
-	Obj? invokeHandler(RouteHandler routeHandler) {
-		handlerType := routeHandler.method.parent
+	Obj? invokeHandler(MethodInvoker methodInvoker) {
+		handlerType := methodInvoker.method.parent
 
 		handler := getState |state->Obj| {
 
@@ -61,7 +61,7 @@ const class ReqestHandlerInvoker {
 				handler = registry.autobuild(handlerType)
 		}
 
-		return routeHandler.invokeOn(handler)
+		return methodInvoker.invokeOn(handler)
 	}
 	
 	private Void withState(|ReqestHandlerInvokerState| state) {
