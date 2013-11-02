@@ -3,6 +3,7 @@ using concurrent::AtomicRef
 using web::WebMod
 using afIoc::Registry
 using afIoc::RegistryBuilder
+using afIocConfig::IocConfigModule
 
 ** The top-level `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
@@ -56,27 +57,25 @@ const class BedSheetWebMod : WebMod {
 		// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
 		if (!moduleName.contains("::")) {
 			pod = Pod.find(moduleName, true)
-			if (pod != null) {
-				log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
-				modName := pod.meta["afIoc.module"]
-				if (modName != null) {
-					mod = Type.find(modName, false)
+			log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
+			modName := pod.meta["afIoc.module"]
+			if (modName != null) {
+				mod = Type.find(modName, false)
+				log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+				// reset back to null - so we add the whole module with trans deps
+				appMod = mod
+				mod = null
+			} else {
+				// we have a pod with no module meta... guess a type of AppModule
+				mod = pod.type("AppModule", false)
+				if (mod != null) {
 					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-					// reset back to null - so we add the whole module with trans deps
-					appMod = mod
-					mod = null
+					log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
 				} else {
-					// we have a pod name with no module meta... guess a type of AppModule
-					mod = pod.type("AppModule", false)
-					if (mod != null) {
-						log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-						log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
-					} else {
-						// we're screwed! No module = no web app!
-						log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
-					}
-				}				
-			}
+					// we're screwed! No module = no web app!
+					log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
+				}
+			}				
 		}
 
 		// mod name given...
@@ -85,22 +84,26 @@ const class BedSheetWebMod : WebMod {
 			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
 		}
 
-		// construct this last so logs look nicer ("...adding module IocModule")
+		// construct after the above messages so logs look nicer ("...adding module IocModule")
 		bob := RegistryBuilder()
+		
+		transDeps := !bedSheetOptions.containsKey("noTransDeps")
+		if (!transDeps)
+			log.info("Suppressing transitive dependencies...")
 		if (pod != null) {
-			bob.addModulesFromDependencies(pod, true)
+			bob.addModulesFromDependencies(pod, transDeps)
 		}
 		if (mod != null) {
-			// TODO: Should we include deps here? Use case?
-//			bob.addModulesFromDependencies(mod.pod, true)
-			bob.addModule(mod)			
+			bob.addModulesFromDependencies(mod.pod, transDeps)
+			if (!bob.moduleTypes.contains(mod))
+				bob.addModule(mod)
 		}
 
-		// A simple thing - ensure the BedSheet module is added!
+		// A simple thing - ensure the BedSheet module is added! 
+		// (Ensure trans deps are added explicitly via @SubModule)
 		if (!bob.moduleTypes.contains(BedSheetModule#))
-			// wrap in an 'if' to avoid dup warnings
-			bob.addModule(BedSheetModule#)
-		
+			 bob.addModule(BedSheetModule#)
+
 		bannerText	:= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
 		options 	:= Str:Obj["bannerText":bannerText]
 		if (registryOptions != null)
@@ -109,10 +112,11 @@ const class BedSheetWebMod : WebMod {
 		if (bedSheetOptions.containsKey("iocModules"))
 			bob.addModules(bedSheetOptions["iocModules"])
 
-		// stick meta on the thread to be picked up by the eager loading Builder
+		// stactically set meta so it can be picked up by the eager loading Builder
+		// thread state doesn't work when lazy loading
 		appMod = (appMod != null) ? appMod : mod
 		appPod = (pod    != null) ?    pod : appMod?.pod
-		meta  := BedSheetMetaDataImpl(appPod, appMod)
+		meta  := BedSheetMetaDataImpl(appPod, appMod, bedSheetOptions)
 		BedSheetMetaDataImpl.initValue.val = meta
 		
 		// startup afIoc

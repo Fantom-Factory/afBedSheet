@@ -4,11 +4,15 @@ using concurrent::Actor
 using afPlastic::PlasticCompiler
 using afIocConfig::FactoryDefaults
 using afIocConfig::IocConfigSource
+using afIocConfig::IocConfigModule
 
 ** The [afIoc]`http://repo.status302.com/doc/afIoc/#overview` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
+@SubModule { modules=[IocConfigModule#] }
 const class BedSheetModule {
+	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
+	// dependencies on BedSheet startup
 	
 	static Void bind(ServiceBinder binder) {
 		
