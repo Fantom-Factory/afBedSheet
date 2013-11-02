@@ -207,12 +207,6 @@ const class BedSheetModule {
 			throw Err("No web request active in thread")
 	}
 	
-	@Contribute 
-	static Void contributeDependencyProviderSource(OrderedConfig conf) {
-		configProvider := conf.autobuild(ConfigProvider#)
-		conf.add(configProvider)
-	}
-
 	@Contribute { serviceType=RegistryStartup# }
 	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc, Registry registry) {
 		conf.add |->| {
