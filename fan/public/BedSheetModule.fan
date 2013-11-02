@@ -47,10 +47,8 @@ const class BedSheetModule {
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
-	static BedSheetMetaData buildBedSheetMetaData() {
-		meta := BedSheetMetaDataImpl.initValue.val
-		BedSheetMetaDataImpl.initValue.val = null
-		return meta 
+	static BedSheetMetaData buildBedSheetMetaData(RegistryOptions options) {
+		options.options["bedSheetMetaData"] 
 	}
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!

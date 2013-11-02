@@ -589,6 +589,7 @@ v1.0.18 [#v1.0.18]
  - New: Added 'BedSheetMetaData' with information on which 'AppModule' afbedSheet was started with.
  - Chg: Injectable services are now documented with '@Inject'.
  - Bug: Re-enabled quotes.
+ - Bug: 'afIocConfig' was not always added as [transitive dependency]`http://stackoverflow.com/questions/19736876/running-afbedsheet-sample-produces-service-does-not-exist-for-type-afiocconfig`.
 
 v1.0.16 [#v1.0.16]
 ------------------
