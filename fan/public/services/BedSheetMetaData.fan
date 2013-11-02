@@ -8,6 +8,9 @@ const mixin BedSheetMetaData {
 	
 	** The 'AppModule'.
 	abstract Type?	appModule()	
+	
+	** The options BedSheet was started with
+	abstract [Str:Obj] 	options()
 }
 
 internal const class BedSheetMetaDataImpl : BedSheetMetaData {
@@ -15,14 +18,13 @@ internal const class BedSheetMetaDataImpl : BedSheetMetaData {
 	// this is a bit naff, but I'm outa options!
 	static const AtomicRef? initValue	:= AtomicRef()
 	
-	** The pod that contains the initial 'AppModule'.
-	override const Pod? 	appPod
+	override const Pod? 		appPod
+	override const Type?		appModule
+	override const [Str:Obj] 	options
 	
-	** The 'AppModule'.
-	override const Type?	appModule
-	
-	internal new make(Pod? appPod, Type? appModule) {
-		this.appPod = appPod
-		this.appModule = appModule
+	internal new make(Pod? appPod, Type? appModule, [Str:Obj] options) {
+		this.appPod 	= appPod
+		this.appModule 	= appModule
+		this.options 	= options.toImmutable
 	}
 }
