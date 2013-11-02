@@ -15,9 +15,6 @@ const mixin BedSheetMetaData {
 
 internal const class BedSheetMetaDataImpl : BedSheetMetaData {
 
-	// this is a bit naff, but I'm outa options!
-	static const AtomicRef? initValue	:= AtomicRef()
-	
 	override const Pod? 		appPod
 	override const Type?		appModule
 	override const [Str:Obj] 	options

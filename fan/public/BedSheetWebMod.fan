@@ -112,12 +112,12 @@ const class BedSheetWebMod : WebMod {
 		if (bedSheetOptions.containsKey("iocModules"))
 			bob.addModules(bedSheetOptions["iocModules"])
 
-		// stactically set meta so it can be picked up by the eager loading Builder
-		// thread state doesn't work when lazy loading
+		
+		// create meta data
 		appMod = (appMod != null) ? appMod : mod
 		appPod = (pod    != null) ?    pod : appMod?.pod
 		meta  := BedSheetMetaDataImpl(appPod, appMod, bedSheetOptions)
-		BedSheetMetaDataImpl.initValue.val = meta
+		options["bedSheetMetaData"] = meta
 		
 		// startup afIoc
 		registry = bob.build(options).startup

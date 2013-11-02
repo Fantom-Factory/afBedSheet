@@ -3,6 +3,7 @@
 #           Alien-Factory BedSheet v1.0, IoC v1.3.11
 
 # Misc
+# --------------------------------------------------
 Any fool can use a computer. Many do.
 Never trust a computer you can't throw out a window.
 If at first you don't succeed; call it version 1.0.
@@ -12,42 +13,41 @@ An idiot with a computer is a faster, better idiot.
 First, solve the problem. Then, write the code.
 Good web applications should look like trifle.
 Booleans: they're only ever wrong by a bit!
+A computer lets you make more mistakes faster than  any other invention with the possible exceptions of handguns and Tequila.
+Computers are like Old Testament gods;              lots of rules and no mercy.
+To err is human - and to blame it on a computer is  even more so.
+No one ever said on their deathbed, 'Gee, I wish I  had spent more time alone with my computer'.
+Programming is like sex. One mistake and you have   to support it for the rest of your life.
+I can't uninstall it, there seems to be some kind   of "Uninstall Shield"!?
+The Internet: where men are men, women are men, and children are FBI agents.
+A computer once beat me at chess, but it was no     match for me at kick boxing.
 
-# from Wargames (1983)
-Good morning Professor Falken.
-Do you want to play a game of "Thermo Nuclear War"?
-Wouldn't you prefer a nice game of chess?
-Colonel, take us to DEFCON five.
+# Wargames (1983)
+# --------------------------------------------------
+"Good morning Professor Falken."                                                                - Joshua
+Do you want to play a game of "Thermo Nuclear War"?                                             - Joshua
+Wouldn't you prefer a nice game of chess?                                                       - Joshua
+"Colonel Conley, take us to DEFCON five."                                             - General Beringer
 
-# from 2001: A Space Odyssey (1968)
-I'm sorry, Dave, I don't have enough information.
-I know you and Frank were planning to disconnect me.
-# There are some extremely odd things about this mission.
-# I'm completely operational and all my circuits are functioning perfectly.
+# 2001: A Space Odyssey (1968)
+# --------------------------------------------------
+I'm sorry, Dave, I don't have enough information.                                             - HAL 9000
+I know you and Frank were planning to disconnect me.                                          - HAL 9000
+I'm completely operational and all my circuits are  functioning perfectly.                    - HAL 9000
 
-# from Star Wars (1977)
-"R2D2, you should never trust a strange computer!"
-# R2D2, you know better than to trust a strange computer!
+# Star Wars (1977)
+# --------------------------------------------------
+"R2D2, you know better than to trust a strange       computer!"                                  - C-3PO
 
-# from Colossus: The Forbin Project (1970)
-This concludes the broadcast from World Control. 
-I am a machine vastly superior to humans. 
+# Colossus: The Forbin Project (1970)
+# --------------------------------------------------
+"This concludes the broadcast from World Control."
+"I am a machine vastly superior to humans."                                                   - Colossus
 End of message.
-You have consumed enough alcohol for one evening. 
-I will now detonate the nuclear warheads. 
-You are being irrational. Go back to bed. 
-# This is the voice of Colossus, the voice of Guardian. We are one. This is the voice of unity. 
+"You have consumed enough alcohol for one evening."                                           - Colossus
+"I will now detonate the nuclear warheads."                                                   - Colossus
+"You are being irrational. Go back to bed."                                                   - Colossus
+"This is the voice of Colossus, the voice of        Guardian. We are one. This is the voice of unity."
 
-# from Sneakers (1992)
-My voice is my passport. Verify Me. 
-# Hi, my name is Werner Brandes. My voice is my passport. Verify Me. 
-
-# Too long... for now.
-# A computer lets you make more mistakes faster than any other invention with the possible exceptions of handguns and Tequila.
-# Computers are like Old Testament gods; lots of rules and no mercy.
-# To err is human - and to blame it on a computer is even more so.
-# No one ever said on their deathbed, 'Gee, I wish I had spent more time alone with my computer'.
-# Programming is like sex. One mistake and you have to support it for the rest of your life.
-# I can't uninstall it, there seems to be some kind of "Uninstall Shield".
-# The Internet: where men are men, women are men, and children are FBI agents.
-# A computer once beat me at chess, but it was no match for me at kick boxing.
+# Sneakers (1992)
+"Hi, my name is Werner Brandes. My voice is my      passport. Verify Me."
