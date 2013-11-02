@@ -11,8 +11,8 @@ const class BedSheetWebMod : WebMod {
 
 	const Str 			moduleName
 	const Int 			port
-	const [Str:Obj] 	bedSheetOptions
-	const [Str:Obj]? 	registryOptions
+	const [Str:Obj?] 	bedSheetOptions
+	const [Str:Obj?]? 	registryOptions
 	
 	private const AtomicRef	atomicReg		:= AtomicRef()
 	private const AtomicRef	atomicAppPod	:= AtomicRef()
@@ -23,7 +23,7 @@ const class BedSheetWebMod : WebMod {
 		private set { atomicReg.val = it }
 	}
 
-	new make(Str moduleName, Int port, [Str:Obj] bedSheetOptions, [Str:Obj]? registryOptions := null) {
+	new make(Str moduleName, Int port, [Str:Obj?] bedSheetOptions, [Str:Obj?]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
 		this.registryOptions	= registryOptions
@@ -105,7 +105,7 @@ const class BedSheetWebMod : WebMod {
 			 bob.addModule(BedSheetModule#)
 
 		bannerText	:= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
-		options 	:= Str:Obj["bannerText":bannerText]
+		options 	:= Str:Obj?["bannerText":bannerText]
 		if (registryOptions != null)
 			options.setAll(registryOptions)
 
