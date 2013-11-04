@@ -3,7 +3,8 @@ using afIoc::Inject
 using afIoc::ProviderCtx
 using afIocConfig::IocConfigSource
 
-internal const class ConfigProvider : DependencyProvider {
+** This is a copy of IocConfig's ConfigProvider so we can use BedSheet's @Config 
+internal const class ConfigProvider2 : DependencyProvider {
 
 	@Inject
 	private const IocConfigSource configSource
