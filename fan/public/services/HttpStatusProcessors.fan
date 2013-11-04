@@ -2,7 +2,7 @@ using afIoc::Inject
 using afIoc::Registry
 using web::WebRes
 
-** @Inject - Holds a collection of `HttpStatusProcessor`s.
+** (Service) - Holds a collection of `HttpStatusProcessor`s.
 ** 
 ** pre>
 **   @Contribute { serviceType=HttpStatusProcessors# }

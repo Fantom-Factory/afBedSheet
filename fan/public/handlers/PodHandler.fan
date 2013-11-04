@@ -1,5 +1,5 @@
 
-** @Inject - A Request Handler that maps URIs to file resources inside pods. 
+** (Service) - A Request Handler that maps URIs to file resources inside pods. 
 **
 ** pre>
 ** @Contribute { serviceType=Routes# }

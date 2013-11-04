@@ -2,7 +2,7 @@ using afIoc::Inject
 using afIoc::Registry
 using web::WebReq
 
-** @Inject - An injectable 'const' version of [WebSession]`web::WebSession`.
+** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
 ** 
 ** This class is proxied and will always refer to the session in the current web request.
 const mixin HttpSession {

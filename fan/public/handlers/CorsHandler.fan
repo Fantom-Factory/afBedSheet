@@ -1,6 +1,6 @@
 using afIoc::Inject
 
-** @Inject - Cross Origin Resource Sharing (CORS) is a strategy for browsers to overcome the 
+** (Service) - Cross Origin Resource Sharing (CORS) is a strategy for browsers to overcome the 
 ** limitations of cross domain scripting. The handshake is done via http headers:
 ** 
 **  1. The browser sets CORS specific http headers in the request

@@ -1,6 +1,6 @@
 using afIoc::StrategyRegistry
 
-** @Inject - Holds a collection of `ErrProcessor`s.
+** (Service) - Holds a collection of `ErrProcessor`s.
 ** 
 ** pre>
 **   @Contribute { serviceType=ErrProcessors# }
@@ -11,7 +11,7 @@ using afIoc::StrategyRegistry
 ** 
 ** @uses a MappedConfig of 'Type:ErrProcessor' where 'Type' is a subclass of 'Err' or a mixin.
 const mixin ErrProcessors {
-	
+
 	@NoDoc
 	abstract Obj processErr(Err err)
 }

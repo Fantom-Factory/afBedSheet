@@ -1,7 +1,7 @@
 using afIoc::Inject
 using web::WebRes
 
-** @Inject - Sends the status code and msg from `HttpStatusErr` to the client. 
+** (Service) - Sends the status code and msg from `HttpStatusErr` to the client. 
 @NoDoc
 const mixin HttpStatusPageDefault : HttpStatusProcessor { }
 

@@ -1,8 +1,8 @@
 using afIoc::Inject
 
-** @Inject - 
+** (Service) - 
 internal const class BedSheetPage {
-
+ 
 	new make(|This|in) { in(this) }
 
 	Text render(Str title, Str content, BedSheetLogo logo := BedSheetLogo.alienHead) {
