@@ -139,6 +139,12 @@ const class BedSheetModule {
 		// wot no value encoders!? Aha! I see you're using fromStr() instead!
 	}
 
+	@Contribute { serviceType=DependencyProviderSource# } 
+	static Void contributeDependencyProviderSource(OrderedConfig config) {
+		// this is a copy of IocConfig's ConfigProvider so we can use BedSheet's @Config
+		config.add(config.autobuild(ConfigProvider2#))
+	}
+	
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(MappedConfig conf) {
 		// add some standard compressible mime types
@@ -155,7 +161,7 @@ const class BedSheetModule {
 	@Contribute { serviceType=ErrPrinterHtml# }
 	static Void contributeErrPrinterHtml(OrderedConfig config) {
 		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
-		
+
 		// these are all the sections you see on the Err500 page
 		// TODO: causes
 		config.addOrdered("AvailableValues",		|WebOutStream out, Err? err| { printer.printAvailableValues			(out, err) })
@@ -211,10 +217,6 @@ const class BedSheetModule {
 	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc, Registry registry) {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
-		}
-		conf.add |->| {
-			// eager load the meta while we're still on the startup thread 
-			registry.dependencyByType(BedSheetMetaData#)
 		}
 	}
 	
