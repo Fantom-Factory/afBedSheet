@@ -1,6 +1,6 @@
 using afIoc::StrategyRegistry
 
-** @Inject - Holds a collection of `ResponseProcessor`s.
+** (Service) - Holds a collection of `ResponseProcessor`s.
 const mixin ResponseProcessors {
 
 	@NoDoc

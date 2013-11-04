@@ -1,6 +1,6 @@
 using concurrent::AtomicRef
 
-** @Inject - MetaData for BedSheet, gleaned from startup.
+** (Service) - MetaData for BedSheet, gleaned from startup.
 const mixin BedSheetMetaData {
 	
 	** The pod that contains the initial 'AppModule'.
