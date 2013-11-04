@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version([1,0,17])
+		version = Version([1,1,1])
 
 		meta	= [	"org.name"		: "Alien-Factory",
 					"org.uri"		: "http://www.alienfactory.co.uk/",
@@ -30,6 +30,6 @@ class Build : BuildPod {
 		
 		// exclude test code when building the pod
 		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
-//		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
+		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
 	}
 }
