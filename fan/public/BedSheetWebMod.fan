@@ -11,8 +11,8 @@ const class BedSheetWebMod : WebMod {
 
 	const Str 			moduleName
 	const Int 			port
-	const [Str:Obj?] 	bedSheetOptions
-	const [Str:Obj?]? 	registryOptions
+	const [Str:Obj?] 	bedSheetOpts
+	const [Str:Obj?] 	registryOpts
 	
 	private const AtomicRef	atomicReg		:= AtomicRef()
 	private const AtomicRef	atomicAppPod	:= AtomicRef()
@@ -24,10 +24,10 @@ const class BedSheetWebMod : WebMod {
 	}
 
 	new make(Str moduleName, Int port, [Str:Obj?] bedSheetOptions, [Str:Obj?]? registryOptions := null) {
-		this.moduleName 		= moduleName
-		this.port 				= port
-		this.registryOptions	= registryOptions
-		this.bedSheetOptions	= bedSheetOptions
+		this.moduleName 	= moduleName
+		this.port 			= port
+		this.registryOpts	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
+		this.bedSheetOpts	= bedSheetOptions
 	}
 
 	override Void onService() {
@@ -49,10 +49,8 @@ const class BedSheetWebMod : WebMod {
 
 		Pod?  pod
 		Type? mod
-		Pod?  appPod
-		Type? appMod
 		
-		// pod name given...
+		// Pod name given...
 		// lots of start up checks looking for pods and modules... 
 		// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
 		if (!moduleName.contains("::")) {
@@ -62,69 +60,61 @@ const class BedSheetWebMod : WebMod {
 			if (modName != null) {
 				mod = Type.find(modName, false)
 				log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-				// reset back to null - so we add the whole module with trans deps
-				appMod = mod
-				mod = null
 			} else {
-				// we have a pod with no module meta... guess a type of AppModule
+				// we have a pod with no module meta... so lets guess the name 'AppModule'
 				mod = pod.type("AppModule", false)
 				if (mod != null) {
 					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
 					log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
-				} else {
-					// we're screwed! No module = no web app!
-					log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
 				}
 			}				
 		}
 
-		// mod name given...
+		// AppModule name given...
 		if (moduleName.contains("::")) {
 			mod = Type.find(moduleName, true)
 			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+			pod = mod.pod
 		}
 
+		// we're screwed! No module = no web app!
+		if (mod == null)
+			log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
+		
 		// construct after the above messages so logs look nicer ("...adding module IocModule")
 		bob := RegistryBuilder()
-		
-		transDeps := !bedSheetOptions.containsKey("noTransDeps")
-		if (!transDeps)
-			log.info("Suppressing transitive dependencies...")
+
+		// this defaults to true if not explicitly FALSE - trust me!
+		transDeps := !(bedSheetOpts["noTransDeps"] == false)
 		if (pod != null) {
-			bob.addModulesFromDependencies(pod, transDeps)
+			if (transDeps)
+				bob.addModulesFromDependencies(pod, true)
+			else
+				log.info("Suppressing transitive dependencies...")
 		}
 		if (mod != null) {
-			bob.addModulesFromDependencies(mod.pod, transDeps)
 			if (!bob.moduleTypes.contains(mod))
 				bob.addModule(mod)
 		}
 
 		// A simple thing - ensure the BedSheet module is added! 
-		// (Ensure trans deps are added explicitly via @SubModule)
+		// (transitive dependencies are added explicitly via @SubModule)
 		if (!bob.moduleTypes.contains(BedSheetModule#))
 			 bob.addModule(BedSheetModule#)
 
-		bannerText	:= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
-		options 	:= Str:Obj?["bannerText":bannerText]
-		if (registryOptions != null)
-			options.setAll(registryOptions)
+		// add extra modules - useful for testing
+		if (bedSheetOpts.containsKey("iocModules"))
+			bob.addModules(bedSheetOpts["iocModules"])
 
-		if (bedSheetOptions.containsKey("iocModules"))
-			bob.addModules(bedSheetOptions["iocModules"])
+		registryOpts["bannerText"] 			= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
+		registryOpts["bedSheetMetaData"]	= BedSheetMetaDataImpl(pod, mod, bedSheetOpts)
 
-		
-		// create meta data
-		appMod = (appMod != null) ? appMod : mod
-		appPod = (pod    != null) ?    pod : appMod?.pod
-		meta  := BedSheetMetaDataImpl(appPod, appMod, bedSheetOptions)
-		options["bedSheetMetaData"] = meta
-		
 		// startup afIoc
-		registry = bob.build(options).startup
+		registry = bob.build(registryOpts).startup
 
 		// start the destroyer!
-		if (bedSheetOptions["pingProxy"] == true) {
-			pingPort := (Int) bedSheetOptions["pingProxyPort"]
+		if (bedSheetOpts["pingProxy"] == true) {
+			pingPort := (Int) bedSheetOpts["pingProxyPort"]
 			destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
 			destroyer.start
 		}
