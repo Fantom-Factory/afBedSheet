@@ -8,21 +8,23 @@ internal const class AppRestarter {
 	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
 	private const ConcurrentState 	conState	:= ConcurrentState(AppRestarterState#)
 	
-	const Str appModule
-	const Int appPort
-	const Int proxyPort
+	const Str 	appModule
+	const Int 	appPort
+	const Int 	proxyPort
+	const Bool	noTransDeps
 	
-	new make(Str appModule, Int appPort, Int proxyPort) { 
-		this.appModule 	= appModule
-		this.appPort 	= appPort
-		this.proxyPort	= proxyPort
+	new make(Str appModule, Int appPort, Int proxyPort, Bool noTransDeps) { 
+		this.appModule 		= appModule
+		this.appPort 		= appPort
+		this.proxyPort		= proxyPort
+		this.noTransDeps	= noTransDeps
 	}
 
 	Void initialise() {
 		withState |state| {
 			if (state.realWebApp == null) {
 				state.updateTimeStamps
-				state.launchWebApp(appModule, appPort, proxyPort)
+				state.launchWebApp(appModule, appPort, proxyPort, noTransDeps)
 			}
 		}
 	}
@@ -33,7 +35,7 @@ internal const class AppRestarter {
 			modified := state.podsModified 
 			if (modified) {
 				state.killWebApp(appModule)
-				state.launchWebApp(appModule, appPort, proxyPort)
+				state.launchWebApp(appModule, appPort, proxyPort, noTransDeps)
 				state.updateTimeStamps
 			}
 			return modified
@@ -71,10 +73,11 @@ internal class AppRestarterState {
 		}
 	}
 	
-	Void launchWebApp(Str appModule, Int appPort, Int proxyPort) {
+	Void launchWebApp(Str appModule, Int appPort, Int proxyPort, Bool noTransDeps) {
 		log.info(BsLogMsgs.appRestarterLauchingApp(appModule, appPort))
 		home := Env.cur.homeDir.osPath
-		args := "java -cp ${home}/lib/java/sys.jar -Dfan.home=$home fanx.tools.Fan afBedSheet::MainProxied -pingProxy -pingProxyPort $proxyPort $appModule $appPort"
+		deps := noTransDeps ? "-noTransDeps " : "" 
+		args := "java -cp ${home}/lib/java/sys.jar -Dfan.home=$home fanx.tools.Fan afBedSheet::MainProxied -pingProxy -pingProxyPort $proxyPort ${deps}$appModule $appPort"
 		log.debug(args)
 		realWebApp = Process(args.split).run
 	}
