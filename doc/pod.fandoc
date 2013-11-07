@@ -587,7 +587,8 @@ Release Notes [#releaseNotes]
 
 v1.1.2 [#v1.1.2]
 ----------------
- - Bug: Transitive dependencies have been turned back on.
+ - Bug: Transitive dependencies have been re-instated.
+ - Bug: The '-noTransDeps' startup option now propogates through the proxy.
 
 v1.1.0 [#v1.1.0]
 ----------------

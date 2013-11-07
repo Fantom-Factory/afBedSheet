@@ -33,13 +33,19 @@ const class BedSheetWebMod : WebMod {
 	override Void onService() {
 		req.mod = this
 		try {
-			httpPipeline := (HttpPipeline) registry.dependencyByType(HttpPipeline#)
-			httpPipeline.service
+			if (registry == null) {
+				res.out.writeChars("BedSheet starting up...")
+			} else {
+				httpPipeline := (HttpPipeline) registry.dependencyByType(HttpPipeline#)
+				httpPipeline.service
+			}
 		} catch (Err err) {
 			// theoretically, this should have already been dealt with by our Err Pipeline Processor...
 			// ...but it's handy for BedSheet development!
-			errPrinter := (ErrPrinterStr) registry.dependencyByType(ErrPrinterStr#)
-			Env.cur.err.printLine(errPrinter.errToStr(err))
+			if (registry != null) {	// reqs may come in before we've start up
+				errPrinter := (ErrPrinterStr) registry.dependencyByType(ErrPrinterStr#)
+				Env.cur.err.printLine(errPrinter.errToStr(err))
+			}
 			throw err
 		}
 	}
@@ -84,8 +90,8 @@ const class BedSheetWebMod : WebMod {
 		// construct after the above messages so logs look nicer ("...adding module IocModule")
 		bob := RegistryBuilder()
 
-		// this defaults to true if not explicitly FALSE - trust me!
-		transDeps := !(bedSheetOpts["noTransDeps"] == false)
+		// this defaults to false if not explicitly set to TRUE - trust me!
+		transDeps := !(bedSheetOpts["noTransDeps"] == true)
 		if (pod != null) {
 			if (transDeps)
 				bob.addModulesFromDependencies(pod, true)

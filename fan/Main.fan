@@ -34,7 +34,7 @@ class Main : AbstractMain {
 
 	** Run baby, run!
 	override Int run() {
-		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port) : BedSheetWebMod(appModule, port ,options))
+		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port, noTransDeps) : BedSheetWebMod(appModule, port, options))
 
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
 		// then check all your ENV vars are being passed to java.
