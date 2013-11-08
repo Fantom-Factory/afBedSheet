@@ -35,19 +35,9 @@ internal const class ErrPrinterStr {
 	}
 
 	Str httpStatusToStr(HttpStatus httpStatus) {
-		buf	:= StrBuf()
-		msg	:= httpStatus.cause?.msg ?: httpStatus.msg
-		buf.add("${httpStatus.code} - ${msg}\n")
-
-		printers.each |print| { 
-			try {
-				print.call(buf, httpStatus.cause)
-			} catch (Err err) {
-				log.warn("Err when printing Err...", err)
-			}
-		}
-		
-		return buf.toStr.trim
+		msg		:= httpStatus.cause?.msg ?: httpStatus.msg
+		status	:= ("HTTP Status Code: ${httpStatus.code} - ${msg}\n\n")
+		return status + errToStr(httpStatus.cause)
 	}
 }
 
@@ -63,6 +53,19 @@ internal const class ErrPrinterStrSections {
 	@Inject	private const HttpSession	session
 
 	new make(|This|in) { in(this) }
+
+	Void printCauses(StrBuf buf, Err? err) {
+		causes := Err[,]
+		forEachCause(err, Err#) |Err cause| { causes.add(cause) }
+		if (causes.size <= 1)	// don't bother if there are no causes
+			return
+		
+		buf.add("\nCauses:\n")
+		causes.each |Err cause, Int i| {
+			indent := "".padl(i * 2)
+			buf.add("  ${indent}${cause.typeof.qname} - ${cause.msg}\n")
+		}
+	}
 
 	Void printAvailableValues(StrBuf buf, Err? err) {
 		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {

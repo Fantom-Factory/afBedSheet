@@ -48,6 +48,22 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const HttpSession	session
 
 	new make(|This|in) { in(this) }
+
+	Void printCauses(WebOutStream out, Err? err) {
+		causes := Err[,]
+		forEachCause(err, Err#) |Err cause| { causes.add(cause) }
+		if (causes.size <= 1)	// don't bother if there are no causes
+			return
+		
+		out.h2.w("Causes").h2End
+		out.pre
+
+		causes.each |Err cause, Int i| {
+			indent := "".padl(i*2)
+			out.w("${indent}${cause.typeof.qname} - ${cause.msg}\n")
+		}
+		out.preEnd
+	}
 	
 	Void printAvailableValues(WebOutStream out, Err? err) {
 		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {

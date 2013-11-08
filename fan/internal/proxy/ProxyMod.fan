@@ -31,10 +31,9 @@ internal const class ProxyMod : WebMod {
 			return
 		}
 
-		// TODO: don't sleep - keep prodding app for an okay response
-		// if restarted, wait for it to start up
+		// if restarted, wait for wisp to start up
 		if (restarter.checkPods)
-			Actor.sleep(2.5sec)
+			Actor.sleep(1.5sec)
 
 		// 13-Jan-2013
 		// Safari seems to have trouble creating seesion cookie
