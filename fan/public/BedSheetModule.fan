@@ -164,6 +164,7 @@ const class BedSheetModule {
 
 		// these are all the sections you see on the Err500 page
 		// TODO: causes
+		config.addOrdered("Causes",					|WebOutStream out, Err? err| { printer.printCauses					(out, err) })
 		config.addOrdered("AvailableValues",		|WebOutStream out, Err? err| { printer.printAvailableValues			(out, err) })
 		config.addOrdered("IocOperationTrace",		|WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) })
 		config.addOrdered("SrcCodeErrs", 			|WebOutStream out, Err? err| { printer.printSrcCodeErrs				(out, err) })
@@ -186,6 +187,7 @@ const class BedSheetModule {
 		printer := (ErrPrinterStrSections) config.autobuild(ErrPrinterStrSections#)
 		
 		// these are all the sections you see on the Err log
+		config.addOrdered("Causes",					|StrBuf out, Err? err| { printer.printCauses			(out, err) })
 		config.addOrdered("AvailableValues",		|StrBuf out, Err? err| { printer.printAvailableValues	(out, err) })
 		config.addOrdered("IocOperationTrace",		|StrBuf out, Err? err| { printer.printIocOperationTrace	(out, err) })
 		config.addOrdered("SrcCodeErrs", 			|StrBuf out, Err? err| { printer.printSrcCodeErrs		(out, err) })		
