@@ -163,7 +163,6 @@ const class BedSheetModule {
 		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
 
 		// these are all the sections you see on the Err500 page
-		// TODO: causes
 		config.addOrdered("Causes",					|WebOutStream out, Err? err| { printer.printCauses					(out, err) })
 		config.addOrdered("AvailableValues",		|WebOutStream out, Err? err| { printer.printAvailableValues			(out, err) })
 		config.addOrdered("IocOperationTrace",		|WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) })
@@ -216,7 +215,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc, Registry registry) {
+	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
 		}

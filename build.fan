@@ -33,3 +33,4 @@ class Build : BuildPod {
 //		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
 	}
 }
+
