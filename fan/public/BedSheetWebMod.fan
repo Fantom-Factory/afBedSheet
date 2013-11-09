@@ -17,13 +17,19 @@ const class BedSheetWebMod : WebMod {
 	const [Str:Obj?] 	registryOptions
 	
 	private const AtomicBool	started		:= AtomicBool(false)
-	private const AtomicRef		startupErr	:= AtomicRef()
+	private const AtomicRef		startupErrA	:= AtomicRef()
 	private const AtomicRef		atomicReg	:= AtomicRef()
 	
 	** The 'afIoc' registry. Can be 'null' if BedSheet has not started.
 	Registry? registry {
 		get { atomicReg.val }
 		private set { atomicReg.val = it }
+	}
+
+	** An Err (if any) that occured on service startup
+	Err? startupErr {
+		get { startupErrA.val }
+		private set { startupErrA.val = it }
 	}
 
 	new make(Str moduleName, Int port, [Str:Obj?] bedSheetOptions, [Str:Obj?]? registryOptions := null) {
@@ -42,14 +48,14 @@ const class BedSheetWebMod : WebMod {
 		
 		// web reqs can come while we're still processing onStart() so lets wait for either  
 		// condition to occur (good or bad) - as some reg startup times may be seconds long
-		while (registry == null && startupErr.val == null) {
+		while (registry == null && startupErr == null) {
 			// 200ms should be un-noticable to humans but a lifetime to a computer!
 			Actor.sleep(200ms)
 		}
 		
 		// rethrow the startup err if one occurred and let Wisp handle it
-		if (startupErr.val != null)
-			throw (Err) startupErr.val 
+		if (startupErr != null)
+			throw startupErr
 		
 		try {
 			httpPipeline := (HttpPipeline) registry.dependencyByType(HttpPipeline#)
@@ -145,7 +151,7 @@ const class BedSheetWebMod : WebMod {
 			}
 			
 		} catch (Err err) {
-			startupErr.val = err
+			startupErr = err
 			throw err
 		}
 	}
