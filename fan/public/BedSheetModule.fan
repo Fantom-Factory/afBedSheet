@@ -48,7 +48,9 @@ const class BedSheetModule {
 
 	@Build { serviceId="BedSheetMetaData" }
 	static BedSheetMetaData buildBedSheetMetaData(RegistryOptions options) {
-		options.options["bedSheetMetaData"] 
+		if (!options.options.containsKey("bedSheetMetaData"))
+			throw BedSheetErr(BsErrMsgs.bedSheetMetaDataNotInOptions)
+		return options.options["bedSheetMetaData"] 
 	}
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!
