@@ -6,11 +6,11 @@ internal const class BsErrMsgs {
 	}
 	
 	static Str routeShouldBePathOnly(Uri routeBase) {
-		"Route '$routeBase' must only contain a path. e.g. `/foo/bar`"
+		"Route `$routeBase` must only contain a path. e.g. `/foo/bar`"
 	}
 
 	static Str routeShouldStartWithSlash(Uri routeBase) {
-		"Route '$routeBase' must start with a slash. e.g. `/foo/bar`"
+		"Route `$routeBase` must start with a slash. e.g. `/foo/bar`"
 	}
 	
 	static Str fileHandlerFileNotExist(File file) {
@@ -57,4 +57,7 @@ internal const class BsErrMsgs {
 		"Please contribute a RequestLogFilter dir! \nExample, conf[ConfigIds.requestLogDir] = `/my/log/dir/`.toFile"
 	}
 
+	static Str bedSheetMetaDataNotInOptions() {
+		"RegistryOptions does not contain BedSheetMetaData"
+	}
 }

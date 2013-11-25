@@ -1,6 +1,5 @@
 using afIoc::Inject
 using afIoc::Registry
-using afIoc::ThreadStashManager
 
 ** Catches and processes Errs. This usually involves generating and sending a error page to the client. 
 internal const class HttpErrFilter : HttpPipelineFilter {
