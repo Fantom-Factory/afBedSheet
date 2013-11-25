@@ -587,7 +587,8 @@ Release Notes [#releaseNotes]
 
 v1.1.4 [#v1.1.4]
 ----------------
- - The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.
+ - New: The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.
+ - Bug: 'BedServer' would crash if the app required 'BedSheetMetaData'.
 
 v1.1.2 [#v1.1.2]
 ----------------
@@ -600,7 +601,7 @@ v1.1.2 [#v1.1.2]
 v1.1.0 [#v1.1.0]
 ----------------
  - New: Added 'BedSheetMetaData' with information on which 'AppModule' afbedSheet was started with.
- - Chg: Renamed 'RouteHandler' -> 'MethodInvoker'.
+ - Chg: Renamed 'RouteHandler' -> 'MethodInvoker'. (Breaking change.)
  - Chg: Injectable services are now documented with '(Service)'.
  - Chg: Moved internal proxy options in 'Main' to their own class.
  - Chg: Enabled multi-line quotes.
