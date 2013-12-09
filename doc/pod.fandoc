@@ -588,6 +588,7 @@ Release Notes [#releaseNotes]
 v1.1.4 [#v1.1.4]
 ----------------
  - New: The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.
+ - Chg: Better Err msg if 'AppModule' type not found on startup.
  - Bug: 'BedServer' would crash if the app required 'BedSheetMetaData'.
 
 v1.1.2 [#v1.1.2]

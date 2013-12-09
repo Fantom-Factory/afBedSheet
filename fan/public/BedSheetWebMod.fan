@@ -88,7 +88,7 @@ const class BedSheetWebMod : WebMod {
 				log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
 				modName := pod.meta["afIoc.module"]
 				if (modName != null) {
-					mod = Type.find(modName, false)
+					mod = Type.find(modName, true)
 					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
 				} else {
 					// we have a pod with no module meta... so lets guess the name 'AppModule'
