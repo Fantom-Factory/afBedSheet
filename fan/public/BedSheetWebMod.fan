@@ -137,8 +137,9 @@ const class BedSheetWebMod : WebMod {
 				bob.addModules(bedSheetOptions["iocModules"])
 	
 			registryOpts := this.registryOptions.rw
-			registryOpts["bannerText"] 			= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
-			registryOpts["bedSheetMetaData"]	= BedSheetMetaDataImpl(pod, mod, bedSheetOptions)
+			registryOpts["bannerText"] 					= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
+			registryOpts["bedSheetMetaData"]			= BedSheetMetaDataImpl(pod, mod, bedSheetOptions)
+			registryOpts["suppressStartupServiceList"]	= true
 	
 			// startup afIoc
 			registry = bob.build(registryOpts).startup
