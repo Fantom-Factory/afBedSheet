@@ -21,8 +21,6 @@ const class BedSheetModule {
 
 		// Routing
 		binder.bindImpl(Routes#)
-		binder.bindImpl(RouteMatchers#).withoutProxy
-		binder.bindImpl(ReqestHandlerInvoker#)
 		binder.bindImpl(ValueEncoders#)
 		
 		// Request handlers
@@ -91,17 +89,13 @@ const class BedSheetModule {
 		conf.addOrdered("HttpOutStreamGzipBuilder", 	conf.autobuild(HttpOutStreamGzipBuilder#))
 	}
 
-	@Contribute { serviceType=RouteMatchers# }
-	static Void contributeRouteMatchers(MappedConfig conf) {
-		conf[Route#] 			= conf.autobuild(RouteMatcherImpl#)
-	}
-
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(MappedConfig conf, HttpStatusProcessors httpStatusProcessor) {
-		conf[File#]				= conf.autobuild(FileResponseProcessor#)
 		conf[Text#]				= conf.autobuild(TextResponseProcessor#)
+		conf[File#]				= conf.autobuild(FileResponseProcessor#)
 		conf[Redirect#]			= conf.autobuild(RedirectResponseProcessor#)
 		conf[InStream#]			= conf.autobuild(InStreamResponseProcessor#)
+		conf[MethodCall#]		= conf.autobuild(MethodCallResponseProcessor#)
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 

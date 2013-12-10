@@ -1,4 +1,20 @@
 
+Err500 only in Dev
+
+rename *ResponseProcessor -> *Processor
+
+Why BedSheet 1.2.0???
+---------------------
+
+The Route Matching process was overly complicated and had one too many levels of re-direction / abstraction. That 
+coupled with the fact it couldn't process simple instructions like, return file X for uri Y, or redirect to P from uri 
+Q. The current system forced you to go through a handler method - which should be an intermediate case, not the norm!
+
+With my own websites I tended to use filters quite heavily and only needed Routes for the simple cases - which it 
+failed!    
+
+
+
 For BedSheet 1.0.14
 -------------------
 
@@ -25,13 +41,10 @@ make HttpRequestWrapper / HttpResponseWrapper public?
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
-Investigate why bs-proxy takes 10s to render page through Firefox.
-
 Front more services with mixins
 
 Future
 ------
- - have Dev / Prod mode (and other envs)
 
 static files & pod files served under 'hash' folder
  - Asset class, File field and genned file field
