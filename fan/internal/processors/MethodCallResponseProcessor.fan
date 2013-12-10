@@ -4,16 +4,13 @@ using afIoc::Registry
 using afIoc::ServiceStats
 using afIoc::ServiceStat
 
-** (Service) - 
-// TODO: make internal again once WebSockets has been amalgamated - maybe not, also used by afPillow. 
-@NoDoc
-const class ReqestHandlerInvoker {
-	private const static Log 		log 		:= Utils.getLog(ReqestHandlerInvoker#)
-	private const ConcurrentState 	conState	:= ConcurrentState(ReqestHandlerInvokerState#)
+internal const class MethodCallResponseProcessor : ResponseProcessor {
+	private const static Log 		log 		:= Utils.getLog(MethodCallResponseProcessor#)
+	private const ConcurrentState 	conState	:= ConcurrentState(MethodCallResponseProcessorState#)
 	private const [Str:ServiceStat] serviceStats
 	
-	@Inject
-	private const Registry registry
+	@Inject	private const Registry 		registry
+	@Inject	private const ValueEncoders valueEncoders	
 
 	new make(ServiceStats serviceStats, |This|in) {
 		in(this) 
@@ -22,8 +19,10 @@ const class ReqestHandlerInvoker {
 		this.serviceStats = serviceStats.stats
 	}
 	
-	Obj? invokeHandler(MethodInvoker methodInvoker) {
-		handlerType := methodInvoker.method.parent
+	override Obj process(Obj response) {
+		methodCall := (MethodCall) response
+		
+		handlerType := methodCall.method.parent
 
 		handler := getState |state->Obj| {
 
@@ -61,19 +60,34 @@ const class ReqestHandlerInvoker {
 				handler = registry.autobuild(handlerType)
 		}
 
-		return methodInvoker.invokeOn(handler)
+		args := convertArgs(methodCall.method, methodCall.args)
+		
+		result := methodCall.method.callOn(handler, args)
+		// FIXME: Err if response is null
+		return result
+	}
+
+	** Convert the Str from Routes into real arg objs
+	private Obj[] convertArgs(Method method, Obj?[] argsIn) {
+		// watch out for ->Obj nulls here if ValEnc sig changes
+		argsOut := argsIn.map |arg, i -> Obj?| {
+			paramType	:= method.params[i].type
+			value		:= valueEncoders.toValue(paramType, arg)
+			return value
+		}
+		return argsOut
 	}
 	
-	private Void withState(|ReqestHandlerInvokerState| state) {
+	private Void withState(|MethodCallResponseProcessorState| state) {
 		conState.withState(state)
 	}
 
-	private Obj? getState(|ReqestHandlerInvokerState -> Obj| state) {
+	private Obj? getState(|MethodCallResponseProcessorState -> Obj| state) {
 		conState.getState(state)
 	}
 }
 
-internal class ReqestHandlerInvokerState {
+internal class MethodCallResponseProcessorState {
 	Type[]		serviceTypes	:= [,]
 	Type[]		autobuildTypes	:= [,]
 	Type:Obj	handlerCache	:= [:]

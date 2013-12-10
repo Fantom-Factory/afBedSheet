@@ -19,6 +19,7 @@ const class BedSheetWebMod : WebMod {
 	private const AtomicBool	started		:= AtomicBool(false)
 	private const AtomicRef		startupErrA	:= AtomicRef()
 	private const AtomicRef		atomicReg	:= AtomicRef()
+	private const AtomicRef		atomicPipe	:= AtomicRef()
 	
 	** The 'afIoc' registry. Can be 'null' if BedSheet has not started.
 	Registry? registry {
@@ -58,7 +59,6 @@ const class BedSheetWebMod : WebMod {
 			throw startupErr
 		
 		try {
-			httpPipeline := (HttpPipeline) registry.dependencyByType(HttpPipeline#)
 			httpPipeline.service
 			
 		} catch (Err err) {
@@ -167,6 +167,15 @@ const class BedSheetWebMod : WebMod {
 		if (quotes.isEmpty || (Int.random(0..8) != 2))
 			return title
 		return quotes[Int.random(0..<quotes.size)]
+	}
+	
+	// lazy load the HttpPipeline
+	private HttpPipeline httpPipeline() {
+		pipe := atomicPipe.val
+		if (pipe != null)
+			return pipe
+		atomicPipe.val = registry.dependencyByType(HttpPipeline#)
+		return atomicPipe.val
 	}
 	
 	private Str[] loadQuotes() {

@@ -232,7 +232,7 @@ For handling the above, BedSheet bundles with the following response processors:
 Template Rendering [#templateRendering]
 ***************************************
 Templating, or generating content (of HTML or otherwise) is left for other 3rd party libraries and is not a conern of afBedSheet.
-That said, integrating them into BedSheet should be relatively simple.
+That said, integrating them into BedSheet is relatively simple.
 
 Alien-Factory provides 3 dedicated libraries:
 

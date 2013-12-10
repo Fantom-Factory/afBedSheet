@@ -58,8 +58,8 @@
 ** Method parameters can be any Obj (and not just 'Str') as they are converted using the  
 ** [ValueEncoder]`ValueEncoder` service.
 **  
-** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. BedSheet will then  
-** call handlers with real Entities, not just str IDs!
+** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. This means BedSheet can
+** call handlers with real entities, not just str IDs!
 ** 
 ** Parameters of type 'Str[]' are *capture all* parameters and match the remaining uri (split on '/').
 **
@@ -86,8 +86,8 @@ const class Route {
 	** The uri regex this route matches.
 	const Regex routeRegex
 
-	** Method handler for this route. 
-	const Method handler
+	** The response to be returned from this route. 
+	const Obj response
 
 	** HTTP method used for this route
 	const Str httpMethod
@@ -96,13 +96,14 @@ const class Route {
 	private const Bool		matchAllArgs
 	private const Bool		matchToEnd
 	private const Bool		isGlob
+	private const RouteResponseFactory	factory
 
 	** Make a Route that matches on the given glob pattern.
 	** 
 	** 'glob' must start with a slash "/"
 	** 
 	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
-	new makeFromGlob(Uri glob, Method handler, Str httpMethod := "GET") {
+	new makeFromGlob(Uri glob, Obj response, Str httpMethod := "GET") {
 	    if (glob.scheme != null || glob.host != null || glob.port!= null )
 			throw BedSheetErr(BsErrMsgs.routeShouldBePathOnly(glob))
 	    if (!glob.isPathAbs)
@@ -133,7 +134,8 @@ const class Route {
 		regex += "\$"
 		
 		this.routeRegex 	= Regex.fromStr(regex)
-		this.handler 		= handler
+		this.response 		= response
+		this.factory 		= wrapResponse(response)
 		this.httpMethod 	= httpMethod
 		// split on both space and ','
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
@@ -149,9 +151,10 @@ const class Route {
 	** 
 	** Set 'matchRemaining' to 'true' to have the last capture group mimic the glob '**' operator, 
 	** splitting on "/" to match all remaining segments.  
-	new makeFromRegex(Regex uriRegex, Method handler, Str httpMethod := "GET", Bool matchRemaining := false) {
+	new makeFromRegex(Regex uriRegex, Obj response, Str httpMethod := "GET", Bool matchRemaining := false) {
 		this.routeRegex 	= uriRegex
-		this.handler 		= handler
+		this.response 		= response
+		this.factory 		= wrapResponse(response)
 		this.httpMethod 	= httpMethod
 		// split on both space and ','
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
@@ -159,7 +162,8 @@ const class Route {
 		this.isGlob			= false
 	}
 
-	internal Str?[]? match(Uri uri, Str httpMethod) {
+	** Returns a response object should the given uri (and http method) match this route. Returns 'null' if not.
+	Obj? match(Uri uri, Str httpMethod) {
 		if (!httpMethodGlob.any { it.matches(httpMethod) })
 			return null
 
@@ -167,11 +171,10 @@ const class Route {
 		if (segs == null)
 			return null
 		
-		args := matchArgs(segs)
-		if (args == null)
+		if (!factory.matchSegments(segs))
 			return null
 		
-		return args
+		return factory.createResponse(segs)
 	}
 
 	** Returns null if the given uri does not match the uri regex
@@ -210,30 +213,55 @@ const class Route {
 		return groups.map { it.isEmpty ? null : it }
 	}
 
-	** Returns null if uriSegments do not match (optional) method handler arguments
-	internal Str?[]? matchArgs(Str?[] args) {
-		if (args.size > handler.params.size)
-			return null
+	private RouteResponseFactory wrapResponse(Obj response) {
+		if (response.typeof.fits(RouteResponseFactory#))
+			return response
+		if (response.typeof.fits(Method#))
+			return MethodCallFactory(response)
+		return NoOpFactory(response)
+	}
+	
+	override Str toStr() {
+		"Route:$routeRegex - $httpMethod -> ${response.typeof.name}: ${response.toStr}"
+	}
+}
+
+** Keep public 'cos it could prove useful!
+@NoDoc
+const mixin RouteResponseFactory {
+	abstract Bool matchSegments(Str?[] segments)
+
+	abstract Obj? createResponse(Str?[] segments)
+}
+
+internal const class MethodCallFactory : RouteResponseFactory {
+	const Method method
+	
+	new make(Method method) {
+		this.method = method
+	}
+	
+	override Bool matchSegments(Str?[] segments) {
+		if (segments.size > method.params.size)
+			return false
 		
-		match := handler.params.all |Param param, i->Bool| {
-			if (i >= args.size)
+		match := method.params.all |Param param, i->Bool| {
+			if (i >= segments.size)
 				return param.hasDefault
-			return (args[i] == null) ? param.type.isNullable : true
+			return (segments[i] == null) ? param.type.isNullable : true
 		}
 		
-		return match ? args : null
-		
-//		if (handler.params.size == uriSegments.size)
-//			return uriSegments
-//		
-//		paramRange	:= (handler.params.findAll { !it.hasDefault }.size..<handler.params.size)
-//		if (paramRange.contains(uriSegments.size))
-//			return uriSegments
-//
-//		return null
+		return match
 	}
 
-	override Str toStr() {
-		"Route:$routeRegex - $httpMethod -> $handler.qname"
+	override Obj? createResponse(Str?[] segments) {
+		MethodCall(method, segments)
 	}
+}
+
+internal const class NoOpFactory : RouteResponseFactory {
+	const Obj? response
+	new make(Obj? response) { this.response = response }
+	override Bool matchSegments(Str?[] segments) { true	}
+	override Obj? createResponse(Str?[] segments) { response }
 }

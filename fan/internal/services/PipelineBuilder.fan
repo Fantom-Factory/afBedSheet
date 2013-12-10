@@ -9,7 +9,7 @@ using afPlastic::IocClassModel
 ** Each method invocation on the returned service is routed through the filters before the 
 ** terminator is called. Each filter has an opportunity to modify method arguments and the return 
 ** value or shortcut the call completely.
-
+@NoDoc
 const mixin PipelineBuilder {
 	
 	abstract Obj build(Type pipelineType, Type filterType, Obj[] filters, Obj terminator)

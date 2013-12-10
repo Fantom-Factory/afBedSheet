@@ -11,41 +11,30 @@ const mixin Routes {
 	abstract Obj[] routes()
 	
 	@NoDoc
-	abstract Obj? processRequest(Uri modRel, Str httpMethod)
+	abstract Obj processRequest(Uri modRel, Str httpMethod)
 }
 
 internal const class RoutesImpl : Routes {
 	private const static Log log := Utils.getLog(Routes#)
-	
-	override const Obj[] routes
 
-	@Inject
-	private const RouteMatchers routeMatchers
+	override const Route[] routes
 
-	@Inject
-	private const ReqestHandlerInvoker handlerInvoker
-
-	@Inject
-	private const Registry registry
+	@Inject	private const Registry registry
 
 
-	internal new make(Obj[] routes, |This|? in := null) {
+	internal new make(Route[] routes, |This|? in := null) {
 		in?.call(this)
 		this.routes = routes
 		if (routes.isEmpty)
 			log.warn(BsLogMsgs.routesGotNone)
 	}
 
-	override Obj? processRequest(Uri modRel, Str httpMethod) {
+	override Obj processRequest(Uri modRel, Str httpMethod) {
 		normalisedUri := normalise(modRel)
 		
+		// loop through all routes looking for a non-null response
 		response := routes.eachWhile |route| {
-			routeMatch := routeMatchers.matchRoute(route, normalisedUri, httpMethod) 
-			if (routeMatch == null)
-				return null
-
-			response := handlerInvoker.invokeHandler(routeMatch)
-
+			response := route.match(normalisedUri, httpMethod)			
 			return (response == false) ? null : response
 		}
 
