@@ -60,4 +60,30 @@ internal const class BsErrMsgs {
 	static Str bedSheetMetaDataNotInOptions() {
 		"RegistryOptions does not contain BedSheetMetaData"
 	}
+	
+	// ---- Pipeline Service Messages -------------------------------------------------------------
+
+	static Str pipelineTypeMustBePublic(Str thing, Type type) {
+		"${thing} ${type.qname} must be public"
+	}
+
+	static Str pipelineTypeMustBeMixin(Str thing, Type type) {
+		"${thing} ${type.qname} must be a mixin"
+	}
+
+	static Str pipelineTypeMustNotDeclareFields(Type type) {
+		"Pipeline type ${type.qname} must not declare fields: " + type.fields.join(", ") { it.name }
+	}
+
+	static Str pipelineTerminatorMustExtendPipeline(Type pipelineType, Type terminatorType) {
+		"Pipeline Terminator ${terminatorType.qname} must extend Pipeline mixin ${pipelineType.qname}"
+	}
+
+	static Str pipelineFilterMustExtendFilter(Type filterType, Type filterImplType) {
+		"Pipeline Terminator ${filterImplType.qname} must extend Filter mixin ${filterType.qname}"
+	}
+	
+	static Str pipelineFilterMustDeclareMethod(Type filterType, Str methodSig) {
+		"Pipeline Filter ${filterType.qname} must declare method : ${methodSig}"
+	}
 }

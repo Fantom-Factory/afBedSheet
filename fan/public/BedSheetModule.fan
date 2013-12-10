@@ -16,6 +16,9 @@ const class BedSheetModule {
 	
 	static Void bind(ServiceBinder binder) {
 		
+		// Utils
+		binder.bindImpl(PipelineBuilder#)
+
 		// Routing
 		binder.bindImpl(Routes#)
 		binder.bindImpl(RouteMatchers#).withoutProxy
@@ -43,7 +46,7 @@ const class BedSheetModule {
 
 		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
 		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
-		binder.bindImpl(HttpStatusPageDefault#)
+		binder.bindImpl(HttpStatusPageDefault#)		
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
