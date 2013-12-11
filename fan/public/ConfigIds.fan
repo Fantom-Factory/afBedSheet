@@ -1,4 +1,5 @@
 
+// FIXME: rename to BedSheetConfigIds
 ** Config values as provided by BedSheet. To change their value, override them in your 'AppModule'. 
 ** Example:
 ** 
