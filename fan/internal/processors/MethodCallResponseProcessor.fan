@@ -63,12 +63,13 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		args := convertArgs(methodCall.method, methodCall.args)
 		
 		result := methodCall.method.callOn(handler, args)
-		// FIXME: Err if response is null
-		return result
+		// TDDO: log warning if handler result == null
+		return (result == null) ? false : result
 	}
 
 	** Convert the Str from Routes into real arg objs
 	private Obj[] convertArgs(Method method, Obj?[] argsIn) {
+		// FIXME:test when we have more args than method parama!
 		// watch out for ->Obj nulls here if ValEnc sig changes
 		argsOut := argsIn.map |arg, i -> Obj?| {
 			paramType	:= method.params[i].type

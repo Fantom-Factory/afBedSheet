@@ -9,9 +9,9 @@ const mixin Routes {
 
 	** The ordered list of routes
 	abstract Obj[] routes()
-	
-	@NoDoc
-	abstract Obj processRequest(Uri modRel, Str httpMethod)
+
+	** Returns true if the HTTP request was handled. 
+	abstract Bool processRequest(Uri modRel, Str httpMethod)
 }
 
 internal const class RoutesImpl : Routes {
@@ -19,8 +19,7 @@ internal const class RoutesImpl : Routes {
 
 	override const Route[] routes
 
-	@Inject	private const Registry registry
-
+	@Inject	private const ResponseProcessors	responseProcessors  
 
 	internal new make(Route[] routes, |This|? in := null) {
 		in?.call(this)
@@ -29,33 +28,29 @@ internal const class RoutesImpl : Routes {
 			log.warn(BsLogMsgs.routesGotNone)
 	}
 
-	override Obj processRequest(Uri modRel, Str httpMethod) {
+	override Bool processRequest(Uri modRel, Str httpMethod) {
 		normalisedUri := normalise(modRel)
-		
+
 		// loop through all routes looking for a non-null response
-		response := routes.eachWhile |route| {
-			response := route.match(normalisedUri, httpMethod)			
-			return (response == false) ? null : response
+		handled := routes.eachWhile |route| {
+			response := route.match(normalisedUri, httpMethod)
+
+			if (response == null)
+				return null
+			
+			// process any non-null results
+			processed := responseProcessors.processResponse(response)
+			
+			return processed ? true : null
 		}
 
-		// if no routes have been defined, return the default 'BedSheet Welcome' page
-		if (response == null && routes.isEmpty)
-			return ((WelcomePage) registry.autobuild(WelcomePage#)).service
-
-		if (response == null)
-			throw HttpStatusErr(404, BsErrMsgs.route404(modRel, httpMethod))
-
-		return response
+		return handled != null
 	}
 
 	private Uri normalise(Uri uri) {
 		if (!uri.isPathAbs)
 			uri = `/` + uri
 		return uri
-	}
-	
-	private WebReq webReq() {
-		registry.dependencyByType(WebReq#)
 	}	
 }
 

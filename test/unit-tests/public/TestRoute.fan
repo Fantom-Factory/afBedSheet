@@ -190,136 +190,122 @@ internal class TestRoute : BsTest {
 		verifyEq(match[1],		"4")
 	}
 	
-	// FIXME: route tests
-//	Void testArgList() {
-//		Str?[]? match
-//		
-//		// ---- handler1 ----
-//		
-//		match = Route(`/wotever/`, #handler1).matchArgs(Str[,])
-//		verify(match.isEmpty)
-//
-//		match = Route(`/wotever/`, #handler1).matchArgs(["eek"])
-//		verifyNull(match)
-//		
-//		// ---- handler2 ----
-//
-//		match = Route(`/wotever/`, #handler2).matchArgs(Str[,])
-//		verifyNull(match)
-//
-//		match = Route(`/wotever/`, #handler2).matchArgs(["wot"])
-//		verifyEq(match.size, 1)
-//		verifyEq(match[0], "wot")
-//
-//		match = Route(`/wotever/`, #handler2).matchArgs(["wot", "ever"])
-//		verifyNull(match)
-//
-//		// ---- handler3 ----
-//
-//		match = Route(`/wotever/`, #handler3).matchArgs(Str[,])
-//		verifyNull(match)
-//
-//		match = Route(`/wotever/`, #handler3).matchArgs(["wot"])
-//		verifyNull(match)
-//
-//		match = Route(`/wotever/`, #handler3).matchArgs(["wot", "ever"])
-//		verifyEq(match.size, 2)
-//		verifyEq(match[0], "wot")
-//		verifyEq(match[1], "ever")
-//		
-//		match = Route(`/wotever/`, #handler3).matchArgs(["wot", "ever", "dude"])
-//		verifyNull(match)
-//
-//		// ---- handler4 ----
-//
-//		match = Route(`/wotever/`, #handler4).matchArgs(Str[,])
-//		verifyNull(match)
-//
-//		match = Route(`/wotever/`, #handler4).matchArgs(["wot"])
-//		verifyEq(match.size, 1)
-//		verifyEq(match[0], "wot")
-//		
-//		match = Route(`/wotever/`, #handler4).matchArgs(["wot", "ever"])
-//		verifyEq(match.size, 2)
-//		verifyEq(match[0], "wot")
-//		verifyEq(match[1], "ever")
-//		
-//		match = Route(`/wotever/`, #handler4).matchArgs(["wot", "ever", "dude"])
-//		verifyNull(match)
-//
-//		// ---- handler5 ----
-//
-//		match = Route(`/wotever/`, #handler5).matchArgs(Str[,])
-//		verifyEq(match.size, 0)
-//
-//		match = Route(`/wotever/`, #handler5).matchArgs(["wot"])
-//		verifyEq(match.size, 1)
-//		verifyEq(match[0], "wot")
-//		
-//		match = Route(`/wotever/`, #handler5).matchArgs(["wot", "ever"])
-//		verifyEq(match.size, 2)
-//		verifyEq(match[0], "wot")
-//		verifyEq(match[1], "ever")
-//		
-//		match = Route(`/wotever/`, #handler5).matchArgs(["wot", "ever", "dude"])
-//		verifyNull(match)
-//	}
-//
-//	Void testMatchArgsFromDocs() {
-//		Str?[]? match
-//
-//		// Void bar1(Str a, Str b) { }
-//		match = Route(`/`, #bar1).matchArgs(Str?[,])
-//		verifyNull(match)
-//		match = Route(`/`, #bar1).matchArgs(Str?[null])
-//		verifyNull(match)
-//		match = Route(`/`, #bar1).matchArgs(Str?[null, null])
-//		verifyNull(match)
-//		match = Route(`/`, #bar1).matchArgs(Str?["--", "--"])
-//		verifyEq(match.size, 2)
-//
-//		// Void bar2(Str? a, Str? b) { }
-//		match = Route(`/`, #bar2).matchArgs(Str?[,])
-//		verifyNull(match)
-//		match = Route(`/`, #bar2).matchArgs(Str?[null])
-//		verifyNull(match)
-//		match = Route(`/`, #bar2).matchArgs(Str?[null, null])
-//		verifyEq(match.size, 2)
-//		match = Route(`/`, #bar2).matchArgs(Str?["--", "--"])
-//		verifyEq(match.size, 2)
-//
-//		// Void bar3(Str? a, Str? b := "") { }
-//		match = Route(`/`, #bar3).matchArgs(Str?[,])
-//		verifyNull(match)
-//		match = Route(`/`, #bar3).matchArgs(Str?[null])
-//		verifyEq(match.size, 1)
-//		match = Route(`/`, #bar3).matchArgs(Str?[null, null])
-//		verifyEq(match.size, 2)
-//		match = Route(`/`, #bar3).matchArgs(Str?["--", "--"])
-//		verifyEq(match.size, 2)
-//
-//		// Void bar4(Str? a, Str b := "") { }
-//		match = Route(`/`, #bar4).matchArgs(Str?[,])
-//		verifyNull(match)
-//		match = Route(`/`, #bar4).matchArgs(Str?[null])
-//		verifyEq(match.size, 1)
-//		match = Route(`/`, #bar4).matchArgs(Str?[null, null])
-//		verifyNull(match)
-//		match = Route(`/`, #bar4).matchArgs(Str?["--", "--"])
-//		verifyEq(match.size, 2)
-//	}
-//	
-//	Void testFromModule() {
-//		Str?[]? match
-//
-//		match = Route(`/route/optional/**`, #defaultParams).matchUri(`/route/optional/`)
-//		verifyEq(match.size, 1)
-//		verifyEq(match[0],	null)
-//
-//		match = Route(`/route/optional/**`, #defaultParams).matchArgs(match)
-//		verifyEq(match.size, 1)
-//		verifyEq(match[0],	null)
-//	}
+	Void testArgList() {
+		Bool match
+		
+		// ---- handler1 ----
+		
+		match = MethodCallFactory(#handler1).matchSegments(Str[,])
+		verify(match)
+			
+		match = MethodCallFactory(#handler1).matchSegments(["eek"])
+		verifyFalse(match)
+		
+		// ---- handler2 ----
+
+		match = MethodCallFactory(#handler2).matchSegments(Str[,])
+		verifyFalse(match)
+
+		match = MethodCallFactory(#handler2).matchSegments(["wot"])
+		verify(match)
+
+		match = MethodCallFactory(#handler2).matchSegments(["wot", "ever"])
+		verifyFalse(match)
+
+		// ---- handler3 ----
+
+		match = MethodCallFactory(#handler3).matchSegments(Str[,])
+		verifyFalse(match)
+
+		match = MethodCallFactory(#handler3).matchSegments(["wot"])
+		verifyFalse(match)
+
+		match = MethodCallFactory(#handler3).matchSegments(["wot", "ever"])
+		verify(match)
+		
+		match = MethodCallFactory(#handler3).matchSegments(["wot", "ever", "dude"])
+		verifyFalse(match)
+
+		// ---- handler4 ----
+
+		match = MethodCallFactory(#handler4).matchSegments(Str[,])
+		verifyFalse(match)
+
+		match = MethodCallFactory(#handler4).matchSegments(["wot"])
+		verify(match)
+		
+		match = MethodCallFactory(#handler4).matchSegments(["wot", "ever"])
+		verify(match)
+		
+		match = MethodCallFactory(#handler4).matchSegments(["wot", "ever", "dude"])
+		verifyFalse(match)
+
+		// ---- handler5 ----
+
+		match = MethodCallFactory(#handler5).matchSegments(Str[,])
+		verify(match)
+
+		match = MethodCallFactory(#handler5).matchSegments(["wot"])
+		verify(match)
+		
+		match = MethodCallFactory(#handler5).matchSegments(["wot", "ever"])
+		verify(match)
+		
+		match = MethodCallFactory(#handler5).matchSegments(["wot", "ever", "dude"])
+		verifyFalse(match)
+	}
+
+	Void testMatchArgsFromDocs() {
+		Bool? match
+
+		// Void bar1(Str a, Str b) { }
+		match = MethodCallFactory(#bar1).matchSegments(Str?[,])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar1).matchSegments(Str?[null])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar1).matchSegments(Str?[null, null])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar1).matchSegments(Str?["--", "--"])
+		verify(match)
+
+		// Void bar2(Str? a, Str? b) { }
+		match = MethodCallFactory(#bar2).matchSegments(Str?[,])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar2).matchSegments(Str?[null])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar2).matchSegments(Str?[null, null])
+		verify(match)
+		match = MethodCallFactory(#bar2).matchSegments(Str?["--", "--"])
+		verify(match)
+
+		// Void bar3(Str? a, Str? b := "") { }
+		match = MethodCallFactory(#bar3).matchSegments(Str?[,])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar3).matchSegments(Str?[null])
+		verify(match)
+		match = MethodCallFactory(#bar3).matchSegments(Str?[null, null])
+		verify(match)
+		match = MethodCallFactory(#bar3).matchSegments(Str?["--", "--"])
+		verify(match)
+
+		// Void bar4(Str? a, Str b := "") { }
+		match = MethodCallFactory(#bar4).matchSegments(Str?[,])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar4).matchSegments(Str?[null])
+		verify(match)
+		match = MethodCallFactory(#bar4).matchSegments(Str?[null, null])
+		verifyFalse(match)
+		match = MethodCallFactory(#bar4).matchSegments(Str?["--", "--"])
+		verify(match)
+	}
+	
+	Void testFromModule() {
+		Str?[]? match
+
+		match = Route(`/route/optional/**`, #defaultParams).matchUri(`/route/optional/`)
+		verifyEq(match.size, 1)
+		verifyEq(match[0],	null)
+	}
 	
 	Void defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") { }
 }

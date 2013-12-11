@@ -170,7 +170,7 @@ const class Route {
 		segs := matchUri(uri)
 		if (segs == null)
 			return null
-		
+
 		if (!factory.matchSegments(segs))
 			return null
 		

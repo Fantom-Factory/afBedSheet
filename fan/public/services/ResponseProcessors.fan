@@ -3,8 +3,8 @@ using afIoc::StrategyRegistry
 ** (Service) - Holds a collection of `ResponseProcessor`s.
 const mixin ResponseProcessors {
 
-	@NoDoc
-	abstract Void processResponse(Obj response)
+	** Recursively processes the response object until 'true' or 'false' is returned
+	abstract Bool processResponse(Obj response)
 
 }
 
@@ -16,9 +16,10 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 		processorStrategy = StrategyRegistry(responseProcessors)
 	}
 
-	override Void processResponse(Obj response) {
-		while (response != true)
+	override Bool processResponse(Obj response) {
+		while (!response.typeof.fits(Bool#))
 			response = get(response.typeof).process(response)
+		return response
 	}	
 
 	private ResponseProcessor get(Type responseType) {

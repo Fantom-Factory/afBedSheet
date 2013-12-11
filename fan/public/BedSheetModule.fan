@@ -56,7 +56,8 @@ const class BedSheetModule {
 
 	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!
 	static HttpPipeline buildHttpPipeline(HttpPipelineFilter[] filters, PipelineBuilder bob, Registry reg) {
-		terminator := reg.autobuild(HttpRouteService#)
+		// FIXME: make HttpRouteService a filter - have a 404 terminator!
+		terminator := reg.autobuild(HttpPipelineTerminator#)
 		return bob.build(HttpPipeline#, HttpPipelineFilter#, filters, terminator)
 	}
 
@@ -81,6 +82,7 @@ const class BedSheetModule {
 		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters", "before: HttpFlashFilter"])		
 		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 	["before: BedSheetFilters"])
 		conf.addPlaceholder("BedSheetFilters")
+		conf.addOrdered("HttpRouteFilter", 		conf.autobuild(HttpRouteFilter#), 	["after: BedSheetFilters"])
 	}
 
 	@Contribute { serviceId="HttpOutStream" }
