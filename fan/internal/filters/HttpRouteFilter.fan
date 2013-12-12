@@ -7,6 +7,7 @@ const internal class HttpRouteFilter : HttpPipelineFilter {
 
 	new make(|This|in) { in(this) }
 
+	// TODO: manually create this filter, passing in routes, so we can create many layers.
 	override Bool service(HttpPipeline handler) {
 		handled := routes.processRequest(httpRequest.modRel, httpRequest.httpMethod)
 		return handled ? true : handler.service

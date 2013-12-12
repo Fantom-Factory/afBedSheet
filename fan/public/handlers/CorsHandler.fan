@@ -39,6 +39,9 @@ using afIoc::Inject
 **  - `http://api.brain-map.org/examples/doc/scatter/javascripts/jquery.ie.cors.js.html`
 const mixin CorsHandler {
 	
+	// FIXME: kill Cors!
+	// FIXME: kill IE cache!
+	
 	** Sets response headers if the request a simple CORS request. 
 	** Returns 'false'.
 	** Uri not used.
