@@ -41,14 +41,6 @@ internal const class T_AppModule {
 		conf.add(Route(`/redirect/movedTemp`,	T_PageHandler#redirectTemp))
 		conf.add(Route(`/redirect/afterPost`,	T_PageHandler#afterPost))
 
-		// CORS filters
-		conf.add(Route(`/cors/simple`,			CorsHandler#serviceSimple))
-		conf.add(Route(`/cors/preflight`,		CorsHandler#servicePrefilght, "OPTIONS"))
-		
-		// CORS routes
-		conf.add(Route(`/cors/simple`,			T_PageHandler#simple))
-		conf.add(Route(`/cors/preflight`,		T_PageHandler#preflight))
-		
 		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
 
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))

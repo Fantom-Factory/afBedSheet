@@ -35,16 +35,6 @@ internal const class T_PageHandler {
 		return Text.fromPlain("This is not Buff!")
 	}
 	
-	// ---- CORS Pages ----
-	
-	Text simple() {
-		Text.fromPlain("CORS!")
-	}
-
-	Text preflight() {
-		Text.fromPlain("Preflight!")
-	}
-	
 	// ---- GZIP Pages ----
 	
 	Obj gzipBig() {

@@ -26,7 +26,6 @@ const class BedSheetModule {
 		// Request handlers
 		binder.bindImpl(FileHandler#).withoutProxy				// has default method args
 		binder.bindImpl(PodHandler#).withoutProxy				// has default method args
-		binder.bindImpl(CorsHandler#).withoutProxy				// has default method args
 
 		// Collections (services with contributions)
 		binder.bindImpl(ResponseProcessors#)
@@ -125,13 +124,6 @@ const class BedSheetModule {
 		conf[ConfigIds.httpRequestLogDir]				= null
 		conf[ConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
 		conf[ConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
-
-		conf[ConfigIds.corsAllowedOrigins]				= "*"
-		conf[ConfigIds.corsExposeHeaders]				= null
-		conf[ConfigIds.corsAllowCredentials]			= false
-		conf[ConfigIds.corsAllowedMethods]				= "GET, POST"
-		conf[ConfigIds.corsAllowedHeaders]				= null
-		conf[ConfigIds.corsMaxAge]						= 60min
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
