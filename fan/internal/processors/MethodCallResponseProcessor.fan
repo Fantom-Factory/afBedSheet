@@ -63,7 +63,7 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		args := convertArgs(methodCall.method, methodCall.args)
 		
 		result := methodCall.method.callOn(handler, args)
-		// TDDO: log warning if handler result == null
+
 		return (result == null) ? false : result
 	}
 
@@ -72,7 +72,8 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		// FIXME:test when we have more args than method parama!
 		argsOut := argsIn.map |arg, i -> Obj?| {
 			paramType	:= method.params[i].type
-			value		:= (paramType.fits(Str#)) ? valueEncoders.toValue(paramType, arg) : arg
+			decode 		:= arg != null && arg.typeof.fits(Str#)
+			value		:= decode ? valueEncoders.toValue(paramType, arg) : arg
 			return value
 		}
 		return argsOut
