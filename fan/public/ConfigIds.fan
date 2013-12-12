@@ -63,47 +63,7 @@ const mixin ConfigIds {
 	** You should do this in production.
 	** Defaults to 'false'
 	static const Str errPageDisabled				:= "afBedSheet.errPage.disabled"
-	
-	** A CSV glob list of all origins (domains) allowed for Cross Origin Resource Sharing.
-	** Defaults to "*" (all domains).
-	** Example, "*.alienfactory.co.uk, *.heroku.com"
-	**
-	** @see `CrossOriginResourceSharingFilter`
-	static const Str corsAllowedOrigins				:= "afBedSheet.cors.allowedOrigins"
-
-	** If set to 'true' the 'Access-Control-Allow-Credentials' response header is set.
-	** Defaults to 'false'
-	** 
-	** @see `CrossOriginResourceSharingFilter` 
-	static const Str corsAllowCredentials			:= "afBedSheet.cors.allowCredentials"
-
-	** A CSV list of http headers the client application is allowed access to. 
-	** Defaults to 'null'.
-	** 
-	** @see `CrossOriginResourceSharingFilter` 
-	static const Str corsExposeHeaders				:= "afBedSheet.cors.exposeHeaders"
-
-	** A CSV list of http methods the client is allowed to make. 
-	** (Only required for preflight requests.)
-	** Defaults to "GET, POST".
-	** 
-	** @see `CrossOriginResourceSharingFilter` 
-	static const Str corsAllowedMethods				:= "afBedSheet.cors.allowedMethods"
-	
-	** A CSV list of http heads the client is allowed to send. 
-	** (Only required for preflight requests.)
-	** Defaults to 'null'.
-	** 
-	** @see `CrossOriginResourceSharingFilter` 
-	static const Str corsAllowedHeaders				:= "afBedSheet.cors.allowedHeaders"
-
-	** The max age to tell a client to cache the preflight request for.
-	** (Only required for preflight requests.)
-	** Defaults to '60min', set to 'null' to disable.
-	** 
-	** @see `CrossOriginResourceSharingFilter` 
-	static const Str corsMaxAge						:= "afBedSheet.cors.maxAge"
-	
+		
 	** When printing 'SrcCodeErrs', this is the number of lines of code to print before and 
 	** after the line in error. 
 	** Defaults to '5'
