@@ -9,7 +9,7 @@
 **   conf[ConfigIds.gzipThreshold] = 500
 ** }
 ** <pre
-const mixin ConfigIds {
+const mixin BedSheetConfigIds {
 	
 	** How often the `AppDestroyer` pings the proxy to keep the app alive.
 	** Defaults to '1sec'.
@@ -59,6 +59,7 @@ const mixin ConfigIds {
 	** @see `RequestLogFilter`
 	static const Str httpRequestLogFields			:= "afBedSheet.httpRequestLog.fields"
 
+	// FIXME: err page disable
 	** Set to 'true' to disable the default detailed BedSheet ErrPage.
 	** You should do this in production.
 	** Defaults to 'false'

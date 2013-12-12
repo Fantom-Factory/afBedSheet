@@ -33,7 +33,6 @@ const class BedSheetModule {
 		binder.bindImpl(HttpStatusProcessors#) 
 		
 		// Other services
-		binder.bindImpl(BrowserDetection#)
 		binder.bindImpl(GzipCompressible#)
 		binder.bindImpl(ErrPrinterHtml#)
 		binder.bindImpl(ErrPrinterStr#)
@@ -112,18 +111,18 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf, HttpStatusPageDefault defaultStatusPage) {
-		conf[ConfigIds.proxyPingInterval]				= 1sec
-		conf[ConfigIds.gzipDisabled]					= false
-		conf[ConfigIds.gzipThreshold]					= 376
-		conf[ConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
-		conf[ConfigIds.httpStatusDefaultPage]			= defaultStatusPage
-		conf[ConfigIds.noOfStackFrames]					= 50
-		conf[ConfigIds.errPageDisabled]					= false
-		conf[ConfigIds.srcCodeErrPadding]				= 5
+		conf[BedSheetConfigIds.proxyPingInterval]				= 1sec
+		conf[BedSheetConfigIds.gzipDisabled]					= false
+		conf[BedSheetConfigIds.gzipThreshold]					= 376
+		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
+		conf[BedSheetConfigIds.httpStatusDefaultPage]			= defaultStatusPage
+		conf[BedSheetConfigIds.noOfStackFrames]					= 50
+		conf[BedSheetConfigIds.errPageDisabled]					= false
+		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
 
-		conf[ConfigIds.httpRequestLogDir]				= null
-		conf[ConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
-		conf[ConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+		conf[BedSheetConfigIds.httpRequestLogDir]				= null
+		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
+		conf[BedSheetConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
@@ -209,7 +208,7 @@ const class BedSheetModule {
 	@Contribute { serviceType=RegistryStartup# }
 	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
 		conf.add |->| {
-			plasticCompiler.srcCodePadding = configSrc.getCoerced(ConfigIds.srcCodeErrPadding, Int#)
+			plasticCompiler.srcCodePadding = configSrc.getCoerced(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
 	}
 	

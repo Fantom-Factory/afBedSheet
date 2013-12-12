@@ -62,9 +62,9 @@ internal const class T_AppModule {
 	
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
-		conf[ConfigIds.gzipThreshold] 			= 50
-		conf[ConfigIds.httpRequestLogDir] 		= `./`.toFile
-		conf[ConfigIds.responseBufferThreshold]	= 1 * 1024
+		conf[BedSheetConfigIds.gzipThreshold] 			= 50
+		conf[BedSheetConfigIds.httpRequestLogDir] 		= `./`.toFile
+		conf[BedSheetConfigIds.responseBufferThreshold]	= 1 * 1024
 	}
 	
 	@Contribute { serviceType=ValueEncoders# }
