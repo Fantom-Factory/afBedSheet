@@ -231,6 +231,7 @@ const class Route {
 const mixin RouteResponseFactory {
 	abstract Bool matchSegments(Str?[] segments)
 
+	** Obj?[] so we can easily add other args into the list
 	abstract Obj? createResponse(Str?[] segments)
 }
 

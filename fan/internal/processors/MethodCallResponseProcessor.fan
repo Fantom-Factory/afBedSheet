@@ -70,10 +70,9 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 	** Convert the Str from Routes into real arg objs
 	private Obj[] convertArgs(Method method, Obj?[] argsIn) {
 		// FIXME:test when we have more args than method parama!
-		// watch out for ->Obj nulls here if ValEnc sig changes
 		argsOut := argsIn.map |arg, i -> Obj?| {
 			paramType	:= method.params[i].type
-			value		:= valueEncoders.toValue(paramType, arg)
+			value		:= (paramType.fits(Str#)) ? valueEncoders.toValue(paramType, arg) : arg
 			return value
 		}
 		return argsOut

@@ -1,7 +1,6 @@
 using afIoc
 using concurrent::Actor
 
-// FIXME: Delete test?
 internal class TestRoutes : BsTest {
 
 	Void handler1(Uri uri) 	{ Actor.locals["handler1"] = true}
