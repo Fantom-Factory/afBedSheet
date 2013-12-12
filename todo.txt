@@ -59,8 +59,6 @@ Tale integration - http://fantom.org/sidewalk/topic/1290
  - the JS compiler! A bloody neat idea!
  - anything else?
  
-Move the non-standard filters (Cors / IE) out into an afBedSheetUtils pod / afBedSheetContrib
-
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection
 
 

@@ -61,7 +61,7 @@ internal class TestBoom : AppTest {
 internal class T_TestBoomMod {
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
-		conf[ConfigIds.errPageDisabled] = true
+		conf[BedSheetConfigIds.errPageDisabled] = true
 	}
 }
 
