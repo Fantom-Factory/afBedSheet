@@ -9,8 +9,8 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 	@Inject	private const ErrPrinterHtml 	errPrinterHtml
 	@Inject	private const ErrPrinterStr 	errPrinterStr
 	
-	@Config { id="afBedSheet.errPage.disabled" }
-	@Inject private const Bool			errPageDisabled
+	@Config { id="afIocEnv.isProd" }
+	@Inject private const Bool				inProd
 	
 	internal new make(|This|in) { in(this) }
 
@@ -20,9 +20,9 @@ internal const class HttpStatusPage500 : HttpStatusProcessor {
 		if (!response.isCommitted)	// a sanity check
 			response.statusCode = httpStatus.code
 		
-		// disable detailed err page reports in production mode
-		title			:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
-		content			:= errPageDisabled ? "<p><b>Internal Server Error</b></p>" : errPrinterHtml.httpStatusToHtml(httpStatus)
+		// disable the detailed err page report in production mode
+		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
+		content	:= inProd ? "<p><b>Internal Server Error</b></p>" : errPrinterHtml.httpStatusToHtml(httpStatus)
 		return bedSheetPage.render(title, content, BedSheetLogo.skull)
 	}
 }

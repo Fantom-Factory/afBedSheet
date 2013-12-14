@@ -585,6 +585,13 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 Release Notes [#releaseNotes]
 *****************************
 
+v1.2.0 [#v1.2.0]
+----------------
+ - New: Route objects may take any response result - not just 'Methods'!
+ - New: BedSheet now has a dependency on [IocEnv]`http://repo.status302.com/doc/afIoc/#overview`
+ - Chg: The detailed Err page is disabled in a 'production' environment.
+ - Chg: Removed Route Matching - 'Routes' now only take 'Route' objects. (Breaking change.)
+
 v1.1.4 [#v1.1.4]
 ----------------
  - New: The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.

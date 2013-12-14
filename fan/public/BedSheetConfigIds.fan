@@ -1,5 +1,4 @@
 
-// FIXME: rename to BedSheetConfigIds
 ** Config values as provided by BedSheet. To change their value, override them in your 'AppModule'. 
 ** Example:
 ** 
@@ -59,12 +58,6 @@ const mixin BedSheetConfigIds {
 	** @see `RequestLogFilter`
 	static const Str httpRequestLogFields			:= "afBedSheet.httpRequestLog.fields"
 
-	// FIXME: err page disable
-	** Set to 'true' to disable the default detailed BedSheet ErrPage.
-	** You should do this in production.
-	** Defaults to 'false'
-	static const Str errPageDisabled				:= "afBedSheet.errPage.disabled"
-		
 	** When printing 'SrcCodeErrs', this is the number of lines of code to print before and 
 	** after the line in error. 
 	** Defaults to '5'

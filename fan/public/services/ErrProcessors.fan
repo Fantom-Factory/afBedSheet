@@ -12,7 +12,7 @@ using afIoc::StrategyRegistry
 ** @uses a MappedConfig of 'Type:ErrProcessor' where 'Type' is a subclass of 'Err' or a mixin.
 const mixin ErrProcessors {
 
-	@NoDoc
+	** Returns the result of processing the given 'Err'.
 	abstract Obj processErr(Err err)
 }
 
