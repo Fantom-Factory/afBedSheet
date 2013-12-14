@@ -35,7 +35,8 @@ header {
 footer {
 	margin-top:			3em;
 	padding:			0.5em 5%;
-	border-top: 		2px solid #33B5E5;
+	/* small pages, like 404, look better without the bottom border */
+	/*border-top: 		2px solid #33B5E5;*/
 	text-align:			right;
 }
 

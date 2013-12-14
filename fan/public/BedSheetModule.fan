@@ -1,5 +1,6 @@
-using afIoc
 using web
+using afIoc
+using afIocEnv::IocEnvModule
 using concurrent::Actor
 using afPlastic::PlasticCompiler
 using afIocConfig::FactoryDefaults
@@ -9,7 +10,7 @@ using afIocConfig::IocConfigModule
 ** The [afIoc]`http://repo.status302.com/doc/afIoc/#overview` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
-@SubModule { modules=[IocConfigModule#] }
+@SubModule { modules=[IocConfigModule#, IocEnvModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
@@ -98,15 +99,15 @@ const class BedSheetModule {
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 
-	@Contribute { serviceType=HttpStatusProcessors# }
-	static Void contributeHttpStatusProcessor(MappedConfig conf) {
-		conf[500]				= conf.autobuild(HttpStatusPage500#)
-	}
-
 	@Contribute { serviceType=ErrProcessors# }
 	static Void contributeErrProcessors(MappedConfig conf) {
 		conf[HttpStatusErr#]	= conf.autobuild(HttpStatusErrProcessor#)
 		conf[Err#]				= conf.autobuild(DefaultErrProcessor#)
+	}
+
+	@Contribute { serviceType=HttpStatusProcessors# }
+	static Void contributeHttpStatusProcessor(MappedConfig conf) {
+		conf[500]				= conf.autobuild(HttpStatusPage500#)
 	}
 
 	@Contribute { serviceType=FactoryDefaults# }
@@ -117,7 +118,6 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
 		conf[BedSheetConfigIds.httpStatusDefaultPage]			= defaultStatusPage
 		conf[BedSheetConfigIds.noOfStackFrames]					= 50
-		conf[BedSheetConfigIds.errPageDisabled]					= false
 		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
 
 		conf[BedSheetConfigIds.httpRequestLogDir]				= null

@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version("1.1.3")
+		version = Version("1.2.0")
 
 		meta	= [	"org.name"		: "Alien-Factory",
 					"org.uri"		: "http://www.alienfactory.co.uk/",
@@ -30,6 +30,7 @@ class Build : BuildPod {
 			
 					"afIoc 1.4.10+", 
 					"afIocConfig 0+", 
+					"afIocEnv 1+", 
 					"afPlastic 1.0+"
 				]
 
@@ -42,6 +43,20 @@ class Build : BuildPod {
 		// exclude test code when building the pod
 		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
 //		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
+	}
+	
+	@Target { help = "Compile to pod file and associated natives" }
+	override Void compile() {
+		super.compile
+		
+		destDir := Env.cur.homeDir.plus(`src/${podName}/`)
+		destDir.delete
+		destDir.create		
+		`fan/`.toFile.copyInto(destDir)
+		
+		log.indent
+		log.info("Copied `fan/` to ${destDir.normalize}")
+		log.unindent
 	}
 }
 

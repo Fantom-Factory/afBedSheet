@@ -3,6 +3,8 @@ using afIoc::Contribute
 using afIoc::Inject
 using afIoc::OrderedConfig
 using afIoc::MappedConfig
+using afIoc::ServiceOverride
+using afIocEnv::IocEnv
 using afIocConfig::ApplicationDefaults
 
 
@@ -12,6 +14,7 @@ internal class TestBoom : AppTest {
 	override Void setup() { }
 	
 	Void testBoomPage() {
+		iocModules	= [T_AppModule#, T_TestBoomMod1#]
 		super.setup
 		
 		client.reqUri = reqUri(`/boom`)
@@ -20,6 +23,18 @@ internal class TestBoom : AppTest {
 		
 		verifyEq(client.resCode, 500)
 		verify(client.resStr.contains("Stack Trace"))
+	}
+
+	Void testBoomPageInProdModeIsNotScary() {
+		iocModules	= [T_AppModule#, T_TestBoomMod2#]
+		super.setup
+
+		client.reqUri = reqUri(`/boom`)
+		client.writeReq
+		client.readRes
+
+		verifyEq(client.resCode, 500)
+		verifyFalse(client.resStr.contains("Stack Trace"))
 	}
 
 	Void testErr500WithNoErr() {
@@ -34,7 +49,7 @@ internal class TestBoom : AppTest {
 	}
 
 	Void testErrPagesWillNeverDie() {
-		iocModules	= [T_AppModule#, T_TestBoomMod2#]
+		iocModules	= [T_AppModule#, T_TestBoomMod3#]
 		super.setup
 		
 		client.reqUri = reqUri(`/boom`)
@@ -44,28 +59,23 @@ internal class TestBoom : AppTest {
 		verifyEq(client.resCode, 500)
 		verify(client.resStr.contains("Fantom Diagnostics"))
 	}
-
-	Void testBoomPageInProdModeIsNotScary() {
-		iocModules	= [T_AppModule#, T_TestBoomMod#]
-		super.setup
-
-		client.reqUri = reqUri(`/boom`)
-		client.writeReq
-		client.readRes
-
-		verifyEq(client.resCode, 500)
-		verifyFalse(client.resStr.contains("Stack Trace"))
-	}
 }
 
-internal class T_TestBoomMod {
-	@Contribute { serviceType=ApplicationDefaults# } 
-	static Void contributeApplicationDefaults(MappedConfig conf) {
-		conf[BedSheetConfigIds.errPageDisabled] = true
-	}
+internal class T_TestBoomMod1 {
+    @Contribute { serviceType=ServiceOverride# }
+    static Void contributeServiceOverride(MappedConfig config) {
+        config["IocEnv"] = IocEnv.fromStr("dev")
+    }
 }
 
 internal class T_TestBoomMod2 {
+    @Contribute { serviceType=ServiceOverride# }
+    static Void contributeServiceOverride(MappedConfig config) {
+        config["IocEnv"] = IocEnv.fromStr("prod")
+    }
+}
+
+internal class T_TestBoomMod3 {
 	@Contribute { serviceType=ErrPrinterHtml# } 
 	static Void contributeErrPrinterHtml(OrderedConfig config) {
 		config.addOrdered("Die", |WebOutStream out, Err? err| { throw Err("Ouch!") }, ["before: RequestDetails"])
