@@ -15,8 +15,8 @@ failed!
 
 
 
-For BedSheet 1.0.14
--------------------
+For BedSheet 1.2.2
+------------------
 
 Doc customising the ErrPrinters! Make them public?
 
@@ -83,3 +83,25 @@ With that in mind, BedSheet is reluctant
 Simple.
 Developers are lazy. If it's complicated or difficult, they won't use it.
 
+
+
+
+
+Using Draft Routes [#usingDraftRoutes]
+======================================
+If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use draft Routes
+in BedSheet!
+
+Just add [afBedSheetDraft]`https://bitbucket.org/AlienFactor/afbedsheetdraft` and [draft]`https://bitbucket.org/afrankvt/draft`
+as dependencies in your 'build.fan' (no config required!). Now you can contribute draft routes to BedSheet:
+
+pre>
+using draft::Route as DraftRoute
+
+@Contribute { serviceType=Routes# }
+static Void contributeRoutes(OrderedConfig conf) {
+
+  conf.add(DraftRoute("/", "GET", PageHandler#index))
+  conf.add(DraftRoute("/echo/{name}/{age}", "GET", PageHandler#print))
+}
+<pre
