@@ -75,17 +75,17 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=HttpPipeline# }
-	static Void contributeHttpPipeline(OrderedConfig conf) {
+	static Void contributeHttpPipeline(OrderedConfig conf, Routes routes) {
 		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), ["before: BedSheetFilters", "before: HttpErrFilter"])
 		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters", "before: HttpFlashFilter"])		
 		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 	["before: BedSheetFilters"])
 		conf.addPlaceholder("BedSheetFilters")
-		conf.addOrdered("HttpRouteFilter", 		conf.autobuild(HttpRouteFilter#), 	["after: BedSheetFilters"])
+		conf.addOrdered("HttpRoutesFilter", 	conf.autobuild(HttpRoutesFilter#, [routes]), ["after: BedSheetFilters"])
 	}
 
 	@Contribute { serviceId="HttpOutStream" }
 	static Void contributeHttpOutStream(OrderedConfig conf) {
-		conf.addOrdered("HttpOutStreamBuffBuilder", 	conf.autobuild(HttpOutStreamBuffBuilder#), ["before: HttpOutStreamGzipBuilder"])		
+		conf.addOrdered("HttpOutStreamBuffBuilder", 	conf.autobuild(HttpOutStreamBuffBuilder#), ["before: HttpOutStreamGzipBuilder"])
 		conf.addOrdered("HttpOutStreamGzipBuilder", 	conf.autobuild(HttpOutStreamGzipBuilder#))
 	}
 
@@ -109,7 +109,7 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.proxyPingInterval]				= 1sec
 		conf[BedSheetConfigIds.gzipDisabled]					= false
 		conf[BedSheetConfigIds.gzipThreshold]					= 376
-		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
+		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// todo: why not kB?
 		conf[BedSheetConfigIds.defaultHttpStatusProcessor]		= defaultHttpStatus
 		conf[BedSheetConfigIds.defaultErrProcessor]				= defaultErr
 		conf[BedSheetConfigIds.noOfStackFrames]					= 50
