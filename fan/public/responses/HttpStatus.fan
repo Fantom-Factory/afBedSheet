@@ -13,12 +13,12 @@ const class HttpStatus {
 	** @see `web::WebRes.statusMsg`
 	const Str msg
 	
-	** The Err which caused this http status. Generally used with a HTTP Status Code of 500. 
-	const Err? cause
+	** Custom user data 
+	const Obj? data
 	
-	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) {
+	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? data := null) {
 		this.code 	= statusCode
 		this.msg 	= statusMsg
-		this.cause 	= cause
+		this.data 	= data
 	}
 }

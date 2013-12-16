@@ -16,19 +16,19 @@ internal const class ErrPrinterHtml {
 		this.printers = printers
 	}
 	
-	Str httpStatusToHtml(HttpStatus httpStatus) {
+	Str errToHtml(Err err) {
 		buf := StrBuf()
 		out := WebOutStream(buf.out)
 
-		msg	  := (httpStatus.cause != null) ? "${httpStatus.cause.typeof}\n - ${httpStatus.cause.msg}" : httpStatus.msg
+		msg	  := "${err.typeof}\n - ${err.msg}"
 		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
 		out.h1.w(h1Msg).h1End
 		
 		printers.each |print| { 
 			try {
-				print.call(out, httpStatus.cause)
-			} catch (Err err) {
-				log.warn("Err when printing Err...", err)
+				print.call(out, err)
+			} catch (Err e) {
+				log.warn("Err when printing Err...", e)
 			}
 		}
 

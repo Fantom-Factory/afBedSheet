@@ -33,8 +33,8 @@ const mixin HttpStatusProcessors : ResponseProcessor {
 
 internal const class HttpStatusProcessorsImpl : HttpStatusProcessors {
 
-	@Inject @Config { id="afBedSheet.httpStatus.defaultPage" }
-	private const HttpStatusProcessor defaultHttpStatusPage
+	@Inject @Config { id="afBedSheet.httpStatusProcessors.default" }
+	private const HttpStatusProcessor defaultHttpStatusProcessor
 	
 	private const Int:HttpStatusProcessor processors
 
@@ -50,6 +50,6 @@ internal const class HttpStatusProcessorsImpl : HttpStatusProcessors {
 	}	
 	
 	private HttpStatusProcessor get(Int status) {
-		processors[status] ?: defaultHttpStatusPage
+		processors[status] ?: defaultHttpStatusProcessor
 	}	
 }

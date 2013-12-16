@@ -37,13 +37,13 @@ const class BedSheetModule {
 		binder.bindImpl(GzipCompressible#)
 		binder.bindImpl(ErrPrinterHtml#)
 		binder.bindImpl(ErrPrinterStr#)
-		binder.bindImpl(BedSheetPage#)
 		binder.bindImpl(HttpSession#)
 		binder.bindImpl(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
+		binder.bindImpl(BedSheetPage#)
 
-		// as it's used in FactoryDefaults we need to proxy it, because it needs MoustacheTemplates 
-		// (non proxy-iable) which needs @Config which needs FactoryDefaults...!!!
-		binder.bindImpl(HttpStatusPageDefault#)		
+		// TODO: afIoc-1.5 : use createProxy() instead
+		binder.bindImpl(DefaultHttpStatusProcessor#)
+		binder.bindImpl(DefaultErrProcessor#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -102,21 +102,16 @@ const class BedSheetModule {
 	@Contribute { serviceType=ErrProcessors# }
 	static Void contributeErrProcessors(MappedConfig conf) {
 		conf[HttpStatusErr#]	= conf.autobuild(HttpStatusErrProcessor#)
-		conf[Err#]				= conf.autobuild(DefaultErrProcessor#)
-	}
-
-	@Contribute { serviceType=HttpStatusProcessors# }
-	static Void contributeHttpStatusProcessor(MappedConfig conf) {
-		conf[500]				= conf.autobuild(HttpStatusPage500#)
 	}
 
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig conf, HttpStatusPageDefault defaultStatusPage) {
+	static Void contributeFactoryDefaults(MappedConfig conf, DefaultHttpStatusProcessor defaultHttpStatus, DefaultErrProcessor defaultErr) {
 		conf[BedSheetConfigIds.proxyPingInterval]				= 1sec
 		conf[BedSheetConfigIds.gzipDisabled]					= false
 		conf[BedSheetConfigIds.gzipThreshold]					= 376
 		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// TODO: why not kB?
-		conf[BedSheetConfigIds.httpStatusDefaultPage]			= defaultStatusPage
+		conf[BedSheetConfigIds.defaultHttpStatusProcessor]		= defaultHttpStatus
+		conf[BedSheetConfigIds.defaultErrProcessor]				= defaultErr
 		conf[BedSheetConfigIds.noOfStackFrames]					= 50
 		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
 

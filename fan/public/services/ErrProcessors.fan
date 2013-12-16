@@ -1,3 +1,4 @@
+using afIoc::Inject
 using afIoc::StrategyRegistry
 
 ** (Service) - Holds a collection of `ErrProcessor`s.
@@ -19,8 +20,13 @@ const mixin ErrProcessors {
 internal const class ErrProcessorsImpl : ErrProcessors {
 
 	private const StrategyRegistry errProcessorStrategy
+
+	@Inject @Config { id="afBedSheet.errProcessors.default" }
+	private const ErrProcessor defaultErrProcessor
 	
-	internal new make(Type:ErrProcessor errProcessors) {
+	
+	internal new make(Type:ErrProcessor errProcessors, |This|in) {
+		in(this)
 		errProcessors.keys.each |type| {
 			if (type.isClass && !type.fits(Err#))
 				throw BedSheetErr(BsErrMsgs.errProcessorsNotErrType(type))
@@ -33,6 +39,6 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 	}
 
 	private ErrProcessor get(Type errType) {
-		return errProcessorStrategy.findBestFit(errType)
+		errProcessorStrategy.findBestFit(errType, false) ?: defaultErrProcessor
 	}
 }

@@ -1,8 +1,25 @@
+using afIoc::Inject
+using web::WebRes
 
-** Converts an Err into a `HttpStatus` with a status code of 500 - Internal Server Error. 
-internal const class DefaultErrProcessor : ErrProcessor {
-	
+** Prints the BedSheet Err Page 
+@NoDoc
+const mixin DefaultErrProcessor : ErrProcessor { }
+
+internal const class DefaultErrProcessorImpl : DefaultErrProcessor {
+	private const static Log log := Utils.getLog(DefaultErrProcessor#)
+
+	@Inject	private const HttpResponse 		response
+	@Inject	private const ErrPrinterStr 	errPrinterStr
+	@Inject	private const BedSheetPage		bedSheetPage
+
+	new make(|This|in) { in(this) }
+
 	override Obj process(Err err) {
-		HttpStatus(500, "Internal Server Error", err)
+		log.err(errPrinterStr.errToStr(err))
+
+		if (!response.isCommitted)	// a sanity check
+			response.statusCode = 500
+		
+		return bedSheetPage.renderErr(err)
 	}
 }

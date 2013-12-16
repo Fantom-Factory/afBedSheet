@@ -9,6 +9,7 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const ErrProcessors			errProcessors
 	@Inject	private const HttpResponse			httpResponse
+	@Inject	private const BedSheetPage			bedSheetPage
 
 	new make(|This|in) { in(this) }
 	
@@ -27,8 +28,10 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 				log.err("  - Original Err", err)
 				
 				if (!httpResponse.isCommitted) {
-					errPage := (HttpStatusPage500) registry.autobuild(HttpStatusPage500#)
-					errPage.process(HttpStatus(500, doubleErr.msg)) 
+					errText := bedSheetPage.renderErr(doubleErr)
+					httpResponse.statusCode = 500
+					httpResponse.headers.contentType = errText.mimeType
+					httpResponse.out.print(errText.text)
 				}
 			}
 			
