@@ -8,7 +8,7 @@ internal const class T_AppModule {
 	}
 
 	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(OrderedConfig conf) {
+	static Void contributeRoutes(OrderedConfig conf, BedSheetPage bedSheetPage) {
 		conf.add(Route(`/textResult/plain`,		T_PageHandler#plain))
 		conf.add(Route(`/textResult/html`,	 	T_PageHandler#html))
 		conf.add(Route(`/textResult/xml`, 		T_PageHandler#xml))
@@ -41,7 +41,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
 
-		conf.add(Route(`/welcome`, 				WelcomePage#service))
+		conf.add(Route(`/welcome`, 				bedSheetPage.renderWelcomePage))
 
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
 		conf.add(Route(`/test-src2/***`, 		FileHandler#service))

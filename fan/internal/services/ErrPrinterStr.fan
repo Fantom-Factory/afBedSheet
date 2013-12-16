@@ -33,12 +33,6 @@ internal const class ErrPrinterStr {
 		
 		return buf.toStr.trim
 	}
-
-	Str httpStatusToStr(HttpStatus httpStatus) {
-		msg		:= httpStatus.cause?.msg ?: httpStatus.msg
-		status	:= ("HTTP Status Code: ${httpStatus.code} - ${msg}\n\n")
-		return status + errToStr(httpStatus.cause)
-	}
 }
 
 internal const class ErrPrinterStrSections {

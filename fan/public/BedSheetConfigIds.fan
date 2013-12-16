@@ -28,10 +28,16 @@ const mixin BedSheetConfigIds {
 	** Defaults to '32Kb'.
 	static const Str responseBufferThreshold		:= "afBedSheet.responseBuffer.threshold"
 
-	** The default page (instance of HttpStatusProcessor) to show when no specific page has been 
-	** specified for a http status code.
-	** Defaults to 'conf.autobuild(HttpStatusPageDefault#)'
-	static const Str httpStatusDefaultPage			:= "afBedSheet.httpStatus.defaultPage"
+	** The default `HttpStatusProcessor` to use when no specific processor has been defined for a given http status 
+	** code.
+	** Defaults to 'conf.autobuild(DefaultHttpStatusProcessor#)' which sets the http status code in the response and 
+	** renders the standard BedSheet status page.
+	static const Str defaultHttpStatusProcessor		:= "afBedSheet.httpStatusProcessors.default"
+
+	** The default `ErrProcessor` to use when no specific processor has been defined for a given Err.
+	** Defaults to 'conf.autobuild(DefaultErrProcessor#)' which sets the http status code in the response to 500 and 
+	** renders the standard BedSheet verbose error page.
+	static const Str defaultErrProcessor			:= "afBedSheet.errProcessors.default"
 	
 	** The number of stack frames to print in logs and error pages.
 	** Defaults to '50'

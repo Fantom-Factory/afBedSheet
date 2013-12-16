@@ -1,5 +1,6 @@
 using web::WebRes
 
+// FIXME: Is there a test for this?
 ** Throw at any point to process / handle the wrapped `HttpStatus`.
 const class HttpStatusErr : Err {
 
@@ -10,7 +11,7 @@ const class HttpStatusErr : Err {
 		this.httpStatus = HttpStatus(statusCode, statusMsg, cause)
 	}
 
-	new makeFromHttpStatus(HttpStatus httpStatus) : super.make(httpStatus.msg, httpStatus.cause) {
+	new makeFromHttpStatus(HttpStatus httpStatus, Err? cause := null) : super.make(httpStatus.msg, cause) {
 		this.httpStatus = httpStatus
 	}
 }
