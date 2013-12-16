@@ -1,6 +1,5 @@
 using web::WebRes
 
-// FIXME: Is there a test for this?
 ** Throw at any point to process / handle the wrapped `HttpStatus`.
 const class HttpStatusErr : Err {
 

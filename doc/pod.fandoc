@@ -589,7 +589,8 @@ v1.2.0 [#v1.2.0]
 ----------------
  - New: Route objects may take any response result - not just 'Methods'!
  - New: BedSheet now has a dependency on [IocEnv]`http://repo.status302.com/doc/afIoc/#overview`
- - Chg: The detailed Err page is disabled in a 'production' environment.
+ - Chg: The detailed BedSheet Err500 page is disabled in 'production' environments.
+ - Chg: Rejigged how the default 'ErrProcessor' is used, making it easier to plug in your own. (Breaking change.)
  - Chg: Removed Route Matching - 'Routes' now only take 'Route' objects. (Breaking change.)
 
 v1.1.4 [#v1.1.4]
