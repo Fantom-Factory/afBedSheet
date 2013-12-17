@@ -1,6 +1,6 @@
 
-** (Service) - Holds a list of [MimeType]`sys::MimeType`s that may be gzip'ed in a http response. A 
-** standard set of types are configured by default, to add to the list:
+** (Service) - Holds a list of 'MimeTypes' that may be gzip'ed in a http response. 
+** A standard set of types are configured by default. To add to the list:
 ** 
 ** pre>
 **  @Contribute { serviceType=GzipCompressible# }
@@ -9,6 +9,7 @@
 **  }
 ** <pre
 ** 
+** @uses a MappedConfig of 'MimeType:Bool'
 const mixin GzipCompressible {
 	
 	** Returns 'true' if the given `MimeType` may be compressed.

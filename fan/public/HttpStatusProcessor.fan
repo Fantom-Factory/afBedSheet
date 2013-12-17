@@ -1,6 +1,5 @@
 
-** A response processor for `HttpStatus` objects. Configure 'HttpStatusProcessors' for specific 
-** http status codes by contributing to `HttpStatusProcessors`. 
+** Implement to define a 'HttpStatusProcessor'. Contribute it to the 'HttpStatusProcessors' service. 
 const mixin HttpStatusProcessor {
 	
 	** Process the given `HttpStatus`. Return 'true' if request processing is complete or another 

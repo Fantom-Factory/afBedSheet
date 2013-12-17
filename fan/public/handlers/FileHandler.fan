@@ -1,7 +1,7 @@
 using web::WebReq
 using afIoc::Inject
 
-** (Service) - A Request Handler that maps uris to files on the file system.
+** (Service) - A Request Handler that maps URIs to files on the file system.
 ** 
 ** Example, to map all uris prefixed with '/pub/' to files under the '<app>/etc/web/' directory, 
 ** in your AppModule:
@@ -30,7 +30,7 @@ using afIoc::Inject
 const mixin FileHandler {
 
 	** Returns a `File` on the file system, as mapped from the given uri.
-	abstract File service(Uri remainingUri := ``)
+	abstract File service(Uri remainingUri)
 
 }
 
@@ -61,7 +61,7 @@ internal const class FileHandlerImpl : FileHandler {
 		this.dirMappings = dirMappings.toImmutable
 	}
 
-	override File service(Uri remainingUri := ``) {
+	override File service(Uri remainingUri) {
 		
 		// use pathStr to knockout any unwanted query str
 		matchedUri := req.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri

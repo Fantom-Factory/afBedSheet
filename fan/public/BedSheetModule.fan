@@ -25,8 +25,8 @@ const class BedSheetModule {
 		binder.bindImpl(ValueEncoders#)
 		
 		// Request handlers
-		binder.bindImpl(FileHandler#).withoutProxy				// has default method args
-		binder.bindImpl(PodHandler#).withoutProxy				// has default method args
+		binder.bindImpl(FileHandler#)
+		binder.bindImpl(PodHandler#)
 
 		// Collections (services with contributions)
 		binder.bindImpl(ResponseProcessors#)
@@ -80,7 +80,7 @@ const class BedSheetModule {
 		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters", "before: HttpFlashFilter"])		
 		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 	["before: BedSheetFilters"])
 		conf.addPlaceholder("BedSheetFilters")
-		conf.addOrdered("HttpRoutesFilter", 	conf.autobuild(HttpRoutesFilter#, [routes]), ["after: BedSheetFilters"])
+		conf.addOrdered("HttpRoutesFilter", 	conf.autobuild(HttpRoutesBeforeFilter#, [routes]), ["after: BedSheetFilters"])
 	}
 
 	@Contribute { serviceId="HttpOutStream" }

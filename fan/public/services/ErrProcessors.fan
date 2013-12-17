@@ -1,7 +1,8 @@
 using afIoc::Inject
 using afIoc::StrategyRegistry
 
-** (Service) - Holds a collection of `ErrProcessor`s.
+** (Service) - Contribute your 'ErrProcessor' implementations to this. 
+** Example, in your 'AppModule':
 ** 
 ** pre>
 **   @Contribute { serviceType=ErrProcessors# }
@@ -14,6 +15,7 @@ using afIoc::StrategyRegistry
 const mixin ErrProcessors {
 
 	** Returns the result of processing the given 'Err'.
+	@NoDoc	// not intended for public use
 	abstract Obj processErr(Err err)
 }
 

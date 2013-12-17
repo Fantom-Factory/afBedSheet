@@ -1,9 +1,10 @@
 using afIoc::StrategyRegistry
 
-** (Service) - Holds a collection of `ResponseProcessor`s.
+** (Service) - Contribute your `ResponseProcessor` implementations to this.
 const mixin ResponseProcessors {
 
 	** Recursively processes the response object until 'true' or 'false' is returned
+	@NoDoc // not for public use
 	abstract Bool processResponse(Obj response)
 
 }

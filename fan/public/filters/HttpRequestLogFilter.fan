@@ -3,9 +3,8 @@ using afIoc::RegistryShutdownHub
 using webmod::LogMod
 using afIocConfig::IocConfigSource
 
-**
-** Uses [LogMod]`webmod::LogMod` to generate a server log file for all HTTP requests in the [W3C 
-** Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. 
+** Logs HTTP requests to file in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. 
+** Uses [LogMod]`webmod::LogMod`. 
 ** 
 ** To enable, contribute the filter to the HttpPipeline and set the log dir:
 ** 

@@ -2,7 +2,7 @@ using afIoc::ConcurrentState
 using afIoc::StrategyRegistry
 using afIoc::TypeCoercer
 
-** (Service) - Holds a list of `ValueEncoder`s.
+** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
 ** pre>
 **   @Contribute { serviceType=ValueEncoders# }
@@ -11,7 +11,7 @@ using afIoc::TypeCoercer
 **   }
 ** <pre
 ** 
-** @uses a MappedConfig of 'Type:ValueEncoder'
+** @uses a MappedConfig of 'Type:ValueEncoder' where 'Type' is what the 'ValueEncoder', um, encodes!
 const mixin ValueEncoders {
 	
 	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
