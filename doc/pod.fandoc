@@ -19,7 +19,7 @@ Install 'BedSheet' with the [Fantom Respository Manager]`http://fantom.org/doc/d
 
 Or download the pod from [Status302]`http://repo.status302.com/browse/afBedSheet` and copy to '%FAN_HOME%/lib/fan/'.
 
-To use in a [Fantom]`http://fantom.org/` project, add a dependency to its 'build.fan':
+To use in a Fantom project, add a dependency to its 'build.fan':
 
   depends = ["sys 1.0", ..., "afBedSheet 1.2+"]
 
@@ -56,7 +56,7 @@ class Example {
 
 2). Run 'Example.fan' as a script from the command line:
 pre>
-C:\> fan Example.fan
+C:\> fan Example.fan -env development
 ...
 BedSheet v1.0 started up in 323ms
 
@@ -98,7 +98,7 @@ pre>
 C:\> fan afBedSheet myWebApp::AppModule 80
 <pre
 
-Every BedSheet application has an 'AppModule' class that defines and configures your
+Every 'BedSheet' application has an 'AppModule' class that defines and configures your
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an
 [afIoc]`http://repo.status302.com/doc/afIoc/#overview` concept that allows you centralise your application configuration in
 one place.
@@ -217,32 +217,29 @@ By default, BedSheet handles the following response objects:
 Template Rendering [#templateRendering]
 ***************************************
 Templating, or generating content (of HTML or otherwise) is left for other 3rd party libraries and is not a conern of 'BedSheet'.
-That said, integrating them into BedSheet is relatively simple.
+That said, integrating them into 'BedSheet' is relatively simple.
 
-Alien-Factory provides 3 dedicated libraries:
+Alien-Factory provides the following libraries:
 
  - [afSlim]`http://repo.status302.com/doc/afSlim/#overview` for rendering HTML,
+ - [afPillow]`http://repo.status302.com/doc/afPillow/#overview` for integrating [afEfanXtra]`http://repo.status302.com/doc/afEfanXtra/#overview` components (may be used with 'Slim'!),
  - [afBedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` for integrating
  [efan (Embedded Fantom)]`http://repo.status302.com/doc/afEfan/#overview` templates and
  - [afBedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
 
-Taking [afBedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` as an example, to use it simply add it as a
-dependency in your 'build.fan':
-
-    depends = ["sys 1.0", "afIoc 1.4+", "afBedSheet 1.0+", "afBedSheetEfan 1.0+", ... ]
-
-Then use it in your request handlers:
+Taking [Slim]`http://repo.status302.com/doc/afSlim/#overview` as an example, simply inject and use it in your request
+handlers:
 
 pre>
-using afBedSheet
-using afBedSheetEfan
 using afIoc
+using afBedSheet
+using afSlim
 
 class IndexPage {
-  @Inject EfanTemplates? efan
+  @Inject Slim? slim
 
   Text render() {
-    html := efan.renderFromFile(`xmas.html.efan`.toFile)
+    html := slim.renderFromFile(`xmas.html.slim`.toFile)
     return Text.fromHtml(html)
   }
 }
@@ -253,22 +250,26 @@ class IndexPage {
 Error Processing [#errorProcessing]
 ***********************************
 When 'BedSheet' catches an Err it scans through a list of contributed [ErrProcessors]`ErrProcessor` to find one that can
-handle the Err. [ErrProcessors]`ErrProcessor` take an Err and return a response for further processing (example, `Text`). Or
+handle the Err. [ErrProcessors]`ErrProcessor` take an Err and return a response for further processing (for example, `Text`). Or
 it may return 'true' if the error has been completely handled and no further processing is required.
 
 'BedSheet' bundles with the follow 'ErrProcessors':
- - 'HttpStatusErr' : Returns the wrapped `HttpStatus` for further processing.
+ - `HttpStatusErr` : Returns the wrapped `HttpStatus` for further processing.
 
 If no matching 'ErrProcessor' is found then 'BedSheet' displays its default Err500 page - which is extremely verbose, displays
-loads of debugging information and is highly customisable.
+(a shed load of) debugging information and is highly customisable.
 
 ![BedSheet's Verbose Err500 Page]`http://static.alienfactory.co.uk/fantom-docs/Err500.png`
 
-The default Err page is great for development! But... not so great for production - stack traces tend to scare most non-developers.
+The default Err page is great for development! But not so great for production - stack traces tend to scare most non-developers.
 So note that in a production environment (see [afIocEnv]`http://repo.status302.com/doc/afIocEnv/#overview`) a simple HTTP status
 page is displayed instead.
 
-To add your own Err page, contribute to `ErrProcessors`:
+> **ALIEN-AID:** BedSheet defaults to production mode, so set an environment variable called 'ENV' with the value 'development'
+to ensure you continue to see the BedSheet's verbose Err50 page. See this
+[Fantom-Factory article]`http://fantom-factory.blogspot.co.uk/2013/12/dev-test-or-prod-what-is-your-machine.html` for more details.
+
+To add your own Err page, contribute an `ErrProcessor` to `ErrProcessors`:
 
 pre>
   @Contribute { serviceType=ErrProcessors# }
@@ -288,7 +289,7 @@ client. This is the page you see when you receive a '404 Not Found' error.
 
 ![BedSheet's 404 Status Page]`http://static.alienfactory.co.uk/fantom-docs/Err404.png`
 
-To set your own '404 Not Found' page, contribute to the 'HttpStatusProcessors' service:
+To set your own '404 Not Found' page, contribute a `HttpStatusProcessor` to the `HttpStatusProcessors` service:
 
 pre>
   @Contribute { serviceType=HttpStatusProcessors# }
@@ -321,7 +322,7 @@ pre>
 All BedSheet config keys are listed in `BedSheetConfigIds` meaning the above can be more safely rewriten as:
 
 pre>
-  conf[ConfigIds.noOfStackFrames] = 100
+  conf[BedSheetConfigIds.noOfStackFrames] = 100
 <pre
 
 To inject config values in your services, use the '@Config' facet with conjunction with
@@ -373,26 +374,26 @@ Development Proxy [#DevelopmentProxy]
 *************************************
 Never (manually) restart your app again!
 
-Use the '-proxy' option to create a Development Proxy to auto re-start your app when any of your pods are updated:
+Use the '-proxy' option when starting BedSheet to create a Development Proxy and your app will auto re-start when a pod is updated:
 
 pre>
 C:\> fan afBedSheet -proxy <mypod> <port>
 <pre
 
-The proxy sits on '<port>', starts your real app on '<port>+1' and forwards all requests to it.
+The proxy sits on '<port>' and starts your real app on '<port>+1', forwarding all requests to it.
 
 pre>
   Client <--> Proxy (port) <--> Web App (port+1)
 <pre
 
-A problem other (Fantom) web development proxies suffer from, is that when the proxy dies your real web app is left hanging
+A problem other (Fantom) web development proxies suffer from is that, when the proxy dies, your real web app is left hanging
 around; requiring you to manually kill it.
 
 pre>
   Client <-->   ????????   <--> Web App (port+1)
 <pre
 
-BedSheet goes a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
+BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
 the proxy not respond, the web app kills itself.
 
 See `ConfigIds.proxyPingInterval` for more details.
