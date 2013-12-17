@@ -80,7 +80,7 @@ const mixin HttpRequest {
 	** @see `web::WebReq.locales`
 	abstract Locale[] locales()
 	
-	** Get the stream to read request body.  See `WebUtil.makeContentInStream` to check under which 
+	** Get the stream to read request body.  See `web::WebUtil.makeContentInStream` to check under which 
 	** conditions request content is available. If request content is not available, then throw an 
 	** exception.
 	**
