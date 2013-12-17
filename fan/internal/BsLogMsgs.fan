@@ -78,5 +78,9 @@ internal const class BsLogMsgs {
 	static Str routesGotNone() {
 		"No contributions have been made to the Routes service!"
 	}
+
+	static Str requestLogEnabled(File logDir) {
+		"HTTP Request Logging is enabled --> ${logDir.normalize.osPath}"
+	}
 	
 }

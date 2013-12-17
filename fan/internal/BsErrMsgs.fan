@@ -53,10 +53,6 @@ internal const class BsErrMsgs {
 		"Contributed ErrProcessor types must be subclasses of Err - ${type.qname}"
 	}
 	
-	static Str requestLogFilterDirCannotBeNull() {
-		"Please contribute a RequestLogFilter dir! \nExample, conf[ConfigIds.requestLogDir] = `/my/log/dir/`.toFile"
-	}
-
 	static Str bedSheetMetaDataNotInOptions() {
 		"RegistryOptions does not contain BedSheetMetaData"
 	}

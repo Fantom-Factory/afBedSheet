@@ -76,9 +76,10 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=HttpPipeline# }
 	static Void contributeHttpPipeline(OrderedConfig conf, Routes routes) {
-		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), ["before: BedSheetFilters", "before: HttpErrFilter"])
-		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 	["before: BedSheetFilters", "before: HttpFlashFilter"])		
-		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 	["before: BedSheetFilters"])
+		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), 	["before: BedSheetFilters", "before: HttpErrFilter"])
+		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 		["before: BedSheetFilters", "before: HttpRequestLogFilter"])
+		conf.addOrdered("HttpRequestLogFilter", conf.autobuild(HttpRequestLogFilter#),	["before: BedSheetFilters", "before: HttpFlashFilter"])
+		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 		["before: BedSheetFilters"])
 		conf.addPlaceholder("BedSheetFilters")
 		conf.addOrdered("HttpRoutesFilter", 	conf.autobuild(HttpRoutesBeforeFilter#, [routes]), ["after: BedSheetFilters"])
 	}
@@ -117,7 +118,7 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.disableWelcomePage]				= false
 
 		conf[BedSheetConfigIds.httpRequestLogDir]				= null
-		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
+		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
 		conf[BedSheetConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 

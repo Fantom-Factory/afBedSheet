@@ -6,7 +6,7 @@
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# } 
 ** static Void configureApplicationDefaults(MappedConfig conf) {
-**   conf[ConfigIds.gzipThreshold] = 500
+**   conf[BedSheetConfigIds.gzipThreshold] = 500
 ** }
 ** <pre
 const mixin BedSheetConfigIds {
@@ -63,12 +63,14 @@ const mixin BedSheetConfigIds {
 	**  
 	** Defaults to 'false'
 	static const Str disableWelcomePage				:= "afBedSheet.disableWelcomePage"
+
+
+
+	// --- RequestLogFilter ----
 	
-	
-	
-	
-	
-	** Directory where the request log files are written. Must be supplied.
+	** Directory where request log files are to be written. 
+	** Set to enable request logging. 
+	** Must end in a trailing /slash/.
 	** 
 	** @see `RequestLogFilter`
 	static const Str httpRequestLogDir				:= "afBedSheet.httpRequestLog.dir"
