@@ -8,7 +8,7 @@ using afIoc::Registry
 const mixin Routes {
 
 	** The ordered list of routes
-	abstract Obj[] routes()
+	abstract Route[] routes()
 
 	** Returns true if the HTTP request was handled.
 	@NoDoc	// not for public use 

@@ -73,6 +73,14 @@ internal const class T_PageHandler {
 	
 	// ---- Route Pages ----
 	
+	Obj noParams() {
+		Text.fromPlain("No Params")
+	}
+
+	Obj methodCallErr() {
+		MethodCall(#noParams, [69])
+	}
+
 	Obj defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") {
 		Text.fromPlain("$p1 $p2 $p3")
 	}
