@@ -1,4 +1,4 @@
-using build::BuildPod
+using build
 
 class Build : BuildPod {
 

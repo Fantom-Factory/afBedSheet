@@ -17,7 +17,7 @@ Install 'BedSheet' with the [Fantom Respository Manager]`http://fantom.org/doc/d
 
   C:\> fanr install -r http://repo.status302.com/fanr/ afBedSheet
 
-Or download the pod from [Status302]`http://repo.status302.com/browse/afBedSheet` and copy to '%FAN_HOME%/lib/fan/'.
+Or download the pod from [Status302]`http://repo.status302.com/browse/afBedSheet` and copy it to '%FAN_HOME%/lib/fan/'.
 
 To use in a Fantom project, add a dependency to its 'build.fan':
 
@@ -178,6 +178,33 @@ static Void contributeRoutes(OrderedConfig conf) {
 [Routes]`Route` take a matching 'glob' and a response object. A response object is any object that 'BedSheet' knows how to
 [process]`#responseProcessing` or a 'Method' to be called. If a method is given, then uri segments are matched to the method
 arguments. See `Route` for more details.
+
+
+
+Using Draft Routes [#usingDraftRoutes]
+======================================
+If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use draft Routes
+in 'BedSheet'!
+
+Add [afBedSheetDraft]`https://bitbucket.org/AlienFactor/afbedsheetdraft` and [draft]`https://bitbucket.org/afrankvt/draft`
+as dependencies in your 'build.fan'; now you can contribute draft Route objects in your 'AppModule':
+
+pre>
+using afIoc
+using afBedSheet
+using afBedSheetDraft
+using draft::Route as DraftRoute
+
+class AppModule {
+
+  @Contribute { serviceType=DraftRoutes# }
+  static Void contributeDraftRoutes(OrderedConfig conf) {
+
+    conf.add(DraftRoute("/", "GET", PageHandler#index))
+    conf.add(DraftRoute("/echo/{name}/{age}", "GET", PageHandler#print))
+  }
+}
+<pre
 
 Routing lesson over.
 
