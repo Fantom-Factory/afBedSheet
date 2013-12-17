@@ -461,8 +461,8 @@ See 'BufferedOutStream' and `BedSheetConfigIds.responseBufferThreshold` for more
 
 
 
-Testing [#testing]
-******************
+Testing Your Web App [#testing]
+*******************************
 BedSheet ships with a means of testing your web app without starting the wisp server. This forgoes the overhead of starting a
 real web server, opening real ports and making real http requests. Essentially you're testing the entire app, just cutting
 out the middle man.

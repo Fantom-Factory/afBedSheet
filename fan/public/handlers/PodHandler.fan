@@ -13,7 +13,7 @@
 ** Now a request to '/pod/icons/x256/flux.png' should return just that! 
 const mixin PodHandler {
 	
-	** Returns `File` pod resource as mapped from the given uri.
+	** Returns a pod resource (as a 'File') as mapped from the given uri.
 	** Throws a `HttpStatusErr` 404 if not found.
 	abstract File service(Uri remainingUri)
 

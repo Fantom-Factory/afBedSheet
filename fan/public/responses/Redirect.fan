@@ -17,6 +17,7 @@ const final class Redirect {
 		this.type = type
 	}
 
+	// FIXME: Fantom-1.0.66 - use http status 308 
 	** Sends a 'Moved Permanently' response to the client with the following status codes:
 	**  - 301 for HTTP 1.0 
 	**  - 308 for HTTP 1.1
