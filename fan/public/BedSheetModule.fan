@@ -114,6 +114,7 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.defaultErrProcessor]				= defaultErr
 		conf[BedSheetConfigIds.noOfStackFrames]					= 50
 		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
+		conf[BedSheetConfigIds.disableWelcomePage]				= false
 
 		conf[BedSheetConfigIds.httpRequestLogDir]				= null
 		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "afBedSheet-{YYYY-MM}.log"
