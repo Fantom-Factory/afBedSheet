@@ -5,7 +5,7 @@ using util::Opt
 using web::WebMod
 using wisp::WispService
 
-** Call to start Wisp and run a BedSheet app. To run BedSheet from the command line:
+** Call to start 'Wisp' and run a 'BedSheet' app. To run BedSheet from the command line:
 ** 
 ** pre>
 **   $ fan afBedSheet [-proxy] <appModule> <port>

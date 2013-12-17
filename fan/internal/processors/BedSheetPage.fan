@@ -2,29 +2,46 @@ using afIoc::Inject
 using web::WebOutStream
 using web::WebRes
 
-const class BedSheetPage {
- 
+** (Service) - Renders the standard 'BedSheet' web pages.
+const mixin BedSheetPage {
+
+	** Renders the 'BedSheet' status page, such as the 404 page.
+	abstract Text renderHttpStatus(HttpStatus httpStatus)
+
+	** Renders the 'BedSheet' Err page. This is usually verbose but very minimal in a production environment. 
+	** 
+	** To see the verbose Err page, ensure 'BedSheet' is started with the '-env dev' option or have a environment 
+	** variable 'env' set to 'dev'.   
+	abstract Text renderErr(Err err)
+	
+	** Renders the 'BedSheet' welcome page. 
+	** Usually shown if no [Routes]`Route` have been contributed to the `Routes` service. 
+	abstract Text renderWelcomePage()
+}
+
+internal const class BedSheetPageImpl : BedSheetPage {
+
 	@Inject	private const ErrPrinterHtml 	errPrinterHtml
 
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool				inProd
 
 	new make(|This|in) { in(this) }
-	
-	Text renderHttpStatus(HttpStatus httpStatus) {
+
+	override Text renderHttpStatus(HttpStatus httpStatus) {
 		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
 		// if the msg is html, leave it as is
 		content	:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>"
 		return render(title, content)
 	}	
 
-	Text renderErr(Err err) {
+	override Text renderErr(Err err) {
 		title	:= "500 - " + WebRes.statusMsg[500]
 		content	:= inProd ? "<p><b>${err.msg}</b></p>" : errPrinterHtml.errToHtml(err)
 		return render(title, content, BedSheetLogo.skull)		
 	}
 	
-	Text renderWelcomePage() {
+	override Text renderWelcomePage() {
 		title	:= "BedSheet ${typeof.pod.version}"
 		buf 	:= StrBuf()
 		out 	:= WebOutStream(buf.out)

@@ -1,16 +1,15 @@
 
-** Responsible for converting values to and from Strs, use to inject values into request handler 
-** methods.
+** Implement to convert values to and from 'Str' objects. Contribute it to the `ValueEncoders` service. 
 ** 
-** Contribute to `ValueEncoderSource` to add your own ValueEncoders.
+** 'ValueEncoders' are responsible for converting 'Strs' from request uri segments into request handler method 
+** arguments. 
 ** 
-** A general pattern for Fantom when converting values from Strs is for the Obj in question to 
-** implement a static ctor called, 'fromStr()'. While this technique works well for serialisation, 
-** it falls short in web app context because:
+** In general, Fantom objects use 'toStr()' and 'fromStr()' for Str conversion. While this works well for serialisation,
+** it often falls short in the context of a web application. This is because in an application, the object in question 
+** is often an entity or DTO from a database, and you need services to create it... which you don't have in a static 
+** 'fromStr()' ctor!
 ** 
-**  - Static methods can not make use of dependency injection. Given that most ValueEncoders will
-**    need to call out a DAO or similar, this is a big limitation.
-** 
+** Therefore 'ValueEncoders' allow you to use the standard 'afIoc' dependency injection and any service of your choice. 
 const mixin ValueEncoder {
 
 	abstract Str toClient(Obj value)

@@ -11,7 +11,7 @@ const internal class HttpPipelineTerminator : HttpPipeline {
 	new make(|This|in) { in(this) }
 
 	override Bool service() {
-		// TODO: have a way to disable the welcome page if filters have been added
+		// FIXME: have a way to disable the welcome page if filters have been added
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
 		if (routes.routes.isEmpty)
 			return responseProcessors.processResponse(bedSheetPage.renderWelcomePage)

@@ -15,13 +15,13 @@ const mixin PodHandler {
 	
 	** Returns `File` pod resource as mapped from the given uri.
 	** Throws a `HttpStatusErr` 404 if not found.
-	abstract File service(Uri remainingUri := ``)
+	abstract File service(Uri remainingUri)
 
 }
 
 internal const class PodHandlerImpl : PodHandler {
 
-	override File service(Uri remainingUri := ``) {
+	override File service(Uri remainingUri) {
 		// must have at least 3 path segments
 		path := remainingUri.path
 		if (path.size < 2)

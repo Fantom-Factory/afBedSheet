@@ -581,6 +581,8 @@ v1.2.0 [#v1.2.0]
  - Chg: Rejigged how the default 'ErrProcessor' is used, making it easier to plug in your own. (Breaking change.)
  - Chg: 'BedSheetConfigIds' renamed from 'ConfigIds'. (Breaking change.)
  - Chg: Removed Route Matching - 'Routes' now only take 'Route' objects. (Breaking change.)
+ - Chg: Removed 'IeAjaxCacheBustingFilter' with no replacement. (Breaking change.)
+ - Chg: Removed 'CorsHandler' with no replacement. (Breaking change.)
 
 v1.1.4 [#v1.1.4]
 ----------------

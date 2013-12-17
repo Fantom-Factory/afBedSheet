@@ -1,5 +1,6 @@
 
-** Config values as provided by BedSheet. To change their value, override them in your 'AppModule'. 
+** [IocConfig]`http://repo.status302.com/doc/afIocConfig/#overview` values as provided by BedSheet. 
+** To change their value, override them in your 'AppModule'. 
 ** Example:
 ** 
 ** pre>

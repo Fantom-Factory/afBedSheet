@@ -2,13 +2,16 @@ using web
 using afIoc::Inject
 using afIoc::Registry
 
-** (Service) - Handles routing URIs to request handlers.
+** (Service) - Contribute your `Route` objects to this.
+** 
+** Responsible for routing URIs to request handlers.
 const mixin Routes {
 
 	** The ordered list of routes
 	abstract Obj[] routes()
 
-	** Returns true if the HTTP request was handled. 
+	** Returns true if the HTTP request was handled.
+	@NoDoc	// not for public use 
 	abstract Bool processRequest(Uri modRel, Str httpMethod)
 }
 

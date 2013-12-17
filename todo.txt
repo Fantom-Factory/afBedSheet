@@ -1,7 +1,9 @@
 
-Err500 only in Dev
+rename *ResponseProcessor -> *Processor ... ?
 
-rename *ResponseProcessor -> *Processor
+contribute ranges to HttpStatusProcessor?? - Naa, can't be arsed. Use case?
+
+
 
 Why BedSheet 1.2.0???
 ---------------------

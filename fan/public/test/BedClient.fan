@@ -11,7 +11,7 @@ using inet::IpAddr
 using inet::SocketOptions
 using inet::TcpSocket
 
-** For testing: Make (fake) http calls against `BedServer`. Unlike 'WebClient', 'BedClient' is 
+** For testing 'BedSheet' apps: Make (fake) HTTP calls against `BedServer`. Unlike 'WebClient', 'BedClient' is 
 ** designed for re-use, it auto tracks your 'Cookies' and lets you inspect your session.  
 ** 
 ** @since 1.0.4
@@ -152,7 +152,7 @@ internal class BedClientWebReq : WebReq {
 	new make(|This|in) { in(this) }
 }
 
-** For testing: Holds response data from a (fake) HTTP call to `BedServer`. 
+** For testing 'BedSheet' apps: Holds response data from a (fake) HTTP call to `BedServer`. 
 ** 
 ** @since 1.0.4
 class BedClientRes {

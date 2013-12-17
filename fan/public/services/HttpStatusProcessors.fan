@@ -2,17 +2,17 @@ using afIoc::Inject
 using afIoc::Registry
 using web::WebRes
 
-** (Service) - Holds a collection of `HttpStatusProcessor`s.
+** (Service) - Contribute your 'HttpStatusProcessor' implementations to this.
 ** 
 ** pre>
 **   @Contribute { serviceType=HttpStatusProcessors# }
 **   static Void contributeHttpStatusProcessors(MappedConfig conf) {
-**     conf[404] = conf.autobuild(Page404#)
+**     conf[404] = conf.autobuild(My404PageHandler#)
 **   }
 ** <pre
 ** 
 ** If a processor for the given status code can not be found, the default page (processor) is used.
-** The default page can be set in `ApplicationDefaults`.
+** The default page can be set in `afIocConfig::ApplicationDefaults`.
 ** 
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# } 
@@ -21,14 +21,14 @@ using web::WebRes
 ** }
 ** <pre
 ** 
-** @see `ConfigIds.httpStatusDefaultPage`
+** @see `BedSheetConfigIds.defaultHttpStatusProcessor`
 ** 
 ** @uses a MappedConfig of 'Int:HttpStatusProcessor'
 const mixin HttpStatusProcessors : ResponseProcessor {
 
 	** Returns the result of processing the given `HttpStatus` as per the contributed processors.
+	@NoDoc // not for public use
 	override abstract Obj process(Obj response)
-
 }
 
 internal const class HttpStatusProcessorsImpl : HttpStatusProcessors {

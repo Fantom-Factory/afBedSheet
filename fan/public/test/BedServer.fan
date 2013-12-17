@@ -5,7 +5,7 @@ using afIoc::RegistryBuilder
 using wisp::MemWispSessionStore
 using wisp::WispSessionStore
 
-** For testing: Allows tests to be run against an instance of 'afBedSheet' without starting the 'wisp' web server.
+** For testing 'BedSheet' apps: Run tests against 'BedSheet' without starting a 'wisp' web server.
 ** Testing your web app is as simple as:
 ** 
 **   Void testMywebApp() {
