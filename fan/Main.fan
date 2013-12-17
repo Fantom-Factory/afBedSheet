@@ -20,8 +20,11 @@ class Main : AbstractMain {
 	@Opt { help="Starts a proxy and launches the real web app on (<port> + 1)" }
 	private Bool proxy
 
-	@Opt { help="No not load transitive dependencies." }
+	@Opt { help="Do not load transitive dependencies." }
 	private Bool noTransDeps
+
+	@Opt { help="The environment to start BedSheet in. e.g. dev, test, prod." }
+	private Str? env
 
 	@Arg { help="The qname of the AppModule or pod which configures the BedSheet web app" }
 	private Str? appModule
@@ -34,7 +37,7 @@ class Main : AbstractMain {
 
 	** Run baby, run!
 	override Int run() {
-		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port, noTransDeps) : BedSheetWebMod(appModule, port, options))
+		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port, noTransDeps, env) : BedSheetWebMod(appModule, port, options))
 
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
 		// then check all your ENV vars are being passed to java.

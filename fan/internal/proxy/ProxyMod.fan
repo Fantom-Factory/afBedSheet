@@ -10,10 +10,10 @@ internal const class ProxyMod : WebMod {
 	const Int appPort
 	const AppRestarter restarter
 	
-	new make(Str appModule, Int proxyPort, Bool noTransDeps) {
+	new make(Str appModule, Int proxyPort, Bool noTransDeps, Str? env) {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
-		this.restarter 	= AppRestarter(appModule, appPort, proxyPort, noTransDeps)
+		this.restarter 	= AppRestarter(appModule, appPort, proxyPort, noTransDeps, env)
 	}
 
 	override Void onStart() {
