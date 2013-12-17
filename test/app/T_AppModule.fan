@@ -15,6 +15,8 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/jsonResult/list`, 		T_PageHandler#list))
 
+		conf.add(Route(`/route/no-params`, 		T_PageHandler#noParams))
+		conf.add(Route(`/route/meth-call-err`, 	T_PageHandler#methodCallErr))
 		conf.add(Route(`/route/optional/**`, 	T_PageHandler#defaultParams))
 		conf.add(Route(`/route/valEnc/*`,		T_PageHandler#valEnc))
 		conf.add(Route(`/route/uri/***`, 		T_PageHandler#uri))
@@ -63,7 +65,7 @@ internal const class T_AppModule {
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(MappedConfig conf) {
 		conf[BedSheetConfigIds.gzipThreshold] 			= 50
-		conf[BedSheetConfigIds.httpRequestLogDir] 		= `./`.toFile
+//		conf[BedSheetConfigIds.httpRequestLogDir] 		= `./`.toFile
 		conf[BedSheetConfigIds.responseBufferThreshold]	= 1 * 1024
 	}
 	

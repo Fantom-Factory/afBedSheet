@@ -2,6 +2,20 @@ using web::WebClient
 
 internal class TestRouteParams : AppTest {
 
+	Void testNoParams() {
+		res := getAsStr(`/route/no-params`)
+		verifyEq(res, "No Params")
+	}
+
+	Void testNoParams2() {
+		verify404(`/route/no-params/too-many`)
+	}
+
+	Void testMethodCallErr() {
+		res := getAsStr(`/route/meth-call-err`)
+		verifyEq(res, "No Params")
+	}
+	
 	Void testP0() {
 		verify404(`/route/`)
 	}
