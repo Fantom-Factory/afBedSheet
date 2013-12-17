@@ -17,7 +17,7 @@ using web::WebRes
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# } 
 ** static Void configureApplicationDefaults(MappedConfig conf) {
-**   conf[ConfigIds.httpStatusDefaultPage] = MyStatusPage()
+**   conf[BedSheetConfigIds.httpStatusDefaultPage] = MyStatusPage()
 ** }
 ** <pre
 ** 

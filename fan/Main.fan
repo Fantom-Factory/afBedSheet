@@ -5,25 +5,27 @@ using util::Opt
 using web::WebMod
 using wisp::WispService
 
-** Call to start 'Wisp' and run a 'BedSheet' app. To run BedSheet from the command line:
+** Call to run a 'BedSheet' web application from the command line.
 ** 
 ** pre>
-**   $ fan afBedSheet [-proxy] <appModule> <port>
+**   C:\> fan afBedSheet [-env <env>] [-proxy] [-noTransDeps] <appModule> <port>
 ** <pre
 ** 
 ** Where:
-**  - proxy:        (optional) Starts a dev proxy and launches the real web app on (<port> + 1)
-**  - appModule:    The qname of the AppModule or pod which configures the BedSheet web app
-**  - port:         The HTTP port to run the app on
+**   env:          (optional) The environment to start BedSheet in -> dev|test|prod
+**   proxy:        (optional) Starts a dev proxy and launches the real web app on (<port> + 1)
+**   noTransDeps:  (optional) Do not load transitive dependencies.
+**   appModule:    The qname of the AppModule or pod which configures the BedSheet web app
+**   port:         The HTTP port to run the app on
 class Main : AbstractMain {
-	
+
 	@Opt { help="Starts a proxy and launches the real web app on (<port> + 1)" }
 	private Bool proxy
 
 	@Opt { help="Do not load transitive dependencies." }
 	private Bool noTransDeps
 
-	@Opt { help="The environment to start BedSheet in. e.g. dev, test, prod." }
+	@Opt { help="The environment to start BedSheet in -> dev|test|prod" }
 	private Str? env
 
 	@Arg { help="The qname of the AppModule or pod which configures the BedSheet web app" }
@@ -36,6 +38,7 @@ class Main : AbstractMain {
 
 
 	** Run baby, run!
+	@NoDoc	// point!
 	override Int run() {
 		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port, noTransDeps, env) : BedSheetWebMod(appModule, port, options))
 

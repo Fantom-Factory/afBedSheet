@@ -205,10 +205,10 @@ Or they can return another response object for further processing, such as a `Te
 By default, BedSheet handles the following response objects:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : No further processing is required.
- - `CallMethod` : The method is called and the return value used for further processing.
- - [File]`sys:File` : The file is streamed to the client.
+ - [File]`sys::File` : The file is streamed to the client.
  - `HttpStatus` : Sets the http response status and renders a mini html page. (See [Error Processing]`#errorProcessing`.)
  - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guarenteed to be closed.
+ - `MethodCall` : The method is called and the return value used for further processing.
  - `Redirect` : Sends a 3xx redirect response to the client.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with the given `sys::MimeType`.
 
@@ -342,27 +342,21 @@ Request Logging [#requestLogging]
 *********************************
 BedSheet can generate standard HTTP request logs in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
-To enable,
- - contribute the `HttpRequestLogFilter` to the HttpPipeline
- - configure the directory where the logs should be written
- - set the log filename, or filename pattern for log rotation.
+To enable, just configure the directory where the logs should be written and (optionally) set the log filename, or filename
+pattern for log rotation:
 
 pre>
-  @Contribute { serviceType=HttpPipeline# }
-  static Void contributeHttpPipeline(OrderedConfig conf) {
-
-    conf.addOrdered("HttpRequestLogFilter", conf.autobuild(HttpRequestLogFilter#), ["after: BedSheetFilters"])
-  }
-
   @Contribute { serviceType=ApplicationDefaults# }
   static Void contributeApplicationDefaults(MappedConfig conf) {
 
-    conf[ConfigIds.httpRequestLogDir]             = `/my/log/dir/`
-    conf[ConfigIds.httpRequestLogFilenamePattern] = "afBedSheet-{YYYY-MM}.log"
+    conf[BedSheetConfigIds.httpRequestLogDir]             = `/my/log/dir/`
+    conf[BedSheetConfigIds.httpRequestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log"
   }
 <pre
 
-The fields writen to the logs may be set by configuring 'ConfigIds.httpRequestLogFields', but default to looking like:
+Ensure the log dir ends in a trailing /slash/.
+
+The fields writen to the logs may be set by configuring 'BedSheetConfigIds.httpRequestLogFields', but default to looking like:
 pre>
 2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 
@@ -396,7 +390,7 @@ pre>
 BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
 the proxy not respond, the web app kills itself.
 
-See `ConfigIds.proxyPingInterval` for more details.
+See `BedSheetConfigIds.proxyPingInterval` for more details.
 
 
 
@@ -409,7 +403,7 @@ Disable All [#disablePerWebApp]
 -------------------------------
 Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
 
-    config[ConfigIds.gzipDisabled] = true
+    config[BedSheetConfigIds.gzipDisabled] = true
 
 Disable per Response [#disablePerResponse]
 ------------------------------------------
@@ -442,7 +436,7 @@ Gzip is great when compressing large files, but if you've only got a few bytes t
 going to be bigger, which kinda defeats the point of using gzip in the first place! For that reason the response data must
 reach a minimum size / threshold before it gets gzipped.
 
-See 'GzipOutStream' and `ConfigIds.gzipThreshold` for more details.
+See 'GzipOutStream' and `BedSheetConfigIds.gzipThreshold` for more details.
 
 Phew! Made it! [#madeIt]
 ------------------------
@@ -461,7 +455,7 @@ Response buffering can be disabled on a per http response basis.
 
 A threshold can be set, whereby if the buffer exeeds that value, all content is streamed directly to the client.
 
-See 'BufferedOutStream' and `ConfigIds.responseBufferThreshold` for more details.
+See 'BufferedOutStream' and `BedSheetConfigIds.responseBufferThreshold` for more details.
 
  - (2) `http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`
 
@@ -577,12 +571,14 @@ v1.2.0 [#v1.2.0]
 ----------------
  - New: Route objects may take any response result - not just 'Methods'!
  - New: BedSheet now has a dependency on [IocEnv]`http://repo.status302.com/doc/afIoc/#overview`
+ - Chg: 'HttpRequestLogFilter' is now in the Http Pipeline by default - it just needs enabling.
  - Chg: The detailed BedSheet Err500 page is disabled in 'production' environments.
  - Chg: Rejigged how the default 'ErrProcessor' is used, making it easier to plug in your own. (Breaking change.)
  - Chg: 'BedSheetConfigIds' renamed from 'ConfigIds'. (Breaking change.)
  - Chg: Removed Route Matching - 'Routes' now only take 'Route' objects. (Breaking change.)
  - Chg: Removed 'IeAjaxCacheBustingFilter' with no replacement. (Breaking change.)
  - Chg: Removed 'CorsHandler' with no replacement. (Breaking change.)
+ - Chg: Massaged a lot of the documentation.
 
 v1.1.4 [#v1.1.4]
 ----------------
