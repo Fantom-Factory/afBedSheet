@@ -8,11 +8,12 @@ const mixin BedSheetPage {
 	** Renders the 'BedSheet' status page, such as the 404 page.
 	abstract Text renderHttpStatus(HttpStatus httpStatus)
 
-	** Renders the 'BedSheet' Err page. This is usually verbose but very minimal in a production environment. 
+	** Renders the 'BedSheet' Err page. If 'verbose' is 'false' a very minimal page is rendered, otherwise the standard
+	** detail BedSheet Err page is rendered.
 	** 
-	** To see the verbose Err page, ensure 'BedSheet' is started with the '-env dev' option or have a environment 
-	** variable 'env' set to 'dev'.   
-	abstract Text renderErr(Err err)
+	** > **ALIEN-AID:** To ensure you see the verbose Err page, start 'BedSheet' with the '-env dev' option or set the 
+	** environment variable 'env' to 'dev'.   
+	abstract Text renderErr(Err err, Bool verbose)
 	
 	** Renders the 'BedSheet' welcome page. 
 	** Usually shown if no [Routes]`Route` have been contributed to the `Routes` service. 
@@ -23,9 +24,6 @@ internal const class BedSheetPageImpl : BedSheetPage {
 
 	@Inject	private const ErrPrinterHtml 	errPrinterHtml
 
-	@Config { id="afIocEnv.isProd" }
-	@Inject private const Bool				inProd
-
 	new make(|This|in) { in(this) }
 
 	override Text renderHttpStatus(HttpStatus httpStatus) {
@@ -35,10 +33,10 @@ internal const class BedSheetPageImpl : BedSheetPage {
 		return render(title, content)
 	}	
 
-	override Text renderErr(Err err) {
+	override Text renderErr(Err err, Bool verbose) {
 		title	:= "500 - " + WebRes.statusMsg[500]
-		content	:= inProd ? "<p><b>${err.msg}</b></p>" : errPrinterHtml.errToHtml(err)
-		return render(title, content, BedSheetLogo.skull)		
+		content	:= verbose ? errPrinterHtml.errToHtml(err) : "<p><b>${err.msg}</b></p>"
+		return render(title, content, BedSheetLogo.skull)
 	}
 	
 	override Text renderWelcomePage() {

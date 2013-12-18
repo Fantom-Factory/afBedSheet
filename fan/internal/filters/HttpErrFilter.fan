@@ -5,7 +5,9 @@ using afIoc::Registry
 internal const class HttpErrFilter : HttpPipelineFilter {
 	private const static Log log := Utils.getLog(HttpErrFilter#)
 
-	@Inject	private const Registry				registry
+	@Config { id="afIocEnv.isProd" }
+	@Inject private const Bool					inProd
+	
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const ErrProcessors			errProcessors
 	@Inject	private const HttpResponse			httpResponse
@@ -28,7 +30,7 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 				log.err("  - Original Err", err)
 				
 				if (!httpResponse.isCommitted) {
-					errText := bedSheetPage.renderErr(doubleErr)
+					errText := bedSheetPage.renderErr(doubleErr, !inProd)
 					httpResponse.statusCode = 500
 					httpResponse.headers.contentType = errText.mimeType
 					httpResponse.out.print(errText.text)
