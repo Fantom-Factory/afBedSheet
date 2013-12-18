@@ -12,7 +12,7 @@ class Build : BuildPod {
 					"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
 					"proj.name"		: "AF-BedSheet",
 					"license.name"	: "BSD 2-Clause License",
-					"repo.private"	: "true",
+					"repo.private"	: "false",
 
 					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
@@ -41,7 +41,7 @@ class Build : BuildPod {
 		docSrc = true
 		
 		// exclude test code when building the pod
-		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
+//		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
 //		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
 	}
 	
