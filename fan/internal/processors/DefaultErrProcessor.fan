@@ -8,6 +8,9 @@ const mixin DefaultErrProcessor : ErrProcessor { }
 internal const class DefaultErrProcessorImpl : DefaultErrProcessor {
 	private const static Log log := Utils.getLog(DefaultErrProcessor#)
 
+	@Config { id="afIocEnv.isProd" }
+	@Inject private const Bool				inProd
+	
 	@Inject	private const HttpResponse 		response
 	@Inject	private const ErrPrinterStr 	errPrinterStr
 	@Inject	private const BedSheetPage		bedSheetPage
@@ -20,6 +23,6 @@ internal const class DefaultErrProcessorImpl : DefaultErrProcessor {
 		if (!response.isCommitted)	// a sanity check
 			response.statusCode = 500
 		
-		return bedSheetPage.renderErr(err)
+		return bedSheetPage.renderErr(err, !inProd)
 	}
 }

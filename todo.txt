@@ -1,20 +1,4 @@
 
-contribute ranges to HttpStatusProcessor?? - Naa, can't be arsed. Use case?
-
-
-
-Why BedSheet 1.2.0???
----------------------
-
-The Route Matching process was overly complicated and had one too many levels of re-direction / abstraction. That 
-coupled with the fact it couldn't process simple instructions like, return file X for uri Y, or redirect to P from uri 
-Q. The current system forced you to go through a handler method - which should be an intermediate case, not the norm!
-
-With my own websites I tended to use filters quite heavily and only needed Routes for the simple cases - which it 
-failed!    
-
-
-
 For BedSheet 1.2.2
 ------------------
 
@@ -41,7 +25,6 @@ make HttpRequestWrapper / HttpResponseWrapper public?
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
-Front more services with mixins
 
 Future
 ------
@@ -60,6 +43,11 @@ Tale integration - http://fantom.org/sidewalk/topic/1290
  - anything else?
  
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection
+
+
+Naa
+===
+contribute ranges to HttpStatusProcessor?? - Naa, can't be arsed. Use case?
 
 
 

@@ -147,7 +147,7 @@ Standard BedSheet filters are:
  - 'HttpFlashFilter': Stores values from one http request to the next.
  - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. (Not enabled by default.)
 
-It is important that the first 3 filters are always first in the pipeline. As such, when contributing your own filters you are
+It is important that these are first in the pipeline. As such, when contributing your own filters you are
 encouraged to add the ordering constraint of '"after: BedSheetFilters"', example:
 
 pre>
@@ -593,6 +593,10 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+
+v1.2.2 [#v1.2.2]
+----------------
+Chg - Gave more control over the verbose rendering of the standard 'BedSheet' Err page.
 
 v1.2.0 [#v1.2.0]
 ----------------
