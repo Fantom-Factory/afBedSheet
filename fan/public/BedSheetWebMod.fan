@@ -86,18 +86,7 @@ const class BedSheetWebMod : WebMod {
 			if (!moduleName.contains("::")) {
 				pod = Pod.find(moduleName, true)
 				log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
-				modName := pod.meta["afIoc.module"]
-				if (modName != null) {
-					mod = Type.find(modName, true)
-					log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-				} else {
-					// we have a pod with no module meta... so lets guess the name 'AppModule'
-					mod = pod.type("AppModule", false)
-					if (mod != null) {
-						log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-						log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
-					}
-				}				
+				mod = findModFromPod(pod)
 			}
 	
 			// AppModule name given...
@@ -158,6 +147,24 @@ const class BedSheetWebMod : WebMod {
 		}
 	}
 
+	** Used by BedServer
+	internal static Type? findModFromPod(Pod pod) {
+		mod := null
+		modName := pod.meta["afIoc.module"]
+		if (modName != null) {
+			mod = Type.find(modName, true)
+			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+		} else {
+			// we have a pod with no module meta... so lets guess the name 'AppModule'
+			mod = pod.type("AppModule", false)
+			if (mod != null) {
+				log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+				log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
+			}
+		}
+		return mod
+	}
+	
 	override Void onStop() {
 		registry?.shutdown
 		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
