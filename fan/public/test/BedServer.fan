@@ -21,10 +21,13 @@ using wisp::WispSessionStore
 ** 
 ** @since 1.0.4
 const class BedServer {
+	private const static Log log := Utils.getLog(BedServer#)
+
 	private const AtomicRef		reg			:= AtomicRef()
 	private const AtomicBool	started		:= AtomicBool()
 	private const AtomicRef		modules		:= AtomicRef(Type#.emptyList)
 	private const AtomicRef		moduleDeps	:= AtomicRef(Pod#.emptyList)
+	private const AtomicRef		bsMeta		:= AtomicRef()
 
 	** The 'afIoc' registry - read only.
 	Registry registry {
@@ -37,12 +40,17 @@ const class BedServer {
 		addModulesFromDependencies(BedSheetModule#.pod)
 		if (iocModule != null)
 			addModule(iocModule)
+		
+		bsMeta.val = BedSheetMetaDataImpl(iocModule?.pod, iocModule, [:])
 	}
 
 	** Create a instance of 'afBedSheet' with afIoc dependencies from the given pod (usually your web app)
 	new makeWithPod(Pod webApp) {
-		addModule(BedSheetModule#)
 		addModulesFromDependencies(webApp)
+		addModule(BedSheetModule#)
+		
+		mod := BedSheetWebMod.findModFromPod(webApp)		
+		bsMeta.val = BedSheetMetaDataImpl(webApp, mod, [:])
 	}
 
 	** Add extra (test) modules should you wish to override behaviour in your tests
@@ -75,9 +83,9 @@ const class BedServer {
 		bob.addModules(mods)
 
 		module := ((Type[]) modules.val).first
-		bedSheetMetaData := BedSheetMetaDataImpl(module?.pod, module, [:])
+		bedSheetMetaData := bsMeta.val
 		
-		registry = bob.build(["bannerText":bannerText, "bedSheetMetaData":bedSheetMetaData]).startup
+		registry = bob.build(["bannerText":bannerText, "bedSheetMetaData":bedSheetMetaData, "appName":"BedServer"]).startup
 		
 		started.val = true
 		return this
