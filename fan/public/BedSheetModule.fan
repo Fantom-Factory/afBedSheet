@@ -18,7 +18,8 @@ const class BedSheetModule {
 	static Void bind(ServiceBinder binder) {
 		
 		// Utils
-		binder.bindImpl(PipelineBuilder#)
+		// FIXME: not provided in afIoc-1.4, only afIoc-1.5
+//		binder.bindImpl(PipelineBuilder#)
 
 		// Routing
 		binder.bindImpl(Routes#)
@@ -98,11 +99,6 @@ const class BedSheetModule {
 		conf[InStream#]			= conf.autobuild(InStreamResponseProcessor#)
 		conf[MethodCall#]		= conf.autobuild(MethodCallResponseProcessor#)
 		conf[HttpStatus#]		= httpStatusProcessor
-	}
-
-	@Contribute { serviceType=ErrProcessors# }
-	static Void contributeErrProcessors(MappedConfig conf) {
-		conf[HttpStatusErr#]	= conf.autobuild(HttpStatusErrProcessor#)
 	}
 
 	@Contribute { serviceType=FactoryDefaults# }

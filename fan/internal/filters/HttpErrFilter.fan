@@ -16,27 +16,44 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 	new make(|This|in) { in(this) }
 	
 	override Bool service(HttpPipeline handler) {
+		firstErr := null
+		
 		try {
-			return handler.service
+			response := null
 			
-		} catch (Err err) {
 			try {
-				response := errProcessors.processErr(err)				
-				responseProcessors.processResponse(response)
-
-			} catch (Err doubleErr) {
-				// the backup plan for when the err handler errs!
-				log.err("ERR thrown when processing $err.typeof.qname", doubleErr)
-				log.err("  - Original Err", err)
+				return handler.service
 				
-				if (!httpResponse.isCommitted) {
-					errText := bedSheetPage.renderErr(doubleErr, !inProd)
-					httpResponse.statusCode = 500
-					httpResponse.headers.contentType = errText.mimeType
-					httpResponse.out.print(errText.text)
-				}
+			} catch (ReProcessErr reErr) {
+				firstErr = reErr
+				response = reErr.responseObj
+				
+			} catch (Err otherErr) {
+				firstErr = otherErr
+				response = errProcessors.processErr(otherErr)									
 			}
+	
+			// TODO: Write test that throws multiple ReProcessErrs
+			while (!response.typeof.fits(Bool#))
+				try {
+					response = responseProcessors.processResponse(response)
+				} catch (ReProcessErr rpe) {
+					response = rpe.responseObj
+				}	
 			
+			return response
+
+		} catch (Err doubleErr) {
+			// the backup plan for when the err handler errs!
+			log.err("ERR thrown when processing $firstErr.typeof.qname", doubleErr)
+			log.err("  - Original Err", firstErr)
+			
+			if (!httpResponse.isCommitted) {
+				errText := bedSheetPage.renderErr(doubleErr, !inProd)
+				httpResponse.statusCode = 500
+				httpResponse.headers.contentType = errText.mimeType
+				httpResponse.out.print(errText.text)
+			}
 			return true
 		}
 	}
