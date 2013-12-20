@@ -17,13 +17,16 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 	
 	override Bool service(HttpPipeline handler) {
 		firstErr := null
+		response := null
 		
+		// the double try 
 		try {
-			response := null
 			
 			try {
 				return handler.service
 				
+			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in a filter), and people 
+			// would still expect it work
 			} catch (ReProcessErr reErr) {
 				firstErr = reErr
 				response = reErr.responseObj
@@ -32,7 +35,7 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 				firstErr = otherErr
 				response = errProcessors.processErr(otherErr)									
 			}
-	
+
 			// TODO: Write test that throws multiple ReProcessErrs
 			while (!response.typeof.fits(Bool#))
 				try {
