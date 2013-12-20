@@ -82,9 +82,7 @@ const class BedServer {
 		mods := (Type[]) modules.val
 		bob.addModules(mods)
 
-		module := ((Type[]) modules.val).first
-		bedSheetMetaData := bsMeta.val
-		
+		bedSheetMetaData := bsMeta.val		
 		registry = bob.build(["bannerText":bannerText, "bedSheetMetaData":bedSheetMetaData, "appName":"BedServer"]).startup
 		
 		started.val = true

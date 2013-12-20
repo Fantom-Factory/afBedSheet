@@ -20,6 +20,7 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 	override Bool processResponse(Obj response) {
 		while (!response.typeof.fits(Bool#))
 			response = get(response.typeof).process(response)
+			// false is fine, it means it wasn't handled, fall through to the next route / filter
 		return response
 	}	
 

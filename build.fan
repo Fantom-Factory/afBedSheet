@@ -10,7 +10,7 @@ class Build : BuildPod {
 		meta	= [	"org.name"		: "Alien-Factory",
 					"org.uri"		: "http://www.alienfactory.co.uk/",
 					"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
-					"proj.name"		: "AF-BedSheet",
+					"proj.name"		: "BedSheet",
 					"license.name"	: "BSD 2-Clause License",
 					"repo.private"	: "true",
 
