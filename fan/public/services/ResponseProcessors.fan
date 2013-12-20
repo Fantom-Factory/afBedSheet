@@ -18,9 +18,18 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 	}
 
 	override Bool processResponse(Obj response) {
-		while (!response.typeof.fits(Bool#))
-			response = get(response.typeof).process(response)
-			// false is fine, it means it wasn't handled, fall through to the next route / filter
+		while (!response.typeof.fits(Bool#)) {
+			try {
+				response = get(response.typeof).process(response)
+				
+			// We handle ReProcessErrs as close to the source as possible as not to bounce back through any filters
+			} catch (ReProcessErr rpe) {
+				// re-process any, um, ReProcessErrs!
+				response = rpe.responseObj
+			}
+		}
+		
+		// false is fine, it means it wasn't handled, fall through to the next route / filter
 		return response
 	}	
 
