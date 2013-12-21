@@ -28,7 +28,7 @@ To use in a Fantom project, add a dependency to its 'build.fan':
 Quick Start [#quickStart]
 *************************
 
-1). Create a file called 'Example.fan':
+1). Create a text file called 'Example.fan':
 pre>
 using afIoc
 using afBedSheet
@@ -54,11 +54,11 @@ class Example {
 }
 <pre
 
-2). Run 'Example.fan' as a script from the command line:
+2). Run 'Example.fan' as a Fantom script from the command line:
 pre>
 C:\> fan Example.fan -env development
 ...
-BedSheet v1.0 started up in 323ms
+BedSheet v1.2 started up in 323ms
 
 C:\> curl http://localhost:8080/index
 Welcome to BedSheet!
@@ -596,6 +596,7 @@ Release Notes [#releaseNotes]
 
 v1.2.2 [#v1.2.2]
 ----------------
+ - New: Added 'gzip' compression for web fonts.
  - Chg: Gave more control over the verbose rendering of the standard 'BedSheet' Err page.
  - Bug: 'BedServer' generated the wrong info for 'BedSheetMetaData' - required when testing [Pillow]`http://repo.status302.com/doc/afPillow/#overview` web apps.
 

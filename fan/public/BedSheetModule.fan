@@ -132,14 +132,21 @@ const class BedSheetModule {
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(MappedConfig conf) {
 		// add some standard compressible mime types
-		conf["text/plain"]					= true
 		conf["text/css"]					= true
-		conf["text/tab-separated-values"]	= true
 		conf["text/html"]					= true
 		conf["text/javascript"]				= true
+		conf["text/plain"]					= true
+		conf["text/tab-separated-values"]	= true
 		conf["text/xml"]					= true
 		conf["application/rss+xml"]			= true
 		conf["application/json"]			= true
+
+		// compress web fonts
+		// see http://stackoverflow.com/questions/2871655/proper-mime-type-for-fonts#20723357
+		conf["application/font-sfnt"]		= true	// ttf, otf
+		conf["application/json"]			= true	// eot
+		conf["image/svg+xml"]				= true	// svg
+		conf["application/font-woff"]		= false	// woff files are already gzip compressed
 	}
 	
 	@Contribute { serviceType=ErrPrinterHtml# }

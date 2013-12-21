@@ -36,7 +36,6 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 				response = errProcessors.processErr(otherErr)									
 			}
 
-			// TODO: Write test that throws multiple ReProcessErrs
 			while (!response.typeof.fits(Bool#))
 				try {
 					response = responseProcessors.processResponse(response)
