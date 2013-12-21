@@ -22,7 +22,8 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 			try {
 				response = get(response.typeof).process(response)
 				
-			// We handle ReProcessErrs as close to the source as possible as not to bounce back through any filters
+			// We handle ReProcessErrs as close to the source as possible as not to bounce back through any 
+			// HTTPPipelineFilters
 			} catch (ReProcessErr rpe) {
 				// re-process any, um, ReProcessErrs!
 				response = rpe.responseObj
