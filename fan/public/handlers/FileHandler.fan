@@ -29,8 +29,8 @@ using afIoc::Inject
 ** @uses MappedConfig of 'Uri:File'
 const mixin FileHandler {
 
-	** Returns a `File` on the file system, as mapped from the given uri.
-	abstract File service(Uri remainingUri)
+	** Returns a `File` on the file system as mapped from the given uri, or 'null' if the file does not exist.
+	abstract File? service(Uri remainingUri)
 
 }
 
@@ -61,7 +61,7 @@ internal const class FileHandlerImpl : FileHandler {
 		this.dirMappings = dirMappings.toImmutable
 	}
 
-	override File service(Uri remainingUri) {
+	override File? service(Uri remainingUri) {
 		
 		// use pathStr to knockout any unwanted query str
 		matchedUri := req.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri
@@ -82,9 +82,10 @@ internal const class FileHandlerImpl : FileHandler {
 		
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
-		// FUTURE: configure this behaviour once we've thought up a nice name for the config!
-	    return dirMappings[matchedUri].plus(remainingUri, false)
-		
-		// currently it's the FileResponseProcessor that throws a 404 if the file doesn't exist
+	    file := dirMappings[matchedUri].plus(remainingUri, false)
+
+		// return null if the file doesn't exist so the request can be picked up by another route
+		// Note that dirs exist and (currently) return a 403 in the FileResponseProcessor
+		return file.exists ? file : null
 	}
 }

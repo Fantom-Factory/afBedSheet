@@ -1,5 +1,6 @@
 
-LOOK AT FILE HANDLER - does it return robots.txt in / for instance?
+FileHandler - allow multiple dirs to serve the same uri, auto add to routes with placeholders, add to docs
+
 
 For BedSheet 1.2.4
 ------------------
