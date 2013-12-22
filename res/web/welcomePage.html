@@ -1,0 +1,23 @@
+<h1>Welcome to BedSheet {{{ bedSheetVersion }}}!</h1>
+
+<p>Something fresh and clean to lay your web app on!</p>
+
+<p>BedSheet is a Fantom framework for web applications, providing a rich middleware mechanism for the routing and delivery of content over HTTP.</p>
+
+<p>Full API & fandocs are available on the <a href='http://repo.status302.com/doc/afBedSheet/#overview'>status302 repository</a>.</p>
+
+<p>&nbsp;</p>
+
+<p>To disable this welcome page, contribute a Route in your App Module:</p>
+
+<code><span style="color: #a6e22e">@Contribute</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">serviceType</span><span style="color: #f92672">=</span><span style="color: #a6e22e">Routes</span><span style="color: #f8f8f2">#</span> <span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">static</span> <span style="color: #a6e22e">Void</span> <span style="color: #a6e22e">contributeRoutes</span><span style="color: #f8f8f2">(</span><span style="color: #a6e22e">OrderedConfig</span> <span style="color: #f8f8f2">conf)</span> <span style="color: #f8f8f2">{</span>
+    conf<span style="color: #f92672">.</span><span style="color: #a6e22e">add</span><span style="color: #f8f8f2">(</span>Route<span style="color: #f8f8f2">(`</span><span style="color: #e6db74">/hello</span><span style="color: #f8f8f2">`</span>, Text<span style="color: #f92672">.</span><span style="color: #a6e22e">fromPlain</span><span style="color: #f8f8f2">(&quot;</span><span style="color: #e6db74">Hello!</span><span style="color: #f8f8f2">&quot;)))</span>
+}</code>
+
+<p>Or ensure BedSheet can find your AppModule. Do this by adding meta to your project's build.fan:</p>
+
+<code>meta <span style="color: #f92672">=</span> <span style="color: #f92672">[</span> ...
+         <span style="color: #f8f8f2">&quot;</span><span style="color: #e6db74">afIoc.module</span><span style="color: #f8f8f2">&quot;</span> : <span style="color: #f8f8f2">&quot;</span><span style="color: #e6db74">myPod::AppModule</span><span style="color: #f8f8f2">&quot;</span>,
+         ... <span style="color: #f92672">]</span>
+</code>

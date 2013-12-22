@@ -16,7 +16,7 @@ const internal class HttpPipelineTerminator : HttpPipeline {
 	override Bool service() {
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
 		if (routes.routes.isEmpty && !disbleWelcomePage)
-			return responseProcessors.processResponse(bedSheetPage.renderWelcomePage)
+			return responseProcessors.processResponse(bedSheetPage.renderWelcome)
 
 		throw HttpStatusErr(404, BsErrMsgs.route404(httpRequest.modRel, httpRequest.httpMethod))
 	}	
