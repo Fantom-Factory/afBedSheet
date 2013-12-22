@@ -1,9 +1,11 @@
 
 FileHandler - allow multiple dirs to serve the same uri, auto add to routes with placeholders, add to docs
-
+PodHandler, do the same
 
 For BedSheet 1.2.4
 ------------------
+
+After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 

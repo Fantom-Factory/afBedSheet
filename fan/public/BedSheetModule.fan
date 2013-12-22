@@ -75,6 +75,20 @@ const class BedSheetModule {
 		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
 	}
 
+	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	
+	private static WebReq buildWebReq() {
+		try return Actor.locals["web.req"]
+		catch (NullErr e) 
+			throw Err("No web request active in thread")
+	}
+
+	@Build { serviceId="WebRes"; scope=ServiceScope.perThread } 
+	private static WebRes buildWebRes() {
+		try return Actor.locals["web.res"]
+		catch (NullErr e)
+			throw Err("No web request active in thread")
+	}
+
 	@Contribute { serviceType=HttpPipeline# }
 	static Void contributeHttpPipeline(OrderedConfig conf, Routes routes) {
 		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), 	["before: BedSheetFilters", "before: HttpErrFilter"])
@@ -101,23 +115,6 @@ const class BedSheetModule {
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 
-	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig conf, DefaultHttpStatusProcessor defaultHttpStatus, DefaultErrProcessor defaultErr) {
-		conf[BedSheetConfigIds.proxyPingInterval]				= 1sec
-		conf[BedSheetConfigIds.gzipDisabled]					= false
-		conf[BedSheetConfigIds.gzipThreshold]					= 376
-		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// todo: why not kB?
-		conf[BedSheetConfigIds.defaultHttpStatusProcessor]		= defaultHttpStatus
-		conf[BedSheetConfigIds.defaultErrProcessor]				= defaultErr
-		conf[BedSheetConfigIds.noOfStackFrames]					= 50
-		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
-		conf[BedSheetConfigIds.disableWelcomePage]				= false
-
-		conf[BedSheetConfigIds.httpRequestLogDir]				= null
-		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
-		conf[BedSheetConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
-	}
-
 	@Contribute { serviceType=ValueEncoders# }
 	static Void contributeValueEncoders(MappedConfig config) {
 		// wot no value encoders!? Aha! I see you're using fromStr() instead!
@@ -127,6 +124,15 @@ const class BedSheetModule {
 	static Void contributeDependencyProviderSource(OrderedConfig config) {
 		// this is a copy of IocConfig's ConfigProvider so we can use BedSheet's @Config
 		config.add(config.autobuild(ConfigProvider2#))
+	}
+	
+	@Contribute { serviceType=Routes# }
+	static Void contributeRoutes(OrderedConfig conf, FileHandler fileHandler) {
+		conf.addPlaceholder("FileHandlerStart")
+		fileHandler.directoryMappings.each |dir, uri| {
+			conf.add(Route(uri + `***`, FileHandler#service))
+		}
+		conf.addPlaceholder("FileHandlerEnd")
 	}
 	
 	@Contribute { serviceType=GzipCompressible# }
@@ -191,18 +197,21 @@ const class BedSheetModule {
 		config.addOrdered("Locals",					|StrBuf out, Err? err| { printer.printLocals			(out, err) })
 	}
 	
-	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	
-	private static WebReq buildWebReq() {
-		try return Actor.locals["web.req"]
-		catch (NullErr e) 
-			throw Err("No web request active in thread")
-	}
+	@Contribute { serviceType=FactoryDefaults# }
+	static Void contributeFactoryDefaults(MappedConfig conf, DefaultHttpStatusProcessor defaultHttpStatus, DefaultErrProcessor defaultErr) {
+		conf[BedSheetConfigIds.proxyPingInterval]				= 1sec
+		conf[BedSheetConfigIds.gzipDisabled]					= false
+		conf[BedSheetConfigIds.gzipThreshold]					= 376
+		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// todo: why not kB?
+		conf[BedSheetConfigIds.defaultHttpStatusProcessor]		= defaultHttpStatus
+		conf[BedSheetConfigIds.defaultErrProcessor]				= defaultErr
+		conf[BedSheetConfigIds.noOfStackFrames]					= 50
+		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
+		conf[BedSheetConfigIds.disableWelcomePage]				= false
 
-	@Build { serviceId="WebRes"; scope=ServiceScope.perThread } 
-	private static WebRes buildWebRes() {
-		try return Actor.locals["web.res"]
-		catch (NullErr e)
-			throw Err("No web request active in thread")
+		conf[BedSheetConfigIds.httpRequestLogDir]				= null
+		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
+		conf[BedSheetConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
