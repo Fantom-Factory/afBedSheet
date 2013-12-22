@@ -110,11 +110,20 @@ td:first-child {
 
 code {
 	display:			block;
-	padding:			1em;
-	box-sizing: 		border-box;
+	white-space:		pre;
+	padding:			8px 12px;
+	margin:				0;
+	color:				#f8f8f2;
+	background:			#272822;
+	border:				solid gray;
+	border-width:		1px 0;
+	border-radius:		4px;
+	line-height:		125%;
+	font-family:		Monaco, Menlo, Consolas, "Courier New", monospace;
+	font-size:			13px;
+	overflow:			auto;
 }
 
-code,
 .srcLoc {
 	width:				100%;
 	overflow-x:			auto;

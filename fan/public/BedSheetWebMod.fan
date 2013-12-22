@@ -125,7 +125,7 @@ const class BedSheetWebMod : WebMod {
 			// add extra modules - useful for testing
 			if (bedSheetOptions.containsKey("iocModules"))
 				bob.addModules(bedSheetOptions["iocModules"])
-	
+
 			registryOpts := this.registryOptions.rw
 			registryOpts["bannerText"] 					= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
 			registryOpts["bedSheetMetaData"]			= BedSheetMetaDataImpl(pod, mod, bedSheetOptions)

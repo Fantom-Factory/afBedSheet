@@ -4,7 +4,7 @@ Overview [#overview]
 'BedSheet' is a [Fantom]`http://fantom.org/` framework for delivering web applications.
 
 Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`,
-BedSheet is concerned with providing a rich mechanism for the routing and delivery of content over HTTP.
+BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
 
 BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
 Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
@@ -597,9 +597,11 @@ Release Notes [#releaseNotes]
 v1.2.2 [#v1.2.2]
 ----------------
  - New: Added 'gzip' compression for web fonts.
+ - New: BedSheet connection details printed on startup.
  - Chg: 'FileHandler' now lets non-existant files fall through.
  - Chg: 'FileHandler' auto adds 'Route' mappings to the 'Routes' service.
- - Chg: Gave more control over the verbose rendering of the standard 'BedSheet' Err page.
+ - Chg: Added more info to the BedSheet 404 page in dev.
+ - Chg: Gave more control over the verbose rendering of the standard 'BedSheet' pages.
  - Bug: 'BedServer' generated the wrong info for 'BedSheetMetaData' - required when testing [Pillow]`http://repo.status302.com/doc/afPillow/#overview` web apps.
 
 v1.2.0 [#v1.2.0]

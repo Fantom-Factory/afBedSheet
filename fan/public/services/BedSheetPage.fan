@@ -6,7 +6,7 @@ using web::WebRes
 const mixin BedSheetPage {
 
 	** Renders the 'BedSheet' status page, such as the 404 page.
-	abstract Text renderHttpStatus(HttpStatus httpStatus)
+	abstract Text renderHttpStatus(HttpStatus httpStatus, Bool verbose)
 
 	** Renders the 'BedSheet' Err page. If 'verbose' is 'false' a very minimal page is rendered, otherwise the standard
 	** detail BedSheet Err page is rendered.
@@ -17,19 +17,27 @@ const mixin BedSheetPage {
 	
 	** Renders the 'BedSheet' welcome page. 
 	** Usually shown if no [Routes]`Route` have been contributed to the `Routes` service. 
-	abstract Text renderWelcomePage()
+	abstract Text renderWelcome()
 }
 
 internal const class BedSheetPageImpl : BedSheetPage {
 
+	@Inject	private const HttpRequest		request
 	@Inject	private const ErrPrinterHtml 	errPrinterHtml
 
 	new make(|This|in) { in(this) }
 
-	override Text renderHttpStatus(HttpStatus httpStatus) {
+	override Text renderHttpStatus(HttpStatus httpStatus, Bool verbose) {
 		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
 		// if the msg is html, leave it as is
 		content	:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>"
+		
+		if (verbose && httpStatus.code == 404) {
+			page	:= typeof.pod.file(`/res/web/404Page.html`).readAllStr
+			page	 = page.replace("{{{ route }}}", request.modRel.pathOnly.toStr)
+			content	+= page
+		}
+
 		return render(title, content)
 	}	
 
@@ -39,33 +47,11 @@ internal const class BedSheetPageImpl : BedSheetPage {
 		return render(title, content, BedSheetLogo.skull)
 	}
 	
-	override Text renderWelcomePage() {
+	override Text renderWelcome() {
 		title	:= "BedSheet ${typeof.pod.version}"
-		buf 	:= StrBuf()
-		out 	:= WebOutStream(buf.out)
-
-		// move html to text file..?
-		out.h1.w("Welcome to BedSheet ${typeof.pod.version}!").h1End
-		out.p.w("Something fresh and clean to lay your web app on!").pEnd
-		out.p.w("BedSheet is a Fantom framework for delivering web applications.").pEnd
-		out.p.w("Full API & fandocs are available on the ")
-			 .a(`http://repo.status302.com/doc/afBedSheet/#overview`).w("status302 repository").aEnd
-			 .w(".").pEnd
-		out.p.w("&nbsp;").pEnd
-		out.p.w("To disable this welcome page, contribute a Route in your App Module:").pEnd
-		out.code.w("""@Contribute { serviceType=Routes# }
-		              static Void contributeRoutes(OrderedConfig conf) {
-		                conf.add(Route(`/hello`, Text.fromPlain("Hello!")))
-		              }
-		              """).codeEnd
-		out.p.w("Or ensure BedSheet can find your AppModule. Do this by adding meta to your project's build.fan:").pEnd
-		out.code.w("""meta = [ ...
-		                       "afIoc.module" : "myPod::AppModule",
-		                       ...
-		                     ]
-		              """).codeEnd
-
-		return render(title, buf.toStr)
+		content	:= typeof.pod.file(`/res/web/welcomePage.html`).readAllStr
+		content	 = content.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr)
+		return render(title, content)
 	}	
 	
 	private Text render(Str title, Str content, BedSheetLogo logo := BedSheetLogo.alienHead) {
