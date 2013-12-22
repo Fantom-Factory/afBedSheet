@@ -5,20 +5,19 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version("1.2.1")
+		version = Version("1.2.2")
 
 		meta	= [	"org.name"		: "Alien-Factory",
 					"org.uri"		: "http://www.alienfactory.co.uk/",
 					"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
 					"proj.name"		: "BedSheet",
 					"license.name"	: "BSD 2-Clause License",
-					"repo.private"	: "true",
+					"repo.private"	: "false",
 
 					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
 
-		index	= [	"afIoc.module"	: "afBedSheet::BedSheetModule"
-				]
+		index	= [	"afIoc.module"	: "afBedSheet::BedSheetModule" ]
 
 		depends = [	"sys 1.0", 
 					"concurrent 1.0", 
@@ -41,20 +40,20 @@ class Build : BuildPod {
 		docSrc = true
 		
 		// exclude test code when building the pod
-//		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
-//		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
+		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
+		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
 	}
 	
 	@Target { help = "Compile to pod file and associated natives" }
 	override Void compile() {
 		super.compile
 		
+		// copy src to %FAN_HOME% for F4 debugging
+		log.indent
 		destDir := Env.cur.homeDir.plus(`src/${podName}/`)
 		destDir.delete
 		destDir.create		
-		`fan/`.toFile.copyInto(destDir)
-		
-		log.indent
+		`fan/`.toFile.copyInto(destDir)		
 		log.info("Copied `fan/` to ${destDir.normalize}")
 		log.unindent
 	}
