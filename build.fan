@@ -5,14 +5,14 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version("1.2.2")
+		version = Version("1.2.3")
 
 		meta	= [	"org.name"		: "Alien-Factory",
 					"org.uri"		: "http://www.alienfactory.co.uk/",
 					"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
 					"proj.name"		: "BedSheet",
 					"license.name"	: "BSD 2-Clause License",
-					"repo.private"	: "false",
+					"repo.private"	: "true",
 
 					"afIoc.module"	: "afBedSheet::BedSheetModule"
 				]
@@ -40,8 +40,8 @@ class Build : BuildPod {
 		docSrc = true
 		
 		// exclude test code when building the pod
-		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
-		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
+//		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
+//		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
 	}
 	
 	@Target { help = "Compile to pod file and associated natives" }
