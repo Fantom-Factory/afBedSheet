@@ -6,6 +6,7 @@ using web::WebMod
 using afIoc::Registry
 using afIoc::RegistryBuilder
 using afIocConfig::IocConfigModule
+using inet::IpAddr
 
 ** The top-level `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
@@ -36,8 +37,8 @@ const class BedSheetWebMod : WebMod {
 	new make(Str moduleName, Int port, [Str:Obj?] bedSheetOptions, [Str:Obj?]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
-		this.registryOptions	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
 		this.bedSheetOptions	= bedSheetOptions
+		this.registryOptions	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
 	}
 
 	override Void onService() {
@@ -140,6 +141,17 @@ const class BedSheetWebMod : WebMod {
 				destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
 				destroyer.start
 			}
+			
+			// print print BedSheet connection details
+			dPort := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
+			Actor(ActorPool()) |->| { 
+				// run in seperate thread because hostname may block
+				host := "localhost"
+				try {
+					host = IpAddr.local.hostname
+				} catch (Err e) { }
+				log.info(BsLogMsgs.bedSheetWebModStarted(moduleName, host, dPort)) 
+			}.send(null)
 			
 		} catch (Err err) {
 			startupErr = err

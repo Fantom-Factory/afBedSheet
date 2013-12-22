@@ -69,6 +69,10 @@ internal const class BsLogMsgs {
 		"Could not find any AppModules!"
 	}
 
+	static Str bedSheetWebModStarted(Str appModule, Str host, Int port) {
+		"BedSheet '$appModule' listening on http://${host}:${port}/"
+	}
+	
 	static Str bedSheetWebModStopping(Str appModule) {
 		"\"Goodbye!\" from afBedSheet!"
 	}

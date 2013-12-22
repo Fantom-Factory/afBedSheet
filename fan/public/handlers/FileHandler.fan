@@ -95,8 +95,6 @@ internal const class FileHandlerImpl : FileHandler {
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
 	    file := directoryMappings[matchedUri].plus(remainingUri, false)
 
-//		FIXME: DONT"T REUTRN '/' 404
-		
 		// return null if the file doesn't exist so the request can be picked up by another route
 		// Note that dirs exist and (currently) return a 403 in the FileResponseProcessor
 		return file.exists ? file : null
