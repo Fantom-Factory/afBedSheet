@@ -597,6 +597,8 @@ Release Notes [#releaseNotes]
 v1.2.2 [#v1.2.2]
 ----------------
  - New: Added 'gzip' compression for web fonts.
+ - Chg: 'FileHandler' now lets non-existant files fall through.
+ - Chg: 'FileHandler' auto adds 'Route' mappings to the 'Routes' service.
  - Chg: Gave more control over the verbose rendering of the standard 'BedSheet' Err page.
  - Bug: 'BedServer' generated the wrong info for 'BedSheetMetaData' - required when testing [Pillow]`http://repo.status302.com/doc/afPillow/#overview` web apps.
 
