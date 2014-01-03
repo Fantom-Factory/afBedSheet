@@ -74,7 +74,7 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 	internal new make(RegistryShutdownHub shutdownHub, IocConfigSource configSource, |This|in) { 
 		in(this)
 
-		dir 	= configSource.getCoerced("afBedSheet.httpRequestLog.dir", File#)
+		dir 	= configSource.get("afBedSheet.httpRequestLog.dir", File#)
 		if (dir == null)
 			return
 		

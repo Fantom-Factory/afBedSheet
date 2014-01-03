@@ -5,6 +5,9 @@ PodHandler, do the same
 For BedSheet 1.2.4
 ------------------
 
+Have afIoc call the RouteHandlers so they can take services.
+ - not urgent as handlers can @Inject services
+
 After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
@@ -14,10 +17,6 @@ Doc customising the ErrPrinters! Make them public?
 make HttpRequestWrapper / HttpResponseWrapper public?
 
 Logging filter with reqId, SessId and configurable userId
-
-
-Have afIoc call the RouteHandlers so they can take services.
- - not urgent as handlers can @Inject services
 
 BedClient (test) post reqs and req.in
 
@@ -30,7 +29,6 @@ Err500 - have filter stack frames checkbox?
 		size := kB.convertTo(3f, b)
 		Env.cur.err.printLine(size)
 	}
-
 
 
 
