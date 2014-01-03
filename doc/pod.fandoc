@@ -3,7 +3,7 @@ Overview [#overview]
 ********************
 'BedSheet' is a [Fantom]`http://fantom.org/` framework for delivering web applications.
 
-Built on top of [afIoc]`http://repo.status302.com/doc/afIoc/#overview` and [Wisp]`http://fantom.org/doc/wisp/index.html`,
+Built on top of [Ioc]`http://www.fantomfactory.org/pods/afIoc` and [Wisp]`http://fantom.org/doc/wisp/index.html`,
 BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
 
 BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
@@ -17,7 +17,7 @@ Install 'BedSheet' with the [Fantom Respository Manager]`http://fantom.org/doc/d
 
   C:\> fanr install -r http://repo.status302.com/fanr/ afBedSheet
 
-Or download the pod from [Status302]`http://repo.status302.com/browse/afBedSheet` and copy it to '%FAN_HOME%/lib/fan/'.
+Or to install manually, download the pod from [Status302]`http://repo.status302.com/browse/afBedSheet` and copy it to '%FAN_HOME%/lib/fan/'.
 
 To use in a Fantom project, add a dependency to its 'build.fan':
 
@@ -72,7 +72,7 @@ Hello! I'm Luci and I have an IQ of 666!
 
 Wow! That's awesome! But what just happened!?
 
-Every 'BedSheet' application has an 'AppModule' that configures [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services.
+Every 'BedSheet' application has an 'AppModule' that configures [Ioc]`http://www.fantomfactory.org/pods/afIoc` services.
 Here we told the `Routes` service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method for all requests that start with '/hello'.
 `Route` converts URI path segments into method arguments, or in our case, to 'Str name' and to an
 optional 'Int iq'.
@@ -99,8 +99,8 @@ C:\> fan afBedSheet myWebApp::AppModule 80
 <pre
 
 Every 'BedSheet' application has an 'AppModule' class that defines and configures your
-[afIoc]`http://repo.status302.com/doc/afIoc/#overview` services. It is an
-[afIoc]`http://repo.status302.com/doc/afIoc/#overview` concept that allows you centralise your application configuration in
+[Ioc]`http://www.fantomfactory.org/pods/afIoc` services. It is an
+[Ioc]`http://www.fantomfactory.org/pods/afIoc` concept that allows you centralise your application configuration in
 one place.
 
 > TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the @SubModule facet.
@@ -289,7 +289,7 @@ If no matching 'ErrProcessor' is found then 'BedSheet' displays its default Err5
 ![BedSheet's Verbose Err500 Page]`http://static.alienfactory.co.uk/fantom-docs/Err500.png`
 
 The default Err page is great for development! But not so great for production - stack traces tend to scare most non-developers.
-So note that in a production environment (see [afIocEnv]`http://repo.status302.com/doc/afIocEnv/#overview`) a simple HTTP status
+So note that in a production environment (see [IocEnv]`http://www.fantomfactory.org/pods/afIocEnv`) a simple HTTP status
 page is displayed instead.
 
 > **ALIEN-AID:** BedSheet defaults to production mode, so set an environment variable called 'ENV' with the value 'development'
@@ -330,7 +330,7 @@ pre>
 
 Config Injection [#injectConfig]
 ********************************
-BedSheet uses [afIocConfig]`http://repo.status302.com/doc/afIocConfig/#overview` to give injectable '@Config' values. '@Config' values
+BedSheet uses [IocConfig]`http://repo.status302.com/doc/afIocConfig/#overview` to give injectable '@Config' values. '@Config' values
 are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
 config values to be immutable once the app has started).
 
@@ -353,7 +353,7 @@ pre>
 <pre
 
 To inject config values in your services, use the '@Config' facet with conjunction with
-[afIoc]`http://repo.status302.com/doc/afIoc/#overview`'s '@Inject':
+[Ioc]`http://www.fantomfactory.org/pods/afIoc`'s '@Inject':
 
 pre>
   @Inject @Config { id="afBedSheet.errPrinter.noOfStackFrames" }
@@ -446,7 +446,7 @@ must contribute to the `GzipCompressible` service to enable gzip for specified [
 
     config["text/funky"] = true
 
-(Note: The GzipCompressible contrib type is actually `sys::MimeType` - [afIoc]`http://repo.status302.com/doc/afIoc/#overview`
+(Note: The GzipCompressible contrib type is actually `sys::MimeType` - [Ioc]`http://www.fantomfactory.org/pods/afIoc`
 kindly coerces the 'Str' to 'MimeType' for us.)
 
 By default BedSheet will compress plain text, css, html, javascript, xml, json and other text responses.
@@ -497,7 +497,7 @@ out the middle man.
 Use `BedServer` to start an instance of BedSheet, and then the re-usable `BedClient` to serve (fake) http requests. The
 benifits (besides the obvious performance ones) include:
  - override real services with test servies / configuration
- - inject your [afIoc]`http://repo.status302.com/doc/afIoc/#overview` services direct into your test class
+ - inject your [Ioc]`http://www.fantomfactory.org/pods/afIoc` services direct into your test class
  - inspect your client's `web::WebSession`
  - cookies are auto sent on each http request
 
@@ -540,11 +540,11 @@ class TestWebApp : Test {
 
 Tips [#tips]
 *************
-All request handlers and processors are built by [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so feel free to '@Inject'
+All request handlers and processors are built by [Ioc]`http://www.fantomfactory.org/pods/afIoc` so feel free to '@Inject'
 DAOs and other services.
 
-BedSheet itself is built with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` so look at the
-[BedSheet Source]`https://bitbucket.org/AlienFactory/afbedsheet/src` for [afIoc]`http://repo.status302.com/doc/afIoc/#overview` examples.
+BedSheet itself is built with [Ioc]`http://www.fantomfactory.org/pods/afIoc` so look at the
+[BedSheet Source]`https://bitbucket.org/AlienFactory/afbedsheet/src` for [Ioc]`http://www.fantomfactory.org/pods/afIoc` examples.
 
 Even if your request handlers aren't services, if they're 'const' classes, they're cached by BedSheet and reused on every request.
 
@@ -593,6 +593,10 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+v1.2.4 [#v1.2.4]
+----------------
+ - Chg: Upgraded to [afIoc-1.5.0]`http://www.fantomfactory.org/pods/afIoc`.
+ - Chg: Upgraded to [afIocConfig-1.0.0]`http://www.fantomfactory.org/pods/afIocConfig`.
 
 v1.2.2 [#v1.2.2]
 ----------------
@@ -607,7 +611,7 @@ v1.2.2 [#v1.2.2]
 v1.2.0 [#v1.2.0]
 ----------------
  - New: Route objects may take any response result - not just 'Methods'!
- - New: BedSheet now has a dependency on [IocEnv]`http://repo.status302.com/doc/afIoc/#overview`
+ - New: BedSheet now has a dependency on [IocEnv]`http://www.fantomfactory.org/pods/afIocEnv`
  - Chg: 'HttpRequestLogFilter' is now in the Http Pipeline by default - it just needs enabling.
  - Chg: The detailed BedSheet Err500 page is disabled in 'production' environments.
  - Chg: Rejigged how the default 'ErrProcessor' is used, making it easier to plug in your own. (Breaking change.)
@@ -646,7 +650,7 @@ v1.1.0 [#v1.1.0]
 v1.0.16 [#v1.0.16]
 ------------------
  - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
- - Chg: Broke @Config code out into its own module: [afIocConfig]`http://repo.status302.com/doc/afIoc/#overview`.
+ - Chg: Broke @Config code out into its own module: [afIocConfig]`http://repo.status302.com/doc/afIocConfig/#overview`.
  - Chg: Added a skull logo to the 'Err500' page.
  - Chg: Rejigged the 'Err500' section layout and tweaked the source code styling.
 

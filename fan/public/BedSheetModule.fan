@@ -4,6 +4,7 @@ using afIocEnv::IocEnvModule
 using concurrent::Actor
 using afPlastic::PlasticCompiler
 using afIocConfig::FactoryDefaults
+using afIocConfig::ConfigProvider
 using afIocConfig::IocConfigSource
 using afIocConfig::IocConfigModule
 
@@ -19,7 +20,7 @@ const class BedSheetModule {
 		
 		// Utils
 		// FIXME: not provided in afIoc-1.4, only afIoc-1.5
-//		binder.bindImpl(PipelineBuilder#)
+		binder.bindImpl(PipelineBuilder#)
 
 		// Routing
 		binder.bindImpl(Routes#)
@@ -115,15 +116,14 @@ const class BedSheetModule {
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 
+	@Contribute { serviceType=ConfigProvider# }
+	static Void contributeConfigProviders(OrderedConfig conf) {
+		conf.add(Config#)
+	}
+
 	@Contribute { serviceType=ValueEncoders# }
 	static Void contributeValueEncoders(MappedConfig config) {
 		// wot no value encoders!? Aha! I see you're using fromStr() instead!
-	}
-
-	@Contribute { serviceType=DependencyProviderSource# } 
-	static Void contributeDependencyProviderSource(OrderedConfig config) {
-		// this is a copy of IocConfig's ConfigProvider so we can use BedSheet's @Config
-		config.add(config.autobuild(ConfigProvider2#))
 	}
 	
 	@Contribute { serviceType=Routes# }
@@ -217,7 +217,7 @@ const class BedSheetModule {
 	@Contribute { serviceType=RegistryStartup# }
 	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
 		conf.add |->| {
-			plasticCompiler.srcCodePadding = configSrc.getCoerced(BedSheetConfigIds.srcCodeErrPadding, Int#)
+			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
 	}
 	

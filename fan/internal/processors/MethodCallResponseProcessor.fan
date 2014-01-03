@@ -36,7 +36,7 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 				return state.handlerCache[handlerType]
 
 			// TODO: we may want to change this to 'handlerType.fits(it.type)' should our ModuleImpl change 
-			if (serviceStats.any { handlerType == it.type }) {
+			if (serviceStats.any { handlerType == it.serviceType }) {
 				state.serviceTypes.add(handlerType)
 				return "iocService"
 			}

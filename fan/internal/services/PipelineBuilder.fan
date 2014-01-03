@@ -10,12 +10,12 @@ using afPlastic::IocClassModel
 ** terminator is called. Each filter has an opportunity to modify method arguments and the return 
 ** value or shortcut the call completely.
 @NoDoc
-const mixin PipelineBuilderFixme {
+const mixin PipelineBuilder {
 	
 	abstract Obj build(Type pipelineType, Type filterType, Obj[] filters, Obj terminator)
 }
 
-internal const class PipelineBuilderImpl : PipelineBuilderFixme {
+internal const class PipelineBuilderImpl : PipelineBuilder {
 	
 	private const ConcurrentCache typeCache	:= ConcurrentCache()
 
