@@ -78,6 +78,11 @@ class QualityValues {
 		qvalues.size
 	}
 	
+	** Returns 'size() == 0'
+	Bool isEmpty() {
+		qvalues.isEmpty
+	}
+	
 	** Returns a dup of the internal 'name:qvalue' map 
 	Str:Float toMap() {
 		qvalues.dup

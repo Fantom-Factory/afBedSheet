@@ -1,3 +1,4 @@
+using web::Cookie
 
 ** A wrapper for HTTP request headers with accessors for some commonly used headings.
 ** 
@@ -11,24 +12,32 @@ class HttpRequestHeaders {
 	** Content-Types that are acceptable for the response.
 	** 
 	** Example: 'Accept: audio/*; q=0.2, audio/basic'
-	QualityValues accept {
-		get { QualityValues(headers["Accept"]) }
+	QualityValues? accept {
+		get { makeIfNotNull("Accept") { QualityValues(it, true) }}
 		private set { }
 	}
 
 	** List of acceptable encodings.
 	** 
 	** Example: 'Accept-Encoding: compress;q=0.5, gzip;q=1.0'
-	QualityValues acceptEncoding {
-		get { QualityValues(headers["Accept-Encoding"]) }
+	QualityValues? acceptEncoding {
+		get { makeIfNotNull("Accept-Encoding") { QualityValues(it, true) }}
 		private set { }
 	}
 
 	** List of acceptable human languages for response.
 	** 
 	** Example: 'Accept-Language: da, en-gb;q=0.8, en;q=0.7'
-	QualityValues acceptLanguage {
-		get { QualityValues(headers["Accept-Language"]) }
+	QualityValues? acceptLanguage {
+		get { makeIfNotNull("Accept-Language") { QualityValues(it, true) }}
+		private set { }
+	}
+
+	** The length of the request body in octets (8-bit bytes).
+	** 
+	** Example: 'Content-Length: 348'
+	Int? contentLength {
+		get { makeIfNotNull("Content-Length") { Int.fromStr(it) }}
 		private set { }
 	}
 
@@ -37,6 +46,14 @@ class HttpRequestHeaders {
 	** Example: 'Content-Type: application/x-www-form-urlencoded'
 	MimeType? contentType {
 		get { makeIfNotNull("Content-Type") { MimeType(it, true) }}
+		private set { }
+	}
+
+	** HTTP cookies previously sent by the server with 'Set-Cookie'. 
+	** 
+	** Example: 'Cookie: Version=1; Skin=new;'
+	Cookie[]? cookie {
+		get { makeIfNotNull("Cookie") { it.split(';').map { Cookie.fromStr(it) }}}
 		private set { }
 	}
 
@@ -109,8 +126,6 @@ class HttpRequestHeaders {
 		private set { }
 	}
 
-
-
 	@Operator
 	Str? get(Str name) {
 		headers[name]
@@ -123,10 +138,13 @@ class HttpRequestHeaders {
 	Str:Str map() {
 		headers
 	}
+
+	override Str toStr() {
+		headers.toStr
+	}
 	
-	private Obj? makeIfNotNull(Str name, |Obj->Obj| func) {
+	private Obj? makeIfNotNull(Str name, |Str->Obj| func) {
 		val := headers[name]
 		return (val == null) ? null : func(val)
 	}
-
 }

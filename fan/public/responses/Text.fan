@@ -37,9 +37,14 @@ const final class Text {
 		fromMimeStr(text, "text/html", charset)
 	}
 
-	** Creates a 'Text' with the mime type 'text/xml'.
+	** Creates a 'Text' with the mime type 'application/xml'.
 	static new fromXml(Str text, Charset charset := Charset.utf8) {
-		fromMimeStr(text, "text/xml", charset)
+		fromMimeStr(text, "application/xml", charset)
+	}
+
+	** Creates a 'Text' with the mime type 'application/xhtml+xml'.
+	static new fromXhtml(Str text, Charset charset := Charset.utf8) {
+		fromMimeStr(text, "application/xhtml+xml", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/json'.
