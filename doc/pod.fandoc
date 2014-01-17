@@ -486,56 +486,6 @@ See 'BufferedOutStream' and `BedSheetConfigIds.responseBufferThreshold` for more
 
 
 
-Testing Your Web App [#testing]
-*******************************
-BedSheet ships with a means of testing your web app without starting the wisp server. This forgoes the overhead of starting a
-real web server, opening real ports and making real http requests. Essentially you're testing the entire app, just cutting
-out the middle man.
-
-Use `BedServer` to start an instance of BedSheet, and then the re-usable `BedClient` to serve (fake) http requests. The
-benifits (besides the obvious performance ones) include:
- - override real services with test servies / configuration
- - inject your [Ioc]`http://www.fantomfactory.org/pods/afIoc` services direct into your test class
- - inspect your client's `web::WebSession`
- - cookies are auto sent on each http request
-
-See below for a test example:
-
-pre>
-using afIoc
-using afBedSheet
-
-class TestWebApp : Test {
-  BedServer? server
-
-  @Inject UserDAO? userDAO            // inject your services
-
-  override Void setup() {
-    server = BedServer(AppModule#)
-    server.addModule(TestOverrides#)  // override services and config with test values
-    server.startup
-    server.injectIntoFields(this)     // inject your services
-  }
-
-  override Void teardown() {
-    server.shutdown
-  }
-
-  Void testIndexPage() {
-    // given
-    client := server.makeClient
-
-    // when
-    res := client.get(`/index`)
-
-    // then
-    verify(res.asStr.contains("Welcome!"))
-  }
-}
-<pre
-
-
-
 Tips [#tips]
 *************
 All request handlers and processors are built by [Ioc]`http://www.fantomfactory.org/pods/afIoc` so feel free to '@Inject'
@@ -593,6 +543,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.2.6 [#v1.2.6]
 ----------------
+ - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`
  - Chg: Added 'Text.fromXhtml(...)'
  - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
  - Chg: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
