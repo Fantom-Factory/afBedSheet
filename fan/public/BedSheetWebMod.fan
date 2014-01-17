@@ -159,8 +159,9 @@ const class BedSheetWebMod : WebMod {
 		}
 	}
 
-	** Used by BedServer
-	internal static Type? findModFromPod(Pod pod) {
+	// as used by BedServer
+	** Looks for an 'AppModule' in the given pod. 
+	static Type? findModFromPod(Pod pod) {
 		mod := null
 		modName := pod.meta["afIoc.module"]
 		if (modName != null) {

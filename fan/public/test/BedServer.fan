@@ -83,7 +83,7 @@ const class BedServer {
 		bob.addModules(mods)
 
 		bedSheetMetaData := bsMeta.val		
-		registry = bob.build(["bannerText":bannerText, "bedSheetMetaData":bedSheetMetaData, "appName":"BedServer"]).startup
+		registry = bob.build(["bannerText":bannerText, "bedSheetMetaData":bedSheetMetaData, "appName":"BedServer", "suppressStartupServiceList":true]).startup
 		
 		started.val = true
 		return this
@@ -91,6 +91,7 @@ const class BedServer {
 
 	** Shutdown 'afBedSheet'
 	BedServer shutdown() {
+		// FIXME: just do it!!! no throw eerr
 		checkHasStarted
 		registry.shutdown
 		reg.val = null

@@ -23,7 +23,7 @@ class Build : BuildPod {
 		depends = [	"sys 1.0", 
 					"concurrent 1.0", 
 					"web 1.0", 
-					"webmod 1.0", 
+					"webmod 1.0", // for LogMod
 					"wisp 1.0", 
 					"util 1.0", 
 					"inet 1.0",
@@ -39,14 +39,14 @@ class Build : BuildPod {
 
 		docApi = true
 		docSrc = true
-		
-		// exclude test code when building the pod
-//		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
-//		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
 	}
 	
 	@Target { help = "Compile to pod file and associated natives" }
 	override Void compile() {
+		// exclude test code when building the pod
+		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
+		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
+		
 		super.compile
 		
 		// copy src to %FAN_HOME% for F4 debugging

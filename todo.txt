@@ -5,10 +5,22 @@ PodHandler, do the same
 For BedSheet 1.2.4
 ------------------
 
+Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web app??
+ - document how to use BedSheet with normal wisp
+
+Check the 'accept' header before we return content
+
+
 Have afIoc call the RouteHandlers so they can take services.
  - not urgent as handlers can @Inject services
 
 After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
+
+Have Before and After routes
+
+Have req.data - an easy map store
+
+
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 

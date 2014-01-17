@@ -127,6 +127,10 @@ class HttpResponseHeaders {
 	Str:Str map() {
 		headers
 	}
+
+	override Str toStr() {
+		headers.toStr
+	}
 	
 	private Obj? makeIfNotNull(Str name, |Obj->Obj| func) {
 		val := headers[name]
