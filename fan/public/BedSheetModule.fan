@@ -41,10 +41,6 @@ const class BedSheetModule {
 		binder.bindImpl(HttpSession#)
 		binder.bindImpl(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
 		binder.bindImpl(BedSheetPage#)
-
-		// TODO: afIoc-1.5 : use createProxy() instead
-		binder.bindImpl(DefaultHttpStatusProcessor#)
-		binder.bindImpl(DefaultErrProcessor#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -196,13 +192,13 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig conf, DefaultHttpStatusProcessor defaultHttpStatus, DefaultErrProcessor defaultErr) {
+	static Void contributeFactoryDefaults(MappedConfig conf, Registry reg) {
 		conf[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		conf[BedSheetConfigIds.gzipDisabled]				= false
 		conf[BedSheetConfigIds.gzipThreshold]				= 376
 		conf[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
-		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= defaultHttpStatus
-		conf[BedSheetConfigIds.defaultErrProcessor]			= defaultErr
+		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= reg.createProxy(DefaultHttpStatusProcessor#, DefaultHttpStatusProcessorImpl#)	// FiXME: afIoc-1.5.2
+		conf[BedSheetConfigIds.defaultErrProcessor]			= reg.createProxy(DefaultErrProcessor#, DefaultErrProcessorImpl#)	// FiXME: afIoc-1.5.2
 		conf[BedSheetConfigIds.noOfStackFrames]				= 50
 		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		conf[BedSheetConfigIds.disableWelcomePage]			= false
