@@ -60,7 +60,7 @@ const class BedSheetWebMod : WebMod {
 			throw startupErr
 		
 		try {
-			httpPipeline.service
+			middlewarePipeline.service
 			
 		} catch (Err err) {
 			// theoretically, this should have already been dealt with by our HttpErrFilter...
@@ -190,12 +190,12 @@ const class BedSheetWebMod : WebMod {
 		return quotes[Int.random(0..<quotes.size)]
 	}
 	
-	// lazy load the HttpPipeline
-	private HttpPipeline httpPipeline() {
+	// lazy load the MiddlewarePipeline
+	private MiddlewarePipeline middlewarePipeline() {
 		pipe := atomicPipe.val
 		if (pipe != null)
 			return pipe
-		atomicPipe.val = registry.dependencyByType(HttpPipeline#)
+		atomicPipe.val = registry.dependencyByType(MiddlewarePipeline#)
 		return atomicPipe.val
 	}
 	

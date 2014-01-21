@@ -12,7 +12,7 @@ using afPlastic::IocClassModel
 @NoDoc
 const mixin PipelineBuilder {
 	
-	abstract Obj build(Type pipelineType, Type filterType, Obj[] filters, Obj terminator)
+	abstract Obj build(Type pipelineType, Type middlewareType, Obj[] filters, Obj terminator)
 }
 
 internal const class PipelineBuilderImpl : PipelineBuilder {

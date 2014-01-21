@@ -19,7 +19,6 @@ const class BedSheetModule {
 	static Void bind(ServiceBinder binder) {
 		
 		// Utils
-		// FIXME: not provided in afIoc-1.4, only afIoc-1.5
 		binder.bindImpl(PipelineBuilder#)
 
 		// Routing
@@ -55,10 +54,19 @@ const class BedSheetModule {
 		return options.options["bedSheetMetaData"] 
 	}
 
-	@Build { serviceId="HttpPipeline"; disableProxy=true }	// no need for a proxy, you don't advice the pipeline, you contribute to it!
-	static HttpPipeline buildHttpPipeline(HttpPipelineFilter[] filters, PipelineBuilder bob, Registry reg) {
-		terminator := reg.autobuild(HttpPipelineTerminator#)
-		return bob.build(HttpPipeline#, HttpPipelineFilter#, filters, terminator)
+	// No need for a proxy, you don't advice the pipeline, you contribute to it!
+	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
+	@Build { serviceId="MiddlewarePipeline"; disableProxy=true }
+	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg) {
+		// hardcode BedSheet default middleware
+		middleware := Middleware[
+			reg.autobuild(CleanupMiddleware#),
+			reg.autobuild(ErrMiddleware#),
+			reg.autobuild(FlashMiddleware#),
+			reg.autobuild(HttpRequestLogMiddleware#)
+		].addAll(userMiddleware)
+		terminator := reg.autobuild(MiddlewareTerminator#)
+		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
 	}
 
 	@Build { serviceId="HttpRequest" }
@@ -90,14 +98,9 @@ const class BedSheetModule {
 			throw Err("No web request active in thread")
 	}
 
-	@Contribute { serviceType=HttpPipeline# }
-	static Void contributeHttpPipeline(OrderedConfig conf, Routes routes) {
-		conf.addOrdered("HttpCleanupFilter", 	conf.autobuild(HttpCleanupFilter#), 	["before: BedSheetFilters", "before: HttpErrFilter"])
-		conf.addOrdered("HttpErrFilter", 		conf.autobuild(HttpErrFilter#), 		["before: BedSheetFilters", "before: HttpRequestLogFilter"])
-		conf.addOrdered("HttpRequestLogFilter", conf.autobuild(HttpRequestLogFilter#),	["before: BedSheetFilters", "before: HttpFlashFilter"])
-		conf.addOrdered("HttpFlashFilter", 		conf.autobuild(HttpFlashFilter#), 		["before: BedSheetFilters"])
-		conf.addPlaceholder("BedSheetFilters")
-		conf.addOrdered("HttpRoutesFilter", 	conf.autobuild(HttpRoutesBeforeFilter#, [routes]), ["after: BedSheetFilters"])
+	@Contribute { serviceType=MiddlewarePipeline# }
+	static Void contributeMiddlewarePipeline(OrderedConfig conf, Routes routes) {
+		conf.addOrdered("Routes", 	conf.autobuild(RoutesBeforeMiddleware#, [routes]))
 	}
 
 	@Contribute { serviceId="HttpOutStream" }

@@ -41,7 +41,7 @@ using afIocConfig::Config
 ** 
 **   2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 ** 
-const mixin HttpRequestLogFilter : HttpPipelineFilter {
+const mixin HttpRequestLogMiddleware : Middleware {
 
 	** Directory where the request log files are written.
 	** 
@@ -59,8 +59,8 @@ const mixin HttpRequestLogFilter : HttpPipelineFilter {
 	abstract Str fields()
 }
 
-internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
-	private static const Log log	:= Utils.getLog(HttpRequestLogFilter#)
+internal const class HttpRequestLogMiddlewareImpl : HttpRequestLogMiddleware {
+	private static const Log log	:= Utils.getLog(HttpRequestLogMiddleware#)
 	
 	override const File? dir
 
@@ -75,11 +75,11 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 	internal new make(RegistryShutdownHub shutdownHub, IocConfigSource configSource, |This|in) { 
 		in(this)
 
-		dir 	= configSource.get("afBedSheet.httpRequestLog.dir", File#)
+		dir = configSource.get("afBedSheet.httpRequestLog.dir", File#)
 		if (dir == null)
 			return
 		
-		logMod  = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
+		logMod = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
 		logMod.onStart
 
 		shutdownHub.addRegistryShutdownListener("RequestLogFilter", [,], |->| { logMod.onStop })
@@ -87,8 +87,8 @@ internal const class HttpRequestLogFilterImpl : HttpRequestLogFilter {
 		log.info(BsLogMsgs.requestLogEnabled(dir + `${filenamePattern}`))
 	}
 	
-	override Bool service(HttpPipeline handler) {
+	override Bool service(MiddlewarePipeline pipeline) {
 		logMod?.onService
-		return handler.service		
+		return pipeline.service		
 	}
 }

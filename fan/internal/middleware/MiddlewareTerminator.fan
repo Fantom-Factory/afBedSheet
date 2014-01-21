@@ -2,7 +2,7 @@ using afIoc::Inject
 using afIoc::Registry
 using afIocConfig::Config
 
-const internal class HttpPipelineTerminator : HttpPipeline {
+const internal class MiddlewareTerminator : MiddlewarePipeline {
 
 	@Inject	private const Routes				routes
 	@Inject	private const ResponseProcessors	responseProcessors 	
