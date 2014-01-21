@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIoc::Registry
+using afIocConfig::Config
 
 internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
 	@Inject	private const Registry 			registry

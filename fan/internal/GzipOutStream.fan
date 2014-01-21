@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using web::WebRes
 
 ** A stream that starts gzipping once data has accumulated past a given (minimum) threshold. When 

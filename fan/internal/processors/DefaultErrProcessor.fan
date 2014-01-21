@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using web::WebRes
 
 ** Prints the BedSheet Err Page 
