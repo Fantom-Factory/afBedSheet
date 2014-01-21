@@ -12,7 +12,7 @@ const class ReProcessErr : Err {
 	** The response object
 	const Obj responseObj
 	
-	** Make a 'ReProcessErr' passing in response obj to be processed. 
+	** Make a 'ReProcessErr' passing in a response obj to be processed. 
 	new make(Obj responseObj, Err? cause := null) : super(msg, cause) {
 		this.responseObj = responseObj
 	}

@@ -71,14 +71,14 @@ Hello! I'm Luci and I have an IQ of 666!
 Wow! That's awesome! But what just happened!?
 
 Every 'BedSheet' application has an 'AppModule' that configures [Ioc]`http://www.fantomfactory.org/pods/afIoc` services.
-Here we told the `Routes` service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method for all requests that start with '/hello'.
+Here we told the `Routes` service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method
+for all requests that start with '/hello'.
 `Route` converts URI path segments into method arguments, or in our case, to 'Str name' and to an
 optional 'Int iq'.
 
-Request handlers are typically what we, the app developers, write. They perform logic processing and render responses. Our
-'HelloPage' request handler simply returns a plain `Text` response.
-
-A default `ResponseProcessor` then sends the `Text` response to the client.
+Request handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our
+'HelloPage' request handler simply returns a plain `Text` response, which 'BedSheet' sends to the client via an appropriate
+`ResponseProcessor`.
 
 
 
@@ -109,7 +109,6 @@ pre>
 using util
 
 class Main : AbstractMain {
-
   @Arg { help="The HTTP port to run the app on" }
   private Int port
 
@@ -123,26 +122,27 @@ class Main : AbstractMain {
 meta:
 
 pre>
-meta = [ ...
-         "afIoc.module" : "<fully-qualified-app-module-name>",
-         ...
-       ]
+meta = [
+    ...
+    "afIoc.module" : "<fully-qualified-app-module-name>",
+    ...
+]
 <pre
 
 Note that 'AppModule' is named so out of convention but may be called anything you like.
 
 
 
-HTTP Pipeline [#httpPipeline]
-*****************************
-When a http request is received it is passed through a pipeline of filters. The terminating filter performs the standard
-'BedSheet' routing (see [Request Routing]`#requestRouting`). Filters can be used to address cross cutting concerns such as
+BedSheet Middleware [#middleware]
+*********************************
+When a HTTP request is received it is passed through a pipeline of middleware. The terminating filter performs the standard
+'BedSheet' routing (see [Request Routing]`#requestRouting`). Middleware can be used to address cross cutting concerns such as
 authorisation.
 
 Standard BedSheet filters are:
  - 'HttpCleanupFilter': Ensures the 'HttpOutStream' is closed and cleans up all request / thread scoped data.
  - 'HttpErrFilter': Catches and processes Errs, see [Error Processing]`#errorProcessing`.
- - 'HttpFlashFilter': Stores values from one http request to the next.
+ - 'HttpFlashFilter': Stores values from one HTTP request to the next.
  - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. (Not enabled by default.)
 
 pre>
@@ -221,18 +221,18 @@ Request handlers are usually written by yourself, but a couple of common use-cas
 Response Processing [#responseProcessing]
 *****************************************
 [ResponseProcessors]`ResponseProcessor` process return values from request handlers (`sys::File`, `Text`, etc...) and send
-data to the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the http request.
+data to the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the HTTP request.
 Or they can return another response object for further processing, such as a `Text` obj.
 
 By default, BedSheet handles the following response objects:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : No further processing is required.
  - [File]`sys::File` : The file is streamed to the client.
- - `HttpStatus` : Sets the http response status and renders a mini html page. (See [Error Processing]`#errorProcessing`.)
+ - `HttpStatus` : Sets the HTTP response status and renders a mini html page. (See [Error Processing]`#errorProcessing`.)
  - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guarenteed to be closed.
  - `MethodCall` : The method is called and the return value used for further processing.
  - `Redirect` : Sends a 3xx redirect response to the client.
- - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with the given `sys::MimeType`.
+ - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding 'Content-Type'.
 
 
 
@@ -243,13 +243,13 @@ That said, integrating them into 'BedSheet' is relatively simple.
 
 Alien-Factory provides the following libraries:
 
- - [afSlim]`http://repo.status302.com/doc/afSlim/#overview` for rendering HTML,
- - [afPillow]`http://repo.status302.com/doc/afPillow/#overview` for integrating [afEfanXtra]`http://repo.status302.com/doc/afEfanXtra/#overview` components (may be used with 'Slim'!),
- - [afBedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` for integrating
- [efan (Embedded Fantom)]`http://repo.status302.com/doc/afEfan/#overview` templates and
- - [afBedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
+ - [Slim]`http://www.fantomfactory.org/pods/afSlim` for rendering HTML,
+ - [Pillow]`http://www.fantomfactory.org/pods/afPillow` for integrating [afEfanXtra]`http://www.fantomfactory.org/pods/afEfanXtra` components (may be used with [Slim]`http://www.fantomfactory.org/pods/afSlim`!),
+ - [BedSheetEfan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` for basic
+ [efan (Embedded Fantom)]`http://www.fantomfactory.org/pods/afEfan` integration, and
+ - [BedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
 
-Taking [Slim]`http://repo.status302.com/doc/afSlim/#overview` as an example, simply inject and use it in your request
+Taking [Slim]`http://www.fantomfactory.org/pods/afSlim` as an example, simply inject and use it in your request
 handlers:
 
 pre>
@@ -275,9 +275,6 @@ When 'BedSheet' catches an Err it scans through a list of contributed [ErrProces
 handle the Err. [ErrProcessors]`ErrProcessor` take an Err and return a response for further processing (for example, `Text`). Or
 it may return 'true' if the error has been completely handled and no further processing is required.
 
-'BedSheet' bundles with the follow 'ErrProcessors':
- - `HttpStatusErr` : Returns the wrapped `HttpStatus` for further processing.
-
 If no matching 'ErrProcessor' is found then 'BedSheet' displays its default Err500 page - which is extremely verbose, displays
 (a shed load of) debugging information and is highly customisable.
 
@@ -291,7 +288,7 @@ page is displayed instead.
 to ensure you continue to see the BedSheet's verbose Err50 page. See this
 [Fantom-Factory article]`http://fantom-factory.blogspot.co.uk/2013/12/dev-test-or-prod-what-is-your-machine.html` for more details.
 
-To add your own Err page, contribute an `ErrProcessor` to `ErrProcessors`:
+To add a custom error page, contribute an `ErrProcessor` to `ErrProcessors`:
 
 pre>
   @Contribute { serviceType=ErrProcessors# }
@@ -305,13 +302,14 @@ pre>
 
 HTTP Status Processing [#httpStatusProcessing]
 **********************************************
-'HttpStatus' responses are handled by `HttpStatusProcessors` which select a contributed processor dependent on the http status
-code. If none are found, a default catch all processor sets the http status code and sends a mini html page to the
+'HttpStatus' responses are handled by `HttpStatusProcessors` which select a contributed processor dependent on the HTTP status
+code. If none are found, a default catch all processor sets the HTTP status code and sends a mini html page to the
 client. This is the page you see when you receive a '404 Not Found' error.
 
 ![BedSheet's 404 Status Page]`http://static.alienfactory.co.uk/fantom-docs/Err404.png`
 
-To set your own '404 Not Found' page, contribute a `HttpStatusProcessor` to the `HttpStatusProcessors` service:
+To set your own '404 Not Found' page, contribute a `HttpStatusProcessor` to the `HttpStatusProcessors` service for the status
+code 404:
 
 pre>
   @Contribute { serviceType=HttpStatusProcessors# }
@@ -355,8 +353,8 @@ pre>
   Int noOfStackFrames
 <pre
 
-The config mechanism is not just for BedSheet, you can use it too when creating 3rd Party libraries! Contributing to
-'FactoryDefaults' gives users of your library an easy way to override your values.
+The config mechanism is not just for BedSheet, you can use it too when creating 3rd Party libraries! Contributing initial
+values to 'FactoryDefaults' gives users of your library an easy way to override your values.
 
 
 
@@ -371,14 +369,14 @@ pre>
   @Contribute { serviceType=ApplicationDefaults# }
   static Void contributeApplicationDefaults(MappedConfig conf) {
 
-    conf[BedSheetConfigIds.httpRequestLogDir]             = `/my/log/dir/`
-    conf[BedSheetConfigIds.httpRequestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log"
+    conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
+    conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log"
   }
 <pre
 
 Ensure the log dir ends in a trailing /slash/.
 
-The fields writen to the logs may be set by configuring 'BedSheetConfigIds.httpRequestLogFields', but default to looking like:
+The fields writen to the logs may be set by configuring 'BedSheetConfigIds.requestLogFields', but default to looking like:
 pre>
 2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 
@@ -470,10 +468,10 @@ If (and only if!) your request passed all the tests above, will it then be lovin
 
 Buffered Response [#bufferedResponse]
 *************************************
-By default, BedSheet attempts to set the 'Content-Length' http response header.(2) It does this by buffering
-'HttpResponse.out'. When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real http response.
+By default, BedSheet attempts to set the 'Content-Length' HTTP response header.(2) It does this by buffering
+'HttpResponse.out'. When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real HTTP response.
 
-Response buffering can be disabled on a per http response basis.
+Response buffering can be disabled on a per HTTP response basis.
 
 A threshold can be set, whereby if the buffer exeeds that value, all content is streamed directly to the client.
 
@@ -545,6 +543,8 @@ v1.3.0 [#v1.3.0]
  - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
  - Chg: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
  - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoder'.
+ - Chg: Renamed 'HttpPipelineFilter' -> 'Middleware' and updated the corresponding services. Hardcoded the default BedSheet filters / middleware to the start of the pipeline. (Breaking change)
+ - Chg: Renamed 'HttpRequestLogFilter' -> 'RequestLogMiddleware' and updated the '@Config' values. (Breaking change)
 
 v1.2.4 [#v1.2.4]
 ----------------

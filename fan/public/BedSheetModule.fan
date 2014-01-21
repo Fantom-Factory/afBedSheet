@@ -63,7 +63,7 @@ const class BedSheetModule {
 			reg.autobuild(CleanupMiddleware#),
 			reg.autobuild(ErrMiddleware#),
 			reg.autobuild(FlashMiddleware#),
-			reg.autobuild(HttpRequestLogMiddleware#)
+			reg.autobuild(RequestLogMiddleware#)
 		].addAll(userMiddleware)
 		terminator := reg.autobuild(MiddlewareTerminator#)
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
@@ -123,7 +123,7 @@ const class BedSheetModule {
 	static Void contributeValueEncoders(MappedConfig config) {
 		// wot no value encoders!? Aha! I see you're using fromStr() instead!
 	}
-	
+
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(OrderedConfig conf, FileHandler fileHandler) {
 		conf.addPlaceholder("FileHandlerStart")
@@ -197,19 +197,19 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf, DefaultHttpStatusProcessor defaultHttpStatus, DefaultErrProcessor defaultErr) {
-		conf[BedSheetConfigIds.proxyPingInterval]				= 1sec
-		conf[BedSheetConfigIds.gzipDisabled]					= false
-		conf[BedSheetConfigIds.gzipThreshold]					= 376
-		conf[BedSheetConfigIds.responseBufferThreshold]			= 32 * 1024	// todo: why not kB?
-		conf[BedSheetConfigIds.defaultHttpStatusProcessor]		= defaultHttpStatus
-		conf[BedSheetConfigIds.defaultErrProcessor]				= defaultErr
-		conf[BedSheetConfigIds.noOfStackFrames]					= 50
-		conf[BedSheetConfigIds.srcCodeErrPadding]				= 5
-		conf[BedSheetConfigIds.disableWelcomePage]				= false
+		conf[BedSheetConfigIds.proxyPingInterval]			= 1sec
+		conf[BedSheetConfigIds.gzipDisabled]				= false
+		conf[BedSheetConfigIds.gzipThreshold]				= 376
+		conf[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
+		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= defaultHttpStatus
+		conf[BedSheetConfigIds.defaultErrProcessor]			= defaultErr
+		conf[BedSheetConfigIds.noOfStackFrames]				= 50
+		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
+		conf[BedSheetConfigIds.disableWelcomePage]			= false
 
-		conf[BedSheetConfigIds.httpRequestLogDir]				= null
-		conf[BedSheetConfigIds.httpRequestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
-		conf[BedSheetConfigIds.httpRequestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+		conf[BedSheetConfigIds.requestLogDir]				= null
+		conf[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
+		conf[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }

@@ -20,7 +20,7 @@ using web::WebRes
 ** So the default GZIP threshold is set to 376. Although you should still inspect your site traffic 
 ** and adjust accordingly.
 ** 
-** @see `ConfigIds.gzipThreshold`
+** @see `BedSheetConfigIds.gzipThreshold`
 ** 
 ** @see [What is recommended minimum object size for gzip performance benefits?]`http://webmasters.stackexchange.com/questions/31750/what-is-recommended-minimum-object-size-for-gzip-performance-benefits`
 internal class GzipOutStream : OutStream {
