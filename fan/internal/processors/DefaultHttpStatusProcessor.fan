@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using web::WebRes
 
 ** (Service) - Sends the status code and msg from `HttpStatusErr` to the client. 

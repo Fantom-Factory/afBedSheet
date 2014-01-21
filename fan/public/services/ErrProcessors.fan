@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIoc::StrategyRegistry
+using afIocConfig::Config
 
 ** (Service) - Contribute your 'ErrProcessor' implementations to this. 
 ** 

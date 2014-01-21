@@ -2,6 +2,7 @@ using afIoc::Inject
 using afIoc::RegistryShutdownHub
 using webmod::LogMod
 using afIocConfig::IocConfigSource
+using afIocConfig::Config
 
 ** Logs HTTP requests to file in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. 
 ** Uses [LogMod]`webmod::LogMod`. 

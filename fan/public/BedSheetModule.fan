@@ -116,11 +116,6 @@ const class BedSheetModule {
 		conf[HttpStatus#]		= httpStatusProcessor
 	}
 
-	@Contribute { serviceType=ConfigProvider# }
-	static Void contributeConfigProviders(OrderedConfig conf) {
-		conf.add(Config#)
-	}
-
 	@Contribute { serviceType=ValueEncoders# }
 	static Void contributeValueEncoders(MappedConfig config) {
 		// wot no value encoders!? Aha! I see you're using fromStr() instead!

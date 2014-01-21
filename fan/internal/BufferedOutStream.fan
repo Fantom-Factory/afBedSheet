@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using web::WebRes
 
 ** Buffers the stream content so it can set the 'Content-Length' http response header.
@@ -8,7 +9,7 @@ using web::WebRes
 internal class BufferedOutStream : OutStream {
 
 	@Config { id="afBedSheet.responseBuffer.threshold" }
-	@Inject private Int 			resBufThreadhold	
+	@Inject private Int 			resBufThreadhold
 	@Inject	private HttpResponse	response
 	
 	private OutStream	realOut

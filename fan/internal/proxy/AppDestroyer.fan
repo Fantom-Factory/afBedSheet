@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using concurrent::Actor
 using concurrent::ActorPool
 using concurrent::AtomicInt

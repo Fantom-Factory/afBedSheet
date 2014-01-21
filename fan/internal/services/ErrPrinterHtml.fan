@@ -2,6 +2,7 @@ using afIoc::Inject
 using afIoc::IocErr
 using afIoc::IocHelper
 using afIoc::NotFoundErr
+using afIocConfig::Config
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 

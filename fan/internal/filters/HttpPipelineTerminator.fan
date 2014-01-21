@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIoc::Registry
+using afIocConfig::Config
 
 const internal class HttpPipelineTerminator : HttpPipeline {
 
