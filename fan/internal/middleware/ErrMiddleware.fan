@@ -3,8 +3,8 @@ using afIoc::Registry
 using afIocConfig::Config
 
 ** Catches and processes Errs. This usually involves generating and sending a error page to the client. 
-internal const class HttpErrFilter : HttpPipelineFilter {
-	private const static Log log := Utils.getLog(HttpErrFilter#)
+internal const class ErrMiddleware : Middleware {
+	private const static Log log := Utils.getLog(ErrMiddleware#)
 
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool					inProd
@@ -16,7 +16,7 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 
 	new make(|This|in) { in(this) }
 	
-	override Bool service(HttpPipeline handler) {
+	override Bool service(MiddlewarePipeline pipeline) {
 		firstErr := null
 		response := null
 		
@@ -24,7 +24,7 @@ internal const class HttpErrFilter : HttpPipelineFilter {
 		try {
 			
 			try {
-				return handler.service
+				return pipeline.service
 				
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in a filter), and people 
 			// would still expect it work

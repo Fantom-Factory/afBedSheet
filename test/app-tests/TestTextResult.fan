@@ -17,7 +17,7 @@ internal class TestTextResult : AppTest {
 	Void testXml() {
 		res := getAsStr(`/textResult/xml`)
 		verifyEq(res, "This is xml text <honest!/>")
-		verifyEq(client.resHeaders["Content-Type"], "text/xml; charset=UTF-8")
+		verifyEq(client.resHeaders["Content-Type"], "application/xml; charset=UTF-8")
 	}
 	
 }

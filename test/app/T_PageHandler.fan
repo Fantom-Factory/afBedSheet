@@ -5,6 +5,7 @@ internal const class T_PageHandler {
 	
 	@Inject	private const Registry 			registry
 	@Inject	private const HttpResponse 		response
+	@Inject	private const HttpSession 		session
 	@Inject	private const HttpFlash 		flash
 	
 	new make(|This|in) { in(this) }
@@ -90,6 +91,15 @@ internal const class T_PageHandler {
 	
 	Obj uri(Uri uri) {
 		Text.fromPlain("uri: $uri")
+	}
+	
+	// ---- Session Pages ----
+	
+	Obj countReqs() {
+		count := (Int) session.get("count", 0)
+		count += 1
+		session["count"] = count
+		return Text.fromPlain("count $count")
 	}
 	
 	// ---- Status Code Page ----

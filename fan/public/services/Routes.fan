@@ -5,6 +5,9 @@ using afIoc::Registry
 ** (Service) - Contribute your `Route` objects to this.
 ** 
 ** Responsible for routing URIs to request handlers.
+** 
+** @uses an OrderedConfig of 'Route'
+@NoDoc	// Don't confuse the masses
 const mixin Routes {
 
 	** The ordered list of routes

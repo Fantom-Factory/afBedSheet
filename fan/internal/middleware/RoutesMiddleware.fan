@@ -3,7 +3,7 @@ using afIoc::Inject
 ** Create instances of 'HttpRoutesFilter' manually so you can pass in your own 'Routes' object with it's own collection
 ** of routes.
 @NoDoc
-const class HttpRoutesBeforeFilter : HttpPipelineFilter {
+const class RoutesBeforeMiddleware : Middleware {
 			private const Routes		routes
 	@Inject	private const HttpRequest	httpRequest
 
@@ -13,14 +13,14 @@ const class HttpRoutesBeforeFilter : HttpPipelineFilter {
 		in(this) 
 	}
 
-	override Bool service(HttpPipeline handler) {
+	override Bool service(MiddlewarePipeline pipeline) {
 		handled := routes.processRequest(httpRequest.modRel, httpRequest.httpMethod)
-		return handled ? true : handler.service
+		return handled ? true : pipeline.service
 	}	
 }
 
 @NoDoc
-const class HttpRoutesAfterFilter : HttpPipelineFilter {
+const class RoutesAfterMiddleware : Middleware {
 			private const Routes		routes
 	@Inject	private const HttpRequest	httpRequest
 
@@ -29,7 +29,7 @@ const class HttpRoutesAfterFilter : HttpPipelineFilter {
 		in(this) 
 	}
 
-	override Bool service(HttpPipeline handler) {
+	override Bool service(MiddlewarePipeline handler) {
 		retVal1 := handler.service
 		// if the 'after' Route also tries to send data to the client - so be it, let them deal with the error!  
 		retVal2 := routes.processRequest(httpRequest.modRel, httpRequest.httpMethod)
