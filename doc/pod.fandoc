@@ -541,12 +541,13 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
-v1.2.6 [#v1.2.6]
+v1.3.0 [#v1.3.0]
 ----------------
- - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`
+ - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`. (Breaking change)
  - Chg: Added 'Text.fromXhtml(...)'
  - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
  - Chg: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
+ - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoder'.
 
 v1.2.4 [#v1.2.4]
 ----------------

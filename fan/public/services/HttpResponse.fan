@@ -85,7 +85,7 @@ const class HttpResponseWrapper : HttpResponse {
 	}
 	override Bool disableBuffering {
 		get { res.disableBuffering }
-		set { res.disableBuffering = it}		
+		set { res.disableBuffering = it}
 	}
 	override Int statusCode {
 		get { res.statusCode }

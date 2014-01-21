@@ -1,7 +1,7 @@
 using afIoc::ConcurrentState
 
-** (Service) - Stores values from one http request to the next. 
-** The values stored must be serializable.
+** (Service) - Stores values from one HTTP request to the next. 
+** The values stored must be '@Serializable'.
 const mixin HttpFlash {
 	
 	@Operator
