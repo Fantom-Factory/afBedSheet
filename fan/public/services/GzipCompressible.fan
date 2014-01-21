@@ -1,5 +1,5 @@
 
-** (Service) - Holds a list of 'MimeTypes' that may be gzip'ed in a http response. 
+** (Service) - Holds a list of 'MimeTypes' that may be gzip'ed in a HTTP response. 
 ** A standard set of types are configured by default. To add to the list:
 ** 
 ** pre>

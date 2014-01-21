@@ -1,7 +1,7 @@
 using web::WebReq
 using afIoc::Inject
 
-** (Service) - A Request Handler that maps URIs to files on the file system.
+** (Service) - Request Handler that maps URIs to files on the file system.
 ** 
 ** Example, to map all uris prefixed with '/pub/' to files under the '<app>/etc/web/' directory, 
 ** add the following to your 'AppModule':

@@ -4,14 +4,8 @@ using afIoc::TypeCoercer
 
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
-** pre>
-**   @Contribute { serviceType=ValueEncoders# }
-**   static Void contributeValueEncoders(MappedConfig conf) {
-**     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)
-**   }
-** <pre
-** 
 ** @uses a MappedConfig of 'Type:ValueEncoder' where 'Type' is what the 'ValueEncoder', um, encodes!
+@NoDoc	// Don't confuse the masses
 const mixin ValueEncoders {
 	
 	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 

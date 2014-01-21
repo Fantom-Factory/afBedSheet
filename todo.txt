@@ -10,6 +10,9 @@ Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web ap
 
 Check the 'accept' header before we return content
 
+Rename Filter to Middleware -> re-implement the pipeline as a manual chain, delete pipeline service, delete the Before / After placeholders
+
+Configure RouteHandlers to take other non-service classes
 
 Have afIoc call the RouteHandlers so they can take services.
  - not urgent as handlers can @Inject services
@@ -21,6 +24,7 @@ Have Before and After routes
 Have req.data - an easy map store
 
 
+put goals on googal anal
 
 Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
@@ -29,8 +33,6 @@ Doc customising the ErrPrinters! Make them public?
 make HttpRequestWrapper / HttpResponseWrapper public?
 
 Logging filter with reqId, SessId and configurable userId
-
-BedClient (test) post reqs and req.in
 
 Err500 - have filter stack frames checkbox?
 

@@ -2,20 +2,12 @@ using afIoc::Inject
 using afIoc::StrategyRegistry
 
 ** (Service) - Contribute your 'ErrProcessor' implementations to this. 
-** Example, in your 'AppModule':
-** 
-** pre>
-**   @Contribute { serviceType=ErrProcessors# }
-**   static Void contributeErrProcessors(MappedConfig conf) {
-**     conf[Err#] = CatchAllErrHandler()
-**   }
-** <pre
 ** 
 ** @uses a MappedConfig of 'Type:ErrProcessor' where 'Type' is a subclass of 'Err' or a mixin.
+@NoDoc	// Don't confuse the masses
 const mixin ErrProcessors {
 
 	** Returns the result of processing the given 'Err'.
-	@NoDoc	// not intended for public use
 	abstract Obj processErr(Err err)
 }
 
@@ -37,6 +29,7 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 	}
 	
 	override Obj processErr(Err err) {
+		// TODO: should we catch all Errs and re-process? Um, it get's a little complicated...
 		get(err.typeof).process(err)
 	}
 

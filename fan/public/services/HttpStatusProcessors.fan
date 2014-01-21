@@ -4,30 +4,11 @@ using web::WebRes
 
 ** (Service) - Contribute your 'HttpStatusProcessor' implementations to this.
 ** 
-** pre>
-**   @Contribute { serviceType=HttpStatusProcessors# }
-**   static Void contributeHttpStatusProcessors(MappedConfig conf) {
-**     conf[404] = conf.autobuild(My404PageHandler#)
-**   }
-** <pre
-** 
-** If a processor for the given status code can not be found, the default page (processor) is used.
-** The default page can be set in `afIocConfig::ApplicationDefaults`.
-** 
-** pre>
-** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void configureApplicationDefaults(MappedConfig conf) {
-**   conf[BedSheetConfigIds.httpStatusDefaultPage] = MyStatusPage()
-** }
-** <pre
-** 
-** @see `BedSheetConfigIds.defaultHttpStatusProcessor`
-** 
 ** @uses a MappedConfig of 'Int:HttpStatusProcessor'
+@NoDoc // Don't confuse the masses.
 const mixin HttpStatusProcessors : ResponseProcessor {
 
 	** Returns the result of processing the given `HttpStatus` as per the contributed processors.
-	@NoDoc // not for public use
 	override abstract Obj process(Obj response)
 }
 

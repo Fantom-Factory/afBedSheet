@@ -131,7 +131,7 @@ const class BedSheetWebMod : WebMod {
 			registryOpts["bedSheetMetaData"]			= BedSheetMetaDataImpl(pod, mod, bedSheetOptions)
 			registryOpts["suppressStartupServiceList"]	= true
 			registryOpts["appName"]						= "BedSheet"
-	
+
 			// startup afIoc
 			registry = bob.build(registryOpts).startup
 	
