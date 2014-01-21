@@ -59,7 +59,7 @@ const mixin BedSheetConfigIds {
 	static const Str srcCodeErrPadding				:= "afBedSheet.plastic.srcCodeErrPadding"
 	
 	** Set to 'true' to ensure the welcome page is never displayed. (Useful if all your routing is done via 
-	** 'HttpPipelineFilters').
+	** 'Middleware').
 	**  
 	** Defaults to 'false'
 	static const Str disableWelcomePage				:= "afBedSheet.disableWelcomePage"
