@@ -3,7 +3,7 @@ using afIoc::Registry
 using afIoc::ThreadStashManager
 
 ** Ensures the `HttpOutStream` is closed and cleans up all data held in the current thread / 
-** request. As such, this must always be the first filter in the pipeline.   
+** request. As such, this must always be the first middleware in the pipeline.   
 internal const class CleanupMiddleware : Middleware {
 	
 	@Inject	private const Registry				registry

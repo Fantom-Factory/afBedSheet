@@ -10,8 +10,6 @@ Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web ap
 
 Check the 'accept' header before we return content
 
-Rename Filter to Middleware -> re-implement the pipeline as a manual chain, delete pipeline service, delete the Before / After placeholders
-
 Configure RouteHandlers to take other non-service classes
 
 Have afIoc call the RouteHandlers so they can take services.
