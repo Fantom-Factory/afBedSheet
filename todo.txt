@@ -2,29 +2,27 @@
 FileHandler - allow multiple dirs to serve the same uri, auto add to routes with placeholders, add to docs
 PodHandler, do the same
 
-For BedSheet 1.2.4
-------------------
+After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
 
 Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web app??
  - document how to use BedSheet with normal wisp
 
+
+For BedSheet 1.3.0
+------------------
+
 Check the 'accept' header before we return content
 
-Configure RouteHandlers to take other non-service classes
+??? Configure RouteHandlers to take other non-service classes
 
-Have afIoc call the RouteHandlers so they can take services.
- - not urgent as handlers can @Inject services
+(*) Have afIoc call the RouteHandlers so they can take services.
+   - not urgent as handlers can @Inject services
 
-After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
+(*) Have Before and After routes
 
-Have Before and After routes
+(*) Have req.data - an easy map store -> store in WebReq?
 
-Have req.data - an easy map store
-
-
-put goals on googal anal
-
-Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
+(*) Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
 
 Doc customising the ErrPrinters! Make them public?
 

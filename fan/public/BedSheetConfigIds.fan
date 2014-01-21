@@ -66,14 +66,14 @@ const mixin BedSheetConfigIds {
 
 
 
-	// --- RequestLogFilter ----
+	// --- LoggingMiddleware ----
 	
 	** Directory where request log files are to be written. 
 	** Set to enable request logging. 
 	** Must end in a trailing /slash/.
 	** 
 	** @see `RequestLogFilter`
-	static const Str httpRequestLogDir				:= "afBedSheet.httpRequestLog.dir"
+	static const Str requestLogDir					:= "afBedSheet.requestLog.dir"
 
 	** Log filename pattern.
 	** The name may contain a pattern between '{}' using the pattern format of 'DateTime.toLocale'. 
@@ -82,13 +82,13 @@ const mixin BedSheetConfigIds {
 	** Defaults to 'afBedSheet-{YYYY-MM}.log'
 	** 
 	** @see `RequestLogFilter`
-	static const Str httpRequestLogFilenamePattern	:= "afBedSheet.httpRequestLog.filenamePattern" 
+	static const Str requestLogFilenamePattern		:= "afBedSheet.requestLog.filenamePattern" 
 
 	** Format of the web log records as a string of names.
 	** 
 	** Defaults to 'date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)'
 	** 
 	** @see `RequestLogFilter`
-	static const Str httpRequestLogFields			:= "afBedSheet.httpRequestLog.fields"
+	static const Str requestLogFields				:= "afBedSheet.requestLog.fields"
 
 }

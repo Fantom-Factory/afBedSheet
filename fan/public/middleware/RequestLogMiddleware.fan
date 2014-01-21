@@ -7,14 +7,14 @@ using afIocConfig::Config
 ** Logs HTTP requests to file in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. 
 ** Uses [LogMod]`webmod::LogMod`. 
 ** 
-** To enable, set the [log dir]`BedSheetConfigIds.httpRequestLogDir` and (optionally) the 
-** [filename pattern]`BedSheetConfigIds.httpRequestLogFilenamePattern` in your 'AppModule':
+** To enable, set the [log dir]`BedSheetConfigIds.requestLogDir` and (optionally) the 
+** [filename pattern]`BedSheetConfigIds.requestLogFilenamePattern` in your 'AppModule':
 ** 
 ** pre>
 **   @Contribute { serviceType=ApplicationDefaults# } 
 **   static Void contributeAppDefaults(MappedConfig conf) {
-**     conf[BedSheetConfigIds.httpRequestLogDir]             = `/my/log/dir/`
-**     conf[BedSheetConfigIds.httpRequestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log" // (optional)
+**     conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
+**     conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log" // (optional)
 **   }
 ** <pre
 ** 
@@ -22,7 +22,7 @@ using afIocConfig::Config
 ** 
 ** See `util::FileLogger` to configure datetime patterns for your log files.
 ** 
-** The [fields]`BedSheetConfigIds.httpRequestLogFields` property configures the format of the log records. It is a string of field names 
+** The [fields]`BedSheetConfigIds.requestLogFields` property configures the format of the log records. It is a string of field names 
 ** separated by a space. The following field names are supported:
 ** 
 **   - **date**: UTC date as DD-MM-YYYY
@@ -41,33 +41,33 @@ using afIocConfig::Config
 ** 
 **   2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 ** 
-const mixin HttpRequestLogMiddleware : Middleware {
+const mixin RequestLogMiddleware : Middleware {
 
 	** Directory where the request log files are written.
 	** 
-	** @see `ConfigIds.httpRequestLogDir`
+	** @see `BedSheetConfigIds.requestLogDir`
 	abstract File? dir()
 
 	** Log filename pattern. 
 	** 
-	** @see `ConfigIds.httpRequestLogFilenamePattern`
+	** @see `BedSheetConfigIds.requestLogFilenamePattern`
 	abstract Str filenamePattern()
 
 	** Format of the web log records as a string of names.
 	** 
-	** @see `ConfigIds.httpRequestLogFields`
+	** @see `BedSheetConfigIds.requestLogFields`
 	abstract Str fields()
 }
 
-internal const class HttpRequestLogMiddlewareImpl : HttpRequestLogMiddleware {
-	private static const Log log	:= Utils.getLog(HttpRequestLogMiddleware#)
+internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
+	private static const Log log	:= Utils.getLog(RequestLogMiddleware#)
 	
 	override const File? dir
 
-	@Inject @Config { id="afBedSheet.httpRequestLog.filenamePattern" } 
+	@Inject @Config { id="afBedSheet.requestLog.filenamePattern" } 
 	override const Str filenamePattern
 
-	@Inject @Config { id="afBedSheet.httpRequestLog.fields" } 
+	@Inject @Config { id="afBedSheet.requestLog.fields" } 
 	override const Str fields
 
 	private const LogMod? logMod
@@ -75,7 +75,7 @@ internal const class HttpRequestLogMiddlewareImpl : HttpRequestLogMiddleware {
 	internal new make(RegistryShutdownHub shutdownHub, IocConfigSource configSource, |This|in) { 
 		in(this)
 
-		dir = configSource.get("afBedSheet.httpRequestLog.dir", File#)
+		dir = configSource.get(BedSheetConfigIds.requestLogDir, File#)
 		if (dir == null)
 			return
 		
