@@ -5,7 +5,7 @@ using afIocConfig::Config
 ** (Service) - Contribute your 'ErrProcessor' implementations to this. 
 ** 
 ** @uses a MappedConfig of 'Type:ErrProcessor' where 'Type' is a subclass of 'Err' or a mixin.
-@NoDoc	// Don't confuse the masses
+@NoDoc	// don't overwhelm the masses!
 const mixin ErrProcessors {
 
 	** Returns the result of processing the given 'Err'.
