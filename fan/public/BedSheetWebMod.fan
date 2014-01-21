@@ -63,7 +63,7 @@ const class BedSheetWebMod : WebMod {
 			middlewarePipeline.service
 			
 		} catch (Err err) {
-			// theoretically, this should have already been dealt with by our HttpErrFilter...
+			// theoretically, this should have already been dealt with by our ErrMiddleware...
 			// ...but it's handy for BedSheet development!
 			if (registry != null) {	// reqs may come in before we've start up
 				errPrinter := (ErrPrinterStr) registry.dependencyByType(ErrPrinterStr#)

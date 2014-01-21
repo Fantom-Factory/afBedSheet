@@ -26,7 +26,7 @@ internal const class ErrMiddleware : Middleware {
 			try {
 				return pipeline.service
 				
-			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in a filter), and people 
+			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 
 			// would still expect it work
 			} catch (ReProcessErr reErr) {
 				firstErr = reErr

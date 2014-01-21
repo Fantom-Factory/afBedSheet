@@ -32,7 +32,7 @@ internal const class PipelineBuilderImpl : PipelineBuilder {
 			throw BedSheetErr(BsErrMsgs.pipelineTerminatorMustExtendPipeline(pipelineType, terminator.typeof))
 		filters.each |filter| { 
 			if (!filter.typeof.fits(filterType))
-				throw BedSheetErr(BsErrMsgs.pipelineFilterMustExtendFilter(filterType, filter.typeof))
+				throw BedSheetErr(BsErrMsgs.middlewareMustExtendMiddleware(filterType, filter.typeof))
 		}		
 		
 		bridgeType	:= buildBridgeType(pipelineType, filterType)
@@ -69,7 +69,7 @@ internal const class PipelineBuilderImpl : PipelineBuilder {
 			fMeth := ReflectUtils.findMethod(filterType, method.name, method.params.map { it.type }.add(pipelineType), false, method.returns)
 			if (fMeth == null) {
 				sig := method.signature[0..-2] + ", ${pipelineType.qname} handler)"
-				throw BedSheetErr(BsErrMsgs.pipelineFilterMustDeclareMethod(filterType, sig))
+				throw BedSheetErr(BsErrMsgs.middlewareMustDeclareMethod(filterType, sig))
 			}
 		}
 		if (!pipelineType.isPublic)

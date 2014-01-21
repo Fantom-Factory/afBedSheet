@@ -75,11 +75,11 @@ internal const class BsErrMsgs {
 		"Pipeline Terminator ${terminatorType.qname} must extend Pipeline mixin ${pipelineType.qname}"
 	}
 
-	static Str pipelineFilterMustExtendFilter(Type filterType, Type filterImplType) {
-		"Pipeline Terminator ${filterImplType.qname} must extend Filter mixin ${filterType.qname}"
+	static Str middlewareMustExtendMiddleware(Type middlewareType, Type middlewareImplType) {
+		"Middleware ${middlewareImplType.qname} must extend Middleware mixin ${middlewareType.qname}"
 	}
 	
-	static Str pipelineFilterMustDeclareMethod(Type filterType, Str methodSig) {
-		"Pipeline Filter ${filterType.qname} must declare method : ${methodSig}"
+	static Str middlewareMustDeclareMethod(Type middlewareType, Str methodSig) {
+		"Middleware ${middlewareType.qname} must declare method : ${methodSig}"
 	}
 }

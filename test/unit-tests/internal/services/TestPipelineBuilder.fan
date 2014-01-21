@@ -65,13 +65,13 @@ internal class TestPipelineBuilder : BsTest {
 	}
 
 	Void testPipelineFiltersMustExtendFilterType() {
-		verifyBsErrMsg(BsErrMsgs.pipelineFilterMustExtendFilter(t76, T_MyService77Impl#)) {
+		verifyBsErrMsg(BsErrMsgs.middlewareMustExtendMiddleware(t76, T_MyService77Impl#)) {
 			bob.build(t75, t76, [T_MyService77Impl()], term)
 		}
 	}
 
 	Void testPipelineFilterMethodMustTakePipelineAsLastArg() {
-		verifyBsErrMsg(BsErrMsgs.pipelineFilterMustDeclareMethod(T_MyService77#, "sys::Bool service(, ${t75.qname} handler)")) {
+		verifyBsErrMsg(BsErrMsgs.middlewareMustDeclareMethod(T_MyService77#, "sys::Bool service(, ${t75.qname} handler)")) {
 			bob.build(t75, T_MyService77#, [T_MyService77Impl()], term)
 		}
 	}

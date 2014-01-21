@@ -1,6 +1,6 @@
 
-** (Service) - Contribute your 'HttpPipelineFilter' classes to this.
-//const mixin HttpPipeline {
+** (Service) - Contribute your 'Middleware' classes to this.
+//FIXME: search for const mixin HttpPipeline {
 @NoDoc	// don't overwhelm the masses!
 const mixin MiddlewarePipeline {
 
