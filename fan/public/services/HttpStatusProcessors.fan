@@ -6,7 +6,7 @@ using web::WebRes
 ** (Service) - Contribute your 'HttpStatusProcessor' implementations to this.
 ** 
 ** @uses a MappedConfig of 'Int:HttpStatusProcessor'
-@NoDoc // Don't confuse the masses.
+@NoDoc	// don't overwhelm the masses!
 const mixin HttpStatusProcessors : ResponseProcessor {
 
 	** Returns the result of processing the given `HttpStatus` as per the contributed processors.

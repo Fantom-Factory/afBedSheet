@@ -5,7 +5,7 @@ using afIoc::TypeCoercer
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
 ** @uses a MappedConfig of 'Type:ValueEncoder' where 'Type' is what the 'ValueEncoder', um, encodes!
-@NoDoc	// Don't confuse the masses
+@NoDoc	// don't overwhelm the masses!
 const mixin ValueEncoders {
 	
 	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
