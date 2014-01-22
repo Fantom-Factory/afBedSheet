@@ -26,10 +26,10 @@ internal class TestRoutes : BsTest {
 
 internal class T_MyModule02 {
 	static Void bind(ServiceBinder binder) {
-		binder.bindImpl(Routes#)
-		binder.bindImpl(ResponseProcessors#)
-		binder.bindImpl(MethodCallResponseProcessor#)
-		binder.bindImpl(ValueEncoders#)
+		binder.bind(Routes#)
+		binder.bind(ResponseProcessors#)
+		binder.bind(MethodCallResponseProcessor#)
+		binder.bind(ValueEncoders#)
 	}	
 
 	@Contribute { serviceType=Routes# }

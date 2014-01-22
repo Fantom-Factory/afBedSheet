@@ -18,7 +18,7 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		// we can cache the stats 'cos we only care about the service types
 		this.serviceStats = serviceStats.stats
 	}
-	
+
 	override Obj process(Obj response) {
 		methodCall := (MethodCall) response
 		
@@ -60,9 +60,15 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 				handler = registry.autobuild(handlerType)
 		}
 
-		args := convertArgs(methodCall.method, methodCall.args)
+		args 	:= convertArgs(methodCall.method, methodCall.args)
 		
-		result := methodCall.method.callOn(handler, args)
+		// the standard method call
+//		result	:= methodCall.method.callOn(handler, args)
+
+		// use afIoc to call the method, injecting in any extra params
+		// This may seem pointless for routes (which need to match all params on the uri) but it *may* prove useful for
+		// other uses of MethodCalls. The Jury's out; I may remove this feature if it proves too bloated and under used.
+		result	:= registry.callMethod(methodCall.method, handler, args) 
 
 		return (result == null) ? false : result
 	}

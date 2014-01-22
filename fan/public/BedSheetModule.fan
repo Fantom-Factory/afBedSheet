@@ -19,28 +19,28 @@ const class BedSheetModule {
 	static Void bind(ServiceBinder binder) {
 		
 		// Utils
-		binder.bindImpl(PipelineBuilder#)
+		binder.bind(PipelineBuilder#)
 
 		// Routing
-		binder.bindImpl(Routes#)
-		binder.bindImpl(ValueEncoders#)
+		binder.bind(Routes#)
+		binder.bind(ValueEncoders#)
 		
 		// Request handlers
-		binder.bindImpl(FileHandler#)
-		binder.bindImpl(PodHandler#)
+		binder.bind(FileHandler#)
+		binder.bind(PodHandler#)
 
 		// Collections (services with contributions)
-		binder.bindImpl(ResponseProcessors#)
-		binder.bindImpl(ErrProcessors#)
-		binder.bindImpl(HttpStatusProcessors#) 
+		binder.bind(ResponseProcessors#)
+		binder.bind(ErrProcessors#)
+		binder.bind(HttpStatusProcessors#) 
 		
 		// Other services
-		binder.bindImpl(GzipCompressible#)
-		binder.bindImpl(ErrPrinterHtml#)
-		binder.bindImpl(ErrPrinterStr#)
-		binder.bindImpl(HttpSession#)
-		binder.bindImpl(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
-		binder.bindImpl(BedSheetPage#)
+		binder.bind(GzipCompressible#)
+		binder.bind(ErrPrinterHtml#)
+		binder.bind(ErrPrinterStr#)
+		binder.bind(HttpSession#)
+		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
+		binder.bind(BedSheetPage#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -197,8 +197,8 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.gzipDisabled]				= false
 		conf[BedSheetConfigIds.gzipThreshold]				= 376
 		conf[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
-		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= reg.createProxy(DefaultHttpStatusProcessor#, DefaultHttpStatusProcessorImpl#)	// FiXME: afIoc-1.5.2
-		conf[BedSheetConfigIds.defaultErrProcessor]			= reg.createProxy(DefaultErrProcessor#, DefaultErrProcessorImpl#)	// FiXME: afIoc-1.5.2
+		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= reg.createProxy(DefaultHttpStatusProcessor#)
+		conf[BedSheetConfigIds.defaultErrProcessor]			= reg.createProxy(DefaultErrProcessor#)
 		conf[BedSheetConfigIds.noOfStackFrames]				= 50
 		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		conf[BedSheetConfigIds.disableWelcomePage]			= false

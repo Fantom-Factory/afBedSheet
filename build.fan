@@ -28,7 +28,7 @@ class Build : BuildPod {
 					"util 1.0", 
 					"inet 1.0",
 			
-					"afIoc 1.5.0+", 
+					"afIoc 1.5.1+",		// TODO: afIoc-1.5.2 
 					"afIocConfig 1.0+", 
 					"afIocEnv 1+", 
 					"afPlastic 1.0+"
