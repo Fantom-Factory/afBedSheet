@@ -8,15 +8,9 @@ Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web ap
  - document how to use BedSheet with normal wisp
 
 
-For BedSheet 1.3.0
+For BedSheet 1.3.2
 ------------------
-
-Check the 'accept' header before we return content
-
 ??? Configure RouteHandlers to take other non-service classes
-
-(*) Have afIoc call the RouteHandlers so they can take services.
-   - not urgent as handlers can @Inject services
 
 (*) Have Before and After routes
 
@@ -47,9 +41,9 @@ Future
 
 static files & pod files served under 'hash' folder
  - Asset class, File field and genned file field
+ - template files served under version number
+ - see Duvet library
  
-template files served under version number
-
 RequireJS module support 
 
 Tale integration - http://fantom.org/sidewalk/topic/1290
@@ -61,9 +55,14 @@ Tale integration - http://fantom.org/sidewalk/topic/1290
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection
 
 
-Naa
-===
+
+Naa - Can't be arsed!
+=====================
 contribute ranges to HttpStatusProcessor?? - Naa, can't be arsed. Use case?
+
+Inspect the 'accept' headers to ensure the client likes what we're about to send back, send 406 otherwise
+ - HTTP 1.1 says we MAY, as the client can make the final decision themselves
+ - Also, if the 406 spec says we need to encode the alternatives in the response, but in an entity in the body....!?
 
 
 

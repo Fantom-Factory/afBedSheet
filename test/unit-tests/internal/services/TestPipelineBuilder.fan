@@ -119,7 +119,7 @@ const class T_MyService76Num : T_MyService76 {
 
 internal class T_PipeMod {
 	static Void bind(ServiceBinder binder) {
-		binder.bindImpl(PipelineBuilder#)
+		binder.bind(PipelineBuilder#)
 	}
 }
 

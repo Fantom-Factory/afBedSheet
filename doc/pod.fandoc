@@ -538,13 +538,15 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.0 [#v1.3.0]
 ----------------
+ - New: Added 'Text.fromXhtml(...)'
+ - New: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
+ - New: 'MethodCallresponseProcessor' uses [Ioc]`http://www.fantomfactory.org/pods/afIoc` to call methods so that it may inject any dependencies / services as method arguments.
  - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`. (Breaking change)
- - Chg: Added 'Text.fromXhtml(...)'
- - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
- - Chg: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
- - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoder'.
+ - Chg: Removed '@Config', use '@afIocConfig::Config' instead. (Breaking change)
  - Chg: Renamed 'HttpPipelineFilter' -> 'Middleware' and updated the corresponding services. Hardcoded the default BedSheet filters / middleware to the start of the pipeline. (Breaking change)
  - Chg: Renamed 'HttpRequestLogFilter' -> 'RequestLogMiddleware' and updated the '@Config' values. (Breaking change)
+ - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoder'.
+ - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
 
 v1.2.4 [#v1.2.4]
 ----------------
