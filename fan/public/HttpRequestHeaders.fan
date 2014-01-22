@@ -52,7 +52,7 @@ class HttpRequestHeaders {
 	** HTTP cookies previously sent by the server with 'Set-Cookie'. 
 	** 
 	** Example: 'Cookie: Version=1; Skin=new;'
-	Cookie[]? cookie {
+	Cookie[]? cookies {
 		get { makeIfNotNull("Cookie") { it.split(';').map { Cookie.fromStr(it) }}}
 		private set { }
 	}

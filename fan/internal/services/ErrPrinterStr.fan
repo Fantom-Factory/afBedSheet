@@ -46,6 +46,7 @@ internal const class ErrPrinterStrSections {
 	
 	@Inject	private const HttpRequest	request
 	@Inject	private const HttpSession	session
+	@Inject	private const HttpCookies	cookies
 
 	new make(|This|in) { in(this) }
 
@@ -119,9 +120,9 @@ internal const class ErrPrinterStrSections {
 	}
 	
 	Void printCookies(StrBuf buf, Err? err) {
-		if (!request.cookies.isEmpty) {
+		if (!cookies.all.isEmpty) {
 			buf.add("\nCookies:\n")
-			request.cookies.each |v, k| { buf.add("  $k: $v\n") }
+			cookies.all.each |c| { buf.add("  ${c.name}: ${c.val}\n") }
 		}	
 	}
 

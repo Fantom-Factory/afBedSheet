@@ -14,7 +14,7 @@ internal const class DefaultErrProcessorImpl : DefaultErrProcessor {
 	
 	@Inject	private const HttpResponse 		response
 	@Inject	private const ErrPrinterStr 	errPrinterStr
-	@Inject	private const BedSheetPage		bedSheetPage
+	@Inject	private const BedSheetPages		bedSheetPages
 
 	new make(|This|in) { in(this) }
 
@@ -24,6 +24,6 @@ internal const class DefaultErrProcessorImpl : DefaultErrProcessor {
 		if (!response.isCommitted)	// a sanity check
 			response.statusCode = 500
 		
-		return bedSheetPage.renderErr(err, !inProd)
+		return bedSheetPages.renderErr(err, !inProd)
 	}
 }

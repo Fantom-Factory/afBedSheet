@@ -11,7 +11,7 @@ internal const class DefaultHttpStatusProcessorImpl : DefaultHttpStatusProcessor
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool				inProd
 	@Inject	private const HttpResponse 		response
-	@Inject	private const BedSheetPage		bedSheetPage
+	@Inject	private const BedSheetPages		bedSheetPages
 	
 	internal new make(|This|in) { in(this) }
 
@@ -19,7 +19,7 @@ internal const class DefaultHttpStatusProcessorImpl : DefaultHttpStatusProcessor
 		if (!response.isCommitted)	// a sanity check
 			response.statusCode = httpStatus.code
 
-		return bedSheetPage.renderHttpStatus(httpStatus, !inProd)
+		return bedSheetPages.renderHttpStatus(httpStatus, !inProd)
 	}	
 }
 
