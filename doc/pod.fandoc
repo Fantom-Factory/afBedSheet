@@ -538,7 +538,9 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.0 [#v1.3.0]
 ----------------
- - New: Added 'Text.fromXhtml(...)'
+ - New: Added 'HttpCookies' service, removed corresponding cookie methods from 'HttpRequest' and 'HttpResponse'. (Breaking change)
+ - New: Added 'stash()' to 'HttpRequest'
+ - New: Added 'fromXhtml(...)' to 'Text'
  - New: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
  - New: 'MethodCallresponseProcessor' uses [Ioc]`http://www.fantomfactory.org/pods/afIoc` to call methods so that it may inject any dependencies / services as method arguments.
  - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`. (Breaking change)

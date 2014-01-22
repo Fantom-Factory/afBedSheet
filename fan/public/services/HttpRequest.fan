@@ -87,6 +87,11 @@ const mixin HttpRequest {
 	** @see `web::WebReq.in`
 	abstract InStream in()
 	
+	
+	** 'Stash' allows you to store temporary data on the request, to easily pass it between services and objects.
+	** 
+	** It is good for a quick hack, but if you find yourself relying on it, considering making a thread scoped service instead. 
+  	abstract Str:Obj? stash()
 }
 
 ** Wraps a given `HttpRequest`, delegating all its methods. 
@@ -108,13 +113,13 @@ const class HttpRequestWrapper : HttpRequest {
 	override [Str:Str]? form() 				{ req.form				}
 	override Locale[] locales() 			{ req.locales			}
 	override InStream in() 					{ req.in				}	
+	override Str:Obj? stash()				{ req.stash				}
 }
 
 internal const class HttpRequestImpl : HttpRequest {
 	
 	@Inject
 	private const Registry registry
-	
 	private const ThreadStash threadStash
 
 	new make(ThreadStashManager threadStashManager, |This|in) { 
@@ -125,55 +130,45 @@ internal const class HttpRequestImpl : HttpRequest {
 	override Bool isXmlHttpRequest() {
 		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false
 	}
-
 	override Version httpVersion() {
 		webReq.version
 	}
-	
 	override Str httpMethod() {
 		webReq.method
 	}	
-
 	override IpAddr remoteAddr() {
 		webReq.remoteAddr		
 	}
-	
 	override Int remotePort() {
 		webReq.remotePort		
 	}
-
 	override Uri uri() {
 		webReq.uri
 	}
-	
 	override Uri absUri() {
 		webReq.absUri
 	}
-	
 	override Uri modBase() {
 		webReq.modBase
 	}
-
 	override Uri modRel() {
 		webReq.modRel
 	}
-	
 	override HttpRequestHeaders headers() {
 		threadStash.get("headers") |->Obj| { HttpRequestHeaders(webReq.headers) }
 	}
-	
 	override [Str:Str]? form() {
 		webReq.form
 	}
-
 	override Locale[] locales() {
 		webReq.locales
 	}
-
 	override InStream in() {
 		webReq.in
 	}
-	
+	override Str:Obj? stash() {
+		webReq.stash
+	}	
 	private WebReq webReq() {
 		registry.dependencyByType(WebReq#)
 	}

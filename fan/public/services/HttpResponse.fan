@@ -25,17 +25,6 @@ const mixin HttpResponse {
 	**  - `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
 	abstract HttpResponseHeaders headers()
 	
-	** Get the list of cookies to set via header fields.  
-	** Add a Cookie to this list to set a cookie. 
-	** Throws Err if response is already committed.
-	**
-	** Example:
-	**   res.cookies.add(Cookie("foo", "123"))
-	**   res.cookies.add(Cookie("persistent", "some val") { maxAge = 3day })
-	** 
-	** @see `web::WebRes.cookies`
-	abstract Cookie[] cookies()
-	
 	** Return true if this response has been commmited.  A committed response has written its 
 	** response headers, and can no longer modify its status code or headers.  A response is 
 	** committed the first time that `out` is called.
@@ -75,7 +64,6 @@ const class HttpResponseWrapper : HttpResponse {
 	const 	 HttpResponse res
 	new 	 make(HttpResponse res) 		{ this.res = res 			} 
 	override HttpResponseHeaders headers() 	{ res.headers				}
-	override Cookie[] cookies() 			{ res.cookies				}
 	override Bool isCommitted() 			{ res.isCommitted			}
 	override OutStream out() 				{ res.out					}
 	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
@@ -96,8 +84,8 @@ const class HttpResponseWrapper : HttpResponse {
 
 internal const class HttpResponseImpl : HttpResponse {
 	
-	@Inject	private const Registry 	registry
-	
+	@Inject	
+	private const Registry 	registry
 	private const ThreadStash threadStash
 
 	new make(ThreadStashManager threadStashManager, |This|in) { 
@@ -109,37 +97,26 @@ internal const class HttpResponseImpl : HttpResponse {
 		get { threadStash["disableGzip"] ?: false }
 		set { threadStash["disableGzip"] = it}
 	}
-	
 	override Bool disableBuffering {
 		get { threadStash["disableBuffering"] ?: false }
 		set { threadStash["disableBuffering"] = it}
 	}
-
 	override Int statusCode {
 		get { webRes.statusCode }
 		set { webRes.statusCode = it }
 	}	
-
 	override HttpResponseHeaders headers() {
 		threadStash.get("headers") |->Obj| { HttpResponseHeaders(webRes.headers) }
 	}
-
-	override Cookie[] cookies() {
-		webRes.cookies
-	}
-
 	override Bool isCommitted() {
 		webRes.isCommitted
 	}
-	
 	override OutStream out() {
 		registry.serviceById("HttpOutStream")
 	}
-	
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "Attachment; filename=${fileName}"
 	}
-
 	private WebRes webRes() {
 		registry.dependencyByType(WebRes#)
 	}	
