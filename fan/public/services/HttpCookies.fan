@@ -6,6 +6,15 @@ const mixin HttpCookies {
 	@Operator
 	abstract Cookie? get(Str name, Bool checked := true)
 
+	** Get the list of cookies to set via header fields.  
+	** Add a Cookie to this list to set a cookie. 
+	** Throws Err if response is already committed.
+	**
+	** Example:
+	**   res.cookies.add(Cookie("foo", "123"))
+	**   res.cookies.add(Cookie("persistent", "some val") { maxAge = 3day })
+	** 
+	** @see `web::WebRes.cookies`
 	abstract Void set(Cookie cookie)
 
 	abstract Cookie? remove(Str cookieName, Bool checked := true)

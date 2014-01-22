@@ -10,13 +10,12 @@ Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web ap
 
 For BedSheet 1.3.2
 ------------------
+
+Doc Middleware, HttpCookies, pod.fandoc
+
 ??? Configure RouteHandlers to take other non-service classes
 
-(*) Have Before and After routes
-
-(*) Have req.data - an easy map store -> store in WebReq?
-
-(*) Remove req.cookies and res.cookies and replace with intelligent HttpCookies service
+(*) Have BeforeRoutes and AfterRoutes
 
 Doc customising the ErrPrinters! Make them public?
 
