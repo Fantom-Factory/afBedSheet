@@ -61,9 +61,6 @@ const mixin HttpRequest {
 	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests`
 	abstract HttpRequestHeaders headers()
 	
-	** Map of cookie values keyed by cookie name.  The cookies map is readonly and case insensitive.
-	abstract Str:Str cookies()
-	
 	** Get the key/value pairs of the form data.  The request content is read and parsed using 
 	** `sys::Uri.decodeQuery`.  
 	** 
@@ -109,7 +106,6 @@ const class HttpRequestWrapper : HttpRequest {
 	override Uri modRel() 					{ req.modRel			}
 	override HttpRequestHeaders headers() 	{ req.headers			}
 	override [Str:Str]? form() 				{ req.form				}
-	override Str:Str cookies() 				{ req.cookies			}
 	override Locale[] locales() 			{ req.locales			}
 	override InStream in() 					{ req.in				}	
 }
@@ -168,10 +164,6 @@ internal const class HttpRequestImpl : HttpRequest {
 	
 	override [Str:Str]? form() {
 		webReq.form
-	}
-
-	override Str:Str cookies() {
-		webReq.cookies
 	}
 
 	override Locale[] locales() {

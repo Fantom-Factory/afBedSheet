@@ -57,6 +57,10 @@ internal const class BsErrMsgs {
 		"RegistryOptions does not contain BedSheetMetaData"
 	}
 	
+	static Str cookieNotFound(Str cookieName) {
+		"Could not find a cookie with the name '${cookieName}'"
+	}
+	
 	// ---- Pipeline Service Messages -------------------------------------------------------------
 
 	static Str pipelineTypeMustBePublic(Str thing, Type type) {

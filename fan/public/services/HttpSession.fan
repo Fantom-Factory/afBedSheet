@@ -52,8 +52,8 @@ const mixin HttpSession {
 
 internal const class HttpSessionImpl : HttpSession {
 
-	@Inject
-	private const Registry registry
+	@Inject	private const Registry 		registry
+	@Inject	private const HttpCookies	httpCookies
 	
 	new make(|This|in) { in(this) } 
 
@@ -69,16 +69,8 @@ internal const class HttpSessionImpl : HttpSession {
 		webReq.session.delete
 	}
 
-	override Bool exists() {		
-		HttpRequest req := registry.dependencyByType(HttpRequest#)
-		if (req.cookies.containsKey("fanws"))
-			return true
-
-		HttpResponse res := registry.dependencyByType(HttpResponse#)
-		if (!res.isCommitted && res.cookies.any |cookie| { cookie.name == "fanws" })
-			return true
-		
-		return false
+	override Bool exists() {
+		httpCookies.get("fanws", false) != null
 	}
 	
 	override Bool isEmpty() {

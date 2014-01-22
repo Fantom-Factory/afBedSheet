@@ -3,7 +3,7 @@ using web::WebOutStream
 using web::WebRes
 
 ** (Service) - Renders the standard 'BedSheet' web pages.
-const mixin BedSheetPage {
+const mixin BedSheetPages {
 
 	** Renders the 'BedSheet' status page, such as the 404 page.
 	abstract Text renderHttpStatus(HttpStatus httpStatus, Bool verbose)
@@ -20,7 +20,7 @@ const mixin BedSheetPage {
 	abstract Text renderWelcome()
 }
 
-internal const class BedSheetPageImpl : BedSheetPage {
+internal const class BedSheetPagesImpl : BedSheetPages {
 
 	@Inject	private const HttpRequest		request
 	@Inject	private const ErrPrinterHtml 	errPrinterHtml

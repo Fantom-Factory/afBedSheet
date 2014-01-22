@@ -47,6 +47,7 @@ internal const class ErrPrinterHtmlSections {
 	
 	@Inject	private const HttpRequest	request
 	@Inject	private const HttpSession	session
+	@Inject	private const HttpCookies	cookies
 
 	new make(|This|in) { in(this) }
 
@@ -155,10 +156,10 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printCookies(WebOutStream out, Err? err) {
-		if (!request.cookies.isEmpty) {
+		if (!cookies.all.isEmpty) {
 			out.h2.w("Cookies").h2End
 			out.table("class=\"cookies\"")
-			request.cookies.each |v, k| { w(out, k, v) }
+			cookies.all.each |c| { w(out, c.name, c.val) }
 			out.tableEnd
 		}		
 	}

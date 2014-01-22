@@ -12,7 +12,7 @@ internal const class ErrMiddleware : Middleware {
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const ErrProcessors			errProcessors
 	@Inject	private const HttpResponse			httpResponse
-	@Inject	private const BedSheetPage			bedSheetPage
+	@Inject	private const BedSheetPages			bedSheetPages
 
 	new make(|This|in) { in(this) }
 	
@@ -52,7 +52,7 @@ internal const class ErrMiddleware : Middleware {
 			log.err("  - Original Err", firstErr)
 			
 			if (!httpResponse.isCommitted) {
-				errText := bedSheetPage.renderErr(doubleErr, !inProd)
+				errText := bedSheetPages.renderErr(doubleErr, !inProd)
 				httpResponse.statusCode = 500
 				httpResponse.headers.contentType = errText.mimeType
 				httpResponse.out.print(errText.text)

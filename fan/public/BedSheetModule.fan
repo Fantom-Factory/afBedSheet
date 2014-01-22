@@ -21,10 +21,6 @@ const class BedSheetModule {
 		// Utils
 		binder.bind(PipelineBuilder#)
 
-		// Routing
-		binder.bind(Routes#)
-		binder.bind(ValueEncoders#)
-		
 		// Request handlers
 		binder.bind(FileHandler#)
 		binder.bind(PodHandler#)
@@ -33,14 +29,17 @@ const class BedSheetModule {
 		binder.bind(ResponseProcessors#)
 		binder.bind(ErrProcessors#)
 		binder.bind(HttpStatusProcessors#) 
+		binder.bind(Routes#)
+		binder.bind(ValueEncoders#)
 		
 		// Other services
 		binder.bind(GzipCompressible#)
 		binder.bind(ErrPrinterHtml#)
 		binder.bind(ErrPrinterStr#)
 		binder.bind(HttpSession#)
+		binder.bind(HttpCookies#)
 		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
-		binder.bind(BedSheetPage#)
+		binder.bind(BedSheetPages#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
