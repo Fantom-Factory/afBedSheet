@@ -12,8 +12,8 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void configureApplicationDefaults(MappedConfig conf) {
-**   conf[BedSheetConfigIds.defaultHttpStatusProcessor] = MyStatusPage()
+** static Void configureApplicationDefaults(MappedConfig config) {
+**   config[BedSheetConfigIds.defaultHttpStatusProcessor] = config.autobuild(MyStatusPage#)
 ** }
 ** <pre
 ** 

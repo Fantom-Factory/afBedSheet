@@ -70,7 +70,7 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Bool exists() {
-		httpCookies.get("fanws", false) != null
+		httpCookies.get("fanws") != null
 	}
 	
 	override Bool isEmpty() {

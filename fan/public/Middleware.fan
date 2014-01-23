@@ -1,14 +1,28 @@
 
-// FIXME: fandoc
 ** Implement to define BedSheet middleware. 
 ** 
-** Contribute it to the `HttpPipeline` service.
+** Define middleware to address cross cutting concerns such as authentication and authorisation.
 ** 
-** Use middleware to address cross cutting concerns such as authorisation.
+** HTTP requests are funneled through a stack of middleware until one of them returns 'true', or they reach a 
+** terminator. Default middleware include passing the request through the 'Routes' service. The default terminator 
+** (should no route be found) raises a 404 error. 
+** 
+** Middleware may perform processing before and / or after passing the service invocation down the pipeline to other 
+** middleware instances. If a Middleware instance handles the request itself, then it should return 'true'. 
+** 
+** Because middleware effectively wrap other middleware and can terminate the pipeline prematurely, the ordering of
+** middleware is extremely important. 'Routes' are processed in middleware named 'Routes' so generally your middleware
+** should be contributed *before* or *after* this.
+** 
+** IOC Configuration
+** =================
+** Instances of 'Middleware' should be contributed to the 'MiddlewarePipeline' service.
+** 
+** For example, in your 'AppModule' class:
 ** 
 ** pre>
-**   @Contribute { serviceType=HttpPipeline# }
-**   static Void contributeHttpPipeline(OrderedConfig conf) {
+**   @Contribute { serviceType=Middleware# }
+**   static Void contributeMiddleware(OrderedConfig config) {
 **     conf.addOrdered("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
 **   }
 ** <pre
