@@ -1,18 +1,18 @@
 using afIoc::Inject
+using afIoc::ServiceId
 
-** Create instances of Route middleware manually so you can pass in your own 'Routes' object with it's own collection
-** of routes.
+** Create instances of RoutesMiddleware manually so you can pass in multiple 'Routes' objects.
 @NoDoc
-const class RoutesBeforeMiddleware : Middleware {
-			private const Routes		routes
+const class RoutesMiddleware : Middleware {
+
+	@ServiceId { id="RoutesBefore" }
+	@Inject	private const Routes		routesBefore
+	@Inject	private const Routes		routes
+	@ServiceId { id="RoutesAfter" }
+	@Inject	private const Routes		routesAfter
 	@Inject	private const HttpRequest	httpRequest
 
-	** 'Routes' are passed in manually so different instances of this middleware can hold different collections of 
-	** 'Routes'.
-	new make(Routes routes, |This|in) {
-		this.routes = routes
-		in(this) 
-	}
+	new make(|This|in) { in(this) }
 
 	override Bool service(MiddlewarePipeline pipeline) {
 		handled := routes.processRequest(httpRequest.modRel, httpRequest.httpMethod)

@@ -53,7 +53,7 @@ internal const class ErrPrinterHtmlSections {
 
 	Void printCauses(WebOutStream out, Err? err) {
 		causes := Err[,]
-		forEachCause(err, Err#) |Err cause| { causes.add(cause) }
+		forEachCause(err, Err#) |Err cause->Bool| { causes.add(cause); return false }
 		if (causes.size <= 1)	// don't bother if there are no causes
 			return
 		
@@ -68,26 +68,30 @@ internal const class ErrPrinterHtmlSections {
 	}
 	
 	Void printAvailableValues(WebOutStream out, Err? err) {
-		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {
+		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr->Bool| {
 			out.h2.w("Available Values").h2End
 			out.ol
 			notFoundErr.availableValues.each { out.li.writeXml(it).liEnd }
 			out.olEnd
+			return false
 		}
 	}
 
 	Void printIocOperationTrace(WebOutStream out, Err? err) {
-		if (err != null && (err is IocErr) && ((IocErr) err).operationTrace != null) {
-			iocErr := (IocErr) err
-			out.h2.w("IoC Operation Trace").h2End
-			out.ol
-			iocErr.operationTrace.splitLines.each { out.li.writeXml(it).liEnd }
-			out.olEnd			
+		// search for the first OpTrace
+		forEachCause(err, IocErr#) |IocErr iocErr->Bool| {
+			if (iocErr.operationTrace != null) {
+				out.h2.w("IoC Operation Trace").h2End
+				out.ol
+				iocErr.operationTrace.splitLines.each { out.li.writeXml(it).liEnd }
+				out.olEnd
+			}
+			return iocErr.operationTrace != null
 		}
 	}
 
 	Void printSrcCodeErrs(WebOutStream out, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
+		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr->Bool| {
 			srcCode 	:= srcCodeErr.srcCode
 			title		:= srcCodeErr.typeof.name.toDisplayName
 			
@@ -105,6 +109,7 @@ internal const class ErrPrinterHtmlSections {
 			}
 			out.tableEnd
 			out.divEnd
+			return false
 		}
 	}
 
@@ -236,10 +241,11 @@ internal const class ErrPrinterHtmlSections {
 		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}
 	
-	private Void forEachCause(Err? err, Type causeType, |Obj| f) {
-		while (err != null) {
+	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
+		done := false
+		while (err != null && !done) {
 			if (err.typeof.fits(causeType))
-				f(err)
+				done = f(err)
 			err = err.cause			
 		}		
 	}		
