@@ -20,6 +20,7 @@ const class BedSheetModule {
 		
 		// Utils
 		binder.bind(PipelineBuilder#)
+		binder.bind(StackFrameFilter#)
 
 		// Request handlers
 		binder.bind(FileHandler#)
@@ -30,8 +31,6 @@ const class BedSheetModule {
 		binder.bind(ErrProcessors#)
 		binder.bind(HttpStatusProcessors#) 
 		binder.bind(Routes#)
-		binder.bind(Routes#).withId("RoutesBefore")
-		binder.bind(Routes#).withId("RoutesAfter")
 		binder.bind(ValueEncoders#)
 		
 		// Other services
@@ -139,6 +138,7 @@ const class BedSheetModule {
 		conf["text/plain"]					= true
 		conf["text/tab-separated-values"]	= true
 		conf["text/xml"]					= true
+		conf["application/xhtml+xml"]		= true
 		conf["application/rss+xml"]			= true
 		conf["application/json"]			= true
 
@@ -207,6 +207,17 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.requestLogDir]				= null
 		conf[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
 		conf[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+	}
+	
+	@Contribute { serviceType=StackFrameFilter# }
+	static Void contributeStackFrameFilter(OrderedConfig config) {
+		config.add("concurrent::Actor._dispatch")
+		config.add("concurrent::Actor._work")
+		config.add("concurrent::ThreadPool\$Worker.run")
+		config.add("concurrent::Actor._send")
+		config.add("java.lang.reflect.Method.invoke")
+		config.add("fan.sys.Method\$MethodFunc.callOn")
+		config.add("fan.sys.Func\$Indirect0.call")
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }

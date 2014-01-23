@@ -145,7 +145,7 @@ class AppModule {
 <pre
 
 [Route]`Route` objects take a matching 'glob' and a response object. A response object is any object that 'BedSheet' knows how to
-[process]`#responseProcessing` or a 'Method' to be called. If a method is given, then request URI path segments are matched to the
+[process]`#responseObjects` or a 'Method' to be called. If a method is given, then request URI path segments are matched to the
 method parameters. See `Route` for more details.
 
 
@@ -235,7 +235,7 @@ One piece of middleware is the standard 'Routes' service, and the terminating mi
 Middleware bundled with 'BedSheet' include:
 
  - 'Routes' : Performs the standard [request routing]`#requestRouting`
- - `RequestLog`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+ - 'RequestLog': Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
 See `Middleware` for further details.
@@ -516,6 +516,8 @@ v1.3.0 [#v1.3.0]
  - New: Added 'fromXhtml(...)' to 'Text'
  - New: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
  - New: 'MethodCallresponseProcessor' uses [Ioc]`http://www.fantomfactory.org/pods/afIoc` to call methods so that it may inject any dependencies / services as method arguments.
+ - New: Added 'StackFrameFilter' to filter out lines in stack traces.
+ - Chg: Upgraded to [afIoc-1.5.2]`http://www.fantomfactory.org/pods/afIoc`.
  - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`. (Breaking change)
  - Chg: Removed '@Config', use '@afIocConfig::Config' instead. (Breaking change)
  - Chg: Renamed 'HttpPipelineFilter' -> 'Middleware' and updated the corresponding services. Hardcoded the default BedSheet filters / middleware to the start of the pipeline. (Breaking change)

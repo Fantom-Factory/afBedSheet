@@ -11,27 +11,12 @@ Doc customising the ErrPrinters! Make them public?
 
 
 
-For BedSheet 1.3.0
-------------------
-
-(*) Have BeforeRoutes and AfterRoutes
-
-Err500 - have filter stack frames checkbox?
- - useful for me to see the wood!
- - I can add to the filter as the BS versions increase!
-
-
 For BedSheet 1.3.2
 ------------------
 make HttpRequestWrapper / HttpResponseWrapper public?
 
-static Void main(Str[] args) {
-	kB := Unit.fromStr("kB")
-	b := Unit.fromStr("byte")
-
-	size := kB.convertTo(3f, b)
-	Env.cur.err.printLine(size)
-}
+Enhance the StackFrameFilter
+ - grey out afIoc / afBedSheet lines.
 
 
 
@@ -57,8 +42,21 @@ Create an afBedSheetProtection pod, based on Rubys Rack::Protection
 
 
 
-Naa - Can't be arsed!
+Meh - Can't be arsed!
 =====================
+Have BeforeRoutes and AfterRoutes, put in RoutesMiddleware so other Middleware still do "Before: Routes"
+ - Use case??
+ - I only want it 'cos Sinatra has it!
+
+Create a Units class:
+	static Void main(Str[] args) {
+		kB := Unit.fromStr("kB")
+		b := Unit.fromStr("byte")
+	
+		size := kB.convertTo(3f, b)
+		Env.cur.err.printLine(size)
+	}
+
 Make MethodCallResponseProcessor configurable so it can call other types of classes
  - e.g. Pillow event methods
  - But man, that's a bucket load of work! And with no use case - it's not worth it!  
