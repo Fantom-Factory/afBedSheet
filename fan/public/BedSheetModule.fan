@@ -30,6 +30,8 @@ const class BedSheetModule {
 		binder.bind(ErrProcessors#)
 		binder.bind(HttpStatusProcessors#) 
 		binder.bind(Routes#)
+		binder.bind(Routes#).withId("RoutesBefore")
+		binder.bind(Routes#).withId("RoutesAfter")
 		binder.bind(ValueEncoders#)
 		
 		// Other services
@@ -94,8 +96,8 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=MiddlewarePipeline# }
-	static Void contributeMiddlewarePipeline(OrderedConfig conf, Routes routes) {
-		conf.addOrdered("Routes", 	conf.autobuild(RoutesBeforeMiddleware#, [routes]))
+	static Void contributeMiddlewarePipeline(OrderedConfig conf) {
+		conf.addOrdered("Routes", conf.autobuild(RoutesMiddleware#))
 	}
 
 	@Contribute { serviceId="HttpOutStream" }

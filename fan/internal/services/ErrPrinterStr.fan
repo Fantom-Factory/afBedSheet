@@ -52,7 +52,7 @@ internal const class ErrPrinterStrSections {
 
 	Void printCauses(StrBuf buf, Err? err) {
 		causes := Err[,]
-		forEachCause(err, Err#) |Err cause| { causes.add(cause) }
+		forEachCause(err, Err#) |Err cause->Bool| { causes.add(cause); return false }
 		if (causes.size <= 1)	// don't bother if there are no causes
 			return
 		
@@ -64,26 +64,31 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printAvailableValues(StrBuf buf, Err? err) {
-		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr| {
+		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr->Bool| {
 			buf.add("\nAvailable Values:\n")
 			notFoundErr.availableValues.each { buf.add("  $it\n") }
+			return false
 		}
 	}
 
 	Void printIocOperationTrace(StrBuf buf, Err? err) {
-		if (err != null && (err is IocErr) && ((IocErr) err).operationTrace != null) {
-			iocErr := (IocErr) err
-			buf.add("\nIoC Operation Trace:\n")
-			iocErr.operationTrace.splitLines.each |op, i| { buf.add("  [${(i+1).toStr.justr(2)}] $op\n") }
+		// search for the first OpTrace
+		forEachCause(err, IocErr#) |IocErr iocErr->Bool| {
+			if (iocErr.operationTrace != null) {
+				buf.add("\nIoC Operation Trace:\n")
+				iocErr.operationTrace.splitLines.each |op, i| { buf.add("  [${(i+1).toStr.justr(2)}] $op\n") }
+			}
+			return iocErr.operationTrace != null
 		}
 	}
 
 	Void printSrcCodeErrs(StrBuf buf, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr| {
+		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr->Bool| {
 			srcCode 	:= srcCodeErr.srcCode
 			title		:= srcCodeErr.typeof.name.toDisplayName	
 			buf.add("\n${title}:\n")
-			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, srcCodeErr.msg, srcCodePadding))	
+			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, srcCodeErr.msg, srcCodePadding))
+			return false
 		}
 	}	
 
@@ -145,10 +150,11 @@ internal const class ErrPrinterStrSections {
 		}		
 	}
 	
-	private Void forEachCause(Err? err, Type causeType, |Obj| f) {
-		while (err != null) {
+	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
+		done := false
+		while (err != null && !done) {
 			if (err.typeof.fits(causeType))
-				f(err)
+				done = f(err)
 			err = err.cause			
 		}		
 	}	
