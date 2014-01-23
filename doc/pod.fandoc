@@ -19,7 +19,7 @@ Install 'BedSheet' with the [Fantom Repository Manager]`http://fantom.org/doc/do
 
 To use in a Fantom project, add a dependency to its 'build.fan':
 
-  depends = ["sys 1.0", ..., "afBedSheet 1.2+"]
+  depends = ["sys 1.0", ..., "afBedSheet 1.3+"]
 
 
 
@@ -84,122 +84,79 @@ Request handlers are typically what we, the application developers, write. They 
 
 Starting BedSheet [#startingBedSheet]
 *************************************
-'BedSheet' applications may be started by invoking 'BedSheet' from the command line:
+Every Bed App (BedSheet Application) has an 'AppModule' class that defines and configures your
+[Ioc]`http://www.fantomfactory.org/pods/afIoc` services. It is an
+[Ioc]`http://www.fantomfactory.org/pods/afIoc` concept that allows you centralise your application's configuration in
+one place. It is the 'AppModule' that defines your Bed App and is central everything it does.
+
+To start 'BedSheet' from the command line, you need to tell it where to find the 'AppModule' and which port to run on:
 
 pre>
-C:\> fan afBedSheet <fully-qualified-app-module-name> <port-number>
+C:\> fan afBedSheet -env development <fully-qualified-app-module-name> <port-number>
 <pre
 
 For example:
 
 pre>
-C:\> fan afBedSheet myWebApp::AppModule 80
+C:\> fan afBedSheet -env development myWebApp::AppModule 8069
 <pre
-
-Every 'BedSheet' application has an 'AppModule' class that defines and configures your
-[Ioc]`http://www.fantomfactory.org/pods/afIoc` services. It is an
-[Ioc]`http://www.fantomfactory.org/pods/afIoc` concept that allows you centralise your application configuration in
-one place.
 
 > TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the @SubModule facet.
 
-You may find it convenient to create your own 'BedSheet' Main wrapper.
-
-pre>
-using util
-
-class Main : AbstractMain {
-  @Arg { help="The HTTP port to run the app on" }
-  private Int port
-
-  override Int run() {
-    return afBedSheet::Main().main("<fully-qualified-app-module-name> $port".split)
-  }
-}
-<pre
-
-'<fully-qualified-app-module-name>' may be replaced with '<pod-name>' as long as your pod's 'build.fan' defines the following
+'<fully-qualified-app-module-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following
 meta:
 
 pre>
 meta = [
     ...
-    "afIoc.module" : "<fully-qualified-app-module-name>",
     ...
+    "afIoc.module" : "<fully-qualified-app-module-name>"
 ]
 <pre
 
-Note that 'AppModule' is named so out of convention but may be called anything you like.
-
-
-
-BedSheet Middleware [#middleware]
-*********************************
-When a HTTP request is received it is passed through a pipeline of middleware. The terminating filter performs the standard
-'BedSheet' routing (see [Request Routing]`#requestRouting`). Middleware can be used to address cross cutting concerns such as
-authorisation.
-
-Standard BedSheet filters are:
- - 'HttpCleanupFilter': Ensures the 'HttpOutStream' is closed and cleans up all request / thread scoped data.
- - 'HttpErrFilter': Catches and processes Errs, see [Error Processing]`#errorProcessing`.
- - 'HttpFlashFilter': Stores values from one HTTP request to the next.
- - `HttpRequestLogFilter`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. (Not enabled by default.)
+This allows 'BedSheet' to look up your 'AppModule' from the pod. Example:
 
 pre>
-@Contribute { serviceType=HttpPipeline# }
-static Void contributeHttpPipeline(OrderedConfig conf, AuthFilter myAuthFilter) {
-
-  conf.addOrdered("AuthFilter", myAuthFilter)
-}
+C:\> fan afBedSheet -env development myWebApp 8069
 <pre
+
+Note that 'AppModule' is named so out of convention but the class may be called anything you like.
 
 
 
 Request Routing [#requestRouting]
 *********************************
-If a request makes it through the filters, it is handed to the `Routes` service for processing. Confiugre the service by
-contributing `Route` instances. Example:
-
-pre>
-@Contribute { serviceType=Routes# }
-static Void contributeRoutes(OrderedConfig conf) {
-
-  conf.add(Route(`/home`, Redirect.movedTemporarily(`/index`)))
-
-  conf.add(Route(`/index`, IndexPage#service))
-}
-<pre
-
-[Routes]`Route` take a matching 'glob' and a response object. A response object is any object that 'BedSheet' knows how to
-[process]`#responseProcessing` or a 'Method' to be called. If a method is given, then uri segments are matched to the method
-arguments. See `Route` for more details.
-
-
-
-Using Draft Routes [#usingDraftRoutes]
-======================================
-If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use draft Routes
-in 'BedSheet'!
-
-Add [afBedSheetDraft]`https://bitbucket.org/AlienFactor/afbedsheetdraft` and [draft]`https://bitbucket.org/afrankvt/draft`
-as dependencies in your 'build.fan'; now you can contribute draft Route objects in your 'AppModule':
+The 'Routes' service maps HTTP request URIs to response objects and handler methods. It is where you would typically define
+how requests are handled. You configure the 'Routes' service by contributing instances of `Route`. Example:
 
 pre>
 using afIoc
 using afBedSheet
-using afBedSheetDraft
-using draft::Route as DraftRoute
 
 class AppModule {
 
-  @Contribute { serviceType=DraftRoutes# }
-  static Void contributeDraftRoutes(OrderedConfig conf) {
+    @Contribute { serviceType=Routes# }
+    static Void contributeRoutes(OrderedConfig conf) {
 
-    conf.add(DraftRoute("/", "GET", PageHandler#index))
-    conf.add(DraftRoute("/echo/{name}/{age}", "GET", PageHandler#print))
-  }
+        conf.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
+        conf.add(Route(`/index`, IndexPage#service))
+    }
 }
 <pre
+
+[Route]`Route` objects take a matching 'glob' and a response object. A response object is any object that 'BedSheet' knows how to
+[process]`#responseProcessing` or a 'Method' to be called. If a method is given, then request URI path segments are matched to the
+method parameters. See `Route` for more details.
+
+
+
+Draft Routes [#draftRoutes]
+===========================
+If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use 'Draft Routes'
+in 'BedSheet'!
+
+Add [BedSheetDraft]`http://repo.status302.com/doc/afBedSheetDraft/#overview` and [draft]`https://bitbucket.org/afrankvt/draft`
+as dependencies in your 'build.fan' and you can contribute 'Draft Route' objects to the 'Routes' service.
 
 Routing lesson over.
 
@@ -209,26 +166,28 @@ Routing lesson over.
 
 Request Handling [#requestHandling]
 ***********************************
-Request handlers process logic. Generally, they shouldn't pipe anything to the HTTP response OutStream, but instead return a
-response object for further processing. For example, the [quick start]`#quickStart` 'HelloPage' handler returns a `Text` object.
+*Request Handler* is the name given to a method that is called by a 'Route'. They process logic and generally don't pipe
+anything to the HTTP response stream. Instead they return a *Response Object* for further processing.
+For example, the [Quick Start]`#quickStart` 'HelloPage' *request handler* returns a `Text` object.
 
-Request handlers are usually written by yourself, but a couple of common use-cases are bundled with 'BedSheet':
+Request handlers are usually written by the application developer, but a couple of common use-cases are bundled with 'BedSheet':
  - `FileHandler`: Maps request URIs to files on file system.
  - `PodHandler` : Maps request URIs to pod file resources.
 
 
 
-Response Processing [#responseProcessing]
-*****************************************
-[ResponseProcessors]`ResponseProcessor` process return values from request handlers (`sys::File`, `Text`, etc...) and send
-data to the client. 'ResponseProcessors' should return 'true' if no further processing should performed on the HTTP request.
-Or they can return another response object for further processing, such as a `Text` obj.
+Response Objects [#responseObjects]
+***********************************
+*Response Objects* are returned from *Request Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to
+process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return a
+*Response Object*, which will be handled by another *Response Processor*.
 
-By default, BedSheet handles the following response objects:
+You can define *Response Processors* and process *Response Objects* yourself; but by default, 'BedSheet' handles the
+following:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : No further processing is required.
  - [File]`sys::File` : The file is streamed to the client.
- - `HttpStatus` : Sets the HTTP response status and renders a mini html page. (See [Error Processing]`#errorProcessing`.)
+ - `HttpStatus` : Sets the HTTP response status and renders a mini html page. (See [HTTP Status Processing]`#httpStatusProcessing`.)
  - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guarenteed to be closed.
  - `MethodCall` : The method is called and the return value used for further processing.
  - `Redirect` : Sends a 3xx redirect response to the client.
@@ -238,10 +197,9 @@ By default, BedSheet handles the following response objects:
 
 Template Rendering [#templateRendering]
 ***************************************
-Templating, or generating content (of HTML or otherwise) is left for other 3rd party libraries and is not a conern of 'BedSheet'.
-That said, integrating them into 'BedSheet' is relatively simple.
-
-Alien-Factory provides the following libraries:
+Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of 'BedSheet'.
+That said, there a couple templating libraries *out there* and integrating them into 'BedSheet' is relatively simple.
+For instance, Alien-Factory provides the following libraries:
 
  - [Slim]`http://www.fantomfactory.org/pods/afSlim` for rendering HTML,
  - [Pillow]`http://www.fantomfactory.org/pods/afPillow` for integrating [afEfanXtra]`http://www.fantomfactory.org/pods/afEfanXtra` components (may be used with [Slim]`http://www.fantomfactory.org/pods/afSlim`!),
@@ -249,8 +207,8 @@ Alien-Factory provides the following libraries:
  [efan (Embedded Fantom)]`http://www.fantomfactory.org/pods/afEfan` integration, and
  - [BedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
 
-Taking [Slim]`http://www.fantomfactory.org/pods/afSlim` as an example, simply inject and use it in your request
-handlers:
+Taking [Slim]`http://www.fantomfactory.org/pods/afSlim` as an example, simply inject the service in your *Request Handler*
+and use it to return a `Text` object:
 
 pre>
 using afIoc
@@ -258,34 +216,49 @@ using afBedSheet
 using afSlim
 
 class IndexPage {
-  @Inject Slim? slim
+    @Inject Slim? slim
 
-  Text render() {
-    html := slim.renderFromFile(`xmas.html.slim`.toFile)
-    return Text.fromHtml(html)
-  }
+    Text render() {
+        xhtml := slim.renderFromFile(`xmas.xhtml.slim`.toFile)
+        return Text.fromXhtml(xhtml)
+    }
 }
 <pre
+
+
+
+BedSheet Middleware [#middleware]
+*********************************
+When a HTTP request is received, it is passed through a pipeline of BedSheet `Middleware`; this is a similar to
+[Java Servlet Filters]`http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html`.
+One piece of middleware is the standard 'Routes' service, and the terminating middleware at the end of the pipeline simply returns a 404.
+Middleware bundled with 'BedSheet' include:
+
+ - 'Routes' : Performs the standard [request routing]`#requestRouting`
+ - `RequestLog`: Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+
+You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
+See `Middleware` for further details.
 
 
 
 Error Processing [#errorProcessing]
 ***********************************
 When 'BedSheet' catches an Err it scans through a list of contributed [ErrProcessors]`ErrProcessor` to find one that can
-handle the Err. [ErrProcessors]`ErrProcessor` take an Err and return a response for further processing (for example, `Text`). Or
-it may return 'true' if the error has been completely handled and no further processing is required.
+handle the Err. [ErrProcessors]`ErrProcessor` take an Err and return a *Response Object* for further processing
+(for example, `Text`). Or it may return 'true' if the error has been completely handled and no further processing is required.
 
 If no matching 'ErrProcessor' is found then 'BedSheet' displays its default Err500 page - which is extremely verbose, displays
 (a shed load of) debugging information and is highly customisable.
 
 ![BedSheet's Verbose Err500 Page]`http://static.alienfactory.co.uk/fantom-docs/Err500.png`
 
-The default Err page is great for development! But not so great for production - stack traces tend to scare most non-developers.
+The default Err page is great for development! But not so great for production - stack traces tend to scare Joe Public.
 So note that in a production environment (see [IocEnv]`http://www.fantomfactory.org/pods/afIocEnv`) a simple HTTP status
 page is displayed instead.
 
 > **ALIEN-AID:** BedSheet defaults to production mode, so set an environment variable called 'ENV' with the value 'development'
-to ensure you continue to see the BedSheet's verbose Err50 page. See this
+to ensure you continue to see the BedSheet's verbose Err500 page. See this
 [Fantom-Factory article]`http://fantom-factory.blogspot.co.uk/2013/12/dev-test-or-prod-what-is-your-machine.html` for more details.
 
 To add a custom error page, contribute an `ErrProcessor` to `ErrProcessors`:
@@ -304,7 +277,7 @@ HTTP Status Processing [#httpStatusProcessing]
 **********************************************
 'HttpStatus' responses are handled by `HttpStatusProcessors` which select a contributed processor dependent on the HTTP status
 code. If none are found, a default catch all processor sets the HTTP status code and sends a mini html page to the
-client. This is the page you see when you receive a '404 Not Found' error.
+client. This is the default page you see when you receive a '404 Not Found' error.
 
 ![BedSheet's 404 Status Page]`http://static.alienfactory.co.uk/fantom-docs/Err404.png`
 
@@ -648,7 +621,7 @@ v1.0.6 [#v1.0.6]
 
 v1.0.4 [#v1.0.4]
 ----------------
- - New: Added `BedServer` and `BedClient` to test BedSheet apps without using a real web server.
+ - New: Added 'BedServer' and 'BedClient' to test BedSheet apps without using a real web server.
 
 v1.0.2 [#v1.0.2]
 ----------------

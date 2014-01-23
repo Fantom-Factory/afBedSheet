@@ -7,6 +7,7 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 	@Inject	private const Routes				routes
 	@Inject	private const ResponseProcessors	responseProcessors 	
 	@Inject	private const HttpRequest			httpRequest
+	@Inject	private const HttpResponse			httpResponse
 	@Inject	private const BedSheetPages			bedSheetPages
 
 	@Config { id="afBedSheet.disableWelcomePage" }
@@ -16,8 +17,10 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 
 	override Bool service() {
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
-		if (routes.routes.isEmpty && !disbleWelcomePage)
+		if (routes.routes.isEmpty && !disbleWelcomePage) {
+			httpResponse.statusCode = 404
 			return responseProcessors.processResponse(bedSheetPages.renderWelcome)
+		}
 
 		throw HttpStatusErr(404, BsErrMsgs.route404(httpRequest.modRel, httpRequest.httpMethod))
 	}	

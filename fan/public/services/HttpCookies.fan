@@ -1,26 +1,37 @@
 using afIoc
 using web
 
+** (Service) - Use to manage your Cookies.
 const mixin HttpCookies {
 	
+	** Retrieve a cookie by name.
+	** Returns 'null' if not found.
 	@Operator
-	abstract Cookie? get(Str name, Bool checked := true)
+	abstract Cookie? get(Str name)
 
-	** Get the list of cookies to set via header fields.  
-	** Add a Cookie to this list to set a cookie. 
-	** Throws Err if response is already committed.
+	** Adds a Cookie to be sent to the client. 
+	** New cookies are sent via a 'Set-Cookie' HTTP response header.
 	**
 	** Example:
-	**   res.cookies.add(Cookie("foo", "123"))
-	**   res.cookies.add(Cookie("persistent", "some val") { maxAge = 3day })
+	**   httpCookies.add(Cookie("foo", "123"))
+	**   httpCookies.add(Cookie("persistent", "some val") { maxAge = 3day })
 	** 
+	** Cookies replace any other cookie with the same name.
+	** 
+	** Throws Err if response is already committed.
 	** @see `web::WebRes.cookies`
-	abstract Void set(Cookie cookie)
+	abstract Void add(Cookie cookie)
 
-	abstract Cookie? remove(Str cookieName, Bool checked := true)
+	** Deletes a cookie by name, returning the deleted cookie. 
+	** Returns 'null' if the cookie was not found.
+	** 
+	** Cookies are deleted from the client by setting the expired attribute to a date in the past.  
+	** 
+	** Throws Err if response is already committed.
+	abstract Cookie? remove(Str cookieName)
 	
+	** Return a list of all the cookies, including those that have been set but not yet sent to the client.
 	abstract Cookie[] all()
-	
 }
 
 internal const class HttpCookiesImpl : HttpCookies {
@@ -29,18 +40,18 @@ internal const class HttpCookiesImpl : HttpCookies {
 	
 	new make(|This|in) { in(this) } 
 
-	override Cookie? get(Str name, Bool checked := true) {
-		all.find { it.name.equalsIgnoreCase(name) } ?: (checked ? throw NotFoundErr(BsErrMsgs.cookieNotFound(name), all) : null)
+	override Cookie? get(Str name) {
+		all.find { it.name.equalsIgnoreCase(name) }	// ?: (checked ? throw NotFoundErr(BsErrMsgs.cookieNotFound(name), all) : null)
 	}
 
-	override Void set(Cookie cookie) {
+	override Void add(Cookie cookie) {
 		existing := webRes.cookies.find { it.name.equalsIgnoreCase(cookie.name) }
 		if (existing != null)
 			webRes.cookies.removeSame(existing)
 		webRes.cookies.add(cookie)
 	}
 
-	override Cookie? remove(Str cookieName, Bool checked := true) {
+	override Cookie? remove(Str cookieName) {
 		res := webRes.cookies.find { it.name.equalsIgnoreCase(cookieName) }
 		if (res != null)
 			webRes.cookies.removeSame(res)
@@ -53,7 +64,7 @@ internal const class HttpCookiesImpl : HttpCookies {
 			return req
 		}
 		
-		return res ?: (checked ? throw NotFoundErr(BsErrMsgs.cookieNotFound(cookieName), all) : null)
+		return res	// ?: (checked ? throw NotFoundErr(BsErrMsgs.cookieNotFound(cookieName), all) : null)
 	}
 	
 	override Cookie[] all() {
