@@ -45,6 +45,8 @@ internal const class ErrPrinterHtmlSections {
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	
+	@Inject	private const StackFrameFilter	frameFilter
+
 	@Inject	private const HttpRequest	request
 	@Inject	private const HttpSession	session
 	@Inject	private const HttpCookies	cookies
@@ -121,7 +123,8 @@ internal const class ErrPrinterHtmlSections {
 			out.h2.w("Stack Trace").h2End
 			out.pre
 			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
-			out.writeXml("  " + Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim)
+			frames := Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.exclude { frameFilter.filter(it) }
+			out.writeXml("  " + frames.join("\n"))
 			out.preEnd
 		}
 	}
