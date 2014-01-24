@@ -517,6 +517,7 @@ v1.3.0 [#v1.3.0]
  - New: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
  - New: 'MethodCallresponseProcessor' uses [Ioc]`http://www.fantomfactory.org/pods/afIoc` to call methods so that it may inject any dependencies / services as method arguments.
  - New: Added 'StackFrameFilter' to filter out lines in stack traces.
+ - New: Added 'host' to 'BedSheetConfigIds', mainly for use by 3rd party libraries.
  - Chg: Upgraded to [afIoc-1.5.2]`http://www.fantomfactory.org/pods/afIoc`.
  - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`. (Breaking change)
  - Chg: Removed '@Config', use '@afIocConfig::Config' instead. (Breaking change)

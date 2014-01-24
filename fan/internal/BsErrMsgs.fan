@@ -61,6 +61,15 @@ internal const class BsErrMsgs {
 		"Could not find a cookie with the name '${cookieName}'"
 	}
 	
+	static Str startupHostMustHaveSchemeAndAuth(Str configName, Uri host) {
+		"@Config value '${configName}' must have a scheme and an auth, e.g. http://example.com - ${host}"
+	}
+
+	static Str startupHostMustNotHavePath(Str configName, Uri host) {
+		"@Config value '${configName}' must NOT have a path e.g. http://example.com - ${host}"
+	}
+	
+	
 	// ---- Pipeline Service Messages -------------------------------------------------------------
 
 	static Str pipelineTypeMustBePublic(Str thing, Type type) {

@@ -58,11 +58,20 @@ const mixin BedSheetConfigIds {
 	** Defaults to '5'
 	static const Str srcCodeErrPadding				:= "afBedSheet.plastic.srcCodeErrPadding"
 	
-	** Set to 'true' to ensure the welcome page is never displayed. (Useful if all your routing is done via 
-	** 'Middleware').
+	** Set to 'true' to ensure the welcome page is never displayed. 
+	** 
+	** The welcome page is displayed in place of a 404 when no routes have been defined. So this config is useful if 
+	** all your routing is done via 'Middleware'.
 	**  
 	** Defaults to 'false'
 	static const Str disableWelcomePage				:= "afBedSheet.disableWelcomePage"
+
+	** Set host to the public facing domain. This config is not mandatory but is often required by 3rd party libraries 
+	** when running in production mode, such as SiteMap and Google Analytics. Host may also be used to create absolute
+	** urls.
+	** 
+	** Defaults to 'http://localhost:<PORT>'
+	static const Str host							:= "afBedSheet.host"
 
 
 

@@ -1,6 +1,6 @@
 using web
 using afIoc
-using afIocEnv::IocEnvModule
+using afIocEnv
 using concurrent::Actor
 using afPlastic::PlasticCompiler
 using afIocConfig::FactoryDefaults
@@ -193,7 +193,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig conf, Registry reg) {
+	static Void contributeFactoryDefaults(MappedConfig conf, Registry reg, IocEnv iocEnv, BedSheetMetaData meta) {
 		conf[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		conf[BedSheetConfigIds.gzipDisabled]				= false
 		conf[BedSheetConfigIds.gzipThreshold]				= 376
@@ -203,6 +203,7 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.noOfStackFrames]				= 50
 		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		conf[BedSheetConfigIds.disableWelcomePage]			= false
+		conf[BedSheetConfigIds.host]						= `http://localhost:${meta.port}`
 
 		conf[BedSheetConfigIds.requestLogDir]				= null
 		conf[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
@@ -212,16 +213,16 @@ const class BedSheetModule {
 	@Contribute { serviceType=StackFrameFilter# }
 	static Void contributeStackFrameFilter(OrderedConfig config) {
 		config.add("concurrent::Actor._dispatch")
+		config.add("concurrent::Actor._send")
 		config.add("concurrent::Actor._work")
 		config.add("concurrent::ThreadPool\$Worker.run")
-		config.add("concurrent::Actor._send")
-		config.add("java.lang.reflect.Method.invoke")
 		config.add("fan.sys.Method\$MethodFunc.callOn")
 		config.add("fan.sys.Func\$Indirect0.call")
+		config.add("java.lang.reflect.Method.invoke")
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
+	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc, BedSheetMetaData meta) {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
@@ -229,7 +230,7 @@ const class BedSheetModule {
 	
 	private static Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
 		delegateBuilders.reduce(service) |Obj delegate, DelegateChainBuilder builder -> Obj| { 		
-			return builder.build(delegate) 
+			return builder.build(delegate)
 		}
 	}
 }
