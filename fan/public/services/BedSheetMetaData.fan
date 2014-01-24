@@ -9,6 +9,9 @@ const mixin BedSheetMetaData {
 	** The 'AppModule'.
 	abstract Type?	appModule()	
 	
+	** The port BedSheet is running under.
+	abstract Int	port()	
+	
 	** The options BedSheet was started with
 	abstract [Str:Obj] 	options()
 }
@@ -17,11 +20,13 @@ internal const class BedSheetMetaDataImpl : BedSheetMetaData {
 
 	override const Pod? 		appPod
 	override const Type?		appModule
+	override const Int			port
 	override const [Str:Obj] 	options
 	
-	internal new make(Pod? appPod, Type? appModule, [Str:Obj] options) {
+	internal new make(Pod? appPod, Type? appModule, Int port, [Str:Obj] options) {
 		this.appPod 	= appPod
 		this.appModule 	= appModule
+		this.port 		= port
 		this.options 	= options.toImmutable
 	}
 }

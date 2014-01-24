@@ -50,7 +50,7 @@ internal const class BsLogMsgs {
 	// ---- BedSheetWebMod ------------------------------------------------------------------------
 
 	static Str bedSheetWebModStarting(Str appModule, Int port) {
-		"Starting BedSheet WebApp '$appModule' on port $port"
+		"Starting Bed App '$appModule' on port $port"
 	}
 
 	static Str bedSheetWebModFoundPod(Pod pod) {
@@ -69,8 +69,8 @@ internal const class BsLogMsgs {
 		"Could not find any AppModules!"
 	}
 
-	static Str bedSheetWebModStarted(Str appModule, Str host, Int port) {
-		"BedSheet '$appModule' listening on http://${host}:${port}/"
+	static Str bedSheetWebModStarted(Str? appModule, Uri host) {
+		"Bed App '$appModule' listening on ${host}\n"
 	}
 	
 	static Str bedSheetWebModStopping(Str appModule) {

@@ -5,8 +5,7 @@ using concurrent::AtomicBool
 using web::WebMod
 using afIoc::Registry
 using afIoc::RegistryBuilder
-using afIocConfig::IocConfigModule
-using inet::IpAddr
+using afIocConfig::IocConfigSource
 
 ** The top-level `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
@@ -126,9 +125,11 @@ const class BedSheetWebMod : WebMod {
 			if (bedSheetOptions.containsKey("iocModules"))
 				bob.addModules(bedSheetOptions["iocModules"])
 
+			dPort 		 := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
+			bsMeta		 := BedSheetMetaDataImpl(pod, mod, dPort, bedSheetOptions)
 			registryOpts := this.registryOptions.rw
 			registryOpts["bannerText"] 					= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
-			registryOpts["bedSheetMetaData"]			= BedSheetMetaDataImpl(pod, mod, bedSheetOptions)
+			registryOpts["bedSheetMetaData"]			= bsMeta 
 			registryOpts["suppressStartupServiceList"]	= true
 			registryOpts["appName"]						= "BedSheet"
 
@@ -142,21 +143,19 @@ const class BedSheetWebMod : WebMod {
 				destroyer.start
 			}
 			
-			// print print BedSheet connection details
-			dPort := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
-			Actor(ActorPool()) |->| { 
-				// run in seperate thread because hostname may block
-				host := "localhost"
-				try {
-					host = IpAddr.local.hostname
-				} catch (Err e) { }
-				log.info(BsLogMsgs.bedSheetWebModStarted(moduleName, host, dPort)) 
-			}.send(null)
-			
+			configSrc := (IocConfigSource) registry.dependencyByType(IocConfigSource#)
+			host := (Uri?) configSrc.get(BedSheetConfigIds.host, Uri#)
+			verifyAndLogHost(bsMeta.appPod.name, host)
+
 		} catch (Err err) {
 			startupErr = err
 			throw err
 		}
+	}
+	
+	override Void onStop() {
+		registry?.shutdown
+		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
 	}
 
 	// as used by BedServer
@@ -177,10 +176,16 @@ const class BedSheetWebMod : WebMod {
 		}
 		return mod
 	}
-	
-	override Void onStop() {
-		registry?.shutdown
-		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
+
+	static internal Void verifyAndLogHost(Str appName, Uri host) {
+		// assert host in correct format
+		if (host.scheme == null || host.auth == null)
+			throw BedSheetErr(BsErrMsgs.startupHostMustHaveSchemeAndAuth(BedSheetConfigIds.host, host))
+		if (!host.pathStr.isEmpty && host.pathStr != "/")
+			throw BedSheetErr(BsErrMsgs.startupHostMustNotHavePath(BedSheetConfigIds.host, host))
+		
+		// print BedSheet connection details
+		log.info(BsLogMsgs.bedSheetWebModStarted(appName, host))
 	}
 	
 	private Str easterEgg(Str title) {
