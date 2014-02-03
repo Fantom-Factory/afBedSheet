@@ -49,7 +49,7 @@ const mixin HttpRequest {
 	** @see `web::WebReq.modBase`
 	abstract Uri modBase()
 
-	** The uri relative to `BedSheetWebMod`. Starts with a '/'. Example, '/index.html'
+	** The URI relative to `BedSheetWebMod`. Always starts with a '/'. Example, '/index.html'
 	** 
 	** @see `web::WebReq.modRel`
 	abstract Uri modRel()
@@ -152,7 +152,9 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.modBase
 	}
 	override Uri modRel() {
-		webReq.modRel
+		rel := webReq.modRel
+		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
+		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override HttpRequestHeaders headers() {
 		threadStash.get("headers") |->Obj| { HttpRequestHeaders(webReq.headers) }

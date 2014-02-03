@@ -8,7 +8,7 @@ using afIocConfig::ConfigProvider
 using afIocConfig::IocConfigSource
 using afIocConfig::IocConfigModule
 
-** The [afIoc]`http://repo.status302.com/doc/afIoc/#overview` module class.
+** The [Ioc]`http://www.fantomfactory.org/pods/afIoc` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @SubModule { modules=[IocConfigModule#, IocEnvModule#] }
