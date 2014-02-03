@@ -13,6 +13,19 @@ Doc customising the ErrPrinters! Make them public?
 
 For BedSheet 1.3.2
 ------------------
+Make HttpRequestHeaders & HttpResponsetHeaders const, backed by WebReq and WebRes methods 
+
+FileHandler, ensure all uris STAY inside given dir - security patch.
+
+Put 'Bed App listening on....' on it's own new line so it stands out more.
+
+Add to meta:
+	appName	:= meta.appPod?.meta["proj.name"] ?: "Unknown"
+	
+Make DefaultErrHandler a service...?
+
+Make ErrPrinterStr public, but @NoDoc
+
 make HttpRequestWrapper / HttpResponseWrapper public?
 
 Enhance the StackFrameFilter

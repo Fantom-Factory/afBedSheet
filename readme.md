@@ -9,17 +9,17 @@ BedSheet is inspired by Java's [Tapestry5](http://tapestry.apache.org/), Ruby's 
 Fantom's [Draft](https://bitbucket.org/afrankvt/draft).
 
 
+
 ## Install
 
 Install `BedSheet` with the [Fantom Respository Manager](http://fantom.org/doc/docFanr/Tool.html#install):
 
     C:\> fanr install -r http://repo.status302.com/fanr/ afBedSheet
 
-Or download the pod from [Status302](http://repo.status302.com/browse/afBedSheet) and copy it to `%FAN_HOME%/lib/fan/`.
-
 To use in a Fantom project, add a dependency to its `build.fan`:
 
-    depends = ["sys 1.0", ..., "afBedSheet 1.2+"]
+    depends = ["sys 1.0", ..., "afBedSheet 1.3+"]
+
 
 
 ## Quick Start
