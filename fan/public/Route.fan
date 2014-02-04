@@ -210,7 +210,8 @@ const class Route {
 
 		// convert empty Strs to nulls
 		// see http://fantom.org/sidewalk/topic/2178#c14077
-		return groups.map { it.isEmpty ? null : it }
+		// 'seg' needs to be named to return an instance of Str[], not Obj[] -> important for method injection
+		return groups.map |Str seg->Str| { seg.isEmpty ? null : seg }
 	}
 
 	private RouteResponseFactory wrapResponse(Obj response) {
@@ -233,6 +234,26 @@ const mixin RouteResponseFactory {
 
 	** Obj?[] so we can easily add other args into the list
 	abstract Obj? createResponse(Str?[] segments)
+	
+	static Bool matchesMethod(Method method, Str?[] segments) {
+		if (segments.size > method.params.size)
+			return false
+		return method.params.all |Param param, i->Bool| {
+			if (i >= segments.size)
+				return param.hasDefault
+			return (segments[i] == null) ? param.type.isNullable : true
+		}
+	}
+
+	static Bool matchesParams(Type[] params, Str?[] segments) {
+		if (segments.size > params.size)
+			return false
+		return params.all |Type param, i->Bool| {
+			if (i >= segments.size)
+				return false
+			return (segments[i] == null) ? param.isNullable : true
+		}
+	}
 }
 
 internal const class MethodCallFactory : RouteResponseFactory {
@@ -243,16 +264,7 @@ internal const class MethodCallFactory : RouteResponseFactory {
 	}
 	
 	override Bool matchSegments(Str?[] segments) {
-		if (segments.size > method.params.size)
-			return false
-		
-		match := method.params.all |Param param, i->Bool| {
-			if (i >= segments.size)
-				return param.hasDefault
-			return (segments[i] == null) ? param.type.isNullable : true
-		}
-		
-		return match
+		matchesMethod(method, segments)
 	}
 
 	override Obj? createResponse(Str?[] segments) {

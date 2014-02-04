@@ -509,6 +509,11 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+v1.3.2 [#v1.3.2]
+----------------
+ - Chg: Added 'matchesMethod()' and 'matchesParams()' helper methods to 'RouteResponseFactory'.
+ - Bug: Ensured 'HttpRequest.modRel' always returns a path absolute uri - see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
+
 v1.3.0 [#v1.3.0]
 ----------------
  - New: Added 'HttpCookies' service, removed corresponding cookie methods from 'HttpRequest' and 'HttpResponse'. (Breaking change)
@@ -583,7 +588,7 @@ v1.1.0 [#v1.1.0]
 v1.0.16 [#v1.0.16]
 ------------------
  - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
- - Chg: Broke @Config code out into its own module: [afIocConfig]`http://repo.status302.com/doc/afIocConfig/#overview`.
+ - Chg: Broke '@Config' code out into its own module: [afIocConfig]`http://repo.status302.com/doc/afIocConfig/#overview`.
  - Chg: Added a skull logo to the 'Err500' page.
  - Chg: Rejigged the 'Err500' section layout and tweaked the source code styling.
 
