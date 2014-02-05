@@ -118,13 +118,13 @@ const class HttpRequestWrapper : HttpRequest {
 
 internal const class HttpRequestImpl : HttpRequest {
 	
-	@Inject
-	private const Registry registry
-	private const ThreadStash threadStash
+	@Inject	private const Registry registry
+	
+	override const HttpRequestHeaders headers
 
-	new make(ThreadStashManager threadStashManager, |This|in) { 
+	new make(|This|in) { 
 		in(this) 
-		threadStash = threadStashManager.createStash("HttpRequest")
+		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
 	}
 
 	override Bool isXmlHttpRequest() {
@@ -155,9 +155,6 @@ internal const class HttpRequestImpl : HttpRequest {
 		rel := webReq.modRel
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel
-	}
-	override HttpRequestHeaders headers() {
-		threadStash.get("headers") |->Obj| { HttpRequestHeaders(webReq.headers) }
 	}
 	override [Str:Str]? form() {
 		webReq.form

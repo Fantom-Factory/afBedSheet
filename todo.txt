@@ -13,18 +13,6 @@ Doc customising the ErrPrinters! Make them public?
 
 For BedSheet 1.3.2
 ------------------
-ValueEncoders.toClient() shoundn't take a valType param - it's hardcoded to Str#!
-
-Make HttpRequestHeaders & HttpResponsetHeaders const, backed by WebReq and WebRes methods 
-
-FileHandler, ensure all uris STAY inside given dir - security patch.
- - just add test to prove it's okay
-
-Put 'Bed App listening on....' on it's own new line so it stands out more.
-
-
-make HttpRequestWrapper / HttpResponseWrapper public & NoDoc?
-
 
 Enhance the StackFrameFilter
  - grey out afIoc / afBedSheet lines.

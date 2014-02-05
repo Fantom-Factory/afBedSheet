@@ -3,11 +3,11 @@ using web::WebUtil
 ** A wrapper for HTTP response headers with accessors for some commonly used headings.
 ** 
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
-class HttpResponseHeaders {
+const class HttpResponseHeaders {
 	
-	private Str:Str headers
+	private const |->Str:Str| headFunc
 
-	internal new make(Str:Str headers) { this.headers = headers }
+	internal new make(|->Str:Str| headFunc) { this.headFunc = headFunc }
 	
 	** Tells all caching mechanisms from server to client whether they may cache this object. It is 
 	** measured in seconds.
@@ -142,5 +142,9 @@ class HttpResponseHeaders {
 			headers.remove(name)
 		else
 			headers[name] = value
+	}
+	
+	private Str:Str headers() {
+		headFunc.call()
 	}
 }
