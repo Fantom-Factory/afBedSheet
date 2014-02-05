@@ -211,7 +211,7 @@ const class Route {
 		// convert empty Strs to nulls
 		// see http://fantom.org/sidewalk/topic/2178#c14077
 		// 'seg' needs to be named to return an instance of Str[], not Obj[] -> important for method injection
-		return groups.map |Str seg->Str| { seg.isEmpty ? null : seg }
+		return groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
 	}
 
 	private RouteResponseFactory wrapResponse(Obj response) {

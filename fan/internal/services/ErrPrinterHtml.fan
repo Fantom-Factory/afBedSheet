@@ -6,8 +6,9 @@ using afIocConfig::Config
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
-** (Service) - 
-internal const class ErrPrinterHtml {
+** (Service) - public, 'cos it's useful for emails. 
+@NoDoc
+const class ErrPrinterHtml {
 	private const static Log log := Utils.getLog(ErrPrinterHtml#)
 		
 	private const |WebOutStream out, Err? err|[]	printers
