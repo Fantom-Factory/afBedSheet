@@ -8,8 +8,9 @@ using afIocConfig::Config
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
-** (Service) - 
-internal const class ErrPrinterStr {
+** (Service) - public, 'cos it's useful for emails. 
+@NoDoc
+const class ErrPrinterStr {
 	private const static Log log := Utils.getLog(ErrPrinterStr#)
 	
 	private const |StrBuf buf, Err? err|[]	printers

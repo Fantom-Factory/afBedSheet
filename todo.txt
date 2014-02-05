@@ -22,13 +22,6 @@ FileHandler, ensure all uris STAY inside given dir - security patch.
 
 Put 'Bed App listening on....' on it's own new line so it stands out more.
 
-Add to meta:
-	appName	:= meta.appPod?.meta["proj.name"] ?: "Unknown"
-
-
-Make DefaultErrHandler a service...? Then err handlers can do their thing and and continue calling the default.
-
-Make ErrPrinterStr public, but @NoDoc
 
 make HttpRequestWrapper / HttpResponseWrapper public & NoDoc?
 

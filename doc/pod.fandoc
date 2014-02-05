@@ -511,8 +511,11 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.2 [#v1.3.2]
 ----------------
+ - New: Added 'appName' to 'BedSheetMetaData' that returns the 'proj.name' from the application's pod meta.
  - Chg: Added 'matchesMethod()' and 'matchesParams()' helper methods to 'RouteResponseFactory'.
+ - Chg: Made 'ErrPrinterStr' and 'ErrPrinterHtml' public, but '@NoDoc', as they're useful for use in emails et al.
  - Bug: Ensured 'HttpRequest.modRel' always returns a path absolute uri - see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
+ - Bug: Application could NPE on startup if an 'AppModule' could not be found.
 
 v1.3.0 [#v1.3.0]
 ----------------

@@ -145,7 +145,7 @@ const class BedSheetWebMod : WebMod {
 			
 			configSrc := (IocConfigSource) registry.dependencyByType(IocConfigSource#)
 			host := (Uri?) configSrc.get(BedSheetConfigIds.host, Uri#)
-			verifyAndLogHost(bsMeta.appPod.name, host)
+			verifyAndLogHost(bsMeta.appName, host)
 
 		} catch (Err err) {
 			startupErr = err
