@@ -3,11 +3,11 @@ using web::Cookie
 ** A wrapper for HTTP request headers with accessors for some commonly used headings.
 ** 
 ** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
-class HttpRequestHeaders {
+const class HttpRequestHeaders {
 	
-	private Str:Str headers
+	private const |->Str:Str| headFunc
 
-	internal new make(Str:Str headers) { this.headers = headers }
+	internal new make(|->Str:Str| headFunc) { this.headFunc = headFunc }
 
 	** Content-Types that are acceptable for the response.
 	** 
@@ -146,5 +146,9 @@ class HttpRequestHeaders {
 	private Obj? makeIfNotNull(Str name, |Str->Obj| func) {
 		val := headers[name]
 		return (val == null) ? null : func(val)
+	}
+	
+	private Str:Str headers() {
+		headFunc.call()
 	}
 }
