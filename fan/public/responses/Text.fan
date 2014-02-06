@@ -71,4 +71,8 @@ const final class Text {
 	private static new fromMimeStr(Str text, Str mimeType, Charset charset) {
 		Text.make(text, MimeType.fromStr("$mimeType; charset=${charset.name}"))		
 	}
+	
+	override Str toStr() {
+		"${mimeType.mediaType}/${mimeType.subType}::${text}"
+	}
 }

@@ -223,7 +223,7 @@ const class Route {
 	}
 	
 	override Str toStr() {
-		"Route:$routeRegex - $httpMethod -> ${response.typeof.name}: ${response.toStr}"
+		"$routeRegex - $httpMethod : ${factory}"
 	}
 }
 
@@ -270,6 +270,8 @@ internal const class MethodCallFactory : RouteResponseFactory {
 	override Obj? createResponse(Str?[] segments) {
 		MethodCall(method, segments)
 	}
+
+	override Str toStr() { "-> $method.qname" }
 }
 
 internal const class NoOpFactory : RouteResponseFactory {
@@ -277,4 +279,5 @@ internal const class NoOpFactory : RouteResponseFactory {
 	new make(Obj? response) { this.response = response }
 	override Bool matchSegments(Str?[] segments) { true	}
 	override Obj? createResponse(Str?[] segments) { response }
+	override Str toStr() { response.toStr }
 }

@@ -21,4 +21,8 @@ const class HttpStatus {
 		this.msg 	= statusMsg
 		this.data 	= data
 	}
+	
+	override Str toStr() {
+		"${code} - ${msg}"
+	}
 }
