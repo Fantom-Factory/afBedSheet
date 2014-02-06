@@ -509,6 +509,10 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+v1.3.4 [#v1.3.4]
+----------------
+ - Chg: Added some handy 'toStr' methods to 'Route' and response objects.
+
 v1.3.2 [#v1.3.2]
 ----------------
  - New: Added 'appName' to 'BedSheetMetaData' that returns the 'proj.name' from the application's pod meta.

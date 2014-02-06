@@ -47,6 +47,10 @@ const final class Redirect {
 	static new afterPost(Uri redirectTo) {
 		Redirect.make(redirectTo, RedirectType.afterPost)
 	}
+	
+	override Str toStr() {
+		"Redirect -> ${uri} (${type})"
+	}
 }
 
 ** the order is important - see `RedirectResponseProcessor`

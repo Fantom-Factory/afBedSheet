@@ -13,4 +13,8 @@ class MethodCall {
 		this.method	= method
 		this.args	= args
 	}
+	
+	override Str toStr() {
+		"${method.signature}"
+	}
 }
