@@ -36,7 +36,7 @@ internal class TestFileHandling : AppTest {
 	}
 
 	Void testSillyUser() {
-		verifyStatus(`/test-src2/folder/`, 501)
+		verifyStatus(`/test-src2/folder/`, 404)
 	}
 
 // TODO: File-Modified test

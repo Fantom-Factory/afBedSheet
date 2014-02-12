@@ -511,6 +511,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.4 [#v1.3.4]
 ----------------
+ - New: Added 'fromClientUri()' and 'fromServerFile()' to 'FileHandler'.
  - Chg: Added some handy 'toStr' methods to 'Route' and response objects.
 
 v1.3.2 [#v1.3.2]
