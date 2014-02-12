@@ -121,7 +121,7 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(OrderedConfig conf, FileHandler fileHandler) {
+	static Void contributeFileHandlerRoutes(OrderedConfig conf, FileHandler fileHandler) {
 		conf.addPlaceholder("FileHandlerStart")
 		fileHandler.directoryMappings.each |dir, uri| {
 			conf.add(Route(uri + `***`, FileHandler#service))

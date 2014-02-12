@@ -1,5 +1,6 @@
 using web::WebReq
 using afIoc::Inject
+using afIoc::NotFoundErr
 
 ** (Service) - Request Handler that maps URIs to files on the file system.
 ** 
@@ -9,11 +10,16 @@ using afIoc::Inject
 ** pre>
 ** @Contribute { serviceType=FileHandler# }
 ** static Void contributeFileHandler(MappedConfig conf) {
-**   conf[`/pub/`] = `etc/web/`
+**   conf[`/pub/`] = `etc/web/`.toFile
 ** }
 ** <pre
 ** 
-** Now all requests to '/pub/css/mystyle.css' will return the file '<app>/etc/web/css/mystyle.css'.
+** Use the 'fromServerFile()' method to generate URIs to be used by the browser. Example:
+** 
+**   // note how the file uses a relative URI
+**   fromServerFile(`etc/web/css/mystyle.css`.toFile) // --> `/pub/css/mystyle.css` 
+** 
+** Now when the browser requests '/pub/css/mystyle.css', BedSheet will return the file '<app>/etc/web/css/mystyle.css'.
 ** 
 ** It is common to serve files from the root uri:
 ** 
@@ -42,61 +48,87 @@ const mixin FileHandler {
 	
 	** Returns a `File` on the file system as mapped from the given uri, or 'null' if the file does not exist.
 	abstract File? service(Uri remainingUri)
+	
+	** Returns the server file that the client-side asset URI maps to. 
+	** 
+	** If 'checked' is 'true' throw Err if the file does not exist, else return 'null'.
+	abstract File? fromClientUri(Uri assetUri, Bool checked)
 
+	** Returns the client URI that corresponds to the given asset file.
+	** 
+	** Throws a 'NotFoundErr' if the file does not reside in a mapped directory. 
+	abstract Uri fromServerFile(File assetFile)
 }
 
 internal const class FileHandlerImpl : FileHandler {
 	
 	@Inject
-	private const HttpRequest req
+	private const HttpRequest? req
 
 	override const Uri:File directoryMappings
 	
 	internal new make(Uri:File dirMappings, |This|? in := null) {
 		in?.call(this)	// nullable for unit tests
 
-		// verify file and uri mappings
-		dirMappings.each |file, uri| {
+		// verify file and uri mappings, normalise the files
+		this.directoryMappings = dirMappings.map |file, uri -> File| {
 			if (!file.exists)
 				throw BedSheetErr(BsErrMsgs.fileHandlerFileNotExist(file))
 			if (!file.isDir)
 				throw BedSheetErr(BsErrMsgs.fileHandlerFileNotDir(file))
 			if (!uri.isPathOnly)
-				throw BedSheetErr(BsErrMsgs.fileHandlerUriNotPathOnly(uri))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUriNotPathOnly(uri, `/foo/bar/`))
 			if (!uri.isPathAbs)
-				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(uri))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(uri, `/foo/bar/`))
 			if (!uri.isDir)
 				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustEndWithSlash(uri))
+			return file.normalize
 		}
-
-		this.directoryMappings = dirMappings.toImmutable
 	}
 
 	override File? service(Uri remainingUri) {
-		
 		// use pathStr to knockout any unwanted query str
 		matchedUri := req.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri
-
-		// throw Err if user mapped the Route but forgot to contribute a matching dir to this handler 
-		if (!directoryMappings.containsKey(matchedUri)) {
-			msg := """<p><b>The path '${matchedUri}' is unknown. </b></p>
-			          <p><b>Add the following to your AppModule: </b></p>
-			          <code>@Contribute { serviceType=FileHandler# }
-			          static Void contributeFileMapping(MappedConfig conf) {
-			
-			            conf[`${matchedUri}`] = `/path/to/files/`.toFile
-			
-			          }</code>
-			          """
-			throw HttpStatusErr(501, msg)
-		}
+		return fromClientUri(matchedUri.plusSlash + remainingUri, false)		
+	}
+	
+	override File? fromClientUri(Uri clientUri, Bool checked) {
+		if (!clientUri.isPathOnly)
+			throw ArgErr(BsErrMsgs.fileHandlerUriNotPathOnly(clientUri, `/css/myStyles.css`))
+		if (!clientUri.isPathAbs)
+			throw ArgErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(clientUri, `/css/myStyles.css`))
+		
+		// match the deepest uri
+		prefix 	:= (Uri?) directoryMappings.keys.findAll { clientUri.toStr.startsWith(it.toStr) }.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
+		if (prefix == null)
+			return null ?: (checked ? throw NotFoundErr(BsErrMsgs.fileHandlerUriNotMapped(clientUri), directoryMappings.keys) : null)
 
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
-	    file := directoryMappings[matchedUri].plus(remainingUri, false)
+		remaining := clientUri.getRange(prefix.path.size..-1).relTo(`/`)
+		file	  := directoryMappings[prefix].plus(remaining, false)
 
-		// return null if the file doesn't exist so the request can be picked up by another route
-		// Note that dirs exist and (currently) return a 403 in the FileResponseProcessor
+		if (!file.exists && checked)
+			throw ArgErr(BsErrMsgs.fileHandlerUriDoesNotExist(clientUri, file))
+
 		return file.exists ? file : null
+	}
+
+	override Uri fromServerFile(File assetFile) {
+		if (assetFile.isDir)
+			throw ArgErr(BsErrMsgs.fileHandlerAssetFileIsDir(assetFile))
+		if (!assetFile.exists)
+			throw ArgErr(BsErrMsgs.fileHandlerAssetFileDoesNotExist(assetFile))
+		
+		assetUriStr := assetFile.normalize.uri.toStr
+		prefix  	:= directoryMappings.findAll |file, uri->Bool| { assetUriStr.startsWith(file.uri.toStr) }.keys.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
+		if (prefix == null)
+			throw NotFoundErr(BsErrMsgs.fileHandlerAssetFileNotMapped(assetFile), directoryMappings.vals.map { it.osPath })
+		
+		matchedFile := directoryMappings[prefix]
+		remaining	:= assetUriStr[matchedFile.uri.toStr.size..-1]
+		assetUri	:= prefix + remaining.toUri
+		
+		return assetUri
 	}
 }

@@ -13,26 +13,6 @@ internal const class BsErrMsgs {
 		"Route `$routeBase` must start with a slash. e.g. `/foo/bar`"
 	}
 	
-	static Str fileHandlerFileNotExist(File file) {
-		"Directory '${file.osPath}' does not exist"		
-	}
-	
-	static Str fileHandlerFileNotDir(File file) {
-		"File '${file.osPath}' is not a directory"
-	}
-
-	static Str fileHandlerUriNotPathOnly(Uri uri) {
-		"Uri '${uri}' must only contain a path. e.g. `/foo/bar/`"
-	}
-
-	static Str fileHandlerUriMustStartWithSlash(Uri uri) {
-		"Uri '${uri}' must start with a slash. e.g. `/foo/bar/`"
-	}
-
-	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
-		"Uri '${uri}' must end with a slash. e.g. `/foo/bar/`"
-	}
-	
 	static Str valueEncodingBuggered(Obj value, Type toType) {
 		"Could not convert $value to ${toType.qname}"
 	}
@@ -69,6 +49,47 @@ internal const class BsErrMsgs {
 		"@Config value '${configName}' must NOT have a path e.g. http://example.com - ${host}"
 	}
 	
+	// ---- FileHandler ----
+	
+	static Str fileHandlerFileNotExist(File file) {
+		"Directory '${file.normalize.osPath}' does not exist"		
+	}
+	
+	static Str fileHandlerFileNotDir(File file) {
+		"File '${file.normalize.osPath}' is not a directory"
+	}
+
+	static Str fileHandlerUriNotPathOnly(Uri uri, Uri example) {
+		"Uri '${uri}' must only contain a path. e.g. `${example}`"
+	}
+
+	static Str fileHandlerUriMustStartWithSlash(Uri uri, Uri example) {
+		"Uri '${uri}' must start with a slash. e.g. `${example}`"
+	}
+
+	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
+		"Uri '${uri}' must end with a slash. e.g. `/foo/bar/`"
+	}
+	
+	static Str fileHandlerUriNotMapped(Uri uri) {
+		"Asset URI `${uri}` does NOT map to any known FileHandler prefixes."
+	}
+	
+	static Str fileHandlerUriDoesNotExist(Uri assetUri, File file) {
+		"Asset URI `${assetUri}` does not exist -> ${file.normalize.osPath}"
+	}
+	
+	static Str fileHandlerAssetFileIsDir(File assetFile) {
+		"Asset File `${assetFile.normalize.osPath}` is a directory!?"
+	}
+	
+	static Str fileHandlerAssetFileDoesNotExist(File assetFile) {
+		"Asset File `${assetFile.normalize.osPath}` does not exist."
+	}
+	
+	static Str fileHandlerAssetFileNotMapped(File assetFile) {
+		"Asset File `${assetFile.normalize.osPath}` does NOT map to any known FileHandler directories."
+	}
 	
 	// ---- Pipeline Service Messages -------------------------------------------------------------
 

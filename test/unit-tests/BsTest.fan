@@ -2,10 +2,10 @@
 abstract internal class BsTest : Test {
 	
 	Void verifyBsErrMsg(Str errMsg, |Obj| func) {
-		verifyErrTypeMsg(BedSheetErr#, errMsg, func)
+		verifyErrTypeAndMsg(BedSheetErr#, errMsg, func)
 	}
 
-	protected Void verifyErrTypeMsg(Type errType, Str errMsg, |Obj| func) {
+	protected Void verifyErrTypeAndMsg(Type errType, Str errMsg, |Obj| func) {
 		try {
 			func(4)
 		} catch (Err e) {
