@@ -32,6 +32,7 @@ const class ErrPrinterHtml {
 				print.call(out, err)
 			} catch (Err e) {
 				log.warn("Err when printing Err...", e)
+				out.p.w("ERROR!").pEnd
 			}
 		}
 
@@ -40,7 +41,6 @@ const class ErrPrinterHtml {
 }
 
 internal const class ErrPrinterHtmlSections {
-
 	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
 	@Inject	private const Int			srcCodePadding	
 	
@@ -62,7 +62,7 @@ internal const class ErrPrinterHtmlSections {
 		if (causes.size <= 1)	// don't bother if there are no causes
 			return
 		
-		out.h2.w("Causes").h2End
+		title(out, "Causes")
 		out.pre
 
 		causes.each |Err cause, Int i| {
@@ -74,7 +74,7 @@ internal const class ErrPrinterHtmlSections {
 	
 	Void printAvailableValues(WebOutStream out, Err? err) {
 		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr->Bool| {
-			out.h2.w("Available Values").h2End
+			title(out, "Available Values")
 			out.ol
 			notFoundErr.availableValues.each { out.li.writeXml(it).liEnd }
 			out.olEnd
@@ -86,7 +86,7 @@ internal const class ErrPrinterHtmlSections {
 		// search for the first OpTrace
 		forEachCause(err, IocErr#) |IocErr iocErr->Bool| {
 			if (iocErr.operationTrace != null) {
-				out.h2.w("IoC Operation Trace").h2End
+				title(out, "IoC Operation Trace")
 				out.ol
 				iocErr.operationTrace.splitLines.each { out.li.writeXml(it).liEnd }
 				out.olEnd
@@ -100,7 +100,7 @@ internal const class ErrPrinterHtmlSections {
 			srcCode 	:= srcCodeErr.srcCode
 			title		:= srcCodeErr.typeof.name.toDisplayName
 			
-			out.h2.w(title).h2End
+			this.title(out, title)
 			
 			out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
 			out.w("&nbsp;&nbsp;-&nbsp;").writeXml(srcCodeErr.msg).pEnd
@@ -123,7 +123,7 @@ internal const class ErrPrinterHtmlSections {
 			// special case for wrapped IocErrs, unwrap the err if it adds nothing 
 			if (err is IocErr && err.msg == err.cause?.msg)
 				err = err.cause			
-			out.h2.w("Stack Trace").h2End
+			title(out, "Stack Trace")
 			out.pre
 			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
 			frames := Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.exclude { frameFilter.filter(it) }
@@ -133,7 +133,7 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printRequestDetails(WebOutStream out, Err? err) {
-		out.h2.w("Request Details").h2End
+		title(out, "Request Details")
 		out.table
 		w(out, "URI",			request.uri)
 		w(out, "HTTP Method",	request.httpMethod)
@@ -142,41 +142,36 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printRequestHeaders(WebOutStream out, Err? err) {
-		out.h2.w("Request Headers").h2End
-		out.table
-		request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }.each |v,k| { w(out, k, v) }
-		out.tableEnd
+		title(out, "Request Headers")
+		map := request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") } 
+		prettyPrintMap(out, map, true)
 	}
 
 	Void printFormParameters(WebOutStream out, Err? err) {
 		if (request.form != null) {
-			out.h2.w("Form Parameters").h2End
-			out.table
-			request.headers.each |v, k| { w(out, k, v) }
-			out.tableEnd
+			title(out, "Form Parameters")
+			prettyPrintMap(out, request.form, true)
 		}
 	}
 	
 	Void printSession(WebOutStream out, Err? err) {
 		if (session.exists && !session.isEmpty) {
-			out.h2.w("Session").h2End
-			out.table("class=\"session\"")
-			session.map.each |v, k| { w(out, k, v) }
-			out.tableEnd
+			title(out, "Session")
+			prettyPrintMap(out, session.map, true, "session")
 		}
 	}
 
 	Void printCookies(WebOutStream out, Err? err) {
 		if (!cookies.all.isEmpty) {
-			out.h2.w("Cookies").h2End
-			out.table("class=\"cookies\"")
-			cookies.all.each |c| { w(out, c.name, c.val) }
-			out.tableEnd
+			title(out, "Cookies")
+			cookieMap := [:]
+			cookies.all.each |c| { cookieMap[c.name] = c.val }
+			prettyPrintMap(out, cookieMap, true, "cookies")
 		}		
 	}
 
 	Void printLocales(WebOutStream out, Err? err) {
-		out.h2.w("Locales").h2End
+		title(out, "Locales")
 		out.ol
 		request.locales.each { out.li.writeXml(it.toStr).liEnd }
 		out.olEnd
@@ -184,37 +179,29 @@ internal const class ErrPrinterHtmlSections {
 	
 	Void printLocals(WebOutStream out, Err? err) {
 		if (!IocHelper.locals.isEmpty) {
-			out.h2.w("Thread Locals").h2End
-			out.table("class=\"threadLocals\"")
-			IocHelper.locals.each |v, k| { w(out, k, v) }
-			out.tableEnd
+			title(out, "Thread Locals")
+			prettyPrintMap(out, IocHelper.locals, true, "threadLocals")
 		}
 	}
 
 	Void printIocConfig(WebOutStream out, Err? err) {
 		if (!configSrc.config.isEmpty) {
-			out.h2.w("Ioc Config Values").h2End
-			out.table
-			map := [:] { ordered = true }
-			configSrc.config.keys.sort.each { map[it] = configSrc.config[it] }
-			map.each |v, k| { w(out, k, v) } 
-			out.tableEnd
+			title(out, "Ioc Config Values")
+			prettyPrintMap(out, configSrc.config, true)
 		}
 	}
 
 	Void printRoutes(WebOutStream out, Err? err) {
 		if (!routes.routes.isEmpty) {
-			out.h2.w("BedSheet Routes").h2End
+			title(out, "BedSheet Routes")
 			map := [:] { ordered = true }
 			routes.routes.each |r| { map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr }
-			out.table
-			map.each |v, k| { w(out, k, v) } 
-			out.tableEnd
+			prettyPrintMap(out, map, false)
 		}
 	}
 
 	Void printFantomEnvironment(WebOutStream out, Err? err) {
-		out.h2.w("Fantom Environment").h2End
+		title(out, "Fantom Environment")
 		out.table
 		w(out, "Cmd Args", 	Env.cur.args)
 		w(out, "Home Dir", 	Env.cur.homeDir)
@@ -228,9 +215,9 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printFantomIndexedProps(WebOutStream out, Err? err) {
-		out.h2.w("Fantom Indexed Properties").h2End
+		title(out, "Fantom Indexed Properties")
 		out.table
-		Env.cur.indexKeys.each |k| {
+		Env.cur.indexKeys.rw.sort.each |k| {
 			vals := Env.cur.index(k)
 			out.tr.td.writeXml(k).tdEnd
 			out.td.ul
@@ -243,10 +230,10 @@ internal const class ErrPrinterHtmlSections {
 	
 	Void printEnvironmentVariables(WebOutStream out, Err? err) {
 		if (!Env.cur.vars.isEmpty) {
+			title(out, "Environment Variables")
 			pathSeparator := Env.cur.vars["path.separator"]?.getSafe(0)
-			out.h2.w("Environment Variables").h2End
 			out.table
-			Env.cur.vars.keys.sort.each |k| {
+			Env.cur.vars.keys.rw.sort.each |k| {
 				vals := Env.cur.vars[k].split(pathSeparator)
 				out.tr.td.writeXml(k).tdEnd
 				out.td.ul
@@ -260,11 +247,39 @@ internal const class ErrPrinterHtmlSections {
 	
 	Void printFantomDiagnostics(WebOutStream out, Err? err) {
 		out.h2.w("Fantom Diagnostics").h2End
-		out.table
-		Env.cur.diagnostics.each |v, k| { w(out, k, v) }
-		out.tableEnd
+		prettyPrintMap(out, Env.cur.diagnostics, true)
 	}
 	
+	Void printFantomPods(WebOutStream out, Err? err) {
+		out.h2.w("Fantom Pods").h2End
+		map := [:]
+		// Pod.list throws an Err if any pod is invalid (wrong dependencies etc), using findAllPodNames we don't even 
+		// load the pod into memory!
+		Env.cur().findAllPodNames.each |podName| {
+			podFile := Env.cur.findPodFile(podName)
+			zip 	:= Zip.open(podFile)
+			props	:= zip.contents[`/meta.props`]?.readProps
+			zip.close
+			map[podName] = props["pod.version"]
+		}
+		prettyPrintMap(out, map, true)
+	}
+	
+	private Void title(WebOutStream out, Str title) {
+		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
+	}
+	
+	private Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
+		if (sort) {
+			newMap := Str:Obj?[:] { ordered = true } 
+			map.keys.sort.each |k| { newMap[k] = map[k] }
+			map = newMap
+		}
+		out.table(cssClass == null ? null : "class=\"${cssClass}\"")
+		map.each |v, k| { w(out, k, v) } 
+		out.tableEnd
+	}
+
 	private Void w(WebOutStream out, Str key, Obj? val) {
 		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}
