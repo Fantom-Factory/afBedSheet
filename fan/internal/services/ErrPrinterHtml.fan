@@ -3,6 +3,7 @@ using afIoc::IocErr
 using afIoc::IocHelper
 using afIoc::NotFoundErr
 using afIocConfig::Config
+using afIocConfig::IocConfigSource
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
@@ -47,10 +48,11 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const Int 			noOfStackFrames
 	
 	@Inject	private const StackFrameFilter	frameFilter
-
-	@Inject	private const HttpRequest	request
-	@Inject	private const HttpSession	session
-	@Inject	private const HttpCookies	cookies
+	@Inject	private const HttpRequest		request
+	@Inject	private const HttpSession		session
+	@Inject	private const HttpCookies		cookies
+	@Inject	private const IocConfigSource	configSrc
+	@Inject	private const Routes			routes
 
 	new make(|This|in) { in(this) }
 
@@ -185,6 +187,28 @@ internal const class ErrPrinterHtmlSections {
 			out.h2.w("Thread Locals").h2End
 			out.table("class=\"threadLocals\"")
 			IocHelper.locals.each |v, k| { w(out, k, v) }
+			out.tableEnd
+		}
+	}
+
+	Void printIocConfig(WebOutStream out, Err? err) {
+		if (!configSrc.config.isEmpty) {
+			out.h2.w("Ioc Config Values").h2End
+			out.table
+			map := [:] { ordered = true }
+			configSrc.config.keys.sort.each { map[it] = configSrc.config[it] }
+			map.each |v, k| { w(out, k, v) } 
+			out.tableEnd
+		}
+	}
+
+	Void printRoutes(WebOutStream out, Err? err) {
+		if (!routes.routes.isEmpty) {
+			out.h2.w("BedSheet Routes").h2End
+			map := [:] { ordered = true }
+			routes.routes.each |r| { map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr }
+			out.table
+			map.each |v, k| { w(out, k, v) } 
 			out.tableEnd
 		}
 	}

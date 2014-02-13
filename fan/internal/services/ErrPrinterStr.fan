@@ -5,6 +5,7 @@ using afIoc::Inject
 using afIoc::IocHelper
 using afIoc::NotFoundErr
 using afIocConfig::Config
+using afIocConfig::IocConfigSource
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
@@ -21,7 +22,7 @@ const class ErrPrinterStr {
 	}
 
 	Str errToStr(Err? err) {
-		buf := StrBuf()
+		buf := StrBuf(1000)
 		msg	:= (err == null) ? "Err!\n" : "${err?.typeof?.qname} - ${err?.msg}\n" 
 		buf.add(msg)
 
@@ -47,9 +48,11 @@ internal const class ErrPrinterStrSections {
 	
 	@Inject	private const StackFrameFilter	frameFilter
 
-	@Inject	private const HttpRequest	request
-	@Inject	private const HttpSession	session
-	@Inject	private const HttpCookies	cookies
+	@Inject	private const HttpRequest		request
+	@Inject	private const HttpSession		session
+	@Inject	private const HttpCookies		cookies
+	@Inject	private const IocConfigSource	configSrc
+	@Inject	private const Routes			routes
 
 	new make(|This|in) { in(this) }
 
@@ -111,27 +114,33 @@ internal const class ErrPrinterStrSections {
 
 	Void printRequestDetails(StrBuf buf, Err? err) {
 		buf.add("\nRequest Details:\n")
-		buf.add("  URI: ${request.uri}\n")
-		buf.add("  HTTP Method: ${request.httpMethod}\n")
-		buf.add("  HTTP Version: ${request.httpVersion}\n")
+		map := [
+			"URI"			: request.uri,
+			"HTTP Method"	: request.httpMethod,
+			"HTTP Version"	: request.httpVersion
+		]
+		prettyPrintMap(buf, map, false)
 	}
 
 	Void printRequestHeaders(StrBuf buf, Err? err) {
 		buf.add("\nRequest Headers:\n")
-		request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }.each |v, k| { buf.add("  $k: $v\n") }
+		reqHeaders := request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }
+		prettyPrintMap(buf, reqHeaders, true)
 	}
 
 	Void printFormParameters(StrBuf buf, Err? err) {
 		if (request.form != null) {
 			buf.add("\nForm:\n")
-			request.form.each |v, k| { buf.add("  $k: $v\n") }
+			prettyPrintMap(buf, request.form, true)
 		}
 	}
 	
 	Void printCookies(StrBuf buf, Err? err) {
 		if (!cookies.all.isEmpty) {
 			buf.add("\nCookies:\n")
-			cookies.all.each |c| { buf.add("  ${c.name}: ${c.val}\n") }
+			cookieMap := [:]
+			cookies.all.each |c| { cookieMap[c.name] = c.val }
+			prettyPrintMap(buf, cookieMap, true)
 		}	
 	}
 
@@ -143,15 +152,46 @@ internal const class ErrPrinterStrSections {
 	Void printLocals(StrBuf buf, Err? err) {
 		if (!IocHelper.locals.isEmpty) {
 			buf.add("\nThread Locals:\n")
-			IocHelper.locals.each |v, k| { buf.add("  $k: $v\n") }
+			prettyPrintMap(buf, IocHelper.locals, true)
 		}
 	}
 
 	Void printSession(StrBuf buf, Err? err) {
 		if (session.exists && !session.isEmpty) {
 			buf.add("\nSession:\n")
-			session.map.each |v, k| { buf.add("  $k: $v\n") }
+			prettyPrintMap(buf, session.map, true)
 		}		
+	}
+	
+	Void printIocConfig(StrBuf buf, Err? err) {
+		if (!configSrc.config.isEmpty) {
+			buf.add("\nIoc Config Values:\n")
+			prettyPrintMap(buf, configSrc.config, true)
+		}
+	}
+	
+	Void printRoutes(StrBuf buf, Err? err) {
+		if (!routes.routes.isEmpty) {
+			buf.add("\nBedSheet Routes:\n")
+			map := [:]
+			routes.routes.each |r| { 
+				map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr
+			}
+			prettyPrintMap(buf, map, false)
+		}
+	}
+	
+	private Void prettyPrintMap(StrBuf buf, Str:Obj? map, Bool sort) {
+		maxKeySize := (Int) map.keys.reduce(0) |size, key| { ((Int) size).max(key.size) }
+		if (sort) {
+			newMap := Str:Obj?[:] { ordered = true } 
+			map.keys.sort.each |k| { newMap[k] = map[k] }
+			map = newMap
+		}
+		map.each |v, k| {
+			key := (k.size == maxKeySize) ? k : "$k "
+			buf.add("  " + key.padr(maxKeySize, '.') + " : " + (v?.toStr ?: "null") + "\n") 
+		}
 	}
 	
 	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {

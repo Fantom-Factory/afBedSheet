@@ -16,6 +16,11 @@ For BedSheet 1.3.4
 
 Have 404 contributions (like the Err page) to list routes / pillow pages (/ middleware?)
 
+err print
+ - routes (with http method!)
+ - ioc config
+ - installed pods and versions
+
 Enhance the StackFrameFilter
  - grey out afIoc / afBedSheet lines.
 
