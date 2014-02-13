@@ -165,6 +165,8 @@ const class BedSheetModule {
 		config.addOrdered("FormParameters",			|WebOutStream out, Err? err| { printer.printFormParameters			(out, err) })
 		config.addOrdered("Session",				|WebOutStream out, Err? err| { printer.printSession					(out, err) })
 		config.addOrdered("Cookies",				|WebOutStream out, Err? err| { printer.printCookies					(out, err) })
+		config.addOrdered("IocConfig",				|WebOutStream out, Err? err| { printer.printIocConfig				(out, err) })
+		config.addOrdered("Routes",					|WebOutStream out, Err? err| { printer.printRoutes					(out, err) })
 		config.addOrdered("Locales",				|WebOutStream out, Err? err| { printer.printLocales					(out, err) })
 		config.addOrdered("Locals",					|WebOutStream out, Err? err| { printer.printLocals					(out, err) })
 		config.addOrdered("FantomEnvironment",		|WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) })
@@ -188,6 +190,8 @@ const class BedSheetModule {
 		config.addOrdered("FormParameters",			|StrBuf out, Err? err| { printer.printFormParameters	(out, err) })
 		config.addOrdered("Session",				|StrBuf out, Err? err| { printer.printSession			(out, err) })
 		config.addOrdered("Cookies",				|StrBuf out, Err? err| { printer.printCookies			(out, err) })
+		config.addOrdered("IocConfig",				|StrBuf out, Err? err| { printer.printIocConfig			(out, err) })
+		config.addOrdered("Routes",					|StrBuf out, Err? err| { printer.printRoutes			(out, err) })
 		config.addOrdered("Locales",				|StrBuf out, Err? err| { printer.printLocales			(out, err) })
 		config.addOrdered("Locals",					|StrBuf out, Err? err| { printer.printLocals			(out, err) })
 	}

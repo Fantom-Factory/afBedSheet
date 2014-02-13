@@ -83,6 +83,7 @@
 ** 
 const class Route {
 	private static const Str star	:= "(.*?)"
+
 	** The uri regex this route matches.
 	const Regex routeRegex
 
@@ -92,11 +93,11 @@ const class Route {
 	** HTTP method used for this route
 	const Str httpMethod
 
-	private const Regex[] 	httpMethodGlob
-	private const Bool		matchAllArgs
-	private const Bool		matchToEnd
-	private const Bool		isGlob
-	private const RouteResponseFactory	factory
+	private  const Regex[] 	httpMethodGlob
+	private  const Bool		matchAllArgs
+	private  const Bool		matchToEnd
+	private  const Bool		isGlob
+	internal const RouteResponseFactory	factory
 
 	** Make a Route that matches on the given glob pattern.
 	** 
@@ -223,7 +224,7 @@ const class Route {
 	}
 	
 	override Str toStr() {
-		"$routeRegex - $httpMethod : ${factory}"
+		"$httpMethod - $routeRegex : $factory"
 	}
 }
 

@@ -512,7 +512,9 @@ Release Notes [#releaseNotes]
 v1.3.4 [#v1.3.4]
 ----------------
  - New: Added 'fromClientUri()' and 'fromServerFile()' to 'FileHandler'.
+ - New: 'IocConfig' values and BedSheet Routes are printed the standard Err page.
  - Chg: Added some handy 'toStr' methods to 'Route' and response objects.
+ - Chg: Pretty printed the Str maps that get logged on Err.
 
 v1.3.2 [#v1.3.2]
 ----------------
