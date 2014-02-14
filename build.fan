@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version("1.3.3")
+		version = Version("1.3.4")
 
 		meta = [	
 			"org.name"		: "Alien-Factory",
@@ -13,7 +13,7 @@ class Build : BuildPod {
 			"proj.name"		: "BedSheet",
 			"proj.uri"		: "http://www.fantomfactory.org/pods/afBedSheet",
 			"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
-			"license.name"	: "BSD 2-Clause License",
+			"license.name"	: "The MIT Licence",
 			"repo.private"	: "true",
 
 			"afIoc.module"	: "afBedSheet::BedSheetModule"
@@ -33,8 +33,8 @@ class Build : BuildPod {
 			"inet 1.0",
 	
 			"afIoc 1.5.2+", 
-			"afIocConfig 1.0.2+", 
-			"afIocEnv 1.0.0+", 
+			"afIocConfig 1.0.4+", 
+			"afIocEnv 1.0.2.1+", 
 			"afPlastic 1.0.10+"
 		]
 

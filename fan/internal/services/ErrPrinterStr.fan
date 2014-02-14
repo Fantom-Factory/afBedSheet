@@ -181,17 +181,8 @@ internal const class ErrPrinterStrSections {
 		}
 	}
 	
-	private Void prettyPrintMap(StrBuf buf, Str:Obj? map, Bool sort) {
-		maxKeySize := (Int) map.keys.reduce(0) |size, key| { ((Int) size).max(key.size) }
-		if (sort) {
-			newMap := Str:Obj?[:] { ordered = true } 
-			map.keys.sort.each |k| { newMap[k] = map[k] }
-			map = newMap
-		}
-		map.each |v, k| {
-			key := (k.size == maxKeySize) ? k : "$k "
-			buf.add("  " + key.padr(maxKeySize, '.') + " : " + (v?.toStr ?: "null") + "\n") 
-		}
+	private Void prettyPrintMap(StrBuf buf, Str:Obj? map, Bool sortKeys) {
+		buf.add(Utils.prettyPrintMap(map, "  ", sortKeys))
 	}
 	
 	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {

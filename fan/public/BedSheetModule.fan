@@ -155,7 +155,7 @@ const class BedSheetModule {
 	static Void contributeNotFoundPrinterHtml(OrderedConfig config) {
 		printer := (NotFoundPrinterHtmlSections) config.autobuild(NotFoundPrinterHtmlSections#)
 
-		// these are all the sections you see on the Err500 page
+		// these are all the sections you see on the 404 page
 		config.addOrdered("RouteCode",				|WebOutStream out| { printer.printRouteCode			(out) })
 		config.addOrdered("BedSheetRoutes",			|WebOutStream out| { printer.printBedSheetRoutes	(out) })
 	}

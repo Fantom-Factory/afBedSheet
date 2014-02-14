@@ -49,7 +49,7 @@ const final class Redirect {
 	}
 	
 	override Str toStr() {
-		"Redirect -> ${uri} (${type})"
+		"Redirect -> ${uri} (${type.toStr.toDisplayName})"
 	}
 }
 
