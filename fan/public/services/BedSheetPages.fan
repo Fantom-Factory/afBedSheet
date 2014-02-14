@@ -22,28 +22,23 @@ const mixin BedSheetPages {
 
 internal const class BedSheetPagesImpl : BedSheetPages {
 
-	@Inject	private const HttpRequest		request
-	@Inject	private const ErrPrinterHtml 	errPrinterHtml
+	@Inject	private const HttpRequest			request
+	@Inject	private const ErrPrinterHtml 		errPrinterHtml
+	@Inject	private const NotFoundPrinterHtml 	notFoundPrinterHtml
 
 	new make(|This|in) { in(this) }
 
 	override Text renderHttpStatus(HttpStatus httpStatus, Bool verbose) {
 		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
 		// if the msg is html, leave it as is
-		content	:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>"
-		
-		if (verbose && httpStatus.code == 404) {
-			page	:= typeof.pod.file(`/res/web/404Page.html`).readAllStr
-			page	 = page.replace("{{{ route }}}", request.modRel.pathOnly.toStr)
-			content	+= page
-		}
-
+		msg		:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>\n"
+		content	:= (verbose && httpStatus.code == 404) ? msg + notFoundPrinterHtml.toHtml : msg
 		return render(title, content)
 	}	
 
 	override Text renderErr(Err err, Bool verbose) {
 		title	:= "500 - " + WebRes.statusMsg[500]
-		content	:= verbose ? errPrinterHtml.errToHtml(err) : "<p><b>${err.msg}</b></p>"
+		content	:= verbose ? errPrinterHtml.errToHtml(err) : "<p><b>${err.msg}</b></p>\n"
 		return render(title, content, BedSheetLogo.skull)
 	}
 	

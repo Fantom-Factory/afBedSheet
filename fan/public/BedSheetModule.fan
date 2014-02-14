@@ -35,6 +35,7 @@ const class BedSheetModule {
 		
 		// Other services
 		binder.bind(GzipCompressible#)
+		binder.bind(NotFoundPrinterHtml#)
 		binder.bind(ErrPrinterHtml#)
 		binder.bind(ErrPrinterStr#)
 		binder.bind(HttpSession#)
@@ -149,7 +150,16 @@ const class BedSheetModule {
 		conf["image/svg+xml"]					= true	// svg
 		conf["application/font-woff"]			= false	// woff files are already gzip compressed
 	}
-	
+
+	@Contribute { serviceType=NotFoundPrinterHtml# }
+	static Void contributeNotFoundPrinterHtml(OrderedConfig config) {
+		printer := (NotFoundPrinterHtmlSections) config.autobuild(NotFoundPrinterHtmlSections#)
+
+		// these are all the sections you see on the Err500 page
+		config.addOrdered("RouteCode",				|WebOutStream out| { printer.printRouteCode			(out) })
+		config.addOrdered("BedSheetRoutes",			|WebOutStream out| { printer.printBedSheetRoutes	(out) })
+	}
+
 	@Contribute { serviceType=ErrPrinterHtml# }
 	static Void contributeErrPrinterHtml(OrderedConfig config) {
 		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
@@ -167,7 +177,7 @@ const class BedSheetModule {
 		config.addOrdered("Cookies",				|WebOutStream out, Err? err| { printer.printCookies					(out, err) })
 		config.addOrdered("Locales",				|WebOutStream out, Err? err| { printer.printLocales					(out, err) })
 		config.addOrdered("IocConfig",				|WebOutStream out, Err? err| { printer.printIocConfig				(out, err) })
-		config.addOrdered("Routes",					|WebOutStream out, Err? err| { printer.printRoutes					(out, err) })
+		config.addOrdered("Routes",					|WebOutStream out, Err? err| { printer.printBedSheetRoutes			(out, err) })
 		config.addOrdered("Locals",					|WebOutStream out, Err? err| { printer.printLocals					(out, err) })
 		config.addOrdered("FantomEnvironment",		|WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) })
 		config.addOrdered("FantomPods",				|WebOutStream out, Err? err| { printer.printFantomPods				(out, err) })
