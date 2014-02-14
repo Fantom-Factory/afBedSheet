@@ -14,7 +14,7 @@ class Build : BuildPod {
 			"proj.uri"		: "http://www.fantomfactory.org/pods/afBedSheet",
 			"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
 			"license.name"	: "The MIT Licence",
-			"repo.private"	: "true",
+			"repo.private"	: "false",
 
 			"afIoc.module"	: "afBedSheet::BedSheetModule"
 		]
