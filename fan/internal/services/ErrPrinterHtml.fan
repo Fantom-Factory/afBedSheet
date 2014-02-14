@@ -271,6 +271,8 @@ internal const class ErrPrinterHtmlSections {
 		}		
 	}
 	
+	** If you're thinking of generating a ToC, think about those contributions not in BedSheet...
+	** ...and if we add a HTML Helper - do we want add a dependency to BedSheet?
 	private Void title(WebOutStream out, Str title) {
 		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
 	}

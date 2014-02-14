@@ -19,4 +19,20 @@ internal const class Utils {
 		err.trace(b.out, ["maxDepth":maxDepth])
 		return b.flip.in.readAllStr
 	}
+	
+	static Str prettyPrintMap(Str:Obj? map, Str prefix, Bool sortKeys) {
+		maxKeySize := (Int) map.keys.reduce(0) |size, key| { ((Int) size).max(key.size) }
+		if (sortKeys) {
+			newMap := Str:Obj?[:] { ordered = true } 
+			map.keys.sort.each |k| { newMap[k] = map[k] }
+			map = newMap
+		}
+		buf := StrBuf(map.size*50)
+		map.each |v, k| {
+			key := (k.size == maxKeySize) ? k : "$k "
+			buf.add(prefix + key.padr(maxKeySize, '.') + " : " + (v?.toStr ?: "null") + "\n") 
+		}
+		return buf.toStr
+	}
+
 }

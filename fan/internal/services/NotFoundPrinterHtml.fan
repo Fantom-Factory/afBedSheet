@@ -49,7 +49,7 @@ internal const class NotFoundPrinterHtmlSections {
 			prettyPrintMap(out, map, false)
 		}
 	}
-	
+
 	private Void title(WebOutStream out, Str title) {
 		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
 	}
