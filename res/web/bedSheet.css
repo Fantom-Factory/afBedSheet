@@ -101,6 +101,7 @@ td:first-child {
 }
 
 .brand {
+	display:			inline;
  	color:				#999999;
     font-size:			32px;
     font-weight:		bold;

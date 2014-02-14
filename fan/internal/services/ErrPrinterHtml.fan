@@ -10,7 +10,7 @@ using afPlastic::SrcCodeErr
 ** (Service) - public, 'cos it's useful for emails. 
 @NoDoc
 const class ErrPrinterHtml {
-	private const static Log log := Utils.getLog(ErrPrinterHtml#)
+	@Inject	private const Log log
 		
 	private const |WebOutStream out, Err? err|[]	printers
 
@@ -191,7 +191,7 @@ internal const class ErrPrinterHtmlSections {
 		}
 	}
 
-	Void printRoutes(WebOutStream out, Err? err) {
+	Void printBedSheetRoutes(WebOutStream out, Err? err) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
 			map := [:] { ordered = true }
@@ -255,14 +255,20 @@ internal const class ErrPrinterHtmlSections {
 		map := [:]
 		// Pod.list throws an Err if any pod is invalid (wrong dependencies etc), using findAllPodNames we don't even 
 		// load the pod into memory!
-		Env.cur().findAllPodNames.each |podName| {
+		Env.cur().findAllPodNames.each |podName| { map[podName] = readPodVersion(podName) }
+		prettyPrintMap(out, map, true)
+	}
+
+	private Str readPodVersion(Str podName) {
+		try {
 			podFile := Env.cur.findPodFile(podName)
 			zip 	:= Zip.open(podFile)
 			props	:= zip.contents[`/meta.props`]?.readProps
 			zip.close
-			map[podName] = props["pod.version"]
-		}
-		prettyPrintMap(out, map, true)
+			return props?.get("pod.version") ?: "NULL"
+		} catch (Err e) {
+			return "ERROR"
+		}		
 	}
 	
 	private Void title(WebOutStream out, Str title) {
