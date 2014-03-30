@@ -509,6 +509,10 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-
 
 Release Notes [#releaseNotes]
 *****************************
+v1.3.6 [#v1.3.6]
+----------------
+ - Chg: Atom (RSS) feeds 'application/atom+xml' are now GZip compressible.
+
 v1.3.4 [#v1.3.4]
 ----------------
  - New: Added 'fromClientUri()' and 'fromServerFile()' to 'FileHandler'.
@@ -531,7 +535,7 @@ v1.3.0 [#v1.3.0]
  - New: Added 'stash()' to 'HttpRequest'
  - New: Added 'fromXhtml(...)' to 'Text'
  - New: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
- - New: 'MethodCallresponseProcessor' uses [Ioc]`http://www.fantomfactory.org/pods/afIoc` to call methods so that it may inject any dependencies / services as method arguments.
+ - New: 'MethodCallResponseProcessor' uses [Ioc]`http://www.fantomfactory.org/pods/afIoc` to call methods so that it may inject any dependencies / services as method arguments.
  - New: Added 'StackFrameFilter' to filter out lines in stack traces.
  - New: Added 'host' to 'BedSheetConfigIds', mainly for use by 3rd party libraries.
  - Chg: Upgraded to [afIoc-1.5.2]`http://www.fantomfactory.org/pods/afIoc`.

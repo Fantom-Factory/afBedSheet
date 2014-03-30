@@ -141,6 +141,7 @@ const class BedSheetModule {
 		conf["text/xml"]					= true
 		conf["application/xhtml+xml"]		= true
 		conf["application/rss+xml"]			= true
+		conf["application/atom+xml"]		= true
 		conf["application/json"]			= true
 
 		// compress web fonts
