@@ -34,7 +34,7 @@ internal const class BsErrMsgs {
 	}
 	
 	static Str bedSheetMetaDataNotInOptions() {
-		"RegistryOptions does not contain BedSheetMetaData"
+		"RegistryOptions does not contain key 'bedSheetMetaData'"
 	}
 	
 	static Str cookieNotFound(Str cookieName) {
