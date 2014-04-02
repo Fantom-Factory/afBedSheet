@@ -512,6 +512,7 @@ Release Notes [#releaseNotes]
 v1.3.6 [#v1.3.6]
 ----------------
  - Chg: Atom (RSS) feeds 'application/atom+xml' are now GZip compressible.
+ - Bug: If 2 'Routes' had the same Regex, only 1 was shown on the 404 page.
 
 v1.3.4 [#v1.3.4]
 ----------------

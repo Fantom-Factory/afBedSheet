@@ -133,16 +133,16 @@ const class BedSheetModule {
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(MappedConfig conf) {
 		// add some standard compressible mime types
+		conf["application/atom+xml"]		= true
+		conf["application/json"]			= true
+		conf["application/rss+xml"]			= true
+		conf["application/xhtml+xml"]		= true
 		conf["text/css"]					= true
 		conf["text/html"]					= true
 		conf["text/javascript"]				= true
 		conf["text/plain"]					= true
 		conf["text/tab-separated-values"]	= true
 		conf["text/xml"]					= true
-		conf["application/xhtml+xml"]		= true
-		conf["application/rss+xml"]			= true
-		conf["application/atom+xml"]		= true
-		conf["application/json"]			= true
 
 		// compress web fonts
 		// see http://stackoverflow.com/questions/2871655/proper-mime-type-for-fonts#20723357
@@ -191,7 +191,7 @@ const class BedSheetModule {
 	static Void contributeErrPrinterStr(OrderedConfig config) {
 		printer := (ErrPrinterStrSections) config.autobuild(ErrPrinterStrSections#)
 		
-		// these are all the sections you see on the Err log
+		// these are all the sections you see in the Err log
 		config.addOrdered("Causes",					|StrBuf out, Err? err| { printer.printCauses			(out, err) })
 		config.addOrdered("AvailableValues",		|StrBuf out, Err? err| { printer.printAvailableValues	(out, err) })
 		config.addOrdered("IocOperationTrace",		|StrBuf out, Err? err| { printer.printIocOperationTrace	(out, err) })
@@ -228,6 +228,7 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=StackFrameFilter# }
 	static Void contributeStackFrameFilter(OrderedConfig config) {
+		// remove meaningless stack frames
 		config.add("concurrent::Actor._dispatch")
 		config.add("concurrent::Actor._send")
 		config.add("concurrent::Actor._work")

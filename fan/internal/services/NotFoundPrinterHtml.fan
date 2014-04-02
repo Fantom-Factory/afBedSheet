@@ -44,9 +44,12 @@ internal const class NotFoundPrinterHtmlSections {
 	Void printBedSheetRoutes(WebOutStream out) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
-			map := [:] { ordered = true }
-			routes.routes.each |r| { map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr }
-			prettyPrintMap(out, map, false)
+
+			out.table
+			routes.routes.each |r| { 
+				w(out, "${r.httpMethod} - ${r.routeRegex}", r.factory.toStr)
+			}
+			out.tableEnd
 		}
 	}
 
@@ -54,17 +57,6 @@ internal const class NotFoundPrinterHtmlSections {
 		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
 	}
 	
-	private Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
-		if (sort) {
-			newMap := Str:Obj?[:] { ordered = true } 
-			map.keys.sort.each |k| { newMap[k] = map[k] }
-			map = newMap
-		}
-		out.table(cssClass == null ? null : "class=\"${cssClass}\"")
-		map.each |v, k| { w(out, k, v) } 
-		out.tableEnd
-	}
-
 	private Void w(WebOutStream out, Str key, Obj? val) {
 		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}
