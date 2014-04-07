@@ -61,11 +61,11 @@ class TestReflectUtils : Test {
 		Obj.echo("Num?#.fits(Num#) -> ${Num?#.fits(Num#)}")	// Num?#.fits(Num#) -> true
 		
 		method = ReflectUtils.findMethod(MyReflectTestUtils2#, "method3", [,], false, Num#)
-//		verifyNull(method)	// this fails!??
+		verifyEq(method, MyReflectTestUtils2#method3)	// 'cos Num# fits Num?#
 		method = ReflectUtils.findMethod(MyReflectTestUtils2#, "method3", [,], false, Num?#)
 		verifyEq(method, MyReflectTestUtils2#method3)
 		method = ReflectUtils.findMethod(MyReflectTestUtils2#, "method3", [,], false, Obj#)
-//		verifyNull(method)	// this fails!??
+		verifyEq(method, MyReflectTestUtils2#method3)	// 'cos Num# fits Num?#
 		method = ReflectUtils.findMethod(MyReflectTestUtils2#, "method3", [,], false, Obj?#)
 		verifyEq(method, MyReflectTestUtils2#method3)
 		method = ReflectUtils.findMethod(MyReflectTestUtils2#, "method3", [,], false, Int#)
@@ -127,6 +127,12 @@ class TestReflectUtils : Test {
 		
 		// test I can call a method with more params than it declares
 		MyReflectTestUtils2#params1.callOn(MyReflectTestUtils2(), [48, 45])
+
+		// test nulls
+		verify		(ReflectUtils.paramTypesFitMethodSignature([Str#, Int#],		 MyReflectTestUtils2#nully))
+		verify		(ReflectUtils.paramTypesFitMethodSignature([null, Int#],		 MyReflectTestUtils2#nully))
+		verify		(ReflectUtils.paramTypesFitMethodSignature([null, Int?#],		 MyReflectTestUtils2#nully))
+		verifyFalse	(ReflectUtils.paramTypesFitMethodSignature([null, Str#],		 MyReflectTestUtils2#nully))
 	}
 	
 	Void testKnarlyFuncsInParams() {
@@ -177,4 +183,6 @@ internal class MyReflectTestUtils2 : MyReflectTestUtils1 {
 	
 	Void funcy1(|Num?| f) { }
 	Void funcy2(|Num?->Num| f) { }
+
+	Void nully(Str? x, Int y) { }
 }
