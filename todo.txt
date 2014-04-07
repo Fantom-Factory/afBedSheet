@@ -13,6 +13,13 @@ Doc customising the ErrPrinters! Make them public?
 
 For BedSheet 1.3.6
 ------------------
+Update docs, "request handlers" out, "route handlers" in!!!
+
+reword middleware doc (poddoc and api) section, add link to basic http auth example
+
+Validate Route params on startup
+ e.g. `admin/***` will NEVER match `authorise()` 
+
 Enhance the StackFrameFilter
  - grey out afIoc / afBedSheet lines.
 

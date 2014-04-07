@@ -21,7 +21,7 @@
 ** For example, in your 'AppModule' class:
 ** 
 ** pre>
-**   @Contribute { serviceType=Middleware# }
+**   @Contribute { serviceType=MiddlewarePipeline# }
 **   static Void contributeMiddleware(OrderedConfig config) {
 **     conf.addOrdered("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
 **   }

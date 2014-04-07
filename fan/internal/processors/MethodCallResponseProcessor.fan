@@ -35,7 +35,8 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 			if (state.isCached(handlerType))
 				return state.handlerCache[handlerType]
 
-			// TODO: we may want to change this to 'handlerType.fits(it.type)' should our ModuleImpl change 
+			// FIXME: we may want to change this to 'handlerType.fits(it.type)' should our ModuleImpl change
+			// FIXME: use fits() for ? comparisons
 			if (serviceStats.any { handlerType == it.serviceType }) {
 				state.serviceTypes.add(handlerType)
 				return "iocService"
