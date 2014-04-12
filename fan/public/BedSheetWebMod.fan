@@ -107,7 +107,7 @@ const class BedSheetWebMod : WebMod {
 			transDeps := !(bedSheetOptions["noTransDeps"] == true)
 			if (pod != null) {
 				if (transDeps)
-					bob.addModulesFromDependencies(pod, true)
+					bob.addModulesFromPod(pod, true)
 				else
 					log.info("Suppressing transitive dependencies...")
 			}

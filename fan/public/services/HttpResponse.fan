@@ -85,13 +85,12 @@ const class HttpResponseWrapper : HttpResponse {
 internal const class HttpResponseImpl : HttpResponse {
 	
 	@Inject	private const Registry 		registry
-	private  const ThreadStash 			threadStash
+	@Inject private const ThreadStash 	threadStash
 	override const HttpResponseHeaders	headers
 
-	new make(ThreadStashManager threadStashManager, |This|in) { 
+	new make(|This|in) { 
 		in(this)
-		this.threadStash = threadStashManager.createStash("HttpResponse")
-		this.headers 	 = HttpResponseHeaders() |->Str:Str| { webRes.headers }
+		this.headers = HttpResponseHeaders() |->Str:Str| { webRes.headers }
 	} 
 
 	override Bool disableGzip {
