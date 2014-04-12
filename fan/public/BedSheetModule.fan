@@ -45,7 +45,7 @@ const class BedSheetModule {
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
-	static BedSheetMetaData buildBedSheetMetaData(RegistryOptions options) {
+	static BedSheetMetaData buildBedSheetMetaData(RegistryMeta options) {
 		if (!options.options.containsKey("bedSheetMetaData"))
 			throw BedSheetErr(BsErrMsgs.bedSheetMetaDataNotInOptions)
 		return options.options["bedSheetMetaData"] 

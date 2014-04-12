@@ -4,8 +4,7 @@ PodHandler, do the same
 
 After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
 
-Allow WispSession to be overridden - can we add BsWebMod to a normal wisp web app??
- - document how to use BedSheet with normal wisp
+Document how to use BedSheet with normal wisp
 
 Doc customising the ErrPrinters! Make them public?
 
@@ -23,6 +22,8 @@ Validate Route params on startup
 Enhance the StackFrameFilter
  - grey out afIoc / afBedSheet lines.
 
+ - Update to 1.0.66, do dat pillow 404 rename
+ - Have a BedSheet.buildIoc(Type module, opts) method that creates BedSheetMetaData for us. use in Bounce & FantomFactory::PodExtractor
 
 
 Future

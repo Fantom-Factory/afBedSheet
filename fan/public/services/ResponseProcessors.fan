@@ -38,6 +38,6 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 	}	
 
 	private ResponseProcessor get(Type responseType) {
-		processorStrategy.findBestFit(responseType)
+		processorStrategy.findClosestParent(responseType)
 	}
 }

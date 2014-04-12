@@ -35,6 +35,6 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 	}
 
 	private ErrProcessor get(Type errType) {
-		errProcessorStrategy.findBestFit(errType, false) ?: defaultErrProcessor
+		errProcessorStrategy.findClosestParent(errType, false) ?: defaultErrProcessor
 	}
 }

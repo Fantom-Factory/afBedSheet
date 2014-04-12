@@ -72,7 +72,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 	}
 
 	private ValueEncoder? get(Type valueType) {
-		valueEncoderStrategy.findBestFit(valueType, false)
+		valueEncoderStrategy.findClosestParent(valueType, false)
 	}
 
 	private Obj? getState(|ValueEncodersState -> Obj| state) {
