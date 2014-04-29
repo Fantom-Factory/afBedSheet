@@ -1,12 +1,12 @@
-using afIoc::ConcurrentState
-using concurrent::Actor
+using afConcurrent::SynchronizedState
+using concurrent::ActorPool
 using concurrent::Future
 using util::PathEnv
 
 ** Adapted from 'draft'
 internal const class AppRestarter {
 	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
-	private const ConcurrentState 	conState	:= ConcurrentState(AppRestarterState#)
+	private const SynchronizedState	conState
 	
 	const Str 	appModule
 	const Int 	appPort
@@ -20,6 +20,8 @@ internal const class AppRestarter {
 		this.proxyPort		= proxyPort
 		this.noTransDeps	= noTransDeps
 		this.env			= env
+		// as we're not run inside afIoc, we don't have ActorPools
+		this.conState		= SynchronizedState(ActorPool(), AppRestarterState#)
 	}
 
 	Void initialise() {

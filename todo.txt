@@ -28,6 +28,8 @@ Enhance the StackFrameFilter
 
 Future
 ------
+TODO: Move the app-restarting into separate thread which checks every X secs
+
 Logging filter with reqId, SessId and configurable userId
 
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection

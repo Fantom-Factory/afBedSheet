@@ -11,9 +11,7 @@ internal const class RedirectResponseProcessor : ResponseProcessor {
 	private static const Version ver10 		:= Version("1.0")
 	private static const Version ver11 		:= Version("1.1")
 
-	// see http://fantom.org/sidewalk/topic/2169
-//	private static const Int[] statusCodes	:= [301, 302, 302, 308, 307, 303]
-	private static const Int[] statusCodes	:= [301, 302, 302, 301, 307, 303]
+	private static const Int[] statusCodes	:= [301, 302, 302, 308, 307, 303]
 	
 	new make(|This|in) { in(this) }
 

@@ -1,3 +1,4 @@
+using concurrent
 
 internal const class Utils {
 	
@@ -33,6 +34,17 @@ internal const class Utils {
 			buf.add(prefix + key.padr(maxKeySize, '.') + " : " + (v?.toStr ?: "null") + "\n") 
 		}
 		return buf.toStr
+	}
+
+	** A read only copy of the 'Actor.locals' map with the keys sorted alphabetically. Handy for 
+	** debugging. Example:
+	** 
+	**   IocHelper.locals.each |value, key| { echo("$key = $value") }
+	** 
+	static Str:Obj? locals() {
+		Str:Obj? map := [:] { ordered = true }
+		Actor.locals.keys.sort.each { map[it] = Actor.locals[it] }
+		return map
 	}
 
 }

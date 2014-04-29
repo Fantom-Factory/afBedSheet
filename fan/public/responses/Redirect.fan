@@ -22,11 +22,7 @@ const final class Redirect {
 	**  - 308 for HTTP 1.1
 	** 
 	** The client should use the same HTTP method when requesting the redirect.
-	** 
-	** Note: Until Fantom 1.0.66 is released, 301 is also set for HTTP 1.1.
-	** 
-	** @see `http://fantom.org/sidewalk/topic/2169#c14003`
-	// FIXME: Fantom-1.0.66 - use http status 308 
+	// @see `http://fantom.org/sidewalk/topic/2169#c14003`
 	static new movedPermanently(Uri redirectTo) {
 		Redirect.make(redirectTo, RedirectType.movedPermanently)
 	}

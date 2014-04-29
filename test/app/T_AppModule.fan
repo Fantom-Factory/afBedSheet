@@ -43,7 +43,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
 
-		conf.add(Route(`/welcome`, 				bedSheetPages.renderWelcome))
+		conf.add(Route(`/welcome`, 				T_PageHandler#renderWelcome))
 
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
 		conf.add(Route(`/test-src2/***`, 		FileHandler#service))

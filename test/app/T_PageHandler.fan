@@ -7,6 +7,7 @@ internal const class T_PageHandler {
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
 	@Inject	private const HttpFlash 		flash
+	@Inject	private const BedSheetPages		bedSheetPages
 	
 	new make(|This|in) { in(this) }
 	
@@ -159,6 +160,12 @@ internal const class T_PageHandler {
 	Obj showFlashMsg() {
 		oldMsg := flash["msg"]
 		return Text.fromPlain("Msg = $oldMsg")
+	}
+	
+	// ---- Other ----
+	
+	Obj renderWelcome() {
+		bedSheetPages.renderWelcome
 	}
 }
 

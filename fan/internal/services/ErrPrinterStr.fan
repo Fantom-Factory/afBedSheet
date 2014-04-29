@@ -150,9 +150,9 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printLocals(StrBuf buf, Err? err) {
-		if (!IocHelper.locals.isEmpty) {
+		if (!Utils.locals.isEmpty) {
 			buf.add("\nThread Locals:\n")
-			prettyPrintMap(buf, IocHelper.locals, true)
+			prettyPrintMap(buf, Utils.locals, true)
 		}
 	}
 

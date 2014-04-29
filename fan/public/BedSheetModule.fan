@@ -1,16 +1,15 @@
 using web
 using afIoc
 using afIocEnv
+using afIocConfig
 using concurrent::Actor
+using concurrent::ActorPool
 using afPlastic::PlasticCompiler
-using afIocConfig::FactoryDefaults
-using afIocConfig::ConfigProvider
-using afIocConfig::IocConfigSource
-using afIocConfig::IocConfigModule
 
 ** The [Ioc]`http://www.fantomfactory.org/pods/afIoc` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
+@NoDoc
 @SubModule { modules=[IocConfigModule#, IocEnvModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
@@ -93,6 +92,11 @@ const class BedSheetModule {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")
+	}
+
+	@Contribute { serviceType=ActorPools# }
+	static Void contributeActorPools(MappedConfig config) {
+		config["afBedSheet.system"] = ActorPool()
 	}
 
 	@Contribute { serviceType=MiddlewarePipeline# }

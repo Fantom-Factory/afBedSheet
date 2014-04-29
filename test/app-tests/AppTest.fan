@@ -56,8 +56,8 @@ internal class AppTest : Test {
 	}
 	
 	Void verifyLastModified(DateTime lastModified) {
-		clientDate := DateTime.fromHttpStr(client.resHeaders["Last-Modified"]).toTimeZone(TimeZone.utc)
-		verifyEq(clientDate, lastModified)		
+		clientDate := DateTime.fromHttpStr(client.resHeaders["Last-Modified"]).toUtc
+		verifyEq(clientDate, lastModified.floor(1sec).toUtc)		
 	}
 	
 	Void verifyErrMsg(Type errType, Str errMsg, |Obj| func) {

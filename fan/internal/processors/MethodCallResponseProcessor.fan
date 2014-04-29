@@ -1,13 +1,12 @@
-using afIoc::ConcurrentState
-using afIoc::Inject
-using afIoc::Registry
-using afIoc::ServiceStats
-using afIoc::ServiceStat
+using afIoc
+using afConcurrent
 
 internal const class MethodCallResponseProcessor : ResponseProcessor {
-	private const static Log 		log 		:= Utils.getLog(MethodCallResponseProcessor#)
-	private const ConcurrentState 	conState	:= ConcurrentState(MethodCallResponseProcessorState#)
-	private const [Str:ServiceStat] serviceStats
+	private const static Log 	log 				:= Utils.getLog(MethodCallResponseProcessor#)
+	private const AtomicList	serviceTypeCache	:= AtomicList()
+	private const AtomicList	autobuildTypeCache	:= AtomicList()
+	private const AtomicMap		handlerTypeCache	:= AtomicMap()
+	private const Type[] 		serviceTypes
 	
 	@Inject	private const Registry 		registry
 	@Inject	private const ValueEncoders valueEncoders	
@@ -16,7 +15,7 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		in(this) 
 		
 		// we can cache the stats 'cos we only care about the service types
-		this.serviceStats = serviceStats.stats
+		this.serviceTypes = serviceStats.stats.vals.map { it.serviceType }
 	}
 
 	override Obj process(Obj response) {
@@ -24,41 +23,32 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		
 		handlerType := methodCall.method.parent
 
-		handler := getState |state->Obj| {
+		handler := null
+		
+		if (serviceTypeCache.contains(handlerType))
+			handler = registry.dependencyByType(handlerType)
 
-			if (state.isService(handlerType))
-				return "iocService"
-
-			if (state.isAutobuild(handlerType))
-				return "autobuild"
-
-			if (state.isCached(handlerType))
-				return state.handlerCache[handlerType]
-
-			// FIXME: we may want to change this to 'handlerType.fits(it.type)' should our ModuleImpl change
-			// FIXME: use fits() for ? comparisons
-			if (serviceStats.any { handlerType == it.serviceType }) {
-				state.serviceTypes.add(handlerType)
-				return "iocService"
-			}
+		if (handlerTypeCache.containsKey(handlerType))
+			handler = handlerTypeCache[handlerType]
+		
+		if (autobuildTypeCache.contains(handlerType))
+			handler = registry.autobuild(handlerType)
+		
+		if (handler == null) {
+			if (serviceTypes.any { handlerType.fits(it) }) {
+				serviceTypeCache.add(handlerType)
+				handler = registry.dependencyByType(handlerType)
+			} else
 			
 			if (handlerType.isConst) {
-				state.handlerCache[handlerType] = registry.autobuild(handlerType)
-				return state.handlerCache[handlerType]
-			}
-
-			state.autobuildTypes.add(handlerType)
-			return "autobuild"
-		}
-		
-		if (handler.typeof == Str#) {
-			if (handler == "iocService")
-				// need to get outside of getState() 'cos handler may not be const 
-				handler = registry.dependencyByType(handlerType)
-			
-			if (handler == "autobuild")
-				// need to build outside of getState() 'cos handler may not be const 
 				handler = registry.autobuild(handlerType)
+				handlerTypeCache.set(handlerType, handler)
+			} else
+			
+			{
+				autobuildTypeCache.add(handlerType)
+				handler = registry.autobuild(handlerType)
+			}
 		}
 
 		args 	:= convertArgs(methodCall.method, methodCall.args)
@@ -87,31 +77,5 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 			return value
 		}
 		return argsOut
-	}
-	
-	private Void withState(|MethodCallResponseProcessorState| state) {
-		conState.withState(state)
-	}
-
-	private Obj? getState(|MethodCallResponseProcessorState -> Obj| state) {
-		conState.getState(state)
-	}
-}
-
-internal class MethodCallResponseProcessorState {
-	Type[]		serviceTypes	:= [,]
-	Type[]		autobuildTypes	:= [,]
-	Type:Obj	handlerCache	:= [:]
-
-	Bool isService(Type handlerType) {
-		serviceTypes.contains(handlerType)
-	}
-
-	Bool isAutobuild(Type handlerType) {
-		autobuildTypes.contains(handlerType)
-	}
-
-	Bool isCached(Type handlerType) {
-		handlerCache.containsKey(handlerType)
-	}
+	}	
 }
