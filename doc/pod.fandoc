@@ -511,8 +511,10 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.6 [#v1.3.6]
 ----------------
+ - Chg: Updated to use [afIoc-1.6.0]`http://www.fantomfactory.org/pods/afIoc` and [afConcurrent]`http://www.fantomfactory.org/pods/afConcurrent`.
  - Chg: Atom (RSS) feeds 'application/atom+xml' are now GZip compressible.
  - Bug: If 2 'Routes' had the same Regex, only 1 was shown on the 404 page.
+ - Bug: 'HttpFlash' data could leak into concurrent web requests.
 
 v1.3.4 [#v1.3.4]
 ----------------

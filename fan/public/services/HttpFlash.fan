@@ -1,4 +1,5 @@
-using afIoc::ConcurrentState
+using afIoc
+using afConcurrent
 
 ** (Service) - Stores values from one HTTP request to the next. 
 ** The values stored must be '@Serializable'.
@@ -21,41 +22,25 @@ const mixin HttpFlash {
 }
 
 internal const class HttpFlashImpl : HttpFlash {
-	private const ConcurrentState 	conState	:= ConcurrentState(HttpFlashState#)
-
+	@Inject private const LocalMap req
+	@Inject private const LocalMap res
+	
+	new make(|This|in) { in(this) }
+	
 	override Obj? get(Str name) {
-		getState |state->Obj?| {
-			if (state.res.containsKey(name))
-				return state.res.get(name)
-			return state.req?.get(name)
-		}
+		res.containsKey(name) ? res[name] : req[name]
 	}
 
 	override Void set(Str name, Obj? val) {
-		withState |state| {
-			state.res[name] = val
-		}.get
+		res[name] = val
 	}
 	
 	override Void setReq([Str:Obj?]? req) {
-		reqImm := req?.toImmutable
-		withState {	it.req = reqImm	} 
+		if (req != null)
+			this.req.map = req 
 	}
 
 	override [Str:Obj?]? getRes() {
-		getState { it.res.isEmpty ? null : it.res.toImmutable } 
+		res.isEmpty ? null : res.map.toImmutable 
 	}
-
-	private Obj? getState(|HttpFlashState -> Obj?| state) {
-		conState.getState(state)
-	}	
-
-	private concurrent::Future withState(|HttpFlashState| state) {
-		conState.withState(state)
-	}	
-}
-
-internal class HttpFlashState {
-	[Str:Obj?]? req
-	[Str:Obj?] 	res	:= [:]
 }

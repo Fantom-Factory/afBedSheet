@@ -1,6 +1,7 @@
 using afIoc
 using afPlastic::PlasticCompiler
 using afPlastic::IocClassModel
+using afConcurrent
 
 ** (Service) -
 ** In this pattern, also know as a *filter chain*, a service endpoint (known as the terminator) is
@@ -17,14 +18,14 @@ const mixin PipelineBuilder {
 
 internal const class PipelineBuilderImpl : PipelineBuilder {
 	
-	private const ConcurrentCache typeCache	:= ConcurrentCache()
-
-	@Inject	
-	private const PlasticCompiler plasticCompiler
-
-	private const Method[]	objMethods	:= Obj#.methods
+	static	private const Method[]			objMethods	:= Obj#.methods
+	@Inject	private const PlasticCompiler	plasticCompiler
+			private const SynchronizedMap 	typeCache
 	
-	new make(|This|in) { in(this) }
+	new make(ActorPools actorPools, |This|in) {
+		in(this) 
+		typeCache = SynchronizedMap(actorPools["afBedSheet.system"])
+	}
 	
 	override Obj build(Type pipelineType, Type filterType, Obj[] filters, Obj terminator) {
 
@@ -51,51 +52,48 @@ internal const class PipelineBuilderImpl : PipelineBuilder {
 	}
 	
 	private Type buildBridgeType(Type pipelineType, Type filterType) {
-		if (typeCache.containsKey(key(pipelineType, filterType)))
-			return typeCache[key(pipelineType, filterType)]
-		
-		pipelineMethods := pipelineType.methods.rw
-			.removeAll(objMethods)
-			.findAll { it.isAbstract || it.isVirtual }
-		
-		// have the public checks last so we can test all other scenarios with internal test types
-		if (!pipelineType.isMixin)
-			throw BedSheetErr(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline", pipelineType))
-		if (!filterType.isMixin)
-			throw BedSheetErr(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline Filter", filterType))
-		if (!pipelineType.fields.isEmpty)
-			throw BedSheetErr(BsErrMsgs.pipelineTypeMustNotDeclareFields(pipelineType))
-		pipelineMethods.each |method| {
-			fMeth := ReflectUtils.findMethod(filterType, method.name, method.params.map { it.type }.add(pipelineType), false, method.returns)
-			if (fMeth == null) {
-				sig := method.signature[0..-2] + ", ${pipelineType.qname} handler)"
-				throw BedSheetErr(BsErrMsgs.middlewareMustDeclareMethod(filterType, sig))
+		typeCache.getOrAdd(key(pipelineType, filterType)) |->Type| {			
+			pipelineMethods := pipelineType.methods.rw
+				.removeAll(objMethods)
+				.findAll { it.isAbstract || it.isVirtual }
+			
+			// have the public checks last so we can test all other scenarios with internal test types
+			if (!pipelineType.isMixin)
+				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline", pipelineType))
+			if (!filterType.isMixin)
+				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline Filter", filterType))
+			if (!pipelineType.fields.isEmpty)
+				throw BedSheetErr(BsErrMsgs.pipelineTypeMustNotDeclareFields(pipelineType))
+			pipelineMethods.each |method| {
+				fMeth := ReflectUtils.findMethod(filterType, method.name, method.params.map { it.type }.add(pipelineType), false, method.returns)
+				if (fMeth == null) {
+					sig := method.signature[0..-2] + ", ${pipelineType.qname} handler)"
+					throw BedSheetErr(BsErrMsgs.middlewareMustDeclareMethod(filterType, sig))
+				}
 			}
+			if (!pipelineType.isPublic)
+				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBePublic("Pipeline", pipelineType))
+			if (!filterType.isPublic)
+				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBePublic("Pipeline Filter", filterType))
+			
+			model := IocClassModel("${pipelineType.name}Bridge", pipelineType.isConst)
+			model.extendMixin(pipelineType)
+			model.addField(filterType, "next")
+			model.addField(pipelineType, "handler")
+	
+			pipelineMethods.each |method| {
+				args := method.params.map { it.name }.add("handler").join(", ")
+				body := "next.${method.name}(${args})"
+				model.overrideMethod(method, body)
+			}
+	
+			code 		:= model.toFantomCode
+			podName		:= plasticCompiler.generatePodName
+			pod 		:= plasticCompiler.compileCode(code, podName)
+			bridgeType 	:= pod.type(model.className)
+			
+			return bridgeType
 		}
-		if (!pipelineType.isPublic)
-			throw BedSheetErr(BsErrMsgs.pipelineTypeMustBePublic("Pipeline", pipelineType))
-		if (!filterType.isPublic)
-			throw BedSheetErr(BsErrMsgs.pipelineTypeMustBePublic("Pipeline Filter", filterType))
-		
-		model := IocClassModel("${pipelineType.name}Bridge", pipelineType.isConst)
-		model.extendMixin(pipelineType)
-		model.addField(filterType, "next")
-		model.addField(pipelineType, "handler")
-
-		pipelineMethods.each |method| {
-			args := method.params.map { it.name }.add("handler").join(", ")
-			body := "next.${method.name}(${args})"
-			model.overrideMethod(method, body)
-		}
-
-		code 		:= model.toFantomCode
-		podName		:= plasticCompiler.generatePodName
-		pod 		:= plasticCompiler.compileCode(code, podName)
-		bridgeType 	:= pod.type(model.className)
-		
-		typeCache[key(pipelineType, filterType)] = bridgeType
-		
-		return bridgeType
 	}
 	
 	private Str key(Type pipelineType, Type filterType) {

@@ -2,8 +2,8 @@ using afIoc::Inject
 
 internal const class FlashMiddleware : Middleware {
 	
-	@Inject	private const HttpFlash				httpFlash
-	@Inject	private const HttpSession			httpSession
+	@Inject	private const HttpFlash		httpFlash
+	@Inject	private const HttpSession	httpSession
 
 	new make(|This|in) { in(this) }
 	

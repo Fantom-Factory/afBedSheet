@@ -1,7 +1,5 @@
 using afIoc::Inject
 using afIoc::Registry
-using afIoc::ThreadStash
-using afIoc::ThreadStashManager
 using web::WebReq
 using inet::IpAddr
 

@@ -121,5 +121,10 @@ internal class T_PipeMod {
 	static Void bind(ServiceBinder binder) {
 		binder.bind(PipelineBuilder#)
 	}
+	
+	@Contribute { serviceType=ActorPools# }
+	static Void contributeActorPools(MappedConfig config) {
+		config["afBedSheet.system"] = ActorPool()
+	}	
 }
 

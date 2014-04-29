@@ -178,9 +178,9 @@ internal const class ErrPrinterHtmlSections {
 	}
 	
 	Void printLocals(WebOutStream out, Err? err) {
-		if (!IocHelper.locals.isEmpty) {
+		if (!Utils.locals.isEmpty) {
 			title(out, "Thread Locals")
-			prettyPrintMap(out, IocHelper.locals, true, "threadLocals")
+			prettyPrintMap(out, Utils.locals, true, "threadLocals")
 		}
 	}
 

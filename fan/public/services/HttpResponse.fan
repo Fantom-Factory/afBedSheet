@@ -1,7 +1,7 @@
 using afIoc::Inject
 using afIoc::Registry
-using afIoc::ThreadStash
-using afIoc::ThreadStashManager
+using afIoc::ThreadLocalManager
+using afConcurrent::LocalRef
 using web::Cookie
 using web::WebReq
 using web::WebRes
@@ -84,8 +84,10 @@ const class HttpResponseWrapper : HttpResponse {
 
 internal const class HttpResponseImpl : HttpResponse {
 	
-	@Inject	private const Registry 		registry
-	@Inject private const ThreadStash 	threadStash
+	@Inject	private const Registry	registry
+	@Inject	private const LocalRef	localGzip
+	@Inject	private const LocalRef	localBuffering
+
 	override const HttpResponseHeaders	headers
 
 	new make(|This|in) { 
@@ -94,12 +96,12 @@ internal const class HttpResponseImpl : HttpResponse {
 	} 
 
 	override Bool disableGzip {
-		get { threadStash["disableGzip"] ?: false }
-		set { threadStash["disableGzip"] = it}
+		get { localGzip.val ?: false }
+		set { localGzip.val = it}
 	}
 	override Bool disableBuffering {
-		get { threadStash["disableBuffering"] ?: false }
-		set { threadStash["disableBuffering"] = it}
+		get { localBuffering.val ?: false }
+		set { localBuffering.val = it}
 	}
 	override Int statusCode {
 		get { webRes.statusCode }

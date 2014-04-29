@@ -1,4 +1,3 @@
-using afIoc::ConcurrentState
 using afIoc::StrategyRegistry
 using afIoc::TypeCoercer
 
@@ -21,7 +20,7 @@ const mixin ValueEncoders {
 }
 
 internal const class ValueEncodersImpl : ValueEncoders {
-	private const ConcurrentState 	conState	:= ConcurrentState(ValueEncodersState#)
+	private const TypeCoercer		typeCoercer	:= TypeCoercer()
 	private const StrategyRegistry 	valueEncoderStrategy
 	
 	internal new make(Type:ValueEncoder valueEncoders) {
@@ -61,11 +60,11 @@ internal const class ValueEncodersImpl : ValueEncoders {
 		if (clientValue == null)
 			return null
 		
-		if (getState() { it.typeCoercer.canCoerce(Str#, valType) } == false)
+		if (!typeCoercer.canCoerce(Str#, valType))
 			throw ValueEncodingErr(BsErrMsgs.valueEncodingNotFound(valType))
 		
 		try {
-			return getState() { it.typeCoercer.coerce(clientValue, valType) } 
+			return typeCoercer.coerce(clientValue, valType) 
 		} catch (Err cause) {
 			throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(clientValue, valType), cause)
 		}
@@ -74,12 +73,4 @@ internal const class ValueEncodersImpl : ValueEncoders {
 	private ValueEncoder? get(Type valueType) {
 		valueEncoderStrategy.findClosestParent(valueType, false)
 	}
-
-	private Obj? getState(|ValueEncodersState -> Obj| state) {
-		conState.getState(state)
-	}
-}
-
-internal class ValueEncodersState {
-	TypeCoercer	typeCoercer	:= TypeCoercer()
 }
