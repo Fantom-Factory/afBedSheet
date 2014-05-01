@@ -76,8 +76,8 @@ for all requests that start with '/hello'.
 `Route` converts URI path segments into method arguments, or in our case, to 'Str name' and to an
 optional 'Int iq'.
 
-Request handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our
-'HelloPage' request handler simply returns a plain `Text` response, which 'BedSheet' sends to the client via an appropriate
+Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our
+'HelloPage' route handler simply returns a plain `Text` response, which 'BedSheet' sends to the client via an appropriate
 `ResponseProcessor`.
 
 
@@ -164,13 +164,13 @@ Routing lesson over.
 
 
 
-Request Handling [#requestHandling]
-***********************************
-*Request Handler* is the name given to a method that is called by a 'Route'. They process logic and generally don't pipe
+Route Handling [#routeHandling]
+*******************************
+*Route Handler* is the name given to a method that is called by a 'Route'. They process logic and generally don't pipe
 anything to the HTTP response stream. Instead they return a *Response Object* for further processing.
-For example, the [Quick Start]`#quickStart` 'HelloPage' *request handler* returns a `Text` object.
+For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` object.
 
-Request handlers are usually written by the application developer, but a couple of common use-cases are bundled with 'BedSheet':
+Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with 'BedSheet':
  - `FileHandler`: Maps request URIs to files on file system.
  - `PodHandler` : Maps request URIs to pod file resources.
 
@@ -178,7 +178,7 @@ Request handlers are usually written by the application developer, but a couple 
 
 Response Objects [#responseObjects]
 ***********************************
-*Response Objects* are returned from *Request Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to
+*Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to
 process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return a
 *Response Object*, which will be handled by another *Response Processor*.
 
@@ -207,7 +207,7 @@ For instance, Alien-Factory provides the following libraries:
  [efan (Embedded Fantom)]`http://www.fantomfactory.org/pods/afEfan` integration, and
  - [BedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
 
-Taking [Slim]`http://www.fantomfactory.org/pods/afSlim` as an example, simply inject the service in your *Request Handler*
+Taking [Slim]`http://www.fantomfactory.org/pods/afSlim` as an example, simply inject the service in your *Route Handler*
 and use it to return a `Text` object:
 
 pre>
@@ -234,7 +234,7 @@ When a HTTP request is received, it is passed through a pipeline of BedSheet `Mi
 One piece of middleware is the standard 'Routes' service, and the terminating middleware at the end of the pipeline simply returns a 404.
 Middleware bundled with 'BedSheet' include:
 
- - 'Routes' : Performs the standard [request routing]`#requestRouting`
+ - 'Routes' : Performs the standard [route routing]`#routeRouting`
  - 'RequestLog': Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
@@ -456,13 +456,13 @@ See 'BufferedOutStream' and `BedSheetConfigIds.responseBufferThreshold` for more
 
 Tips [#tips]
 *************
-All request handlers and processors are built by [Ioc]`http://www.fantomfactory.org/pods/afIoc` so feel free to '@Inject'
+All route handlers and processors are built by [Ioc]`http://www.fantomfactory.org/pods/afIoc` so feel free to '@Inject'
 DAOs and other services.
 
 BedSheet itself is built with [Ioc]`http://www.fantomfactory.org/pods/afIoc` so look at the
 [BedSheet Source]`https://bitbucket.org/AlienFactory/afbedsheet/src` for [Ioc]`http://www.fantomfactory.org/pods/afIoc` examples.
 
-Even if your request handlers aren't services, if they're 'const' classes, they're cached by BedSheet and reused on every request.
+Even if your route handlers aren't services, if they're 'const' classes, they're cached by BedSheet and reused on every request.
 
 
 
@@ -470,7 +470,7 @@ Go Live with Heroku [#goLive]
 *****************************
 In a hurry to go live? Use [Heroku]`http://www.heroku.com/`!
 
-[Heroku]`http://www.heroku.com/` and the [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom`
+[Heroku]`http://www.heroku.com/` and the [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpack-fantom`
 makes it ridiculously to deploy your web app to a live server. Just check in your code and Heroku will build your web app from
 source and deploy it to a live environment!
 
@@ -503,7 +503,7 @@ class Main : AbstractMain {
 
 Main classes have the advantage of being easy to run from an IDE or cmd line.
 
-See [heroku-fantom-buildpack]`https://bitbucket.org/SlimerDude/heroku-buildpack-fantom` for more details.
+See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpack-fantom` for more details.
 
 
 
@@ -511,7 +511,9 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.6 [#v1.3.6]
 ----------------
+ - New: Added 'ActorPools' section to Err500 page.
  - Chg: Updated to use [afIoc-1.6.0]`http://www.fantomfactory.org/pods/afIoc` and [afConcurrent]`http://www.fantomfactory.org/pods/afConcurrent`.
+ - Chg: 'Routes' now perform some basic validation to catch cases where the Uri would never match the method handler.
  - Chg: Atom (RSS) feeds 'application/atom+xml' are now GZip compressible.
  - Bug: If 2 'Routes' had the same Regex, only 1 was shown on the 404 page.
  - Bug: 'HttpFlash' data could leak into concurrent web requests.

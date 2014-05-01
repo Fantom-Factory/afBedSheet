@@ -2,7 +2,7 @@ using web::WebClient
 
 internal class TestFlash : AppTest {
 	
-	Void testSession() {
+	Void testFlash() {
 		verifyEq(getAsStr(`/saveFlashMsg/Blonde`), "Msg = null")
 		cookie 		:= client.resHeaders["Set-Cookie"].replace(";Path=/", "")
 		
