@@ -14,6 +14,16 @@ internal class TestStatusCodes : AppTest {
 		client = WebClient()
 		verify404(`/robots.txt`)
 	}
+	
+	Void test501() {
+		// test we get 501 for weird HTTP methods
+		client = WebClient()
+		client.reqUri = reqUri(`/robots.txt`)
+		client.reqMethod = "DELETE"
+		client.writeReq
+		client.readRes
+		verifyEq(client.resCode, 501, "$client.resCode - $client.resPhrase")		
+	}
 
 	Void test417() {
 		client.reqUri = reqUri(`/statuscode/417`) 
