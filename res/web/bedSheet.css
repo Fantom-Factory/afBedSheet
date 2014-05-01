@@ -125,7 +125,6 @@ code {
 }
 
 .srcLoc {
-	width:				100%;
 	overflow-x:			auto;
 	
 	white-space:		pre;
@@ -141,8 +140,15 @@ code {
 	tab-size:			4;
 }
 
+.srcLoc table {
+	width:				100%;
+}
+
+
 .srcLoc td:first-child {
 	border-right:	1px solid #333333;
+	width:			2em;
+	text-align:		right;
 }
 
 .srcLoc td {

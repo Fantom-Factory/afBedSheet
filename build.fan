@@ -28,7 +28,7 @@ class Build : BuildPod {
 			"concurrent 1.0", 
 			"web 1.0", 
 			"webmod 1.0", // for LogMod
-			"wisp 1.0", 
+			"wisp 1.0.66+", 
 			"util 1.0", 
 			"inet 1.0",
 	
