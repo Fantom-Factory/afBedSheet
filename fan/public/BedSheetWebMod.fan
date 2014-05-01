@@ -33,6 +33,7 @@ const class BedSheetWebMod : WebMod {
 		private set { startupErrA.val = it }
 	}
 
+	** Creates this 'WebMod'.
 	new make(Str moduleName, Int port, [Str:Obj?] bedSheetOptions, [Str:Obj?]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
@@ -76,65 +77,12 @@ const class BedSheetWebMod : WebMod {
 		started.val = true
 		try {
 			log.info(BsLogMsgs.bedSheetWebModStarting(moduleName, port))
-	
-			Pod?  pod
-			Type? mod
-			
-			// Pod name given...
-			// lots of start up checks looking for pods and modules... 
-			// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
-			if (!moduleName.contains("::")) {
-				pod = Pod.find(moduleName, true)
-				log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
-				mod = findModFromPod(pod)
-			}
-	
-			// AppModule name given...
-			if (moduleName.contains("::")) {
-				mod = Type.find(moduleName, true)
-				log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-				pod = mod.pod
-			}
-	
-			// we're screwed! No module = no web app!
-			if (mod == null)
-				log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
-			
-			// construct after the above messages so logs look nicer ("...adding module IocModule")
-			bob := RegistryBuilder()
-	
-			// this defaults to false if not explicitly set to TRUE - trust me!
-			transDeps := !(bedSheetOptions["noTransDeps"] == true)
-			if (pod != null) {
-				if (transDeps)
-					bob.addModulesFromPod(pod, true)
-				else
-					log.info("Suppressing transitive dependencies...")
-			}
-			if (mod != null) {
-				if (!bob.moduleTypes.contains(mod))
-					bob.addModule(mod)
-			}
-	
-			// A simple thing - ensure the BedSheet module is added! 
-			// (transitive dependencies are added explicitly via @SubModule)
-			if (!bob.moduleTypes.contains(BedSheetModule#))
-				 bob.addModule(BedSheetModule#)
-	
-			// add extra modules - useful for testing
-			if (bedSheetOptions.containsKey("iocModules"))
-				bob.addModules(bedSheetOptions["iocModules"])
 
-			dPort 		 := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
-			bsMeta		 := BedSheetMetaDataImpl(pod, mod, dPort, bedSheetOptions)
-			registryOpts := this.registryOptions.rw
-			registryOpts["bannerText"] 					= easterEgg("Alien-Factory BedSheet v${typeof.pod.version}, IoC v${Registry#.pod.version}")
-			registryOpts["bedSheetMetaData"]			= bsMeta 
-			registryOpts["suppressStartupServiceList"]	= true
-			registryOpts["appName"]						= "BedSheet"
-
-			// startup afIoc
-			registry = bob.build(registryOpts).startup
+			bob		:= createBob(moduleName, port, bedSheetOptions, registryOptions)
+			bsMeta	:= (BedSheetMetaData) bob.options["bedSheetMetaData"] 
+			
+			// Go!!!
+			registry = bob.build.startup
 	
 			// start the destroyer!
 			if (bedSheetOptions["pingProxy"] == true) {
@@ -158,9 +106,72 @@ const class BedSheetWebMod : WebMod {
 		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
 	}
 
-	// as used by BedServer
+	** Returns a fully loaded 'RegistryBuilder' ready to build an IoC. 
+	static RegistryBuilder createBob(Str moduleName, Int port, [Str:Obj?] bedSheetOptions := [:], [Str:Obj?] registryOptions := [:]) {
+		Pod?  pod
+		Type? mod
+		
+		// Pod name given...
+		// lots of start up checks looking for pods and modules... 
+		// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
+		if (!moduleName.contains("::")) {
+			pod = Pod.find(moduleName, true)
+			log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
+			mod = findModFromPod(pod)
+		}
+
+		// AppModule name given...
+		if (moduleName.contains("::")) {
+			mod = Type.find(moduleName, true)
+			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+			pod = mod.pod
+		}
+
+		// we're screwed! No module = no web app!
+		if (mod == null)
+			log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
+		
+		// construct after the above messages so logs look nicer ("...adding module IocModule")
+		bob := RegistryBuilder()
+
+		// this defaults to false if not explicitly set to TRUE - trust me!
+		transDeps := !(bedSheetOptions["noTransDeps"] == true)
+		if (pod != null) {
+			if (transDeps)
+				bob.addModulesFromPod(pod, true)
+			else
+				log.info("Suppressing transitive dependencies...")
+		}
+		if (mod != null) {
+			if (!bob.moduleTypes.contains(mod))
+				bob.addModule(mod)
+		}
+
+		// A simple thing - ensure the BedSheet module is added! 
+		// (transitive dependencies are added explicitly via @SubModule)
+		if (!bob.moduleTypes.contains(BedSheetModule#))
+			 bob.addModule(BedSheetModule#)
+
+		// add extra modules - useful for testing
+		if (bedSheetOptions.containsKey("iocModules"))
+			bob.addModules(bedSheetOptions["iocModules"])
+
+		dPort 		 := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
+		bsMeta		 := BedSheetMetaDataImpl(pod, mod, dPort, bedSheetOptions)
+		registryOpts := registryOptions.rw
+		registryOpts["bannerText"] 					= easterEgg("Alien-Factory BedSheet v${BedSheetWebMod#.pod.version}, IoC v${Registry#.pod.version}")
+		registryOpts["bedSheetMetaData"]			= bsMeta 
+		registryOpts["suppressStartupServiceList"]	= true
+		registryOpts["appName"]						= "BedSheet"
+
+		bob.options.addAll(registryOpts)
+		
+		// startup afIoc
+		return bob	
+	}
+	
 	** Looks for an 'AppModule' in the given pod. 
-	static Type? findModFromPod(Pod pod) {
+	private static Type? findModFromPod(Pod pod) {
 		mod := null
 		modName := pod.meta["afIoc.module"]
 		if (modName != null) {
@@ -188,7 +199,7 @@ const class BedSheetWebMod : WebMod {
 		log.info(BsLogMsgs.bedSheetWebModStarted(appName, host))
 	}
 	
-	private Str easterEgg(Str title) {
+	private static Str easterEgg(Str title) {
 		quotes := loadQuotes
 		if (quotes.isEmpty || (Int.random(0..8) != 2))
 			return title
@@ -204,7 +215,7 @@ const class BedSheetWebMod : WebMod {
 		return atomicPipe.val
 	}
 	
-	private Str[] loadQuotes() {
-		typeof.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
+	private static Str[] loadQuotes() {
+		BedSheetWebMod#.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
 	}
 }

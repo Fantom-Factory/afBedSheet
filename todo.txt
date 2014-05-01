@@ -10,18 +10,9 @@ Doc customising the ErrPrinters! Make them public?
 
 
 
-For BedSheet 1.3.6
-------------------
-reword middleware doc (poddoc and api) section, add link to basic http auth example
-
- - Have a BedSheet.buildIoc(Type module, opts) method that creates BedSheetMetaData for us. use in Bounce & FantomFactory::PodExtractor
- - allow ?query&params in file URLs
-
 For BedSheet 1.3.8
 ------------------
-
-Validate Route params on startup
- e.g. `admin/***` will NEVER match `authorise()` 
+Middleware doesn't *need* to return Bool - never used. Should we remove it?
 
 Enhance the StackFrameFilter
  - grey out afIoc / afBedSheet lines.
