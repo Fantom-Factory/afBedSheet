@@ -162,7 +162,8 @@ const class BedSheetModule {
 
 		// these are all the sections you see on the 404 page
 		config.addOrdered("RouteCode",				|WebOutStream out| { printer.printRouteCode			(out) })
-		config.addOrdered("BedSheetRoutes",			|WebOutStream out| { printer.printBedSheetRoutes	(out) })
+		config.addOrdered("Routes",					|WebOutStream out| { printer.printBedSheetRoutes	(out) })
+		config.addPlaceholder("BedSheetRoutes")		// TODO: Remove after Pillow release
 	}
 
 	@Contribute { serviceType=ErrPrinterHtml# }
@@ -184,6 +185,7 @@ const class BedSheetModule {
 		config.addOrdered("IocConfig",				|WebOutStream out, Err? err| { printer.printIocConfig				(out, err) })
 		config.addOrdered("Routes",					|WebOutStream out, Err? err| { printer.printBedSheetRoutes			(out, err) })
 		config.addOrdered("Locals",					|WebOutStream out, Err? err| { printer.printLocals					(out, err) })
+		config.addOrdered("ActorPools",				|WebOutStream out, Err? err| { printer.printActorPools				(out, err) })
 		config.addOrdered("FantomEnvironment",		|WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) })
 		config.addOrdered("FantomPods",				|WebOutStream out, Err? err| { printer.printFantomPods				(out, err) })
 		config.addOrdered("FantomIndexedProps",		|WebOutStream out, Err? err| { printer.printFantomIndexedProps		(out, err) })
@@ -210,21 +212,25 @@ const class BedSheetModule {
 		config.addOrdered("IocConfig",				|StrBuf out, Err? err| { printer.printIocConfig			(out, err) })
 		config.addOrdered("Routes",					|StrBuf out, Err? err| { printer.printRoutes			(out, err) })
 		config.addOrdered("Locals",					|StrBuf out, Err? err| { printer.printLocals			(out, err) })
+		config.addOrdered("ActorPools",				|StrBuf out, Err? err| { printer.printActorPools		(out, err) })
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig conf, Registry reg, IocEnv iocEnv, BedSheetMetaData meta) {
+		// honour the system config from Fantom-1.0.66 
+		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
+
 		conf[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		conf[BedSheetConfigIds.gzipDisabled]				= false
 		conf[BedSheetConfigIds.gzipThreshold]				= 376
 		conf[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
 		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= reg.createProxy(DefaultHttpStatusProcessor#)
 		conf[BedSheetConfigIds.defaultErrProcessor]			= reg.createProxy(DefaultErrProcessor#)
-		conf[BedSheetConfigIds.noOfStackFrames]				= 50
+		conf[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(50)
 		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		conf[BedSheetConfigIds.disableWelcomePage]			= false
-		conf[BedSheetConfigIds.host]						= `http://localhost:${meta.port}`
-
+		conf[BedSheetConfigIds.host]						= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs!
+		
 		conf[BedSheetConfigIds.requestLogDir]				= null
 		conf[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
 		conf[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"

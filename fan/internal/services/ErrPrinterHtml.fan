@@ -1,7 +1,4 @@
-using afIoc::Inject
-using afIoc::IocErr
-using afIoc::IocHelper
-using afIoc::NotFoundErr
+using afIoc
 using afIocConfig::Config
 using afIocConfig::IocConfigSource
 using web::WebOutStream
@@ -53,6 +50,7 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const HttpCookies		cookies
 	@Inject	private const IocConfigSource	configSrc
 	@Inject	private const Routes			routes
+	@Inject	private const ActorPools		actorPools
 
 	new make(|This|in) { in(this) }
 
@@ -200,6 +198,15 @@ internal const class ErrPrinterHtmlSections {
 		}
 	}
 
+	Void printActorPools(WebOutStream out, Err? err) {
+		if (!actorPools.stats.isEmpty) {
+			title(out, "Actor Pools")
+			out.table
+			prettyPrintMap(out, actorPools.stats, true)
+			out.tableEnd
+		}
+	}
+
 	Void printFantomEnvironment(WebOutStream out, Err? err) {
 		title(out, "Fantom Environment")
 		out.table
@@ -284,7 +291,27 @@ internal const class ErrPrinterHtmlSections {
 			map = newMap
 		}
 		out.table(cssClass == null ? null : "class=\"${cssClass}\"")
-		map.each |v, k| { w(out, k, v) } 
+		map.each |v1, k1| {
+			if (v1 is Map && !((Map) v1).isEmpty) {
+				// a map inside a map! Used for Actor.Locals()
+				m2 := (Map) v1
+				out.tr.td.writeXml(k1).tdEnd
+				out.td.ul
+				m2.keys.sort.each |k2, i2|{
+					v2 := "$k2:${m2[k2]}"
+					if (i2 == 0)
+						v2 = "[${v2},"
+					else if (i2 == (m2.size-1))
+						v2 = "${v2}]"
+					else
+						v2 = "${v2},"
+					out.li.writeXml(v2).liEnd
+				}
+				out.ulEnd.tdEnd
+
+			} else
+				w(out, k1, v1)
+		} 
 		out.tableEnd
 	}
 

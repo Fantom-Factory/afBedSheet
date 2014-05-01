@@ -1,9 +1,4 @@
-using afIoc::Contribute
-using afIoc::OrderedConfig
-using afIoc::IocErr
-using afIoc::Inject
-using afIoc::IocHelper
-using afIoc::NotFoundErr
+using afIoc
 using afIocConfig::Config
 using afIocConfig::IocConfigSource
 using web::WebOutStream
@@ -53,6 +48,7 @@ internal const class ErrPrinterStrSections {
 	@Inject	private const HttpCookies		cookies
 	@Inject	private const IocConfigSource	configSrc
 	@Inject	private const Routes			routes
+	@Inject	private const ActorPools		actorPools
 
 	new make(|This|in) { in(this) }
 
@@ -178,6 +174,13 @@ internal const class ErrPrinterStrSections {
 				map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr
 			}
 			prettyPrintMap(buf, map, false)
+		}
+	}
+
+	Void printActorPools(StrBuf buf, Err? err) {
+		if (!actorPools.stats.isEmpty) {
+			buf.add("\nActor Pools:\n")
+			prettyPrintMap(buf, actorPools.stats, true)
 		}
 	}
 	
