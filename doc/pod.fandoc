@@ -231,14 +231,15 @@ BedSheet Middleware [#middleware]
 *********************************
 When a HTTP request is received, it is passed through a pipeline of BedSheet `Middleware`; this is a similar to
 [Java Servlet Filters]`http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html`.
-One piece of middleware is the standard 'Routes' service, and the terminating middleware at the end of the pipeline simply returns a 404.
+If the request reaches the end of the pipeline without being processed, a 404 is returned.
+
 Middleware bundled with 'BedSheet' include:
 
- - 'Routes' : Performs the standard [route routing]`#routeRouting`
+ - 'Routes' : Performs the standard [request routing]`#routeRouting`
  - 'RequestLog': Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
-See `Middleware` for further details.
+See the FantomFactory article [Basic HTTP Authentication With BedSheet]`http://www.fantomfactory.org/articles/basic-http-authentication-with-bedSheet#.U2I2MyhfyJA` for working examples.
 
 
 
