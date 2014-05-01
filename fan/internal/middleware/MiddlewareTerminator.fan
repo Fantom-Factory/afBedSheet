@@ -12,16 +12,19 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 
 	@Config { id="afBedSheet.disableWelcomePage" }
 	@Inject	private const Bool					disbleWelcomePage
-
+			private const Str[]					status404Methods	:= "GET POST".split
+	
 	new make(|This|in) { in(this) }
 
 	override Bool service() {
+		statusCode := status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
+		
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
 		if (routes.routes.isEmpty && !disbleWelcomePage) {
-			httpResponse.statusCode = 404
+			httpResponse.statusCode = statusCode
 			return responseProcessors.processResponse(bedSheetPages.renderWelcome)
 		}
 
-		throw HttpStatusErr(404, BsErrMsgs.route404(httpRequest.modRel, httpRequest.httpMethod))
+		throw HttpStatusErr(statusCode, BsErrMsgs.route404(httpRequest.modRel, httpRequest.httpMethod))
 	}	
 }

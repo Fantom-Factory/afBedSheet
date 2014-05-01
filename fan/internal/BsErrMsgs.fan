@@ -36,7 +36,7 @@ internal const class BsErrMsgs {
 	}
 	
 	static Str route404(Uri modRel, Str httpMethod) {
-		"Route `${modRel}` not found"
+		"Route `${modRel}` not found ($httpMethod)"
 	}
 	
 	static Str errProcessorsNotErrType(Type type) {
