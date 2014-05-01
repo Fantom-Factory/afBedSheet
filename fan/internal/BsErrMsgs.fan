@@ -1,6 +1,8 @@
 
 internal const class BsErrMsgs {
 
+	// ---- Routes ----
+
 	static Str routeNotFound(Uri notFound) {
 		"No route found for '$notFound'"
 	}
@@ -12,7 +14,15 @@ internal const class BsErrMsgs {
 	static Str routeShouldStartWithSlash(Uri routeBase) {
 		"Route `$routeBase` must start with a slash. e.g. `/foo/bar`"
 	}
-	
+
+	static Str routeUriWillNeverMatchMethod(Regex routeRegex, Uri? routeGlob, Method method) {
+		routeGlob != null
+			? "Route Uri `${routeGlob}` will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
+			: "Route Regex ${routeRegex} will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
+	}
+
+	// ---- Other ----
+
 	static Str valueEncodingBuggered(Obj value, Type toType) {
 		"Could not convert $value to ${toType.qname}"
 	}

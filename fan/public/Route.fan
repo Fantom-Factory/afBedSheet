@@ -94,7 +94,7 @@ const class Route {
 	const Str httpMethod
 
 	private  const Regex[] 	httpMethodGlob
-	private  const Bool		matchAllArgs
+	private  const Bool		matchAllSegs
 	private  const Bool		matchToEnd
 	private  const Bool		isGlob
 	internal const RouteResponseFactory	factory
@@ -106,9 +106,9 @@ const class Route {
 	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
 	new makeFromGlob(Uri glob, Obj response, Str httpMethod := "GET") {
 	    if (glob.scheme != null || glob.host != null || glob.port!= null )
-			throw BedSheetErr(BsErrMsgs.routeShouldBePathOnly(glob))
+			throw ArgErr(BsErrMsgs.routeShouldBePathOnly(glob))
 	    if (!glob.isPathAbs)
-			throw BedSheetErr(BsErrMsgs.routeShouldStartWithSlash(glob))
+			throw ArgErr(BsErrMsgs.routeShouldStartWithSlash(glob))
 
 		uriGlob	:= glob.toStr
 		regex	:= "(?i)^"
@@ -121,7 +121,7 @@ const class Route {
 				regex += ("\\" + c.toChar)
 		}
 		
-		matchRemaining	:= false
+		matchAllSegs	:= false
 		matchToEnd		:= false
 		if (uriGlob.endsWith("***")) {
 			regex = regex[0..<-star.size*3] + "(.*)"
@@ -129,7 +129,7 @@ const class Route {
 			
 		} else if (uriGlob.endsWith("**")) {
 			regex = regex[0..<-star.size*2] + "(.*?)\\/?"
-			matchRemaining = true
+			matchAllSegs = true
 		}
 		
 		regex += "\$"
@@ -141,8 +141,9 @@ const class Route {
 		// split on both space and ','
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
 		this.matchToEnd		= matchToEnd
-		this.matchAllArgs	= matchRemaining
+		this.matchAllSegs	= matchAllSegs
 		this.isGlob			= true
+		this.factory.validate(routeRegex, glob, matchAllSegs)
 	}
 
 	** For hardcore users; make a Route from a regex. Capture groups are used to match arguments.
@@ -150,17 +151,18 @@ const class Route {
 	** 
 	**   Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo, "GET", true) -> Route(`/index/**`)
 	** 
-	** Set 'matchRemaining' to 'true' to have the last capture group mimic the glob '**' operator, 
+	** Set 'matchAllSegs' to 'true' to have the last capture group mimic the glob '**' operator, 
 	** splitting on "/" to match all remaining segments.  
-	new makeFromRegex(Regex uriRegex, Obj response, Str httpMethod := "GET", Bool matchRemaining := false) {
+	new makeFromRegex(Regex uriRegex, Obj response, Str httpMethod := "GET", Bool matchAllSegs := false) {
 		this.routeRegex 	= uriRegex
 		this.response 		= response
 		this.factory 		= wrapResponse(response)
 		this.httpMethod 	= httpMethod
 		// split on both space and ','
 		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
-		this.matchAllArgs	= matchRemaining
+		this.matchAllSegs	= matchAllSegs
 		this.isGlob			= false
+		this.factory.validate(routeRegex, null, matchAllSegs)
 	}
 
 	** Returns a response object should the given uri (and http method) match this route. Returns 'null' if not.
@@ -201,12 +203,12 @@ const class Route {
 			find = matcher.find
 		}
 
-		if (matchAllArgs && !groups.isEmpty) {
+		if (matchAllSegs && !groups.isEmpty) {
 			last := groups.removeAt(-1)
 			groups.addAll(last.split('/'))
 		}
 		
-		if (isGlob && !matchToEnd && !matchAllArgs && groups[-1].contains("/"))
+		if (isGlob && !matchToEnd && !matchAllSegs && groups[-1].contains("/"))
 			return null
 
 		// convert empty Strs to nulls
@@ -235,7 +237,9 @@ const mixin RouteResponseFactory {
 
 	** Obj?[] so we can easily add other args into the list
 	abstract Obj? createResponse(Str?[] segments)
-	
+
+	virtual Void validate(Regex routeRegex, Uri? routeGlob, Bool matchAllSegs) { }
+
 	static Bool matchesMethod(Method method, Str?[] segments) {
 		if (segments.size > method.params.size)
 			return false
@@ -270,6 +274,20 @@ internal const class MethodCallFactory : RouteResponseFactory {
 
 	override Obj? createResponse(Str?[] segments) {
 		MethodCall(method, segments)
+	}
+
+	override Void validate(Regex routeRegex, Uri? routeGlob, Bool matchAllSegs) {
+		args := (Int) routeRegex.toStr.split('/').reduce(0) |Int count, arg -> Int| {
+			count + (arg.contains(".*") ? 1 : 0)
+		}
+		if (args > method.params.size)
+			throw ArgErr(BsErrMsgs.routeUriWillNeverMatchMethod(routeRegex, routeGlob, method))
+		
+		if (!matchAllSegs) {
+			defs := (Int) method.params.reduce(0) |Int count, param -> Int| { count + (param.hasDefault ? 0 : 1) }
+			if (args < defs)
+				throw ArgErr(BsErrMsgs.routeUriWillNeverMatchMethod(routeRegex, routeGlob, method))
+		}
 	}
 
 	override Str toStr() { "-> $method.qname" }

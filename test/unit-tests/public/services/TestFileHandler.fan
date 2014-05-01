@@ -36,28 +36,28 @@ internal class TestFileHandler : BsTest {
 
 	Void testAssetUriIsPathOnly() {
 		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(ArgErr#, BsErrMsgs.fileHandlerUriNotPathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriNotPathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
 			fh.fromClientUri(`http://myStyles.css`, true)
 		}
 	}
 
 	Void testAssetUriStartsWithSlash() {
 		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(ArgErr#, BsErrMsgs.fileHandlerUriMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
 			fh.fromClientUri(`css/myStyles.css`, true)
 		}
 	}
 
 	Void testAssetUriMustBeMapped() {
 		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(NotFoundErr#, BsErrMsgs.fileHandlerUriNotMapped(`/css/myStyles.css`)) {
+		verifyErrMsg(NotFoundErr#, BsErrMsgs.fileHandlerUriNotMapped(`/css/myStyles.css`)) {
 			fh.fromClientUri(`/css/myStyles.css`, true)
 		}
 	}
 	
 	Void testAssetUriDoesNotExist() {
 		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(ArgErr#, BsErrMsgs.fileHandlerUriDoesNotExist(`/over-there/myStyles.css`, `doc/myStyles.css`.toFile)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriDoesNotExist(`/over-there/myStyles.css`, `doc/myStyles.css`.toFile)) {
 			fh.fromClientUri(`/over-there/myStyles.css`, true)
 		}
 		file := fh.fromClientUri(`/over-there/myStyles.css`, false)
@@ -75,21 +75,21 @@ internal class TestFileHandler : BsTest {
 	
 	Void testAssetFileIsDir() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileIsDir(`doc/`.toFile)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileIsDir(`doc/`.toFile)) {
 			fh.fromServerFile(`doc/`.toFile)
 		}
 	}	
 	
 	Void testAssetFileDoesNotExist() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileDoesNotExist(`doc/booyaa.txt`.toFile)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileDoesNotExist(`doc/booyaa.txt`.toFile)) {
 			fh.fromServerFile(`doc/booyaa.txt`.toFile)
 		}
 	}
 	
 	Void testAssetFileNotMapped() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		verifyErrTypeAndMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileDoesNotExist(`over-here/booyaa.txt`.toFile)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileDoesNotExist(`over-here/booyaa.txt`.toFile)) {
 			fh.fromServerFile(`over-here/booyaa.txt`.toFile)
 		}
 	}
