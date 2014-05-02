@@ -235,7 +235,7 @@ If the request reaches the end of the pipeline without being processed, a 404 is
 
 Middleware bundled with 'BedSheet' include:
 
- - 'Routes' : Performs the standard [request routing]`#routeRouting`
+ - 'Routes' : Performs the standard [request routing]`#requestRouting`
  - 'RequestLog': Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
