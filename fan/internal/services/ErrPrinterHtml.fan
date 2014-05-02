@@ -101,7 +101,7 @@ internal const class ErrPrinterHtmlSections {
 			this.title(out, title)
 			
 			out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
-			out.w("&nbsp;&nbsp;-&nbsp;").writeXml(srcCodeErr.msg).pEnd
+			out.w("&#160;&#160;-&#160;").writeXml(srcCodeErr.msg).pEnd
 			
 			out.div("class=\"srcLoc\"")
 			out.table
@@ -295,7 +295,8 @@ internal const class ErrPrinterHtmlSections {
 			if (v1 is Map && !((Map) v1).isEmpty) {
 				// a map inside a map! Used for Actor.Locals()
 				m2 := (Map) v1
-				out.tr.td.writeXml(k1).tdEnd
+				out.tr
+				out.td.writeXml(k1).tdEnd
 				out.td.ul
 				m2.keys.sort.each |k2, i2|{
 					v2 := "$k2:${m2[k2]}"
@@ -308,6 +309,7 @@ internal const class ErrPrinterHtmlSections {
 					out.li.writeXml(v2).liEnd
 				}
 				out.ulEnd.tdEnd
+				out.trEnd
 
 			} else
 				w(out, k1, v1)
