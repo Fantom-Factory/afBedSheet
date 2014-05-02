@@ -70,7 +70,23 @@ internal class TestFileHandler : BsTest {
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri) 
 		verifyEq(unNormalised, `doc/pod.fandoc`)
 	}	
-	
+
+	Void testAcceptsQueryParams() {
+		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		file := fh.fromClientUri(`/over-there/pod.fandoc?v=4.01`, true)
+		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
+		// it doesn't seem to matter that the File has query params - it can still be read!
+		verifyEq(unNormalised, `doc/pod.fandoc?v=4.01`)
+	}	
+
+	Void testAcceptsFragments() {
+		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		file := fh.fromClientUri(`/over-there/pod.fandoc#v4.01`, true)
+		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
+		// it doesn't seem to matter that the File has fragments - it can still be read!
+		verifyEq(unNormalised, `doc/pod.fandoc#v4.01`)
+	}	
+
 	// ---- from Server File ----
 	
 	Void testAssetFileIsDir() {

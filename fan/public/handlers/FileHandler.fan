@@ -93,7 +93,7 @@ internal const class FileHandlerImpl : FileHandler {
 	}
 	
 	override File? fromClientUri(Uri clientUri, Bool checked) {
-		if (!clientUri.isPathOnly)
+		if (!clientUri.isRel)
 			throw ArgErr(BsErrMsgs.fileHandlerUriNotPathOnly(clientUri, `/css/myStyles.css`))
 		if (!clientUri.isPathAbs)
 			throw ArgErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(clientUri, `/css/myStyles.css`))
