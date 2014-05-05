@@ -8,15 +8,17 @@ class Build : BuildPod {
 		version = Version("1.3.7")
 
 		meta = [	
-			"org.name"		: "Alien-Factory",
-			"org.uri"		: "http://www.alienfactory.co.uk/",
-			"proj.name"		: "BedSheet",
-			"proj.uri"		: "http://www.fantomfactory.org/pods/afBedSheet",
-			"vcs.uri"		: "https://bitbucket.org/AlienFactory/afbedsheet",
-			"license.name"	: "The MIT Licence",
-			"repo.private"	: "true",
-
-			"afIoc.module"	: "afBedSheet::BedSheetModule"
+			"org.name"			: "Alien-Factory",
+			"org.uri"			: "http://www.alienfactory.co.uk/",
+			"proj.name"			: "BedSheet",
+			"proj.uri"			: "http://www.fantomfactory.org/pods/afBedSheet",
+			"vcs.uri"			: "https://bitbucket.org/AlienFactory/afbedsheet",
+			"license.name"		: "The MIT Licence",
+			"repo.private"		: "true",
+			
+			"tags"				: "web",
+			"stackOverflow.tag"	: "afbedsheet",
+			"afIoc.module"		: "afBedSheet::BedSheetModule"
 		]
 
 		index = [
