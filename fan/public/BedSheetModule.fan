@@ -163,7 +163,7 @@ const class BedSheetModule {
 		// these are all the sections you see on the 404 page
 		config.addOrdered("RouteCode",				|WebOutStream out| { printer.printRouteCode			(out) })
 		config.addOrdered("Routes",					|WebOutStream out| { printer.printBedSheetRoutes	(out) })
-		config.addPlaceholder("BedSheetRoutes")		// TODO: Remove after Pillow release
+		config.addPlaceholder("BedSheetRoutes")		// TODO: Remove after Pillow-1.0.6 release
 	}
 
 	@Contribute { serviceType=ErrPrinterHtml# }
@@ -229,7 +229,7 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(50)
 		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		conf[BedSheetConfigIds.disableWelcomePage]			= false
-		conf[BedSheetConfigIds.host]						= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs!
+		conf[BedSheetConfigIds.host]						= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs with method params!!
 		
 		conf[BedSheetConfigIds.requestLogDir]				= null
 		conf[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
