@@ -510,6 +510,10 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpac
 
 Release Notes [#releaseNotes]
 *****************************
+v1.3.8 [#v1.3.8]
+----------------
+ - Chg: BedSheet pages (404, 500 & Welcome) are served up as XHTML.
+
 v1.3.6 [#v1.3.6]
 ----------------
  - New: Added 'ActorPools' section to Err500 page.
