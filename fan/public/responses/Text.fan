@@ -43,6 +43,12 @@ const final class Text {
 	}
 
 	** Creates a 'Text' with the mime type 'application/xhtml+xml'.
+	** 
+	** Be sure to give your HTML an XML namespace:
+	** 
+	**   <html xmlns="http://www.w3.org/1999/xhtml"> ... </html>
+	** 
+	** Or it will **not** be displayed correctly in the browser!  
 	static new fromXhtml(Str text, Charset charset := Charset.utf8) {
 		fromMimeStr(text, "application/xhtml+xml", charset)
 	}
