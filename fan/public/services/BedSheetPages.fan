@@ -52,16 +52,16 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 	private Text render(Str title, Str content, BedSheetLogo logo := BedSheetLogo.alienHead) {
 		alienHeadSvg	:= typeof.pod.file(logo.svgUri).readAllStr
 		bedSheetCss		:= typeof.pod.file(`/res/web/bedSheet.css`).readAllStr
-		bedSheetHtml	:= typeof.pod.file(`/res/web/bedSheet.html`).readAllStr
+		bedSheetXhtml	:= typeof.pod.file(`/res/web/bedSheet.html`).readAllStr
 		version			:= typeof.pod.version.toStr
-		html			:= bedSheetHtml		// Gotta go old skool now moustache has been moved out from BedSheet core 
+		xhtml			:= bedSheetXhtml		// Gotta go old skool now moustache has been moved out from BedSheet core 
 							.replace("{{{ title }}}", title)
 							.replace("{{{ bedSheetCss }}}", bedSheetCss)
 							.replace("{{{ alienHeadSvg }}}", alienHeadSvg)
 							.replace("{{{ content }}}", content)
 							.replace("{{{ version }}}", version)
 
-		return Text.fromHtml(html)
+		return Text.fromXhtml(xhtml)
 	}
 }
 
