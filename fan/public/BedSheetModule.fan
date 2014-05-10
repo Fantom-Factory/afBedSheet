@@ -187,8 +187,8 @@ const class BedSheetModule {
 		config.addOrdered("Locals",					|WebOutStream out, Err? err| { printer.printLocals					(out, err) })
 		config.addOrdered("ActorPools",				|WebOutStream out, Err? err| { printer.printActorPools				(out, err) })
 		config.addOrdered("FantomEnvironment",		|WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) })
-		config.addOrdered("FantomPods",				|WebOutStream out, Err? err| { printer.printFantomPods				(out, err) })
 		config.addOrdered("FantomIndexedProps",		|WebOutStream out, Err? err| { printer.printFantomIndexedProps		(out, err) })
+		config.addOrdered("FantomPods",				|WebOutStream out, Err? err| { printer.printFantomPods				(out, err) })
 		config.addOrdered("EnvironmentVariables",	|WebOutStream out, Err? err| { printer.printEnvironmentVariables	(out, err) })
 		config.addOrdered("FantomDiagnostics",		|WebOutStream out, Err? err| { printer.printFantomDiagnostics		(out, err) })
 	}
