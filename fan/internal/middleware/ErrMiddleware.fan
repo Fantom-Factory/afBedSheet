@@ -33,6 +33,7 @@ internal const class ErrMiddleware : Middleware {
 				response = reErr.responseObj
 				
 			} catch (Err otherErr) {
+				setStackTraceHeader(otherErr)
 				firstErr = otherErr
 				response = errProcessors.processErr(otherErr)									
 			}
@@ -58,6 +59,15 @@ internal const class ErrMiddleware : Middleware {
 				httpResponse.out.print(errText.text)
 			}
 			return true
+		}
+	}
+	
+	private Void setStackTraceHeader(Err err) {
+		if (!httpResponse.isCommitted && !inProd) {
+			// need to remove line breaks if it's going in the header
+			httpResponse.headers["X-BedSheet-errMsg"] = err.msg 
+			httpResponse.headers["X-BedSheet-errType"] = err.typeof.qname 
+			httpResponse.headers["X-BedSheet-errStackTrace"] = Utils.traceErr(err, 100) 
 		}
 	}
 }

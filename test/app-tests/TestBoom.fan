@@ -23,6 +23,11 @@ internal class TestBoom : AppTest {
 		
 		verifyEq(client.resCode, 500)
 		verify(client.resStr.contains("Stack Trace"))
+		
+		// check the handy err headers have been added in dev
+		verifyNotNull(client.resHeaders["X-BedSheet-errMsg"])
+		verifyNotNull(client.resHeaders["X-BedSheet-errType"])
+		verifyNotNull(client.resHeaders["X-BedSheet-errStackTrace"])
 	}
 
 	Void testBoomPageInProdModeIsNotScary() {
@@ -35,6 +40,11 @@ internal class TestBoom : AppTest {
 
 		verifyEq(client.resCode, 500)
 		verifyFalse(client.resStr.contains("Stack Trace"))
+		
+		// check the handy err headers are dev only
+		verifyNull(client.resHeaders["X-BedSheet-errMsg"])
+		verifyNull(client.resHeaders["X-BedSheet-errType"])
+		verifyNull(client.resHeaders["X-BedSheet-errStackTrace"])
 	}
 
 	Void testErr500WithNoErr() {
