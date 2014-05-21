@@ -1,8 +1,0 @@
-'BedSheet' is a [Fantom]`http://fantom.org/` framework for delivering web applications.
-
-Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
-BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
-
-BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
-Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
-
