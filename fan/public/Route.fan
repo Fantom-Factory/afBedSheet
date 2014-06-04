@@ -226,7 +226,7 @@ const class Route {
 	}
 	
 	override Str toStr() {
-		"$httpMethod - $routeRegex : $factory"
+		"${httpMethod.justl(4)} - $routeRegex : $factory"
 	}
 }
 
