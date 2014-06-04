@@ -33,8 +33,8 @@ internal const class ErrMiddleware : Middleware {
 				response = reErr.responseObj
 				
 			} catch (Err otherErr) {
-				setStackTraceHeader(otherErr)
 				firstErr = otherErr
+				setStackTraceHeader(otherErr)
 				response = errProcessors.processErr(otherErr)									
 			}
 
@@ -64,10 +64,21 @@ internal const class ErrMiddleware : Middleware {
 	
 	private Void setStackTraceHeader(Err err) {
 		if (!httpResponse.isCommitted && !inProd) {
-			// need to remove line breaks if it's going in the header
-			httpResponse.headers["X-BedSheet-errMsg"] = err.msg 
-			httpResponse.headers["X-BedSheet-errType"] = err.typeof.qname 
-			httpResponse.headers["X-BedSheet-errStackTrace"] = Utils.traceErr(err, 100) 
+			addHeader("X-BedSheet-errMsg", 			err.msg)
+			addHeader("X-BedSheet-errType", 		err.typeof.qname)
+			addHeader("X-BedSheet-errStackTrace",	Utils.traceErr(err, 100))
 		}
+	}
+	
+	private Void addHeader(Str name, Str value) {
+		// TODO: report as Fantom web / wisp issue
+		// multiple lines in the header need to be prefixed with whitespace
+		value = value.splitLines.join("\n ")
+		
+		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
+		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
+		value = value[0..<(4096-2).min(value.size)].trim
+		
+		httpResponse.headers[name] = value
 	}
 }

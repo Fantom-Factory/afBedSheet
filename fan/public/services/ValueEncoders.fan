@@ -10,7 +10,7 @@ const mixin ValueEncoders {
 	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 
 	** found, 'toStr()' is used. 
 	** 
-	** 'valType' is NOT 'Str'!!! But rather the Type of the Obj that is being converted. 
+	** 'valType' is NOT 'Str#'!!! But rather the Type of the Obj that is being converted. 
 	** Required to ensure the correct 'ValueEncoder' is used.  
 	abstract Str? toClient(Type valType, Obj? value)
 	
