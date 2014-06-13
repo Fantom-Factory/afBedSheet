@@ -92,6 +92,6 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 	}
 
 	override Void shutdown() {
-		logMod.onStop
+		logMod?.onStop
 	}
 }

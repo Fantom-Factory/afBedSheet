@@ -41,6 +41,7 @@ const class BedSheetModule {
 		binder.bind(HttpCookies#)
 		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
 		binder.bind(BedSheetPages#)
+		binder.bind(RequestLogMiddleware#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -59,7 +60,7 @@ const class BedSheetModule {
 			reg.autobuild(CleanupMiddleware#),
 			reg.autobuild(ErrMiddleware#),
 			reg.autobuild(FlashMiddleware#),
-			reg.autobuild(RequestLogMiddleware#)
+			reg.serviceById(RequestLogMiddleware#.qname)
 		].addAll(userMiddleware)
 		terminator := reg.autobuild(MiddlewareTerminator#)
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)

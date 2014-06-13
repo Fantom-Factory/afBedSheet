@@ -17,4 +17,9 @@ internal class TestFlash : AppTest {
 		client = WebClient()
 		verifyEq(getAsStr(`/showFlashMsg`), "Msg = null")
 	}
+	
+	Void testFlashMiddlewareDoesNotSetCookiesByDefault() {
+		getAsStr(`/textResult/plain`)
+		verifyFalse(client.resHeaders.containsKey("Set-Cookie"))
+	}
 }

@@ -8,17 +8,15 @@ internal const class FlashMiddleware : Middleware {
 	new make(|This|in) { in(this) }
 	
 	override Bool service(MiddlewarePipeline pipeline) {
-		
-		session := httpSession.map
-		httpFlash.setReq(session["bedSheet.flash"])
+		httpFlash.setReq(httpSession["bedSheet.flash"])
 		
 		handled := pipeline.service
 		
 		val := httpFlash.getRes
-		if (val == null)
-			session.remove("bedSheet.flash")
-		else
-			session["bedSheet.flash"] = val 
+		if (val != null)
+			httpSession["bedSheet.flash"] = val
+		else 
+			httpSession.remove("bedSheet.flash")
 		
 		return handled
 	}
