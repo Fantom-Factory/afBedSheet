@@ -13,11 +13,13 @@ const mixin HttpSession {
 	** @see `web::WebSession`
 	abstract Str id()
 
-	** Convenience for 'map.get(name, def)'.
+	** Convenience for 'map.get(name, def)', but does not create a session if it does not already exist.
 	** 
 	** @see `web::WebSession`
 	@Operator
-	Obj? get(Str name, Obj? def := null) { map.get(name, def) }
+	Obj? get(Str name, Obj? def := null) {
+		exists ? map.get(name, def) : def 
+	}
 
 	** Convenience for 'map.set(name, val)'.
 	** 
@@ -29,9 +31,17 @@ const mixin HttpSession {
 		else
 			map[name] = val 
 	}
+	
+	** Convenience for 'map.remove(name)', but does not create a session if it does not already exist.
+	Void remove(Str name) {
+		if (exists)
+			map.remove(name) 		
+	}
 
 	** Application name/value pairs which are persisted between HTTP requests. 
 	** The values stored in this map must be serializable.
+	** 
+	** Note that as soon as this map is accessed, a session is created.
 	** 
 	** @see `web::WebSession`
 	abstract Str:Obj? map()
