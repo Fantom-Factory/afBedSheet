@@ -34,10 +34,11 @@ const class BedSheetWebMod : WebMod {
 	}
 
 	** Creates this 'WebMod'.
-	new make(Str moduleName, Int port, [Str:Obj?] bedSheetOptions, [Str:Obj?]? registryOptions := null) {
+	** 'moduleName' can be a qualified type name of an AppModule or a pod name.
+	new make(Str moduleName, Int port, [Str:Obj?]? bedSheetOptions := null, [Str:Obj?]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
-		this.bedSheetOptions	= bedSheetOptions
+		this.bedSheetOptions	= bedSheetOptions ?: Utils.makeMap(Str#, Obj?#)
 		this.registryOptions	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
 	}
 
