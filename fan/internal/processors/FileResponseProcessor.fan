@@ -39,7 +39,8 @@ internal const class FileResponseProcessor : ResponseProcessor {
 		if (mime != null) 
 			res.headers.contentType = mime
 
-		file.in.pipe(res.out, file.size, true)
+		if (req.httpMethod != "HEAD")
+			file.in.pipe(res.out, file.size, true)
 
 		return true
 	}
