@@ -15,16 +15,9 @@ For BedSheet 1.3.8
 Middleware doesn't *need* to return Bool - never used. Should we remove it?
 
 Make FileHandler respond to HEAD requests.
-
-Enhance the StackFrameFilter
- - grey out afIoc / afBedSheet lines.
- - stackframefilter to use regex
- - only filter on web page - email everything
- - add afBedSheet:: to webfilter 
- - add afIoc:: to webfilter 
-
-
 File handler file cache, with contribtion point for cold feet to store digest
+
+
 
 Future
 ------

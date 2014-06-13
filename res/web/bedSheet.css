@@ -86,11 +86,6 @@ td:first-child {
 	padding-right:		1em;
 }
 
-.cookies td:first-child,
-.threadLocals td:first-child {
-	white-space:		normal;
-}
-
 .bedSheetLogo {
 	position:			absolute;
 	height:				60px;
@@ -124,6 +119,23 @@ code {
 	overflow:			auto;
 }
 
+/* ---- Err 500 Page --------------------------------------------------------------------------- */
+
+.cookies td:first-child,
+.threadLocals td:first-child {
+	white-space:		normal;
+}
+
+#stackFrames.hideBoring .dull {
+	display:			none;
+}
+
+#stackFrames .dull {
+	color:				#888888;
+}
+
+/* ---- Source Location ------------------------------------------------------------------------ */
+
 .srcLoc {
 	overflow-x:			auto;
 	
@@ -143,7 +155,6 @@ code {
 .srcLoc table {
 	width:				100%;
 }
-
 
 .srcLoc td:first-child {
 	border-right:	1px solid #333333;

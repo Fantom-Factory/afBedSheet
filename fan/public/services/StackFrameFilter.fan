@@ -1,22 +1,31 @@
 
-** Removes useless frames from a stack trace. Contribute your useless lines!
+** Used by the Err500 page to automatically hide boring and meaningless frames from a stack trace.
+** 
+** Contribute 'Regex' expressions. 
+** A regex must match the whole (trimmed) frame for it to be considered for filtering.
+** 
+** Example, to remove lines that start with 'afIoc::':
+** 
+**   @Contribute { serviceType=StackFrameFilter# }
+**   static Void contributeStackFrameFilter(OrderedConfig config) {
+**       config.add("^afIoc::.*\$")
+**   }
 @NoDoc
 const mixin StackFrameFilter {
 	
-	** Returns 'true' if the frame should be filtered.
+	** Returns 'true' if the stack frame should be filtered.
 	abstract Bool filter(Str frame)
 }
 
 internal const class StackFrameFilterImpl : StackFrameFilter {
-	private const Str[] filterFrames
+	private const Regex[] filters
 	
-	new make(Str[] filterFrames, |This|in) { 
-		in(this)
-		this.filterFrames = filterFrames.map { it.lower.trim }
+	new make(Regex[] filters) {
+		this.filters = filters
 	}
 	
 	override Bool filter(Str frame) {
-		lower := frame.lower.trim
-		return filterFrames.any { lower.startsWith(it) }
+		trimmed := frame.trim
+		return filters.any { it.matches(trimmed) }
 	}
 }
