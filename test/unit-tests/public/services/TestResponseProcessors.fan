@@ -1,4 +1,4 @@
-using afBeanUtils::NotFoundErr
+using afBeanUtils::TypeNotFoundErr
 using concurrent::Actor
 
 internal class TestResponseProcessors : BsTest {
@@ -27,7 +27,7 @@ internal class TestResponseProcessors : BsTest {
 		map := [Int#:T_ResPro01()]
 		rp := ResponseProcessorsImpl(map)
 		
-		verifyErr(NotFoundErr#) {
+		verifyErr(TypeNotFoundErr#) {
 			rp.processResponse("Die!")			
 		}
 	}

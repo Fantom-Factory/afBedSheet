@@ -226,7 +226,7 @@ const class BedSheetModule {
 		conf[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
 		conf[BedSheetConfigIds.defaultHttpStatusProcessor]	= reg.createProxy(DefaultHttpStatusProcessor#)
 		conf[BedSheetConfigIds.defaultErrProcessor]			= reg.createProxy(DefaultErrProcessor#)
-		conf[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(50)
+		conf[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(75)	// big 'cos we hide a lot
 		conf[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		conf[BedSheetConfigIds.disableWelcomePage]			= false
 		conf[BedSheetConfigIds.host]						= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs with method params!!
@@ -239,16 +239,24 @@ const class BedSheetModule {
 	@Contribute { serviceType=StackFrameFilter# }
 	static Void contributeStackFrameFilter(OrderedConfig config) {
 		// remove meaningless and boring stack frames
-		config.add("concurrent::Actor._dispatch")
-		config.add("concurrent::Actor._send")
-		config.add("concurrent::Actor._work")
-		config.add("concurrent::ThreadPool\$Worker.run")
-		config.add("fan.sys.Method\$MethodFunc.callOn")
-		config.add("fan.sys.Func\$Indirect0.call")
-		config.add("java.lang.reflect.Method.invoke")
-		config.add("fan.sys.Method.invoke")
-		config.add("fan.sys.FanObj.doTrap")
-		config.add("fan.sys.FanObj.trap")
+		
+		// Core Fantom libs
+		config.add("^concurrent::Actor._dispatch.*\$")
+		config.add("^concurrent::Actor._send.*\$")
+		config.add("^concurrent::Actor._work.*\$")
+		config.add("^concurrent::ThreadPool\$Worker.run.*\$")
+		
+		// Core Alien-Factory libs
+		config.add("^afIoc::.*\$")
+		config.add("^afBedSheet::.*\$")
+		
+		// Java code
+		config.add("^fan.sys.Method\\\$MethodFunc\\..*\$")
+		config.add("^fan.sys.Method\\..*\$")
+		config.add("^fan.sys.FanObj.doTrap.*\$")
+		config.add("^fan.sys.FanObj.trap.*\$")
+		config.add("^fan.sys.Func\\\$Indirect0.call.*\$")
+		config.add("^java.lang.reflect..*\$")
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }

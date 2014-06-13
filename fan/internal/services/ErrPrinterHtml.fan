@@ -123,10 +123,19 @@ internal const class ErrPrinterHtmlSections {
 			if (err is IocErr && err.msg == err.cause?.msg)
 				err = err.cause			
 			title(out, "Stack Trace")
-			out.pre
+			
+			out.div
+			out.printLine("""<label><input type="checkbox" value="wotever" checked="checked" onclick="document.getElementById('stackFrames').className = this.checked ? 'hideBoring' : '';"/> Hide boring stack frames</label> """)
+			out.divEnd
+			
+			out.pre("id=\"stackFrames\" class=\"hideBoring\"")
 			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
-			frames := Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.exclude { frameFilter.filter(it) }
-			out.writeXml("  " + frames.join("\n"))
+			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.each |frame| {
+				css := frameFilter.filter(frame) ? "dull" : "okay"
+				out.span("class=\"${css}\"")
+				out.writeXml("  ${frame}\n")
+				out.spanEnd
+			}
 			out.preEnd
 		}
 	}

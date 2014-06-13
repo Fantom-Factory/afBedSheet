@@ -66,25 +66,25 @@ internal class TestFileHandler : BsTest {
 
 	Void testAssetUri() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromClientUri(`/over-there/pod.fandoc`, true)
+		file := fh.fromClientUri(`/over-there/pod.fdoc`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri) 
-		verifyEq(unNormalised, `doc/pod.fandoc`)
+		verifyEq(unNormalised, `doc/pod.fdoc`)
 	}	
 
 	Void testAcceptsQueryParams() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromClientUri(`/over-there/pod.fandoc?v=4.01`, true)
+		file := fh.fromClientUri(`/over-there/pod.fdoc?v=4.01`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has query params - it can still be read!
-		verifyEq(unNormalised, `doc/pod.fandoc?v=4.01`)
+		verifyEq(unNormalised, `doc/pod.fdoc?v=4.01`)
 	}	
 
 	Void testAcceptsFragments() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromClientUri(`/over-there/pod.fandoc#v4.01`, true)
+		file := fh.fromClientUri(`/over-there/pod.fdoc#v4.01`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has fragments - it can still be read!
-		verifyEq(unNormalised, `doc/pod.fandoc#v4.01`)
+		verifyEq(unNormalised, `doc/pod.fdoc#v4.01`)
 	}	
 
 	// ---- from Server File ----
@@ -112,8 +112,8 @@ internal class TestFileHandler : BsTest {
 	
 	Void testAssetFile() {
 		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
-		uri := fh.fromServerFile(`doc/pod.fandoc`.toFile)
-		verifyEq(uri, `/over-there/pod.fandoc`)
+		uri := fh.fromServerFile(`doc/pod.fdoc`.toFile)
+		verifyEq(uri, `/over-there/pod.fdoc`)
 	}
 
 }
