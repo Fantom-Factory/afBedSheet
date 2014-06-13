@@ -1,6 +1,5 @@
 using web::WebReq
 using afIoc::Inject
-using afIoc::NotFoundErr
 
 ** (Service) - Request Handler that maps URIs to files on the file system.
 ** 
@@ -101,7 +100,7 @@ internal const class FileHandlerImpl : FileHandler {
 		// match the deepest uri
 		prefix 	:= (Uri?) directoryMappings.keys.findAll { clientUri.toStr.startsWith(it.toStr) }.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
 		if (prefix == null)
-			return null ?: (checked ? throw NotFoundErr(BsErrMsgs.fileHandlerUriNotMapped(clientUri), directoryMappings.keys) : null)
+			return null ?: (checked ? throw BedSheetNotFoundErr(BsErrMsgs.fileHandlerUriNotMapped(clientUri), directoryMappings.keys) : null)
 
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
@@ -123,7 +122,7 @@ internal const class FileHandlerImpl : FileHandler {
 		assetUriStr := assetFile.normalize.uri.toStr
 		prefix  	:= directoryMappings.findAll |file, uri->Bool| { assetUriStr.startsWith(file.uri.toStr) }.keys.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
 		if (prefix == null)
-			throw NotFoundErr(BsErrMsgs.fileHandlerAssetFileNotMapped(assetFile), directoryMappings.vals.map { it.osPath })
+			throw BedSheetNotFoundErr(BsErrMsgs.fileHandlerAssetFileNotMapped(assetFile), directoryMappings.vals.map { it.osPath })
 		
 		matchedFile := directoryMappings[prefix]
 		remaining	:= assetUriStr[matchedFile.uri.toStr.size..-1]
@@ -132,3 +131,4 @@ internal const class FileHandlerImpl : FileHandler {
 		return assetUri
 	}
 }
+

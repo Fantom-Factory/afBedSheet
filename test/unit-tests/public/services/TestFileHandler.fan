@@ -1,4 +1,4 @@
-using afIoc::NotFoundErr
+using afBeanUtils::NotFoundErr
 
 internal class TestFileHandler : BsTest {
 	

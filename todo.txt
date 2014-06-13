@@ -18,8 +18,13 @@ Make FileHandler respond to HEAD requests.
 
 Enhance the StackFrameFilter
  - grey out afIoc / afBedSheet lines.
+ - stackframefilter to use regex
+ - only filter on web page - email everything
+ - add afBedSheet:: to webfilter 
+ - add afIoc:: to webfilter 
 
 
+File handler file cache, with contribtion point for cold feet to store digest
 
 Future
 ------
@@ -77,5 +82,152 @@ With that in mind, BedSheet is reluctant
 
 Simple.
 Developers are lazy. If it's complicated or difficult, they won't use it.
+
+
+
+
+
+
+General:
+  Timestamp: 07 июня 2014, 08:51:55.165
+  Uri: http://www.alienfactory.co.uk/images/javamappy/onTheWeb-gundam.jpg
+
+sys::NullErr - Coerce to non-null
+
+Stack Trace:
+  sys::NullErr : Coerce to non-null
+  fan.sys.NullErr.makeCoerce (NullErr.java:38)
+  afIoc::ServiceMethodInvoker.invokeMethod (AspectInvokerSource.fan:75)
+  afIoc::MethodInvocation.make$ (MethodAdvisor.fan:48)
+  afIoc::MethodInvocation.make (MethodAdvisor.fan:48)
+  afIoc::ServiceMethodInvoker.invokeMethod (AspectInvokerSource.fan:74)
+  afIoc::LazyProxyForService.call (LazyProxy.fan:30)
+  afPlastic016::HttpFlashImpl.getRes (afPlastic016:23)
+  afBedSheet::FlashMiddleware.service (FlashMiddleware.fan:17)
+  afPlastic018::MiddlewarePipelineBridge.service (afPlastic018:13)
+  afBedSheet::ErrMiddleware.service (ErrMiddleware.fan:27)
+  afPlastic018::MiddlewarePipelineBridge.service (afPlastic018:13)
+  afBedSheet::CleanupMiddleware.service (CleanupMiddleware.fan:16)
+  afPlastic018::MiddlewarePipelineBridge.service (afPlastic018:13)
+  afBedSheet::BedSheetWebMod.onService (BedSheetWebMod.fan:63)
+  wisp::WispActor.process (WispActor.fan:82)
+  wisp::WispActor.receive (WispActor.fan:48)
+
+Request Details:
+  HTTP Method  : GET
+  HTTP Version : 1.1
+  URI ........ : /images/javamappy/onTheWeb-gundam.jpg
+
+Request Headers:
+  Accept ............... : image/webp,*/*;q=0.8
+  Accept-Encoding ...... : gzip,deflate,sdch
+  Accept-Language ...... : ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,lt;q=0.2
+  Alexatoolbar-Alx_ns_ph : AlexaToolbar/alxg-3.2
+  Connection ........... : close
+  Host ................. : www.alienfactory.co.uk
+  Referer .............. : http://www.alienfactory.co.uk/javamappy/ontheweb
+  User-Agent ........... : Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36
+  X-Forwarded-For ...... : 2.223.193.112
+  X-Forwarded-Port ..... : 80
+  X-Forwarded-Proto .... : http
+  X-Request-Id ......... : fdb523de-e850-4055-b652-3a136564fab5
+  X-Request-Start ...... : 1402131114906
+
+Session:
+  __lastAccess : 89954082143780ns
+
+Cookies:
+  _ga . : GA1.3.1753294769.1402131112
+  fanws : 06521201-a0a0-c740-3560-963c001d629b-1756028069743cac
+
+Locales:
+  ru-RU
+  ru
+  en-US
+  en
+  lt
+
+Ioc Config Values:
+  afBedSheet.appDestroyer.pingInterval .. : 1sec
+  afBedSheet.disableWelcomePage ......... : false
+  afBedSheet.errPrinter.noOfStackFrames . : 50
+  afBedSheet.errProcessors.default ...... : fan.afPlastic007.DefaultErrProcessorImpl@372a6e85
+  afBedSheet.gzip.disabled .............. : false
+  afBedSheet.gzip.threshold ............. : 376
+  afBedSheet.host ....................... : http://www.alienfactory.co.uk
+  afBedSheet.httpStatusProcessors.default : fan.afPlastic006.DefaultHttpStatusProcessorImpl@42bdfa0e
+  afBedSheet.plastic.srcCodeErrPadding .. : 5
+  afBedSheet.requestLog.dir ............. : null
+  afBedSheet.requestLog.fields .......... : date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)
+  afBedSheet.requestLog.filenamePattern . : bedSheet-{YYYY-MM}.log
+  afBedSheet.responseBuffer.threshold ... : 32768
+  afEfan.supressStartupLogging .......... : true
+  afEfan.templateTimeout ................ : 30sec
+  afGoogleAnalytics.accountDomain ....... : //alienfactory.co.uk
+  afGoogleAnalytics.accountNumber ....... : UA-33997125-1
+  afIocEnv.env .......................... : PRODUCTION
+  afIocEnv.isDev ........................ : false
+  afIocEnv.isProd ....................... : true
+  afIocEnv.isTest ....................... : false
+  afPillow.defaultContentType ........... : text/plain
+  afPillow.enableRouting ................ : true
+  afPillow.welcomePageName .............. : index
+  afPillow.welcomePageStrategy .......... : onWithRedirects
+  afSitemap.scanIocServices ............. : true
+  afSitemap.scanPillowPages ............. : true
+
+BedSheet Routes:
+  GET - (?i)^\/index(?:\..+)? .......... : Redirect -> / (Moved Permanently)
+  GET - (?i)^\/javamappy\/j2medev$ ..... : Pillow Page afWebsite::JavamappyJ2medev
+  GET - (?i)^\/equinox\/demos$ ......... : Pillow Page afWebsite::EquinoxDemos
+  GET - (?i)^\/javamappy\/versions$ .... : Pillow Page afWebsite::JavamappyVersions
+  GET - (?i)^\/$ ....................... : Pillow Page afWebsite::IndexPage
+  GET - (?i)^\/equinox\/intros$ ........ : Pillow Page afWebsite::EquinoxIntros
+  GET - (?i)^\/fantomfactory$ .......... : Pillow Page afWebsite::FantomfactoryPage
+  GET - (?i)^\/strutsgui\/faqs$ ........ : Pillow Page afWebsite::StrutsguiFaqs
+  GET - (?i)^\/strutsgui\/versions$ .... : Pillow Page afWebsite::StrutsguiVersions
+  GET - (?i)^\/strutsgui\/download$ .... : Pillow Page afWebsite::StrutsguiDownload
+  GET - (?i)^\/strutsgui\/example$ ..... : Pillow Page afWebsite::StrutsguiExample
+  GET - (?i)^\/javamappy\/$ ............ : Pillow Page afWebsite::JavamappyIndex
+  GET - (?i)^\/contact$ ................ : Pillow Page afWebsite::ContactPage
+  GET - (?i)^\/sitemap\.xml$ ........... : -> afSitemap::SitemapPage.render
+  GET - (?i)^\/equinox\/$ .............. : Pillow Page afWebsite::EquinoxIndex
+  GET - (?i)^\/gundam\/versions$ ....... : Pillow Page afWebsite::GundamVersions
+  GET - (?i)^\/strutsgui\/index(?:\..+)? : Redirect -> /strutsgui/ (Moved Permanently)
+  GET - (?i)^\/javamappy\/ontheweb$ .... : Pillow Page afWebsite::JavamappyOntheweb
+  GET - (?i)^\/(.*)$ ................... : -> afBedSheet::FileHandler.service
+  GET - (?i)^\/javamappy\/index(?:\..+)? : Redirect -> /javamappy/ (Moved Permanently)
+  GET - (?i)^\/javamappy\/download$ .... : Pillow Page afWebsite::JavamappyDownload
+  GET - (?i)^\/gundam\/credits$ ........ : Pillow Page afWebsite::GundamCredits
+  GET - (?i)^\/ping$ ................... : Pillow Page afWebsite::PingPage
+  GET - (?i)^\/equinox\/games$ ......... : Pillow Page afWebsite::EquinoxGames
+  GET - (?i)^\/equinox\/slammer$ ....... : Pillow Page afWebsite::EquinoxSlammer
+  GET - (?i)^\/equinox\/misc$ .......... : Pillow Page afWebsite::EquinoxMisc
+  GET - (?i)^\/strutsgui\/ontheweb$ .... : Pillow Page afWebsite::StrutsguiOntheweb
+  GET - (?i)^\/gundam\/index(?:\..+)? .. : Redirect -> /gundam/ (Moved Permanently)
+  GET - (?i)^\/gundam\/playonline$ ..... : Pillow Page afWebsite::GundamPlayonline
+  GET - (?i)^\/gundam\/screenshots$ .... : Pillow Page afWebsite::GundamScreenshots
+  GET - (?i)^\/strutsgui\/$ ............ : Pillow Page afWebsite::StrutsguiIndex
+  GET - (?i)^\/javamappy\/onlinedemo$ .. : Pillow Page afWebsite::JavamappyOnlinedemo
+  GET - (?i)^\/strutsgui\/about$ ....... : Pillow Page afWebsite::StrutsguiAbout
+  GET - (?i)^\/gundam\/playoffline$ .... : Pillow Page afWebsite::GundamPlayoffline
+  GET - (?i)^\/equinox\/index(?:\..+)? . : Redirect -> /equinox/ (Moved Permanently)
+  GET - (?i)^\/gundam\/$ ............... : Pillow Page afWebsite::GundamIndex
+
+Thread Locals:
+  TLM-01.0008.BedSheetModule .............. : [WebReq.lifecycle:CREATED, HttpOutStream.impl:fan.afBedSheet.BufferedOutStream@466bcf5d, WebRes.lifecycle:CREATED, WebRes.impl:fan.wisp.WispRes@4ffb06c9, afBedSheet::HttpFlash.impl:fan.afBedSheet.HttpFlashImpl@697a9f24, afBedSheet::HttpFlash.lifecycle:CREATED, WebReq.impl:fan.wisp.WispReq@71662a95, HttpOutStream.lifecycle:CREATED]
+  TLM-01.00BT.afBedSheet::HttpFlash-invoker : fan.afBedSheet.HttpFlashImpl@697a9f24
+  TLM-01.00Ba.afBedSheet::HttpFlash-invoker : fan.afBedSheet.HttpFlashImpl@697a9f24
+  web.req ................................. : fan.wisp.WispReq@71662a95
+  web.res ................................. : fan.wisp.WispRes@4ffb06c9
+  web.session ............................. : 06521201-a0a0-c740-3560-963c001d629b-1756028069743cac
+
+Actor Pools:
+  afAlienFactory.staticFile : 1
+  afBedFrame.email ........ : 1
+  afBedSheet.system ....... : 1
+  afEfanXtra.componentCache : 1
+  afIoc.system ............ : 2
+
 
 

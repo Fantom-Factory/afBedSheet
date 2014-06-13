@@ -1,3 +1,4 @@
+using afBeanUtils::NotFoundErr
 using web::WebRes
 
 ** As thrown by BedSheet
@@ -38,3 +39,15 @@ internal const class ValueEncodingErr : ReProcessErr {
 	new make(Str msg := "", Err? cause := null) : super(HttpStatus(404, msg), cause) {}
 }
 
+** A generic 'NotFoundErr'.
+internal const class BedSheetNotFoundErr : BedSheetErr, NotFoundErr {
+	override const Str?[] availableValues
+	
+	new make(Str msg, Obj?[] availableValues, Err? cause := null) : super(msg, cause) {
+		this.availableValues = availableValues.map { it?.toStr }.sort
+	}
+	
+	override Str toStr() {
+		NotFoundErr.super.toStr		
+	}
+}

@@ -1,5 +1,4 @@
 using afIoc::Inject
-using afIoc::StrategyRegistry
 using afIocConfig::Config
 
 ** (Service) - Contribute your 'ErrProcessor' implementations to this. 
@@ -14,7 +13,7 @@ const mixin ErrProcessors {
 
 internal const class ErrProcessorsImpl : ErrProcessors {
 
-	private const StrategyRegistry errProcessorStrategy
+	private const CachingTypeLookup errProcessorLookup
 
 	@Inject @Config { id="afBedSheet.errProcessors.default" }
 	private const ErrProcessor defaultErrProcessor
@@ -26,7 +25,7 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 			if (type.isClass && !type.fits(Err#))
 				throw BedSheetErr(BsErrMsgs.errProcessorsNotErrType(type))
 		}
-		this.errProcessorStrategy = StrategyRegistry(errProcessors)
+		this.errProcessorLookup = CachingTypeLookup(errProcessors)
 	}
 	
 	override Obj processErr(Err err) {
@@ -35,6 +34,6 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 	}
 
 	private ErrProcessor get(Type errType) {
-		errProcessorStrategy.findClosestParent(errType, false) ?: defaultErrProcessor
+		errProcessorLookup.findParent(errType, false) ?: defaultErrProcessor
 	}
 }

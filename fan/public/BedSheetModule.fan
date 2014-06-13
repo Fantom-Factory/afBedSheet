@@ -238,7 +238,7 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=StackFrameFilter# }
 	static Void contributeStackFrameFilter(OrderedConfig config) {
-		// remove meaningless stack frames
+		// remove meaningless and boring stack frames
 		config.add("concurrent::Actor._dispatch")
 		config.add("concurrent::Actor._send")
 		config.add("concurrent::Actor._work")
@@ -246,12 +246,22 @@ const class BedSheetModule {
 		config.add("fan.sys.Method\$MethodFunc.callOn")
 		config.add("fan.sys.Func\$Indirect0.call")
 		config.add("java.lang.reflect.Method.invoke")
+		config.add("fan.sys.Method.invoke")
+		config.add("fan.sys.FanObj.doTrap")
+		config.add("fan.sys.FanObj.trap")
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc, BedSheetMetaData meta) {
+	static Void contributeRegistryStartup(OrderedConfig conf, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
+		}
+	}
+
+	@Contribute { serviceType=RegistryShutdown# }
+	static Void contributeRegistryShutdown(OrderedConfig conf, RequestLogMiddleware logMiddleware) {
+		conf.addOrdered("RequestLogFilter") |->| {
+			logMiddleware.shutdown
 		}
 	}
 	

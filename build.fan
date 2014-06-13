@@ -28,10 +28,11 @@ class Build : BuildPod {
 			"util 1.0", 
 			"inet 1.0",
 	
-			"afPlastic 1.0.10+",
-			"afConcurrent 1.0.0+",
-			"afIoc 1.6.0+", 
-			"afIocConfig 1.0.4+", 
+			"afBeanUtils 0.0.4+",
+			"afConcurrent 1.0.4+",
+			"afPlastic 1.0.12+",
+			"afIoc 1.6.2+", 
+			"afIocConfig 1.0.6+", 
 			"afIocEnv 1.0.4+", 
 			
 			// for testing
@@ -40,9 +41,13 @@ class Build : BuildPod {
 
 		srcDirs = [`test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/utils/`, `test/unit-tests/public/services/`, `test/unit-tests/internal/`, `test/unit-tests/internal/utils/`, `test/unit-tests/internal/services/`, `test/app-tests/`, `test/app/`, `fan/`, `fan/public/`, `fan/public/utils/`, `fan/public/services/`, `fan/public/responses/`, `fan/public/middleware/`, `fan/public/handlers/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/services/`, `fan/internal/proxy/`, `fan/internal/processors/`, `fan/internal/middleware/`]
 		resDirs = [`res/web/`, `res/misc/`, `res/test/`]
-
-		docApi = true
-		docSrc = true
+	}
+	
+	override Void compile() {
+		// remove test pods from final build
+		testPods := "xml".split
+		depends = depends.exclude { testPods.contains(it.split.first) }
+		super.compile
 	}
 }
 
