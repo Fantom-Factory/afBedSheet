@@ -130,7 +130,7 @@ const class BedSheetModule {
 	static Void contributeFileHandlerRoutes(OrderedConfig conf, FileHandler fileHandler) {
 		conf.addPlaceholder("FileHandlerStart")
 		fileHandler.directoryMappings.each |dir, uri| {
-			conf.add(Route(uri + `***`, FileHandler#service))
+			conf.add(Route(uri + `***`, FileHandler#service, "GET HEAD"))	// Me like!
 		}
 		conf.addPlaceholder("FileHandlerEnd")
 	}
