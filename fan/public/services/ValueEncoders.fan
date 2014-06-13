@@ -1,5 +1,3 @@
-using afIoc::StrategyRegistry
-using afIoc::TypeCoercer
 
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
@@ -20,11 +18,11 @@ const mixin ValueEncoders {
 }
 
 internal const class ValueEncodersImpl : ValueEncoders {
-	private const TypeCoercer		typeCoercer	:= TypeCoercer()
-	private const StrategyRegistry 	valueEncoderStrategy
+	private const CachingTypeCoercer	typeCoercer	:= CachingTypeCoercer()
+	private const CachingTypeLookup		valueEncoderLookup
 	
 	internal new make(Type:ValueEncoder valueEncoders) {
-		this.valueEncoderStrategy = StrategyRegistry(valueEncoders)
+		this.valueEncoderLookup = CachingTypeLookup(valueEncoders)
 	}
 	
 	override Str? toClient(Type valType, Obj? value) {
@@ -71,6 +69,6 @@ internal const class ValueEncodersImpl : ValueEncoders {
 	}
 
 	private ValueEncoder? get(Type valueType) {
-		valueEncoderStrategy.findClosestParent(valueType, false)
+		valueEncoderLookup.findParent(valueType, false)
 	}
 }

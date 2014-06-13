@@ -1,5 +1,4 @@
 using afIoc::Inject
-using afIoc::RegistryShutdownHub
 using webmod::LogMod
 using afIocConfig::IocConfigSource
 using afIocConfig::Config
@@ -57,6 +56,8 @@ const mixin RequestLogMiddleware : Middleware {
 	** 
 	** @see `BedSheetConfigIds.requestLogFields`
 	abstract Str fields()
+	
+	abstract Void shutdown()
 }
 
 internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
@@ -72,7 +73,7 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 
 	private const LogMod? logMod
 	
-	internal new make(RegistryShutdownHub shutdownHub, IocConfigSource configSource, |This|in) { 
+	internal new make(IocConfigSource configSource, |This|in) { 
 		in(this)
 
 		dir = configSource.get(BedSheetConfigIds.requestLogDir, File#)
@@ -82,13 +83,15 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 		logMod = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
 		logMod.onStart
 
-		shutdownHub.addRegistryShutdownListener("RequestLogFilter", [,], |->| { logMod.onStop })
-		
 		log.info(BsLogMsgs.requestLogEnabled(dir + `${filenamePattern}`))
 	}
 	
 	override Bool service(MiddlewarePipeline pipeline) {
 		logMod?.onService
 		return pipeline.service		
+	}
+
+	override Void shutdown() {
+		logMod.onStop
 	}
 }

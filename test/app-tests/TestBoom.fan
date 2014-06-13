@@ -1,9 +1,5 @@
 using web
-using afIoc::Contribute
-using afIoc::Inject
-using afIoc::OrderedConfig
-using afIoc::MappedConfig
-using afIoc::ServiceOverride
+using afIoc
 using afIocEnv::IocEnv
 using afIocConfig::ApplicationDefaults
 
@@ -72,14 +68,14 @@ internal class TestBoom : AppTest {
 }
 
 internal class T_TestBoomMod1 {
-    @Contribute { serviceType=ServiceOverride# }
+    @Contribute { serviceType=ServiceOverrides# }
     static Void contributeServiceOverride(MappedConfig config) {
         config["IocEnv"] = IocEnv.fromStr("dev")
     }
 }
 
 internal class T_TestBoomMod2 {
-    @Contribute { serviceType=ServiceOverride# }
+    @Contribute { serviceType=ServiceOverrides# }
     static Void contributeServiceOverride(MappedConfig config) {
         config["IocEnv"] = IocEnv.fromStr("prod")
     }

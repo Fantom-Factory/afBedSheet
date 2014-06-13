@@ -1,3 +1,4 @@
+using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
 using afIocConfig::IocConfigSource

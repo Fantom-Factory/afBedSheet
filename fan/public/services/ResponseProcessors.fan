@@ -1,4 +1,3 @@
-using afIoc::StrategyRegistry
 
 ** (Service) - Contribute your `ResponseProcessor` implementations to this.
 ** 
@@ -14,10 +13,10 @@ const mixin ResponseProcessors {
 
 internal const class ResponseProcessorsImpl : ResponseProcessors {
 
-	private const StrategyRegistry processorStrategy
+	private const CachingTypeLookup processorLookup
 
 	internal new make(Type:ResponseProcessor responseProcessors) {
-		processorStrategy = StrategyRegistry(responseProcessors)
+		processorLookup = CachingTypeLookup(responseProcessors)
 	}
 
 	override Bool processResponse(Obj response) {
@@ -38,6 +37,6 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 	}	
 
 	private ResponseProcessor get(Type responseType) {
-		processorStrategy.findClosestParent(responseType)
+		processorLookup.findParent(responseType)
 	}
 }

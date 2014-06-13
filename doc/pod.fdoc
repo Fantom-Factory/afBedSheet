@@ -533,6 +533,7 @@ Release Notes [#releaseNotes]
 v1.3.8 [#v1.3.8]
 ----------------
  - New: Set (development only) response headers 'X-BedSheet-errMsg', 'X-BedSheet-errType' and 'X-BedSheet-errStackTrace' when processing an Err.
+ - Chg: Updated to use [IoC 1.6.2]`pod:afIoc` and [Bean Utils]`pod:afBeanUtils`.
  - Chg: BedSheet pages (404, 500 & Welcome) are served up as XHTML.
  - Chg: 'ReProcessErr' may now re-process non-const response objects.
 
