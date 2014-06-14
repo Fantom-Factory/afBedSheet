@@ -6,7 +6,7 @@ const class BedSheetErr : Err {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) {}
 }
 
-** Throw at any point to (re-)process / (re-)handle the wrapped response object. 
+** Throw at any point to (re)process / (re)handle the wrapped response object. 
 ** Use to change the processing flow. 
 const class ReProcessErr : Err {
 	
@@ -27,7 +27,7 @@ const class ReProcessErr : Err {
 	}
 }
 
-** Throw at any point to (re-)process / (re-)handle the 'HttpStatus'. 
+** Throw at any point to (re)process / (re)handle the 'HttpStatus'. 
 const class HttpStatusErr : ReProcessErr {
 	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super(HttpStatus(statusCode, statusMsg), cause) { }
 }
