@@ -2,6 +2,7 @@ using afIoc
 using afPlastic::PlasticCompiler
 using afPlastic::IocClassModel
 using afConcurrent
+using afBeanUtils
 
 ** (Service) -
 ** In this pattern, also know as a *filter chain*, a service endpoint (known as the terminator) is
