@@ -79,8 +79,25 @@ internal class TestFileHandling : AppTest {
 		verifyEq(client.resHeaders["ETag"], etag(file1))
 		verifyLastModified(file1.modified)
 	}
+
+	Void testFileDeletion() {
+		// test what happens if a file is deleted while it still exists in the FileMetaCache
+		killMe := `test/app-web/kill-me.txt`.toFile.deleteOnExit
+		killMe.out.print("Spoolge!").flush.close
+		text := getAsStr(`/test-src/kill-me.txt`)
+		
+		verifyEq(text, "Spoolge!")
+		killMe.delete
+		concurrent::Actor.sleep(1sec)	// default dev timeout for FileMetaCache is 2 sec
+		
+		client = WebClient()
+		verify404(`/test-src/kill-me.txt`)
+
+		client = WebClient()	// one more time for good measure!
+		verify404(`/test-src/kill-me.txt`)
+	}
 	
 	private Str etag(File file) {
-		"\"${file.size.toHex}-${file.modified.ticks.toHex}\""
+		"\"${file.size.toHex}-${file.modified.floor(1sec).ticks.toHex}\""
 	}
 }

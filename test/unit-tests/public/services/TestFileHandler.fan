@@ -1,10 +1,13 @@
+using concurrent
+using afIoc
+using afIocEnv
 using afBeanUtils::NotFoundErr
 
 internal class TestFileHandler : BsTest {
 	
 	Void testFilesAreDirs() {
 		verifyBsErrMsg(BsErrMsgs.fileHandlerFileNotDir(File(`build.fan`))) {
-			fh := FileHandlerImpl( [`/wotever/`:File(`build.fan`)] )
+			fh := makeFileHandler( [`/wotever/`:File(`build.fan`)] )
 		}
 	}
 
@@ -35,28 +38,28 @@ internal class TestFileHandler : BsTest {
 	// ---- from Client Uri ----
 
 	Void testAssetUriIsPathOnly() {
-		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriNotPathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
 			fh.fromClientUri(`http://myStyles.css`, true)
 		}
 	}
 
 	Void testAssetUriStartsWithSlash() {
-		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
 			fh.fromClientUri(`css/myStyles.css`, true)
 		}
 	}
 
 	Void testAssetUriMustBeMapped() {
-		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(NotFoundErr#, BsErrMsgs.fileHandlerUriNotMapped(`/css/myStyles.css`)) {
 			fh.fromClientUri(`/css/myStyles.css`, true)
 		}
 	}
 	
 	Void testAssetUriDoesNotExist() {
-		fh := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriDoesNotExist(`/over-there/myStyles.css`, `doc/myStyles.css`.toFile)) {
 			fh.fromClientUri(`/over-there/myStyles.css`, true)
 		}
@@ -65,14 +68,14 @@ internal class TestFileHandler : BsTest {
 	}
 
 	Void testAssetUri() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		file := fh.fromClientUri(`/over-there/pod.fdoc`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri) 
 		verifyEq(unNormalised, `doc/pod.fdoc`)
 	}	
 
 	Void testAcceptsQueryParams() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		file := fh.fromClientUri(`/over-there/pod.fdoc?v=4.01`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has query params - it can still be read!
@@ -80,7 +83,7 @@ internal class TestFileHandler : BsTest {
 	}	
 
 	Void testAcceptsFragments() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		file := fh.fromClientUri(`/over-there/pod.fdoc#v4.01`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has fragments - it can still be read!
@@ -90,30 +93,37 @@ internal class TestFileHandler : BsTest {
 	// ---- from Server File ----
 	
 	Void testAssetFileIsDir() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileIsDir(`doc/`.toFile)) {
 			fh.fromServerFile(`doc/`.toFile)
 		}
 	}	
 	
 	Void testAssetFileDoesNotExist() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileDoesNotExist(`doc/booyaa.txt`.toFile)) {
 			fh.fromServerFile(`doc/booyaa.txt`.toFile)
 		}
 	}
 	
 	Void testAssetFileNotMapped() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerAssetFileDoesNotExist(`over-here/booyaa.txt`.toFile)) {
 			fh.fromServerFile(`over-here/booyaa.txt`.toFile)
 		}
 	}
 	
 	Void testAssetFile() {
-		fh 	 := FileHandlerImpl( [`/over-there/`:File(`doc/`)] )
+		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		uri := fh.fromServerFile(`doc/pod.fdoc`.toFile)
 		verifyEq(uri, `/over-there/pod.fdoc`)
 	}
 
+		
+	private FileHandler makeFileHandler(Uri:File dirMappings) {
+		iocEnv := IocEnv.fromStr("dev")
+		actorPools := Type.find("afIoc::ActorPoolsImpl").make([["afBedSheet.system":ActorPool()]])
+		func := Field.makeSetFunc([Slot.findField("afBedSheet::FileHandlerImpl.fileCache"):FileMetaCache(iocEnv, actorPools){ }])
+		return FileHandlerImpl#.make([dirMappings, func])
+	}
 }

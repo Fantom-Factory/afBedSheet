@@ -42,6 +42,7 @@ const class BedSheetModule {
 		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
 		binder.bind(BedSheetPages#)
 		binder.bind(RequestLogMiddleware#)
+		binder.bind(FileMetaCache#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -245,7 +246,7 @@ const class BedSheetModule {
 		config.add("^concurrent::Actor._dispatch.*\$")
 		config.add("^concurrent::Actor._send.*\$")
 		config.add("^concurrent::Actor._work.*\$")
-		config.add("^concurrent::ThreadPool\$Worker.run.*\$")
+		config.add("^concurrent::ThreadPool\\\$Worker.run.*\$")
 		
 		// Core Alien-Factory libs
 		config.add("^afIoc::.*\$")

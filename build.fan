@@ -29,7 +29,7 @@ class Build : BuildPod {
 			"inet 1.0",
 	
 			"afBeanUtils 0.0.4+",
-			"afConcurrent 1.0.4+",
+			"afConcurrent 1.0.6+",
 			"afPlastic 1.0.12+",
 			"afIoc 1.6.2+", 
 			"afIocConfig 1.0.6+", 
