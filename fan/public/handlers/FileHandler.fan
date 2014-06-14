@@ -50,7 +50,7 @@ const mixin FileHandler {
 	
 	** Returns the server file that the client-side asset URI maps to. 
 	** 
-	** If 'checked' is 'true' throw Err if the file does not exist, else return 'null'.
+	** If 'checked' is 'true' throw ArgErr if the file does not exist, else return 'null'.
 	abstract File? fromClientUri(Uri assetUri, Bool checked)
 
 	** Returns the client URI that corresponds to the given asset file.
@@ -61,12 +61,12 @@ const mixin FileHandler {
 
 internal const class FileHandlerImpl : FileHandler {
 	
-	@Inject
-	private const HttpRequest? req
+	@Inject	private const HttpRequest? 		req			// nullable for unit tests
+	@Inject	private const FileMetaCache?	fileCache	// nullable for unit tests
 
 	override const Uri:File directoryMappings
 	
-	internal new make(Uri:File dirMappings, |This|? in := null) {
+	new make(Uri:File dirMappings, |This|? in := null) {
 		in?.call(this)	// nullable for unit tests
 
 		// verify file and uri mappings, normalise the files
@@ -107,16 +107,19 @@ internal const class FileHandlerImpl : FileHandler {
 		remaining := clientUri.getRange(prefix.path.size..-1).relTo(`/`)
 		file	  := directoryMappings[prefix].plus(remaining, false)
 
-		if (!file.exists && checked)
+		fileMeta  := fileCache[file]
+		
+		if (checked && !fileMeta.exists)
 			throw ArgErr(BsErrMsgs.fileHandlerUriDoesNotExist(clientUri, file))
 
-		return file.exists ? file : null
+		return fileMeta.exists ? file : null
 	}
 
 	override Uri fromServerFile(File assetFile) {
-		if (assetFile.isDir)
+		fileMeta  := fileCache[assetFile]
+		if (fileMeta.isDir)
 			throw ArgErr(BsErrMsgs.fileHandlerAssetFileIsDir(assetFile))
-		if (!assetFile.exists)
+		if (!fileMeta.exists)
 			throw ArgErr(BsErrMsgs.fileHandlerAssetFileDoesNotExist(assetFile))
 		
 		assetUriStr := assetFile.normalize.uri.toStr

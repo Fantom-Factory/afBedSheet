@@ -8,12 +8,15 @@ using web::WebReq
 const mixin HttpSession {
 	
 	** Get the unique id used to identify this session.
-	** Calling this will create a session if it doesn't already exist.
+	** 
+	** Calling this **will** create a session if it doesn't already exist.
 	** 
 	** @see `web::WebSession`
 	abstract Str id()
 
-	** Convenience for 'map.get(name, def)', but does not create a session if it does not already exist.
+	** Convenience for 'map.get(name, def)'.
+	** 
+	** Does not create a session if it does not already exist.
 	** 
 	** @see `web::WebSession`
 	@Operator
@@ -22,6 +25,8 @@ const mixin HttpSession {
 	}
 
 	** Convenience for 'map.set(name, val)'.
+	** 
+	** Calling this **will** create a session if it doesn't already exist.
 	** 
 	** @see `web::WebSession`
 	@Operator 
@@ -32,7 +37,9 @@ const mixin HttpSession {
 			map[name] = val 
 	}
 	
-	** Convenience for 'map.remove(name)', but does not create a session if it does not already exist.
+	** Convenience for 'map.remove(name)'.
+	** 
+	** Does not create a session if it does not already exist.
 	Void remove(Str name) {
 		if (exists)
 			map.remove(name) 		
@@ -41,7 +48,7 @@ const mixin HttpSession {
 	** Application name/value pairs which are persisted between HTTP requests. 
 	** The values stored in this map must be serializable.
 	** 
-	** Note that as soon as this map is accessed, a session is created.
+	** Calling this **will** create a session if it doesn't already exist.
 	** 
 	** @see `web::WebSession`
 	abstract Str:Obj? map()
@@ -50,14 +57,29 @@ const mixin HttpSession {
 	** instance. This method must be called before the WebRes is committed otherwise the server side 
 	** instance is cleared, but the user agent cookie will remain uncleared.
 	** 
+	** Does not create a session if it does not already exist.
+	** 
 	** @see `web::WebSession`
 	abstract Void delete()
 	
 	** Returns 'true' if a session exists. 
+	** 
+	** Does not create a session if it does not already exist.
 	abstract Bool exists()
 
 	** Returns 'true' if the session map is empty. 
-	abstract Bool isEmpty()
+	** 
+	** Does not create a session if it does not already exist.
+	virtual Bool isEmpty() {
+		exists ? map.isEmpty : true
+	}
+
+	** Returns 'true' if the session map contains the given key. 
+	** 
+	** Does not create a session if it does not already exist.
+	virtual Bool containsKey(Str key) {
+		exists ? map.containsKey(key) : false		
+	}
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -76,17 +98,14 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Void delete() {
-		webReq.session.delete
+		if (exists)
+			webReq.session.delete
 	}
 
 	override Bool exists() {
 		httpCookies.get("fanws") != null
 	}
 	
-	override Bool isEmpty() {
-		webReq.session.map.isEmpty
-	}
-
 	private WebReq webReq() {
 		registry.dependencyByType(WebReq#)
 	}

@@ -6,79 +6,72 @@ internal const class FileResponseProcessor : ResponseProcessor {
 	
 	@Inject	private const HttpRequest 	req
 	@Inject	private const HttpResponse 	res
+	@Inject	private const FileMetaCache	fileCache
 	
 	new make(|This|in) { in(this) }
 	
 	override Obj process(Obj fileObj) {
-		file := (File) fileObj
+		fileMeta := fileCache[fileObj]
 
-		if (!file.exists)
+		if (!fileMeta.exists)
 			throw HttpStatusErr(404, "File not found: $req.modRel")
 
 		// I dunno if this should be a 403 or 404. 
 		// 403 gives any would be attacker info about your server.
-		if (file.isDir)	// not allowed, until I implement it! 
+		if (fileMeta.isDir)	// not allowed, until I implement it! 
 			throw HttpStatusErr(403, "Directory listing not allowed: $req.modRel")
 
 		// set identity headers
-		res.headers.eTag = etag(file)
-		res.headers.lastModified = modified(file)
+		res.headers.eTag = fileMeta.etag
+		res.headers.lastModified = fileMeta.modified
 
 		// initially set the Content-Length 
 		// - GzipOutStream may reset this to zero if it kicks in 
 		// - BufferedOutStream may override this if needs be 
-		res.headers.contentLength = file.size
+		res.headers.contentLength = fileMeta.size
 
 		// check if we can return a 304 Not Modified
-		if (notModified(req.headers, file)) {
+		if (notModified(req.headers, fileMeta)) {
 			res.statusCode = 304
 			return true
 		}
 
-		mime := file.mimeType
+		mime := fileMeta.file.mimeType
 		if (mime != null) 
 			res.headers.contentType = mime
 
-		if (req.httpMethod != "HEAD")
-			file.in.pipe(res.out, file.size, true)
+		if (req.httpMethod != "HEAD") {
+			if (!fileMeta.file.exists) {
+				// file doesn't exist anymore - damn that cache!
+				fileCache.remove(fileMeta.file)
+				throw HttpStatusErr(404, "File not found: $req.modRel")				
+			}
+			fileMeta.file.in.pipe(res.out, fileMeta.size, true)
+		}
 
 		return true
-	}
-	
-	** Get the modified time of the file floored to 1 second which is the most precision that HTTP 
-	** can deal with.
-	virtual DateTime modified(File file) {
-		file.modified.floor(1sec)
-	}
-
-	** Compute the ETag for the file being serviced which uniquely identifies the file version. The 
-	** default implementation is a hash of the modified time and the file size. The result of this 
-	** method must conform to the ETag syntax and be wrapped in quotes.
-	virtual Str etag(File file) {
-		"${file.size.toHex}-${file.modified.ticks.toHex}"
 	}
 	
 	** Check if the request passed headers indicating it has cached version of the file. Return 
 	** 'true' If the file has not been modified.
 	** 
 	** This method supports ETag "If-None-Match" and "If-Modified-Since" modification time.
-	virtual Bool notModified(HttpRequestHeaders headers, File file) {
+	virtual Bool notModified(HttpRequestHeaders headers, FileMeta fileMeta) {
 		// check If-Match-None
 		matchNone := headers.ifNoneMatch
 		if (matchNone != null) {
-			etag := this.etag(file)
-			if (WebUtil.parseList(matchNone).map { WebUtil.fromQuotedStr(it) }.any { it == etag || it == "*" })
+			if (WebUtil.parseList(matchNone).map { WebUtil.fromQuotedStr(it) }.any { it == fileMeta.etag || it == "*" })
 				return true
 		}
 		
 		// check If-Modified-Since
 		since := headers.ifModifiedSince
 		if (since != null) {
-			if (modified(file) <= since)
+			if (fileMeta.modified <= since)
 				return true
 		}
 	
 		// gotta do it the hard way
 		return false
-	}	
+	}
 }

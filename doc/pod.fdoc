@@ -534,6 +534,8 @@ v1.3.8 [#v1.3.8]
 ----------------
  - New: Set response headers 'X-BedSheet-errMsg', 'X-BedSheet-errType' and 'X-BedSheet-errStackTrace' when processing an Err. (Dev mode only)
  - New: Boring stack frames on the Err500 page are muted (greyed) and may be toggled on and off completely via a checkbox.
+ - New: 'FileHandler' now responds to 'HEAD' requests.
+ - New: Introduced a 'FileMetaCache' to prevent excessive hits on the file system.
  - Chg: Updated to use [IoC 1.6.2]`pod:afIoc` and [Bean Utils]`pod:afBeanUtils`.
  - Chg: BedSheet pages (404, 500 & Welcome) are served up as XHTML.
  - Chg: 'ReProcessErr' may now re-process non-const response objects.
