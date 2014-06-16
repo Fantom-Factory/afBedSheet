@@ -51,6 +51,8 @@ internal const class ValueEncodersImpl : ValueEncoders {
 		if (valEnc != null)
 			try {
 				return get(valType).toValue(clientValue)
+			} catch (ReProcessErr reprocess) {
+				throw reprocess
 			} catch (Err cause) {
 				throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(clientValue, valType), cause)
 			}
