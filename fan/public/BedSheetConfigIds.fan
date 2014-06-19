@@ -49,7 +49,7 @@ const mixin BedSheetConfigIds {
 	
 	** The number of stack frames to print in logs and error pages.
 	** 
-	** Defaults to '50'
+	** Defaults to '75'
 	static const Str noOfStackFrames				:= "afBedSheet.errPrinter.noOfStackFrames"
 	
 	** When printing 'SrcCodeErrs', this is the number of lines of code to print before and 
