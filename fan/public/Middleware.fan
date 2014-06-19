@@ -23,8 +23,8 @@
 ** 
 ** pre>
 **   @Contribute { serviceType=MiddlewarePipeline# }
-**   static Void contributeMiddleware(OrderedConfig config) {
-**       config.addOrdered("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
+**   static Void contributeMiddleware(OrderedConfig conf) {
+**       conf.addOrdered("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
 **   }
 ** <pre
 const mixin Middleware {
