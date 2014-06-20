@@ -62,10 +62,10 @@ const mixin HttpResponse {
 @NoDoc
 const class HttpResponseWrapper : HttpResponse {
 	const 	 HttpResponse res
-	new 	 make(HttpResponse res) 		{ this.res = res 			} 
-	override HttpResponseHeaders headers() 	{ res.headers				}
-	override Bool isCommitted() 			{ res.isCommitted			}
-	override OutStream out() 				{ res.out					}
+	new 	 make(HttpResponse res) 			 { this.res = res 	} 
+	override HttpResponseHeaders headers() 		 { res.headers		}
+	override Bool isCommitted() 				 { res.isCommitted	}
+	override OutStream out() 					 { res.out			}
 	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
 	override Bool disableGzip {
 		get { res.disableGzip }
