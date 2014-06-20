@@ -47,9 +47,9 @@ const class BedSheetModule {
 
 	@Build { serviceId="BedSheetMetaData" }
 	static BedSheetMetaData buildBedSheetMetaData(RegistryMeta options) {
-		if (!options.options.containsKey("bedSheetMetaData"))
+		if (!options.options.containsKey("afBedSheet.metaData"))
 			throw BedSheetErr(BsErrMsgs.bedSheetMetaDataNotInOptions)
-		return options.options["bedSheetMetaData"] 
+		return options.options["afBedSheet.metaData"] 
 	}
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
@@ -98,7 +98,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(MappedConfig config) {
-		config["afBedSheet.system"] = ActorPool()
+		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
 	}
 
 	@Contribute { serviceType=MiddlewarePipeline# }
@@ -124,7 +124,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ValueEncoders# }
 	static Void contributeValueEncoders(MappedConfig config) {
-		// wot no value encoders!? Aha! I see you're using fromStr() instead!
+		// wot no value encoders!? Aha! I see you're using TypeCoercer as a backup!
 	}
 
 	@Contribute { serviceType=Routes# }
@@ -165,7 +165,6 @@ const class BedSheetModule {
 		// these are all the sections you see on the 404 page
 		config.addOrdered("RouteCode",				|WebOutStream out| { printer.printRouteCode			(out) })
 		config.addOrdered("Routes",					|WebOutStream out| { printer.printBedSheetRoutes	(out) })
-		config.addPlaceholder("BedSheetRoutes")		// TODO: Remove after Pillow-1.0.6 release
 	}
 
 	@Contribute { serviceType=ErrPrinterHtml# }
@@ -266,11 +265,12 @@ const class BedSheetModule {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
+		conf.remove("afIoc.showServices", "afBedSheet.showServices")
 	}
 
 	@Contribute { serviceType=RegistryShutdown# }
 	static Void contributeRegistryShutdown(OrderedConfig conf, RequestLogMiddleware logMiddleware) {
-		conf.addOrdered("RequestLogFilter") |->| {
+		conf.addOrdered("afBedSheet.requestLogFilter") |->| {
 			logMiddleware.shutdown
 		}
 	}

@@ -15,7 +15,7 @@ const mixin BedSheetMetaData {
 	** The options BedSheet was started with
 	abstract [Str:Obj] 	options()
 	
-	** Returns the from the application's pod meta, or "Unknown" if no pod was found.
+	** Returns 'proj.name' from the application's pod meta, or "Unknown" if no pod was found.
 	virtual Str appName() {
 		appPod?.meta?.get("proj.name") ?: "Unknown"
 	}

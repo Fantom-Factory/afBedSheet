@@ -15,10 +15,5 @@ const class RoutesMiddleware : Middleware {
 		if (handled)
 			return true
 		return pipeline.service
-
-//		retVal1 := pipeline.service
-//		// if the 'after' Route also tries to send data to the client - so be it, let them deal with the error!  
-//		retVal2 := routesAfter.processRequest(httpRequest.modRel, httpRequest.httpMethod)
-//		return retVal1 || retVal2
 	}	
 }

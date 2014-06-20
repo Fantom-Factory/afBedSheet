@@ -80,7 +80,7 @@ const class BedSheetWebMod : WebMod {
 			log.info(BsLogMsgs.bedSheetWebModStarting(moduleName, port))
 
 			bob		:= createBob(moduleName, port, bedSheetOptions, registryOptions)
-			bsMeta	:= (BedSheetMetaData) bob.options["bedSheetMetaData"] 
+			bsMeta	:= (BedSheetMetaData) bob.options["afBedSheet.metaData"] 
 			
 			// Go!!!
 			registry = bob.build.startup
@@ -160,10 +160,8 @@ const class BedSheetWebMod : WebMod {
 		dPort 		 := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
 		bsMeta		 := BedSheetMetaDataImpl(pod, mod, dPort, bedSheetOptions)
 		registryOpts := registryOptions.rw
-		registryOpts["bannerText"] 					= easterEgg("Alien-Factory BedSheet v${BedSheetWebMod#.pod.version}, IoC v${Registry#.pod.version}")
-		registryOpts["bedSheetMetaData"]			= bsMeta 
-		registryOpts["suppressStartupServiceList"]	= true
-		registryOpts["appName"]						= "BedSheet"
+		registryOpts["afIoc.bannerText"] 	= easterEgg("Alien-Factory BedSheet v${BedSheetWebMod#.pod.version}, IoC v${Registry#.pod.version}")
+		registryOpts["afBedSheet.metaData"]	= bsMeta
 
 		bob.options.addAll(registryOpts)
 		
