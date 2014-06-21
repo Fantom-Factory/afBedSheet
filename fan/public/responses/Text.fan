@@ -20,11 +20,15 @@ using util::JsonOutStream
 ** contructed with. See `http://fantom.org/sidewalk/topic/2166#c13992`.
 const final class Text {
 	const Str 		text
+	const MimeType	contentType
+	
+	@NoDoc @Deprecated { msg="Use contentType insead" }
 	const MimeType	mimeType
 	
-	private new make(Str text, MimeType mimeType) {
-		this.text = text
-		this.mimeType = mimeType
+	private new make(Str text, MimeType contentType) {
+		this.text 		 = text
+		this.mimeType 	 = contentType
+		this.contentType = contentType
 	}
 
 	** Creates a 'Text' with the mime type 'text/plain'.
@@ -79,6 +83,6 @@ const final class Text {
 	}
 	
 	override Str toStr() {
-		"${mimeType.mediaType}/${mimeType.subType}::${text}"
+		"${contentType.mediaType}/${contentType.subType}::${text}"
 	}
 }

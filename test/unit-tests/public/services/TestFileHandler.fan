@@ -40,43 +40,43 @@ internal class TestFileHandler : BsTest {
 	Void testAssetUriIsPathOnly() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriNotPathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
-			fh.fromClientUri(`http://myStyles.css`, true)
+			fh.fromClientUrl(`http://myStyles.css`, true)
 		}
 	}
 
 	Void testAssetUriStartsWithSlash() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
-			fh.fromClientUri(`css/myStyles.css`, true)
+			fh.fromClientUrl(`css/myStyles.css`, true)
 		}
 	}
 
 	Void testAssetUriMustBeMapped() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(NotFoundErr#, BsErrMsgs.fileHandlerUriNotMapped(`/css/myStyles.css`)) {
-			fh.fromClientUri(`/css/myStyles.css`, true)
+			fh.fromClientUrl(`/css/myStyles.css`, true)
 		}
 	}
 	
 	Void testAssetUriDoesNotExist() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriDoesNotExist(`/over-there/myStyles.css`, `doc/myStyles.css`.toFile)) {
-			fh.fromClientUri(`/over-there/myStyles.css`, true)
+			fh.fromClientUrl(`/over-there/myStyles.css`, true)
 		}
-		file := fh.fromClientUri(`/over-there/myStyles.css`, false)
+		file := fh.fromClientUrl(`/over-there/myStyles.css`, false)
 		verifyNull(file)
 	}
 
 	Void testAssetUri() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromClientUri(`/over-there/pod.fdoc`, true)
+		file := fh.fromClientUrl(`/over-there/pod.fdoc`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri) 
 		verifyEq(unNormalised, `doc/pod.fdoc`)
 	}	
 
 	Void testAcceptsQueryParams() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromClientUri(`/over-there/pod.fdoc?v=4.01`, true)
+		file := fh.fromClientUrl(`/over-there/pod.fdoc?v=4.01`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has query params - it can still be read!
 		verifyEq(unNormalised, `doc/pod.fdoc?v=4.01`)
@@ -84,7 +84,7 @@ internal class TestFileHandler : BsTest {
 
 	Void testAcceptsFragments() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromClientUri(`/over-there/pod.fdoc#v4.01`, true)
+		file := fh.fromClientUrl(`/over-there/pod.fdoc#v4.01`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has fragments - it can still be read!
 		verifyEq(unNormalised, `doc/pod.fdoc#v4.01`)

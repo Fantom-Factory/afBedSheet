@@ -55,7 +55,7 @@ internal const class ErrMiddleware : Middleware {
 			if (!httpResponse.isCommitted) {
 				errText := bedSheetPages.renderErr(doubleErr, !inProd)
 				httpResponse.statusCode = 500
-				httpResponse.headers.contentType = errText.mimeType
+				httpResponse.headers.contentType = errText.contentType
 				httpResponse.out.print(errText.text)
 			}
 			return true

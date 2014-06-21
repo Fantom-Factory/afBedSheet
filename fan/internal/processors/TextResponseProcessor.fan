@@ -14,7 +14,7 @@ internal const class TextResponseProcessor : ResponseProcessor {
 		// Text objs and we don't wanna override the 500 status code!
 //		res.setStatusCode(200)
 
-		res.headers.contentType = text.mimeType
+		res.headers.contentType = text.contentType
 		res.out.print(text.text)
 		
 		return true
