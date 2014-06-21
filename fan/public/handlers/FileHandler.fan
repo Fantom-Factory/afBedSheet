@@ -51,12 +51,17 @@ const mixin FileHandler {
 	** Returns the server file that the client-side asset URI maps to. 
 	** 
 	** If 'checked' is 'true' throw ArgErr if the file does not exist, else return 'null'.
-	abstract File? fromClientUri(Uri assetUri, Bool checked)
+	abstract File? fromClientUrl(Uri clientUrl, Bool checked := true)
 
 	** Returns the client URI that corresponds to the given asset file.
 	** 
 	** Throws a 'NotFoundErr' if the file does not reside in a mapped directory. 
-	abstract Uri fromServerFile(File assetFile)
+	abstract Uri fromServerFile(File serverFile)
+
+	@NoDoc @Deprecated { msg="use fromClientUrl instead" }
+	File? fromClientUri(Uri assetUri, Bool checked := true) {
+		fromClientUrl(assetUri, checked)
+	}
 }
 
 internal const class FileHandlerImpl : FileHandler {
@@ -88,10 +93,10 @@ internal const class FileHandlerImpl : FileHandler {
 	override File? service(Uri remainingUri) {
 		// use pathStr to knockout any unwanted query str
 		matchedUri := req.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri
-		return fromClientUri(matchedUri.plusSlash + remainingUri, false)		
+		return fromClientUrl(matchedUri.plusSlash + remainingUri, false)		
 	}
 	
-	override File? fromClientUri(Uri clientUri, Bool checked) {
+	override File? fromClientUrl(Uri clientUri, Bool checked := true) {
 		if (!clientUri.isRel)
 			throw ArgErr(BsErrMsgs.fileHandlerUriNotPathOnly(clientUri, `/css/myStyles.css`))
 		if (!clientUri.isPathAbs)
