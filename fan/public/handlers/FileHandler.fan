@@ -81,11 +81,11 @@ internal const class FileHandlerImpl : FileHandler {
 			if (!file.isDir)
 				throw BedSheetErr(BsErrMsgs.fileHandlerFileNotDir(file))
 			if (!uri.isPathOnly)
-				throw BedSheetErr(BsErrMsgs.fileHandlerUriNotPathOnly(uri, `/foo/bar/`))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUrlNotPathOnly(uri, `/foo/bar/`))
 			if (!uri.isPathAbs)
-				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(uri, `/foo/bar/`))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUrlMustStartWithSlash(uri, `/foo/bar/`))
 			if (!uri.isDir)
-				throw BedSheetErr(BsErrMsgs.fileHandlerUriMustEndWithSlash(uri))
+				throw BedSheetErr(BsErrMsgs.fileHandlerUrlMustEndWithSlash(uri))
 			return file.normalize
 		}
 	}
@@ -96,26 +96,26 @@ internal const class FileHandlerImpl : FileHandler {
 		return fromClientUrl(matchedUri.plusSlash + remainingUri, false)		
 	}
 	
-	override File? fromClientUrl(Uri clientUri, Bool checked := true) {
-		if (!clientUri.isRel)
-			throw ArgErr(BsErrMsgs.fileHandlerUriNotPathOnly(clientUri, `/css/myStyles.css`))
-		if (!clientUri.isPathAbs)
-			throw ArgErr(BsErrMsgs.fileHandlerUriMustStartWithSlash(clientUri, `/css/myStyles.css`))
+	override File? fromClientUrl(Uri clientUrl, Bool checked := true) {
+		if (clientUrl.host != null || !clientUrl.isRel)
+			throw ArgErr(BsErrMsgs.fileHandlerUrlNotPathOnly(clientUrl, `/css/myStyles.css`))
+		if (!clientUrl.isPathAbs)
+			throw ArgErr(BsErrMsgs.fileHandlerUrlMustStartWithSlash(clientUrl, `/css/myStyles.css`))
 		
 		// match the deepest uri
-		prefix 	:= (Uri?) directoryMappings.keys.findAll { clientUri.toStr.startsWith(it.toStr) }.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
+		prefix 	:= (Uri?) directoryMappings.keys.findAll { clientUrl.toStr.startsWith(it.toStr) }.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
 		if (prefix == null)
-			return null ?: (checked ? throw BedSheetNotFoundErr(BsErrMsgs.fileHandlerUriNotMapped(clientUri), directoryMappings.keys) : null)
+			return null ?: (checked ? throw BedSheetNotFoundErr(BsErrMsgs.fileHandlerUrlNotMapped(clientUrl), directoryMappings.keys) : null)
 
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
-		remaining := clientUri.getRange(prefix.path.size..-1).relTo(`/`)
+		remaining := clientUrl.getRange(prefix.path.size..-1).relTo(`/`)
 		file	  := directoryMappings[prefix].plus(remaining, false)
 
 		fileMeta  := fileCache[file]
 		
 		if (checked && !fileMeta.exists)
-			throw ArgErr(BsErrMsgs.fileHandlerUriDoesNotExist(clientUri, file))
+			throw ArgErr(BsErrMsgs.fileHandlerUrlDoesNotExist(clientUrl, file))
 
 		return fileMeta.exists ? file : null
 	}
