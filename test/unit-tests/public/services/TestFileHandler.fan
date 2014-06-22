@@ -17,57 +17,57 @@ internal class TestFileHandler : BsTest {
 		}
 	}
 
-	Void testUriPathOnly() {
-		verifyBsErrMsg(BsErrMsgs.fileHandlerUriNotPathOnly(`http://wotever.com`, `/foo/bar/`)) {
+	Void testUrlPathOnly() {
+		verifyBsErrMsg(BsErrMsgs.fileHandlerUrlNotPathOnly(`http://wotever.com`, `/foo/bar/`)) {
 			fh := FileHandlerImpl( [`http://wotever.com`:File(`test/`)] )
 		}
 	}
 
-	Void testUriNotStartWithSlash() {
-		verifyBsErrMsg(BsErrMsgs.fileHandlerUriMustStartWithSlash(`wotever/`, `/foo/bar/`)) {
+	Void testUrlNotStartWithSlash() {
+		verifyBsErrMsg(BsErrMsgs.fileHandlerUrlMustStartWithSlash(`wotever/`, `/foo/bar/`)) {
 			fh := FileHandlerImpl( [`wotever/`:File(`test/`)] )
 		}
 	}
 
-	Void testUriNotEndWithSlash() {
-		verifyBsErrMsg(BsErrMsgs.fileHandlerUriMustEndWithSlash(`/wotever`)) {
+	Void testUrlNotEndWithSlash() {
+		verifyBsErrMsg(BsErrMsgs.fileHandlerUrlMustEndWithSlash(`/wotever`)) {
 			fh := FileHandlerImpl( [`/wotever`:File(`test/`)] )
 		}
 	}
 
 	// ---- from Client Uri ----
 
-	Void testAssetUriIsPathOnly() {
+	Void testAssetUrlIsPathOnly() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriNotPathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUrlNotPathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
 			fh.fromClientUrl(`http://myStyles.css`, true)
 		}
 	}
 
-	Void testAssetUriStartsWithSlash() {
+	Void testAssetUrlStartsWithSlash() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUrlMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
 			fh.fromClientUrl(`css/myStyles.css`, true)
 		}
 	}
 
-	Void testAssetUriMustBeMapped() {
+	Void testAssetUrlMustBeMapped() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(NotFoundErr#, BsErrMsgs.fileHandlerUriNotMapped(`/css/myStyles.css`)) {
+		verifyErrMsg(NotFoundErr#, BsErrMsgs.fileHandlerUrlNotMapped(`/css/myStyles.css`)) {
 			fh.fromClientUrl(`/css/myStyles.css`, true)
 		}
 	}
 	
-	Void testAssetUriDoesNotExist() {
+	Void testAssetUrlDoesNotExist() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUriDoesNotExist(`/over-there/myStyles.css`, `doc/myStyles.css`.toFile)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandlerUrlDoesNotExist(`/over-there/myStyles.css`, `doc/myStyles.css`.toFile)) {
 			fh.fromClientUrl(`/over-there/myStyles.css`, true)
 		}
 		file := fh.fromClientUrl(`/over-there/myStyles.css`, false)
 		verifyNull(file)
 	}
 
-	Void testAssetUri() {
+	Void testAssetUrl() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
 		file := fh.fromClientUrl(`/over-there/pod.fdoc`, true)
 		unNormalised := file.uri.relTo(`./`.toFile.normalize.uri) 

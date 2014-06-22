@@ -69,23 +69,23 @@ internal const class BsErrMsgs {
 		"File '${file.normalize.osPath}' is not a directory"
 	}
 
-	static Str fileHandlerUriNotPathOnly(Uri uri, Uri example) {
+	static Str fileHandlerUrlNotPathOnly(Uri uri, Uri example) {
 		"Uri '${uri}' must only contain a path. e.g. `${example}`"
 	}
 
-	static Str fileHandlerUriMustStartWithSlash(Uri uri, Uri example) {
+	static Str fileHandlerUrlMustStartWithSlash(Uri uri, Uri example) {
 		"Uri '${uri}' must start with a slash. e.g. `${example}`"
 	}
 
-	static Str fileHandlerUriMustEndWithSlash(Uri uri) {
+	static Str fileHandlerUrlMustEndWithSlash(Uri uri) {
 		"Uri '${uri}' must end with a slash. e.g. `/foo/bar/`"
 	}
 	
-	static Str fileHandlerUriNotMapped(Uri uri) {
+	static Str fileHandlerUrlNotMapped(Uri uri) {
 		"Asset URI `${uri}` does NOT map to any known FileHandler prefixes."
 	}
 	
-	static Str fileHandlerUriDoesNotExist(Uri assetUri, File file) {
+	static Str fileHandlerUrlDoesNotExist(Uri assetUri, File file) {
 		"Asset URI `${assetUri}` does not exist -> ${file.normalize.osPath}"
 	}
 	
