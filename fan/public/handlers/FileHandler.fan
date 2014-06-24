@@ -16,22 +16,44 @@ using concurrent
 ** }
 ** <pre
 ** 
-** Use the 'fromServerFile()' method to generate URLs to be used by the browser. Example:
+** Use the 'fromServerFile()' to generate client URLs to be used by the browser. Example:
 ** 
 **   // note how the file uses a relative URL
 **   fromServerFile(`etc/web/css/mystyle.css`.toFile).clientUrl // --> `/pub/css/mystyle.css` 
 ** 
 ** Now when the browser requests the URL '/pub/css/mystyle.css', 'BedSheet' will return the file '<app>/etc/web/css/mystyle.css'.
 ** 
-** It is common to serve files from the root uri:
+** It is common to serve files from the root URL:
 ** 
 **   conf[`/`] = `etc/web/`
 ** 
-** The 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
+** That way 'etc/web/' may contain 'etc/web/css/', 'etc/web/images/' and 'etc/web/scripts/'.
+** 
+** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
 ** It also contains path segments as provided by any asset caching strategies, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
 ** 
-** `Route` mappings are automatically added to the `Routes` service, and are sandwiched in between 'FileHanderStart' and 
-** 'FileHandlerEnd' place holders. Use these when 'Route' precedence is important:
+** 
+** 
+** Fail Fast [#failFast]
+** =====================
+** An understated advantage of using 'FileHandler' to generate URLs for your assets is that it fails fast.
+** 
+** Should an asset not exist on the file system (due to a bodged rename, a case sensitivity issue, or other) then 'FileHandler' will throw an Err on the server when the client URI is constructed.
+** This allows your web tests to quickly pick up these tricky errors.
+** 
+** The lesser appealing alternative is for the incorrect URL to be served to the browser which on following, will subsequently receive a '404 - Not Found'.
+** While this may not seem a big deal, these errors often go unnoticed and easily find their way into production.
+** 
+** 
+** 
+** Precedence with Other Routes [#RoutePrecedence] 
+** ===============================================
+** the 'FileHandler' directory mappings are automatically added to the `Routes` service on startup.
+** That means it is possible to specify a 'Route' URL with more than one handler; a custom handler *and* this 'FileHandler'.
+** With a bit of configuration it is possible to specify which takes precedence. 
+**   
+** The 'FileHandler' route contributions are sandwiched between 'FileHanderStart' and 'FileHandlerEnd' place holders. 
+** When 'Route' precedence is important, use these place holders in your config: 
 ** 
 ** pre>
 ** @Contribute { serviceId="Routes" }
@@ -64,7 +86,7 @@ const mixin FileHandler {
 	
 	** Hook for asset caching strategies to advise and transform URLs.
 	@NoDoc
-	abstract Uri toClientUrl(Uri localUrl)
+	abstract Uri toClientUrl(Uri localUrl, File file)
 	
 	** Removes the given 'FileAsset' from the internal cache.
 	@NoDoc	// hide the leaky abstraction
@@ -159,7 +181,7 @@ internal const class FileHandlerImpl : FileHandler {
 			localUrl	:= prefix + remaining.toUri
 			modBaseUrl	:= (Actor.locals["web.req"] != null && httpRequest.modBase != `/`) ? httpRequest.modBase : ``
 			fileHandler	:= (FileHandler) registry.serviceById(FileHandler#.qname)
-			clientUrl	:= modBaseUrl.plusSlash + fileHandler.toClientUrl(localUrl)
+			clientUrl	:= modBaseUrl.plusSlash + fileHandler.toClientUrl(localUrl, file)
 			
 			return FileAsset {
 				it.file 		= f
@@ -173,7 +195,7 @@ internal const class FileHandlerImpl : FileHandler {
 		}
 	}
 	
-	override Uri toClientUrl(Uri localUrl) {
+	override Uri toClientUrl(Uri localUrl, File file) {
 		// add any extra 'WebMod' path segments to reach BedSheet WebMod - but only if we're part of a web request!
 		(Actor.locals["web.req"] != null && httpRequest.modBase != `/`) ? httpRequest.modBase.plusSlash + localUrl : localUrl
 	}
@@ -185,49 +207,5 @@ internal const class FileHandlerImpl : FileHandler {
 	override Void clear() {
 		fileCache.clear
 	}
-	
-//	override File? fromClientUrl(Uri clientUrl, Bool checked := true) {
-//		if (clientUrl.host != null || !clientUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
-//			throw ArgErr(BsErrMsgs.fileHandlerUrlNotPathOnly(clientUrl, `/css/myStyles.css`))
-//		if (!clientUrl.isPathAbs)
-//			throw ArgErr(BsErrMsgs.fileHandlerUrlMustStartWithSlash(clientUrl, `/css/myStyles.css`))
-//		
-//		// TODO: what if 2 dirs map to the same url? 
-//		// match the deepest uri
-//		prefix 	:= (Uri?) directoryMappings.keys.findAll { clientUrl.toStr.startsWith(it.toStr) }.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
-//		if (prefix == null)
-//			return null ?: (checked ? throw BedSheetNotFoundErr(BsErrMsgs.fileHandlerUrlNotMapped(clientUrl), directoryMappings.keys) : null)
-//
-//		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
-//		// The 'false' appends a '/' automatically - it's nicer web behaviour
-//		remaining := clientUrl.getRange(prefix.path.size..-1).relTo(`/`)
-//		file	  := directoryMappings[prefix].plus(remaining, false)
-//
-//		fileMeta  := fileCache[file]
-//		
-//		if (checked && !fileMeta.exists)
-//			throw ArgErr(BsErrMsgs.fileHandlerUrlDoesNotExist(clientUrl, file))
-//
-//		return fileMeta.exists ? file : null
-//	}
-//
-//	override Uri fromServerFile(File assetFile) {
-//		fileMeta  := fileCache[assetFile]
-//		if (fileMeta.isDir)
-//			throw ArgErr(BsErrMsgs.fileHandlerAssetFileIsDir(assetFile))
-//		if (!fileMeta.exists)
-//			throw ArgErr(BsErrMsgs.fileHandlerAssetFileDoesNotExist(assetFile))
-//		
-//		assetUriStr := assetFile.normalize.uri.toStr
-//		prefix  	:= directoryMappings.findAll |file, uri->Bool| { assetUriStr.startsWith(file.uri.toStr) }.keys.sort |u1, u2 -> Int| { u1.toStr.size <=> u2.toStr.size }.last
-//		if (prefix == null)
-//			throw BedSheetNotFoundErr(BsErrMsgs.fileHandlerAssetFileNotMapped(assetFile), directoryMappings.vals.map { it.osPath })
-//		
-//		matchedFile := directoryMappings[prefix]
-//		remaining	:= assetUriStr[matchedFile.uri.toStr.size..-1]
-//		assetUri	:= prefix + remaining.toUri
-//		
-//		return assetUri
-//	}
 }
 

@@ -46,4 +46,19 @@ const class FileAsset {
 	const Uri?		clientUrl
 	
 	internal new make(|This|in) { in(this) }
+	
+	@NoDoc
+	override Int hash() {
+		file.hash
+	}
+	
+	@NoDoc
+	override Bool equals(Obj? obj) {
+		file == (obj as FileAsset)?.file
+	}
+	
+	** Returns 'clientUrl' so this can be printed in HTML.
+	override Str toStr() {
+		clientUrl ?: file.toStr
+	}
 }
