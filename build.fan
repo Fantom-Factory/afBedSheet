@@ -5,14 +5,14 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version("1.3.10")
+		version = Version("1.3.11")
 
 		meta = [	
 			"proj.name"			: "BedSheet",
 			"stackOverflow.tag"	: "afbedsheet",
 			"afIoc.module"		: "afBedSheet::BedSheetModule",
 			"tags"				: "web",
-			"repo.private"		: "false"
+			"repo.private"		: "true"
 		]
 
 		index = [
