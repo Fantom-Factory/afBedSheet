@@ -47,6 +47,7 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/test-src/***`, 		FileHandler#service))
 		conf.add(Route(`/test-src2/***`, 		FileHandler#service))
+		conf.add(Route(`/fh/test-src/***`, 		T_PageHandler#altFileHandler))
 		
 		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
 
@@ -77,5 +78,10 @@ internal const class T_AppModule {
 	@Contribute { serviceType=FileHandler# }
 	static Void contributeFileMapping(MappedConfig conf) {
 		conf[`/test-src/`] = `test/app-web/`.toFile
+	}
+
+	@Contribute { serviceType=RegistryStartup# }
+	static Void contributeRegStartup(OrderedConfig conf) {
+		conf.remove("afIoc.showBanner")
 	}
 }

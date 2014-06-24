@@ -7,7 +7,7 @@ using afIoc::Registry
 using afIoc::RegistryBuilder
 using afIocConfig::IocConfigSource
 
-** The top-level `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
+** The `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
 	private const static Log log := Utils.getLog(BedSheetWebMod#)
 

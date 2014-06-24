@@ -4,8 +4,8 @@ using webmod
 using afIoc
 //using afBedSheet
 
-class MainPoo {
-	
+internal
+class MainPoo {	
 	Void main() {
 		mod := RouteMod { it.routes = [
 			"poo" : BedSheetWebMod(TinyBedAppModule#.qname, 8069)
@@ -17,6 +17,7 @@ class MainPoo {
 	}
 }
 
+internal
 class TinyBedAppModule {
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(OrderedConfig conf) {

@@ -40,7 +40,7 @@ internal const class ValueEncodingErr : ReProcessErr {
 }
 
 ** A generic 'NotFoundErr'.
-internal const class BedSheetNotFoundErr : BedSheetErr, NotFoundErr {
+internal const class BedSheetNotFoundErr : ArgErr, NotFoundErr {
 	override const Str?[] availableValues
 	
 	new make(Str msg, Obj?[] availableValues, Err? cause := null) : super(msg, cause) {
