@@ -61,44 +61,40 @@ internal const class BsErrMsgs {
 	
 	// ---- FileHandler ----
 	
-	static Str fileHandlerFileNotExist(File file) {
+	static Str fileHandler_dirNotFound(File file) {
 		"Directory '${file.normalize.osPath}' does not exist"		
 	}
 	
-	static Str fileHandlerFileNotDir(File file) {
+	static Str fileHandler_notDir(File file) {
 		"File '${file.normalize.osPath}' is not a directory"
 	}
 
-	static Str fileHandlerUrlNotPathOnly(Uri uri, Uri example) {
+	static Str fileHandler_urlNotPathOnly(Uri uri, Uri example) {
 		"Uri '${uri}' must only contain a path. e.g. `${example}`"
 	}
 
-	static Str fileHandlerUrlMustStartWithSlash(Uri uri, Uri example) {
+	static Str fileHandler_urlMustStartWithSlash(Uri uri, Uri example) {
 		"Uri '${uri}' must start with a slash. e.g. `${example}`"
 	}
 
-	static Str fileHandlerUrlMustEndWithSlash(Uri uri) {
+	static Str fileHandler_urlMustEndWithSlash(Uri uri) {
 		"Uri '${uri}' must end with a slash. e.g. `/foo/bar/`"
 	}
 	
-	static Str fileHandlerUrlNotMapped(Uri uri) {
+	static Str fileHandler_urlNotMapped(Uri uri) {
 		"Asset URI `${uri}` does NOT map to any known FileHandler prefixes."
 	}
 	
-	static Str fileHandlerUrlDoesNotExist(Uri assetUri, File file) {
-		"Asset URI `${assetUri}` does not exist -> ${file.normalize.osPath}"
+	static Str fileHandler_notFile(File file) {
+		"File `${file.normalize.osPath}` is a directory!?"
 	}
 	
-	static Str fileHandlerAssetFileIsDir(File assetFile) {
-		"Asset File `${assetFile.normalize.osPath}` is a directory!?"
+	static Str fileHandler_fileNotFound(File file) {
+		"File `${file.normalize.osPath}` does not exist."
 	}
 	
-	static Str fileHandlerAssetFileDoesNotExist(File assetFile) {
-		"Asset File `${assetFile.normalize.osPath}` does not exist."
-	}
-	
-	static Str fileHandlerAssetFileNotMapped(File assetFile) {
-		"Asset File `${assetFile.normalize.osPath}` does NOT map to any known FileHandler directories."
+	static Str fileHandler_fileNotMapped(File file) {
+		"File `${file.normalize.osPath}` does NOT map to any known FileHandler directories."
 	}
 	
 	// ---- Pipeline Service Messages -------------------------------------------------------------

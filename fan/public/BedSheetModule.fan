@@ -42,7 +42,6 @@ const class BedSheetModule {
 		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
 		binder.bind(BedSheetPages#)
 		binder.bind(RequestLogMiddleware#)
-		binder.bind(FileMetaCache#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -116,6 +115,7 @@ const class BedSheetModule {
 	static Void contributeResponseProcessors(MappedConfig conf, HttpStatusProcessors httpStatusProcessor) {
 		conf[Text#]				= conf.autobuild(TextResponseProcessor#)
 		conf[File#]				= conf.autobuild(FileResponseProcessor#)
+		conf[FileAsset#]		= conf.autobuild(FileAssetResponseProcessor#)
 		conf[Redirect#]			= conf.autobuild(RedirectResponseProcessor#)
 		conf[InStream#]			= conf.autobuild(InStreamResponseProcessor#)
 		conf[MethodCall#]		= conf.autobuild(MethodCallResponseProcessor#)

@@ -42,11 +42,21 @@ internal class TestFileHandling : AppTest {
 	}
 
 	Void testFolderNonSlash() {
-		verifyStatus(`/test-src/folder`, 403)
+		// this directly returns a File object
+		verifyStatus(`fh/test-src/folder`, 403)
+		
+		// this returns a FileAsset object via FileHandler
+		client = WebClient()
+		verifyStatus(`/test-src/folder`, 404)
 	}
 
 	Void testFolder() {
-		verifyStatus(`/test-src/folder/`, 403)
+		// this directly returns a File object
+		verifyStatus(`fh/test-src/folder/`, 403)
+		
+		// this returns a FileAsset object via FileHandler
+		client = WebClient()
+		verifyStatus(`/test-src/folder/`, 404)
 	}
 
 	Void testSillyUser() {
