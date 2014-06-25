@@ -19,7 +19,7 @@ internal const class ErrMiddleware : Middleware {
 	override Bool service(MiddlewarePipeline pipeline) {
 		firstErr := null
 		response := null
-		
+
 		// the double try 
 		try {
 			

@@ -27,6 +27,7 @@
 **       conf.addOrdered("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
 **   }
 ** <pre
+// Used by Duvet
 const mixin Middleware {
 
 	** Return 'true' if you handled the request and no further request processing should be performed. 
