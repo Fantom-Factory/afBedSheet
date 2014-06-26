@@ -265,7 +265,7 @@ const class BedSheetModule {
 		conf.add |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
-		conf.remove("afIoc.showServices", "afBedSheet.showServices")
+		conf.remove("afIoc.logServices", "afBedSheet.logServices")
 	}
 
 	@Contribute { serviceType=RegistryShutdown# }
