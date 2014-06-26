@@ -18,6 +18,8 @@ Future
 ------
 1.4.0 - Middleware doesn't *need* to return Bool - never used. Should we remove it?
 
+Re-think middleware pipeline processing -> maybe have a pipeline for each type of response?
+
 TODO: Move the app-restarting into separate thread which checks every X secs
 
 Logging filter with reqId, SessId and configurable userId
