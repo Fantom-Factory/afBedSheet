@@ -3,7 +3,7 @@
 **
 ** pre>
 ** @Contribute { serviceType=Routes# }
-** static Void contributeRoutes(OrderedConfig conf) {
+** static Void contributeRoutes(Configuration conf) {
 **   ...
 **   conf.add(Route(`/pod/***`, PodHandler#service))
 **   ...

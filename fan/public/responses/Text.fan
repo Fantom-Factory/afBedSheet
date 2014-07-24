@@ -17,17 +17,13 @@ using util::JsonOutStream
 ** <pre
 ** 
 ** Note: prior to Fantom 1.0.66 the charset will always default to UTF-8 regardless of what Text is
-** contructed with. See `http://fantom.org/sidewalk/topic/2166#c13992`.
+** constructed with. See `http://fantom.org/sidewalk/topic/2166#c13992`.
 const final class Text {
 	const Str 		text
 	const MimeType	contentType
 	
-	@NoDoc @Deprecated { msg="Use contentType insead" }
-	const MimeType	mimeType
-	
 	private new make(Str text, MimeType contentType) {
 		this.text 		 = text
-		this.mimeType 	 = contentType
 		this.contentType = contentType
 	}
 

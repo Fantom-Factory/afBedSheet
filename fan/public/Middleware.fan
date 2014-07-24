@@ -23,8 +23,8 @@
 ** 
 ** pre>
 **   @Contribute { serviceType=MiddlewarePipeline# }
-**   static Void contributeMiddleware(OrderedConfig conf) {
-**       conf.addOrdered("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
+**   static Void contributeMiddleware(Configuration conf) {
+**       conf.set("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
 **   }
 ** <pre
 // Used by Duvet

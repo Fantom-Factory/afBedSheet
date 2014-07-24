@@ -6,7 +6,7 @@ using afIoc::Registry
 ** 
 ** Responsible for routing URIs to request handlers.
 ** 
-** @uses an OrderedConfig of 'Route'
+** @uses a Configuration of 'Route[]'
 @NoDoc	// don't overwhelm the masses!
 const mixin Routes {
 

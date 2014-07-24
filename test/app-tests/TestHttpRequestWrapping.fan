@@ -17,14 +17,14 @@ internal class TestHttpRequestWrapping : AppTest {
 
 internal class T_HttpReqWrapMod1 {
 	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(OrderedConfig conf) {
-		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
-		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
+	static Void contributeRoutes(Configuration conf) {
+		conf.add(Route(`/httpReq1`,	T_PageHandler#httpReq1))
+		conf.add(Route(`/httpReq2`,	T_PageHandler#httpReq2))
 	}
 	
 	@Contribute { serviceId="HttpRequest" }
-	static Void contributeHttpRequest(OrderedConfig conf) {
-		conf.addOrdered("HttpRequestWrapperBuilder", conf.autobuild(T_HttpRequestWrapperBuilder#))
+	static Void contributeHttpRequest(Configuration conf) {
+		conf["HttpRequestWrapperBuilder"] = conf.autobuild(T_HttpRequestWrapperBuilder#)
 	}
 }
 

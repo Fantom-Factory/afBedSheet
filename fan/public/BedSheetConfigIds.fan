@@ -5,7 +5,7 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void configureApplicationDefaults(MappedConfig conf) {
+** static Void configureApplicationDefaults(Configuration conf) {
 **   conf[BedSheetConfigIds.gzipThreshold] = 500
 ** }
 ** <pre

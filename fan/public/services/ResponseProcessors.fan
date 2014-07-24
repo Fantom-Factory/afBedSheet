@@ -1,7 +1,7 @@
 
 ** (Service) - Contribute your `ResponseProcessor` implementations to this.
 ** 
-** @uses a MappedConfig of 'Type:ResponseProcessor'
+** @uses a Configuration of 'Type:ResponseProcessor'
 @NoDoc	// don't overwhelm the masses!
 const mixin ResponseProcessors {
 

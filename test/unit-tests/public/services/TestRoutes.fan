@@ -33,7 +33,7 @@ internal class T_MyModule02 {
 	}	
 
 	@Contribute { serviceType=Routes# }
-	static Void contribute(OrderedConfig conf) {
+	static Void contribute(Configuration conf) {
 		conf.add(Route(`/1/***`,		TestRoutes#handler1))
 		conf.add(Route(`/1/2/***`,		TestRoutes#handler2))
 		conf.add(Route(`/1/2/3/***`,	TestRoutes#handler3))
@@ -42,7 +42,7 @@ internal class T_MyModule02 {
 	}
 	
 	@Contribute { serviceType=ResponseProcessors# }
-	static Void contributeResponseProcessors(MappedConfig conf) {
-		conf[MethodCall#]		= conf.autobuild(MethodCallResponseProcessor#)
+	static Void contributeResponseProcessors(Configuration conf) {
+		conf[MethodCall#]	= conf.autobuild(MethodCallResponseProcessor#)
 	}
 }

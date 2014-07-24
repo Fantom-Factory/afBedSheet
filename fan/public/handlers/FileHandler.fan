@@ -11,7 +11,7 @@ using concurrent
 ** 
 ** pre>
 ** @Contribute { serviceType=FileHandler# }
-** static Void contributeFileHandler(MappedConfig conf) {
+** static Void contributeFileHandler(Configuration conf) {
 **   conf[`/pub/`] = `etc/web/`.toFile
 ** }
 ** <pre
@@ -52,22 +52,22 @@ using concurrent
 ** That means it is possible to specify a 'Route' URL with more than one handler; a custom handler *and* this 'FileHandler'.
 ** With a bit of configuration it is possible to specify which takes precedence. 
 **   
-** The 'FileHandler' route contributions are sandwiched between 'FileHanderStart' and 'FileHandlerEnd' place holders. 
+** The 'FileHandler' route contributions are sandwiched between 'afBedSheet.fileHanderStart' and 'afBedSheet.fileHandlerEnd' place holders. 
 ** When 'Route' precedence is important, use these place holders in your config: 
 ** 
 ** pre>
-** @Contribute { serviceId="Routes" }
-** static Void contributeRoutes(OrderedConfig config) {
+** @Contribute { serviceType=Routes# }
+** static Void contributeRoutes(Configuration config) {
 ** 
 **   // this Route will be served in place of the file 'uri1.txt'
-**   config.addOrdered("uri1", Route(`/uri1.txt`, ...), ["before: FileHandlerStart"])
+**   config.set("uri1", Route(`/uri1.txt`, ...)).before("afBedSheet.fileHandlerStart")
 ** 
 **   // this Route will be served if there is no file called 'uri.txt'
-**   config.addOrdered("uri2", Route(`/uri2.txt`, ...), ["after: FileHandlerEnd"])
+**   config.set("uri2", Route(`/uri2.txt`, ...)).after("afBedSheet.fileHandlerEnd")
 ** }
 ** <pre
 ** 
-** @uses MappedConfig of 'Uri:File'
+** @uses Configuration of 'Uri:File'
 const mixin FileHandler {
 
 	** Returns the map of URL to directory mappings

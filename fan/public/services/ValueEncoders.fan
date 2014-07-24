@@ -1,7 +1,7 @@
 
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
-** @uses a MappedConfig of 'Type:ValueEncoder' where 'Type' is what the 'ValueEncoder', um, encodes!
+** @uses a Configuration of 'Type:ValueEncoder' where 'Type' is what the 'ValueEncoder', um, encodes!
 @NoDoc	// don't overwhelm the masses!
 const mixin ValueEncoders {
 	
