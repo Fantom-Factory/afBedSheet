@@ -69,9 +69,14 @@ const final class Text {
 		return fromMimeStr(text, "application/json", charset)
 	}
 
-	** Creates a 'Text' with the given mime type.
+	@NoDoc @Deprecated { msg="Use 'fromContentType()' instead" }
 	static new fromMimeType(Str text, MimeType mimeType) {
-		Text.make(text, mimeType)
+		fromContentType(text, mimeType)
+	}
+
+	** Creates a 'Text' with the given content type.
+	static new fromContentType(Str text, MimeType contentType) {
+		Text.make(text, contentType)
 	}
 
 	private static new fromMimeStr(Str text, Str mimeType, Charset charset) {
@@ -79,6 +84,6 @@ const final class Text {
 	}
 	
 	override Str toStr() {
-		"${contentType.mediaType}/${contentType.subType}::${text}"
+		"${contentType.noParams}::${text}"
 	}
 }

@@ -57,13 +57,15 @@ const class HttpRequestHeaders {
 		private set { }
 	}
 
+	// Set as a Str because URI normalises it to always have a trailing slash when by default, 
+	// host doesn't have one
 	** The domain name of the server (for virtual hosting), and the TCP port number on which the 
 	** server is listening. The port number may be omitted if the port is the standard port for 
 	** the service requested.
 	** 
 	** Example: 'Host: www.alienfactory.co.uk:8069'
-	Uri? host {
-		get { headers["Host"]?.toUri }
+	Str? host {
+		get { headers["Host"] }
 		private set { }
 	}
 

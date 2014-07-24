@@ -29,12 +29,12 @@ class Build : BuildPod {
 			"inet 1.0",
 	
 			// ---- Core ------------------------
-			"afBeanUtils 1.0.0+",
+			"afBeanUtils 1.0.2+",
 			"afConcurrent 1.0.6+",
-			"afPlastic 1.0.14+",
-			"afIoc 1.6.4+", 
-			"afIocConfig 1.0.8+", 
-			"afIocEnv 1.0.6+", 
+			"afPlastic 1.0.16+",
+			"afIoc 1.7.2+", 
+			"afIocConfig 1.0.10+", 
+			"afIocEnv 1.0.8+", 
 			
 			// ---- Test ------------------------
 			"xml 1.0"
