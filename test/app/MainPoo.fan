@@ -20,7 +20,7 @@ class MainPoo {
 internal
 class TinyBedAppModule {
 	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(OrderedConfig conf) {
+	static Void contributeRoutes(Configuration conf) {
 		conf.add(Route(`/***`, Text.fromPlain("Hello Mum!")))
 	}	
 }

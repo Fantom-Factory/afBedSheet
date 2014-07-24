@@ -123,8 +123,8 @@ internal class T_PipeMod {
 	}
 	
 	@Contribute { serviceType=ActorPools# }
-	static Void contributeActorPools(MappedConfig config) {
-		config["afBedSheet.system"] = ActorPool()
+	static Void contributeActorPools(Configuration config) {
+		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
 	}	
 }
 

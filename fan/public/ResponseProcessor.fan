@@ -13,7 +13,7 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ResponseProcessors# }
-** static Void contributeResponseProcessors(MappedConfig config) {
+** static Void contributeResponseProcessors(Configuration config) {
 **     config[User#] = UserInfoPage()
 ** }
 ** <pre

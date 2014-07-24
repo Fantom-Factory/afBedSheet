@@ -11,7 +11,7 @@ using afIocConfig::Config
 ** 
 ** pre>
 **   @Contribute { serviceType=ApplicationDefaults# } 
-**   static Void contributeAppDefaults(MappedConfig conf) {
+**   static Void contributeAppDefaults(Configuration conf) {
 **     conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
 **     conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log" // (optional)
 **   }

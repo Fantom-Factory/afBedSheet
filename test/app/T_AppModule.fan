@@ -8,7 +8,7 @@ internal const class T_AppModule {
 	}
 
 	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(OrderedConfig conf, BedSheetPages bedSheetPages) {
+	static Void contributeRoutes(Configuration conf, BedSheetPages bedSheetPages) {
 		conf.add(Route(`/textResult/plain`,		T_PageHandler#plain))
 		conf.add(Route(`/textResult/html`,	 	T_PageHandler#html))
 		conf.add(Route(`/textResult/xml`, 		T_PageHandler#xml))
@@ -64,24 +64,24 @@ internal const class T_AppModule {
 
 	
 	@Contribute { serviceType=ApplicationDefaults# } 
-	static Void contributeApplicationDefaults(MappedConfig conf) {
+	static Void contributeApplicationDefaults(Configuration conf) {
 		conf[BedSheetConfigIds.gzipThreshold] 			= 50
 //		conf[BedSheetConfigIds.httpRequestLogDir] 		= `./`.toFile
 		conf[BedSheetConfigIds.responseBufferThreshold]	= 1 * 1024
 	}
 	
 	@Contribute { serviceType=ValueEncoders# }
-	static Void contributeValueEncoders(MappedConfig conf) {
+	static Void contributeValueEncoders(Configuration conf) {
 		conf[Pinky#] = T_PinkyEncoder()
 	}
 
 	@Contribute { serviceType=FileHandler# }
-	static Void contributeFileMapping(MappedConfig conf) {
+	static Void contributeFileMapping(Configuration conf) {
 		conf[`/test-src/`] = `test/app-web/`.toFile
 	}
 
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegStartup(OrderedConfig conf) {
+	static Void contributeRegStartup(Configuration conf) {
 		conf.remove("afIoc.showBanner")
 	}
 }

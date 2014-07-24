@@ -69,26 +69,26 @@ internal class TestBoom : AppTest {
 
 internal class T_TestBoomMod1 {
     @Contribute { serviceType=ServiceOverrides# }
-    static Void contributeServiceOverride(MappedConfig config) {
+    static Void contributeServiceOverride(Configuration config) {
         config["IocEnv"] = IocEnv.fromStr("dev")
     }
 }
 
 internal class T_TestBoomMod2 {
     @Contribute { serviceType=ServiceOverrides# }
-    static Void contributeServiceOverride(MappedConfig config) {
+    static Void contributeServiceOverride(Configuration config) {
         config["IocEnv"] = IocEnv.fromStr("prod")
     }
 }
 
 internal class T_TestBoomMod3 {
 	@Contribute { serviceType=ErrPrinterHtml# } 
-	static Void contributeErrPrinterHtml(OrderedConfig config) {
-		config.addOrdered("Die", |WebOutStream out, Err? err| { throw Err("Ouch!") }, ["before: RequestDetails"])
+	static Void contributeErrPrinterHtml(Configuration config) {
+		config.set("Die", |WebOutStream out, Err? err| { throw Err("Ouch!") }).before("afBedSheet.requestDetails")
 	}
 
 	@Contribute { serviceType=ErrPrinterStr# } 
-	static Void contributeErrPrinterStr(OrderedConfig config) {
-		config.addOrdered("Die", |StrBuf out, Err? err| { throw Err("Ouch!") }, ["before: RequestDetails"])
+	static Void contributeErrPrinterStr(Configuration config) {
+		config.set("Die", |StrBuf out, Err? err| { throw Err("Ouch!") }).before("afBedSheet.requestDetails")
 	}
 }

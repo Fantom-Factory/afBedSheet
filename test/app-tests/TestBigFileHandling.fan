@@ -1,7 +1,7 @@
 using web::WebClient
 using afIoc::Contribute
 using afIoc::Inject
-using afIoc::MappedConfig
+using afIoc::Configuration
 using afIocConfig::ApplicationDefaults
 
 ** FileResponseProcessor sets the Content_Length, need to make sure it gets overwritten properly
@@ -49,7 +49,7 @@ internal class TestBigFileHandling : AppTest {
 
 internal class T_TestBigFileHandlingBigBuffMod {
 	@Contribute { serviceType=ApplicationDefaults# } 
-	static Void contributeApplicationDefaults(MappedConfig conf) {
-		conf.setOverride(BedSheetConfigIds.responseBufferThreshold, 20 * 1024)
+	static Void contributeApplicationDefaults(Configuration conf) {
+		conf.overrideValue(BedSheetConfigIds.responseBufferThreshold, 20 * 1024)
 	}
 }

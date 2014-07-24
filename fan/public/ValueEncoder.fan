@@ -20,7 +20,7 @@
 ** 
 ** pre>
 **   @Contribute { serviceType=ValueEncoders# }
-**   static Void contributeValueEncoders(MappedConfig conf) {
+**   static Void contributeValueEncoders(Configuration conf) {
 **     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)
 **   }
 ** <pre

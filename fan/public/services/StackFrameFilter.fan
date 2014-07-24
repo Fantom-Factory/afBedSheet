@@ -7,7 +7,7 @@
 ** Example, to remove lines that start with 'afIoc::':
 ** 
 **   @Contribute { serviceType=StackFrameFilter# }
-**   static Void contributeStackFrameFilter(OrderedConfig config) {
+**   static Void contributeStackFrameFilter(Configuration config) {
 **       config.add("^afIoc::.*\$")
 **   }
 @NoDoc

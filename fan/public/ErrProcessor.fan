@@ -12,7 +12,7 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void configureApplicationDefaults(MappedConfig conf) {
+** static Void configureApplicationDefaults(Configuration conf) {
 **   conf[BedSheetConfigIds.defaultErrProcessor] = MyStatusPage()
 ** }
 ** <pre
@@ -29,7 +29,7 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ErrProcessors# }
-** static Void contributeErrProcessors(MappedConfig config) {
+** static Void contributeErrProcessors(Configuration config) {
 **     config[Err#] = CatchAllErrHandler()
 ** }
 ** <pre

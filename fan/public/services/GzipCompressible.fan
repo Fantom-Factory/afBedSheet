@@ -4,7 +4,7 @@
 ** 
 ** pre>
 **  @Contribute { serviceType=GzipCompressible# }
-**  static Void configureGzipCompressible(MappedConfig conf) {
+**  static Void configureGzipCompressible(Configuration conf) {
 **     conf[MimeType("text/funky")] = true
 **  }
 ** <pre
