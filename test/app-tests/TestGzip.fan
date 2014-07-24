@@ -9,6 +9,7 @@ internal class TestGzip : AppTest {
 
 		verifyEq(client.resHeaders["Content-Encoding"], "gzip")
 		verifyEq(client.resHeaders["Content-Length"], 	"73")
+		verifyEq(client.resHeaders["Vary"], 			"Accept-Encoding")
 		
 		res := Zip.gzipInStream(client.resIn).readAllStr.trim
 		verifyEq(res, "This is a gzipped message. No really! Need 5 more bytes!")
@@ -38,6 +39,7 @@ internal class TestGzip : AppTest {
 		
 		verifyEq(client.resHeaders["Content-Encoding"], "gzip")
 		verifyEq(client.resHeaders["Content-Length"], 	"73")
+		verifyEq(client.resHeaders["Vary"], 			"Accept-Encoding")
 
 		res := Zip.gzipInStream(client.resIn).readAllStr.trim
 		verifyEq(res, "This is a gzipped message. No really! Need 5 more bytes!")

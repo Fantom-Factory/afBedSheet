@@ -64,9 +64,9 @@ internal const class ErrMiddleware : Middleware {
 	
 	private Void setStackTraceHeader(Err err) {
 		if (!httpResponse.isCommitted && !inProd) {
-			addHeader("X-BedSheet-errMsg", 			err.msg)
-			addHeader("X-BedSheet-errType", 		err.typeof.qname)
-			addHeader("X-BedSheet-errStackTrace",	Utils.traceErr(err, 100))
+			addHeader("X-afBedSheet-errMsg", 		err.msg)
+			addHeader("X-afBedSheet-errType", 		err.typeof.qname)
+			addHeader("X-afBedSheet-errStackTrace",	Utils.traceErr(err, 100))
 		}
 	}
 	

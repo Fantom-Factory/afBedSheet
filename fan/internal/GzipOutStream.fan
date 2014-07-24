@@ -91,6 +91,9 @@ internal class GzipOutStream : OutStream {
 				// - so we remove any previously set length 
 				response.headers.remove("Content-Length")
 				response.headers.contentEncoding = "gzip"
+				
+				// see http://blog.maxcdn.com/accept-encoding-its-vary-important/
+				response.headers.vary = "Accept-Encoding"
 			}
 			bufOut = Zip.gzipOutStream(wrappedOut)
 			writeBufToOut

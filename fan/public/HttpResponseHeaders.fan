@@ -92,6 +92,17 @@ const class HttpResponseHeaders {
 		set { addOrRemove("Pragma", it) }
 	}
 
+	** Tells downstream proxies how to match future request headers to decide whether the cached 
+	** response can be used rather than requesting a fresh one from the origin server.
+	** 
+	** Example: 'Vary: Accept-Encoding'
+	** 
+	** @see [Accept-Encoding, It’s Vary important]`http://blog.maxcdn.com/accept-encoding-its-vary-important/`
+	Str? vary {
+		get { headers["Vary"] }
+		set { addOrRemove("Vary", it) }
+	}
+
 	** Clickjacking protection, set to:
 	**  - 'deny' - no rendering within a frame, 
 	**  - 'sameorigin' - no rendering if origin mismatch
