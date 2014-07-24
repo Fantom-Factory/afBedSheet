@@ -56,6 +56,7 @@ internal const class ErrMiddleware : Middleware {
 				errText := bedSheetPages.renderErr(doubleErr, !inProd)
 				httpResponse.statusCode = 500
 				httpResponse.headers.contentType = errText.contentType
+				httpResponse.headers.cacheControl = "private, max-age=0, no-store"
 				httpResponse.out.print(errText.text)
 			}
 			return true
