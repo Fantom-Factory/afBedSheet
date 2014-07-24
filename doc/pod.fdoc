@@ -531,7 +531,10 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.12 [#v1.3.12]
 ------------------
+ - New: Added 'HttpResponseHeaders.vary'.
  - Chg: Updated to use [IoC 1.7.2]`pod:afIoc`.
+ - Chg: Gzip responses also set a HTTP header of 'Vary: Accept-Encoding'.
+ - Chg: Added the 'Cache-Control' HTTP response header to error pages to ensure they're never cached.
  - Chg: Renamed 'Text.fromMimeType()' -> 'Text.fromContentType()'.
  - Chg: 'HttpRequestHeaders.host' is now a 'Str'.
 

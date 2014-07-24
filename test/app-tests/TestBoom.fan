@@ -24,6 +24,9 @@ internal class TestBoom : AppTest {
 		verifyNotNull(client.resHeaders["X-afBedSheet-errMsg"])
 		verifyNotNull(client.resHeaders["X-afBedSheet-errType"])
 		verifyNotNull(client.resHeaders["X-afBedSheet-errStackTrace"])
+
+		// never cache error pages!
+		verifyEq(client.resHeaders["Cache-Control"], "private, max-age=0, no-store")
 	}
 
 	Void testBoomPageInProdModeIsNotScary() {
@@ -41,6 +44,9 @@ internal class TestBoom : AppTest {
 		verifyNull(client.resHeaders["X-afBedSheet-errMsg"])
 		verifyNull(client.resHeaders["X-afBedSheet-errType"])
 		verifyNull(client.resHeaders["X-afBedSheet-errStackTrace"])
+
+		// never cache error pages!
+		verifyEq(client.resHeaders["Cache-Control"], "private, max-age=0, no-store")
 	}
 
 	Void testErr500WithNoErr() {

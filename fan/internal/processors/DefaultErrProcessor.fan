@@ -24,6 +24,8 @@ internal const class DefaultErrProcessorImpl : DefaultErrProcessor {
 		if (!response.isCommitted)	// a sanity check
 			response.statusCode = 500
 		
+		response.headers.cacheControl = "private, max-age=0, no-store"
+		
 		return bedSheetPages.renderErr(err, !inProd)
 	}
 }
