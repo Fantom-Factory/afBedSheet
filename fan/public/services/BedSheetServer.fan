@@ -1,7 +1,7 @@
 using afIoc::Inject
 using afIoc::Registry
 using afIoc::RegistryMeta
-using afIocConfig::Config
+using afIocConfig::IocConfigSource
 using web::WebReq
 using concurrent
 
@@ -20,8 +20,12 @@ const mixin BedSheetServer {
 		appPod?.meta?.get("proj.name") ?: "Unknown"
 	}
 	
-	** The port BedSheet is running under.
-	abstract Int	port()	
+	** The port BedSheet is listening to.
+	abstract Int port()
+	
+	** The public facing domain used to create absolute URLs.
+	** This is set by 'BedSheetConfigIds.host'. 
+	abstract Uri host()
 	
 	** The options BedSheet was started with
 	abstract [Str:Obj] 	options()
@@ -59,13 +63,9 @@ const mixin BedSheetServer {
 internal const class BedSheetServerImpl : BedSheetServer {
 
 	// nullable for testing
-	@Inject private const RegistryMeta?	regMeta 
+	@Inject private const RegistryMeta?		regMeta 
+	@Inject private const IocConfigSource?	configSrc 
 	
-	// host is validated on startup
-	// nullable for testing
-	@Config { id="afBedSheet.host" }
-	@Inject private const Uri? 			host
-
 	new make(|This|in) { in(this) }
 	
 	override Pod? appPod() {
@@ -95,6 +95,13 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	override Uri path() {
 		// default to root for testing
 		webReq?.modBase ?: `/`
+	}
+
+	override Uri host() {
+		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
+		// DependencyProvider, so @Config is not available for injection then
+		// host is validated on startup, so we know it's okay
+		configSrc.get(BedSheetConfigIds.host, Uri#)
 	}
 	
 	override Uri toClientUrl(Uri localUrl) {

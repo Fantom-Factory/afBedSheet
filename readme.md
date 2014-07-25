@@ -36,7 +36,7 @@ class HelloPage {
 
 class AppModule {
   @Contribute { serviceType=Routes# }
-  static Void contributeRoutes(OrderedConfig conf) {
+  static Void contributeRoutes(Configuration conf) {
     conf.add(Route(`/index`, Text.fromPlain("Welcome to BedSheet!")))
     conf.add(Route(`/hello/**`, HelloPage#hello))
   }
@@ -119,7 +119,7 @@ using afBedSheet
 class AppModule {
 
     @Contribute { serviceType=Routes# }
-    static Void contributeRoutes(OrderedConfig conf) {
+    static Void contributeRoutes(Configuration conf) {
 
         conf.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
         conf.add(Route(`/index`, IndexPage#service))
@@ -276,7 +276,7 @@ To enable, just configure the directory where the logs should be written and (op
 
 ```
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(MappedConfig conf) {
+static Void contributeApplicationDefaults(Configuration conf) {
 
     conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
     conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log"

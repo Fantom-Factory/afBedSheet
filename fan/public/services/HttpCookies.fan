@@ -3,11 +3,6 @@ using web
 
 ** (Service) - Use to manage your Cookies.
 const mixin HttpCookies {
-	
-	** Retrieve a cookie by name.
-	** Returns 'null' if not found.
-	@Operator
-	abstract Cookie? get(Str name)
 
 	** Adds a Cookie to be sent to the client. 
 	** New cookies are sent via a 'Set-Cookie' HTTP response header.
@@ -21,6 +16,11 @@ const mixin HttpCookies {
 	** Throws Err if response is already committed.
 	** @see `web::WebRes.cookies`
 	abstract Void add(Cookie cookie)
+	
+	** Retrieve a cookie by name.
+	** Returns 'null' if not found.
+	@Operator
+	abstract Cookie? get(Str name)
 
 	** Deletes a cookie by name, returning the deleted cookie. 
 	** Returns 'null' if the cookie was not found.
