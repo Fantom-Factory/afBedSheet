@@ -42,6 +42,7 @@ internal const class ErrPrinterStrSections {
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	
+	@Inject	private const BedSheetServer	bedServer
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpSession		session
 	@Inject	private const HttpCookies		cookies
@@ -110,7 +111,7 @@ internal const class ErrPrinterStrSections {
 	Void printRequestDetails(StrBuf buf, Err? err) {
 		buf.add("\nRequest Details:\n")
 		map := [
-			"URI"			: request.uri,
+			"URI"			: bedServer.path + request.url.relTo(`/`),
 			"HTTP Method"	: request.httpMethod,
 			"HTTP Version"	: request.httpVersion
 		]

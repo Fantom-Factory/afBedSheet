@@ -46,6 +46,7 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const Int 			noOfStackFrames
 	
 	@Inject	private const StackFrameFilter	frameFilter
+	@Inject	private const BedSheetServer	bedServer
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpSession		session
 	@Inject	private const HttpCookies		cookies
@@ -143,7 +144,7 @@ internal const class ErrPrinterHtmlSections {
 	Void printRequestDetails(WebOutStream out, Err? err) {
 		title(out, "Request Details")
 		out.table
-		w(out, "URI",			request.uri)
+		w(out, "URI",			bedServer.path + request.url.relTo(`/`))
 		w(out, "HTTP Method",	request.httpMethod)
 		w(out, "HTTP Version",	request.httpVersion)
 		out.tableEnd

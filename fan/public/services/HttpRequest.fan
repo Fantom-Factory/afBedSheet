@@ -8,6 +8,18 @@ using inet::IpAddr
 ** This class is proxied and will always refer to the current web request.
 const mixin HttpRequest {
 
+	@NoDoc @Deprecated { msg="Use 'BedSheetServer.path()' instead" }
+	abstract Uri modBase()
+
+	@NoDoc @Deprecated { msg="Use 'url' instead" }
+	Uri modRel() { url }
+
+	@NoDoc @Deprecated { msg="Use 'BedSheetServer.absoluteUrl(url)' instead" }
+	abstract Uri absUri()
+
+	@NoDoc @Deprecated { msg="Use 'BedSheetServer.path + url.relTo(`/`)' instead" }
+	abstract Uri uri()
+
 	** Returns 'true' if an 'XMLHttpRequest', as specified by the 'X-Requested-With' HTTP header.
 	abstract Bool isXmlHttpRequest()
 	
@@ -31,27 +43,12 @@ const mixin HttpRequest {
 	** @see `web::WebReq.remotePort`
 	abstract Int remotePort()
 
-	** The request URI including the query string relative to this authority. Also see `absUri`, 
-	** `modBase`, `modRel`.
-	** 
-	** @see `web::WebReq.uri`
-	abstract Uri uri()
-
-	** The absolute request URI including the full authority and the query string.
-	** 
-	** @see `web::WebReq.absUri`
-	abstract Uri absUri()
-	
-	** Base uri of the current WebMod. Starts and ends with a '/'. Example, '/pub/'
-	** 
-	** @see `web::WebReq.modBase`
-	abstract Uri modBase()
-
-	** The URI relative to `BedSheetWebMod`. Always starts with a '/'. Example, '/index.html'
+	** The URL relative to `BedSheetWebMod`, includes query string and fragment. 
+	** Always starts with a '/'. Example, '/index.html'
 	** 
 	** @see `web::WebReq.modRel`
-	abstract Uri modRel()
-	
+	abstract Uri url()
+
 	** Map of HTTP request headers. The map is readonly and case insensitive.
 	** 
 	** @see `web::WebReq.headers`
@@ -85,7 +82,6 @@ const mixin HttpRequest {
 	** @see `web::WebReq.in`
 	abstract InStream in()
 	
-	
 	** 'Stash' allows you to store temporary data on the request, to easily pass it between services and objects.
 	** 
 	** It is good for a quick hack, but if you find yourself relying on it, considering making a thread scoped service instead. 
@@ -106,7 +102,7 @@ const class HttpRequestWrapper : HttpRequest {
 	override Uri uri() 						{ req.uri				}
 	override Uri absUri() 					{ req.absUri			}
 	override Uri modBase() 					{ req.modBase			}
-	override Uri modRel() 					{ req.modRel			}
+	override Uri url() 						{ req.url				}
 	override HttpRequestHeaders headers() 	{ req.headers			}
 	override [Str:Str]? form() 				{ req.form				}
 	override Locale[] locales() 			{ req.locales			}
@@ -149,7 +145,7 @@ internal const class HttpRequestImpl : HttpRequest {
 	override Uri modBase() {
 		webReq.modBase
 	}
-	override Uri modRel() {
+	override Uri url() {
 		rel := webReq.modRel
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel

@@ -25,6 +25,6 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 			return responseProcessors.processResponse(bedSheetPages.renderWelcome)
 		}
 
-		throw HttpStatusErr(statusCode, BsErrMsgs.route404(httpRequest.modRel, httpRequest.httpMethod))
+		throw HttpStatusErr(statusCode, BsErrMsgs.route404(httpRequest.url, httpRequest.httpMethod))
 	}	
 }

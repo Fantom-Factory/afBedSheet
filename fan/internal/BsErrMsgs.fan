@@ -51,8 +51,10 @@ internal const class BsErrMsgs {
 		"Could not find a cookie with the name '${cookieName}'"
 	}
 	
-	static Str startupHostMustHaveSchemeAndAuth(Str configName, Uri host) {
-		"@Config value '${configName}' must have a scheme and an auth, e.g. http://example.com - ${host}"
+	// ---- Startup Validation ----
+	
+	static Str startupHostMustHaveSchemeAndHost(Str configName, Uri host) {
+		"@Config value '${configName}' must have a scheme and a host part, e.g. http://example.com - ${host}"
 	}
 
 	static Str startupHostMustNotHavePath(Str configName, Uri host) {

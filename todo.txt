@@ -7,11 +7,9 @@ Doc customising the ErrPrinters! Make them public?
 
 For BedSheet 1.3.14
 --------------------
-Host config is WRONG! Should NOT include scheme - add method to Req (or somewhere) for generating absolute URLs 
-that ALSO take into account wisp mods and scheme.
-HttpReq - isSecure
-getBaseUrl
-
+Run BedSheet under https...?
+Add HttpRequest.isSecure()
+ - find out how to tell
 
 
 Future

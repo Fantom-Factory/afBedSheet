@@ -127,12 +127,14 @@ internal class TestFileHandler : BsTest {
 		bil.add(IocEnv.fromStr("dev"))
 		bil.add(actorPools)
 		bil.setByName("registry", RegistryMock(2))
+		bil.setByName("bedServer", BedSheetServerImpl(){})
 		
 		bob := BeanFactory(FileHandlerImpl#)
 		bob.add(dirMappings)
 		bob.add(IocEnv.fromStr("dev"))
 		bob.add(actorPools)		
 		bob.setByName("registry", RegistryMock(bil.create))
+		bob.setByName("bedServer", BedSheetServerImpl(){})
 		return bob.create
 	}
 }
