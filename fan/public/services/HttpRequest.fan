@@ -62,7 +62,7 @@ const mixin HttpRequest {
 	** Get the key/value pairs of the form data.  The request content is read and parsed using 
 	** `sys::Uri.decodeQuery`.  
 	** 
-	** If the request content type is not "application/x-www-form-urlencoded" this method returns 
+	** If the request content type is not 'application/x-www-form-urlencoded' this method returns 
 	** 'null'.
 	** 
 	** @see `web::WebReq.form`

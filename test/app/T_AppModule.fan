@@ -39,6 +39,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/redirect/afterPost`,	T_PageHandler#afterPost))
 
 		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
+		conf.add(Route(`/sessionBad`,			T_PageHandler#sessionBad))
 
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
