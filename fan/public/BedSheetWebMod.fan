@@ -11,9 +11,16 @@ using afIocConfig::IocConfigSource
 const class BedSheetWebMod : WebMod {
 	private const static Log log := Utils.getLog(BedSheetWebMod#)
 
+	** The module name passed into the ctor.
+	** Can be either a qualified type name of an AppModule or a pod name.
 	const Str 			moduleName
+	
+	** The port number this Bed App will be listening on. 
 	const Int 			port
+
+	@NoDoc	// advanced usage
 	const [Str:Obj?] 	bedSheetOptions
+	@NoDoc	// advanced usage
 	const [Str:Obj?] 	registryOptions
 	
 	private const AtomicBool	started		:= AtomicBool(false)
@@ -27,7 +34,7 @@ const class BedSheetWebMod : WebMod {
 		private set { atomicReg.val = it }
 	}
 
-	** An Err (if any) that occured on service startup
+	** The Err (if any) that occurred on service startup
 	Err? startupErr {
 		get { startupErrA.val }
 		private set { startupErrA.val = it }
@@ -42,6 +49,7 @@ const class BedSheetWebMod : WebMod {
 		this.registryOptions	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
 	}
 
+	@NoDoc
 	override Void onService() {
 		req.mod = this
 		
@@ -74,6 +82,7 @@ const class BedSheetWebMod : WebMod {
 		}
 	}
 
+	@NoDoc
 	override Void onStart() {
 		started.val = true
 		try {
@@ -102,13 +111,17 @@ const class BedSheetWebMod : WebMod {
 		}
 	}
 	
+	@NoDoc
 	override Void onStop() {
 		registry?.shutdown
 		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
 	}
 
-	** Returns a fully loaded 'RegistryBuilder' ready to build an IoC. 
-	static RegistryBuilder createBob(Str moduleName, Int port, [Str:Obj?] bedSheetOptions := [:], [Str:Obj?] registryOptions := [:]) {
+	** Returns a fully loaded IoC 'RegistryBuilder' that creates everything this Bed App needs. 
+	static RegistryBuilder createBob(Str moduleName, Int port, [Str:Obj?]? bedSheetOptions := null, [Str:Obj?]? registryOptions := null) {
+		bedSheetOptions = bedSheetOptions ?: Utils.makeMap(Str#, Obj?#)
+		registryOptions = registryOptions ?: Utils.makeMap(Str#, Obj?#)
+		
 		Pod?  pod
 		Type? mod
 		

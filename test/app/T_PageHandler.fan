@@ -103,6 +103,12 @@ internal const class T_PageHandler {
 		return Text.fromPlain("count $count")
 	}
 	
+	Obj sessionBad() {
+		// Params are const but not serialisable
+		session["oops"] = #statusCode.params[0]
+		return Text.fromPlain("Wot no fail fast Err?")
+	}
+	
 	// ---- Status Code Page ----
 	
 	Obj statusCode(Int httpStatusCode) {
