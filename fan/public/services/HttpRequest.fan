@@ -14,7 +14,7 @@ const mixin HttpRequest {
 	@NoDoc @Deprecated { msg="Use 'url' instead" }
 	Uri modRel() { url }
 
-	@NoDoc @Deprecated { msg="Use 'BedSheetServer.absoluteUrl(url)' instead" }
+	@NoDoc @Deprecated { msg="Use 'BedSheetServer.toAbsoluteUrl(url)' instead" }
 	abstract Uri absUri()
 
 	@NoDoc @Deprecated { msg="Use 'BedSheetServer.path + url.relTo(`/`)' instead" }
