@@ -1,6 +1,7 @@
 using concurrent::AtomicRef
 
 ** (Service) - MetaData gleaned from startup, such as the initial 'AppModule'.
+@NoDoc @Deprecated { msg = "Use 'BedSheetServer' instead" }
 const mixin BedSheetMetaData {
 	
 	** The pod that contains the initial 'AppModule'.

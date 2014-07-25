@@ -4,8 +4,8 @@ using web::Cookie
 ** 
 ** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 const class HttpRequestHeaders {
-	
-	private const |->Str:Str| headFunc
+	private const static Log 	log := Utils.getLog(HttpRequestHeaders#)
+	private const |->Str:Str|	headFunc
 
 	internal new make(|->Str:Str| headFunc) { this.headFunc = headFunc }
 
@@ -53,7 +53,16 @@ const class HttpRequestHeaders {
 	** 
 	** Example: 'Cookie: Version=1; Skin=new;'
 	Cookie[]? cookies {
-		get { makeIfNotNull("Cookie") { it.split(';').map { Cookie.fromStr(it) }}}
+		get { makeIfNotNull("Cookie") { 
+			it.split(';').map |cookieStr->Cookie?| {
+				// corrupted cookies aren't the end of the world - so lets not treat it so!
+				try return Cookie.fromStr(cookieStr)
+				catch {
+					log.warn("Could not parse Cookie value: ${cookieStr}")
+					return null
+				}
+			}.exclude { it == null }
+		}}
 		private set { }
 	}
 

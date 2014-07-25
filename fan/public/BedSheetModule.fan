@@ -33,6 +33,7 @@ const class BedSheetModule {
 		binder.bind(ValueEncoders#)
 		
 		// Other services
+		binder.bind(BedSheetServer#)
 		binder.bind(GzipCompressible#)
 		binder.bind(NotFoundPrinterHtml#)
 		binder.bind(ErrPrinterHtml#)
@@ -45,10 +46,10 @@ const class BedSheetModule {
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
-	static BedSheetMetaData buildBedSheetMetaData(RegistryMeta options) {
-		if (!options.options.containsKey("afBedSheet.metaData"))
+	static BedSheetMetaData buildBedSheetMetaData(RegistryMeta regMeta) {
+		if (!regMeta.options.containsKey("afBedSheet.metaData"))
 			throw BedSheetErr(BsErrMsgs.bedSheetMetaDataNotInOptions)
-		return options.options["afBedSheet.metaData"] 
+		return regMeta.options["afBedSheet.metaData"] 
 	}
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
@@ -217,7 +218,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(Configuration config, Registry reg, IocEnv iocEnv, BedSheetMetaData meta) {
+	static Void contributeFactoryDefaults(Configuration config, IocEnv iocEnv, BedSheetMetaData meta) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
 
@@ -225,11 +226,12 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.gzipDisabled]					= false
 		config[BedSheetConfigIds.gzipThreshold]					= 376
 		config[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
-		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= reg.createProxy(DefaultHttpStatusProcessor#)
-		config[BedSheetConfigIds.defaultErrProcessor]			= reg.createProxy(DefaultErrProcessor#)
+		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= config.registry.createProxy(DefaultHttpStatusProcessor#)
+		config[BedSheetConfigIds.defaultErrProcessor]			= config.registry.createProxy(DefaultErrProcessor#)
 		config[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(75)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.srcCodeErrPadding]				= 5
 		config[BedSheetConfigIds.disableWelcomePage]			= false
+		// don't try injecting BedServer here, it relies on a WebReq being present
 		config[BedSheetConfigIds.host]							= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs with method params!!
 
 		config[BedSheetConfigIds.fileHandlerCacheControl]		= "public"	// don't assume we know how long to cache for - just say it's not user specific.
@@ -267,6 +269,12 @@ const class BedSheetModule {
 		config["afBedSheet.srcCodePadding"] = |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
+
+		config["afBedSheet.validateHost"] = |->| {
+			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
+			validateHost(host)
+		}
+
 		config.remove("afIoc.logServices", "afBedSheet.logServices")
 	}
 
@@ -277,6 +285,13 @@ const class BedSheetModule {
 		}
 	}
 	
+	internal static Void validateHost(Uri host) {
+		if (host.scheme == null || host.host == null)
+			throw BedSheetErr(BsErrMsgs.startupHostMustHaveSchemeAndHost(BedSheetConfigIds.host, host))
+		if (!host.pathStr.isEmpty && host.pathStr != "/")
+			throw BedSheetErr(BsErrMsgs.startupHostMustNotHavePath(BedSheetConfigIds.host, host))		
+	}
+
 	private static Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
 		delegateBuilders.reduce(service) |Obj delegate, DelegateChainBuilder builder -> Obj| { 		
 			return builder.build(delegate)

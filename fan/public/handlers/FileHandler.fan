@@ -103,6 +103,7 @@ internal const class FileHandlerImpl : FileHandler {
 	
 	@Inject	private const HttpRequest? 			httpRequest	// nullable for unit tests
 	@Inject	private const Registry	 			registry	// it's me!!!
+	@Inject	private const BedSheetServer		bedServer
 			private	const SynchronizedFileMap	fileCache
 			override const Uri:File 			directoryMappings
 	
@@ -135,7 +136,7 @@ internal const class FileHandlerImpl : FileHandler {
 	override FileAsset? service(Uri remainingUri) {
 		try {
 			// use pathStr to knockout any unwanted query str
-			matchedUri := httpRequest.modRel.pathStr[0..<-remainingUri.pathStr.size].toUri
+			matchedUri := httpRequest.url.pathStr[0..<-remainingUri.pathStr.size].toUri
 			return fromLocalUrl(matchedUri.plusSlash + remainingUri)
 		} catch 
 			// don't bother making fromLocalUrl() checked, it's too much work for a 404!
@@ -179,9 +180,10 @@ internal const class FileHandlerImpl : FileHandler {
 			matchedFile := directoryMappings[prefix]
 			remaining	:= fileUri[matchedFile.uri.toStr.size..-1]
 			localUrl	:= prefix + remaining.toUri
-			modBaseUrl	:= (Actor.locals["web.req"] != null && httpRequest.modBase != `/`) ? httpRequest.modBase : ``
+			
+			// go 'into' ourselves so the call is routed through the ColdFeet aspects 
 			fileHandler	:= (FileHandler) registry.serviceById(FileHandler#.qname)
-			clientUrl	:= modBaseUrl.plusSlash + fileHandler.toClientUrl(localUrl, file)
+			clientUrl	:= fileHandler.toClientUrl(localUrl, file)
 			
 			return FileAsset {
 				it.file 		= f
@@ -196,8 +198,8 @@ internal const class FileHandlerImpl : FileHandler {
 	}
 	
 	override Uri toClientUrl(Uri localUrl, File file) {
-		// add any extra 'WebMod' path segments to reach BedSheet WebMod - but only if we're part of a web request!
-		(Actor.locals["web.req"] != null && httpRequest.modBase != `/`) ? httpRequest.modBase.plusSlash + localUrl : localUrl
+		// file is used by Cold Feet so it can generate a digest 
+		bedServer.toClientUrl(localUrl)
 	}
 	
 	override Void removeFileAsset(FileAsset fileAsset) {

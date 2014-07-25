@@ -66,9 +66,8 @@ const mixin BedSheetConfigIds {
 	** Defaults to 'false'
 	static const Str disableWelcomePage				:= "afBedSheet.disableWelcomePage"
 
-	** Set host to the public facing domain. This config is not mandatory but is often required by 3rd party libraries 
-	** when running in production mode, such as SiteMap and Google Analytics. Host may also be used to create absolute
-	** urls.
+	** The public facing domain; used by `BedServer` to create absolute URLs. 
+	** 3rd party libraries, such as SiteMap and Google Analytics, require this when running in production mode. 
 	** 
 	** Defaults to 'http://localhost:<PORT>'
 	static const Str host							:= "afBedSheet.host"

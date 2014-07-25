@@ -17,12 +17,12 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 		fileMeta := (FileAsset) fileAss
 
 		if (!fileMeta.exists)
-			throw HttpStatusErr(404, "File not found: $httpRequest.modRel")
+			throw HttpStatusErr(404, "File not found: $httpRequest.url")
 
 		// I dunno if this should be a 403 or 404. 
 		// 403 gives any would be attacker info about your server.
 		if (fileMeta.file.isDir)	// not allowed, until I implement it! 
-			throw HttpStatusErr(403, "Directory listing not allowed: $httpRequest.modRel")
+			throw HttpStatusErr(403, "Directory listing not allowed: $httpRequest.url")
 
 		// set cache headers
 		if (httpResponse.headers.cacheControl == null)
@@ -51,7 +51,7 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 			if (!fileMeta.file.exists) {
 				// file doesn't exist anymore - damn that cache!
 				fileHandler.removeFileAsset(fileMeta)
-				throw HttpStatusErr(404, "File not found: $httpRequest.modRel")				
+				throw HttpStatusErr(404, "File not found: $httpRequest.url")				
 			}
 			fileMeta.file.in.pipe(httpResponse.out, fileMeta.size, true)
 		}

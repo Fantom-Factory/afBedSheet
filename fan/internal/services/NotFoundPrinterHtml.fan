@@ -37,7 +37,7 @@ internal const class NotFoundPrinterHtmlSections {
 	
 	Void printRouteCode(WebOutStream out) {
 		page := typeof.pod.file(`/res/web/404Page.html`).readAllStr
-		page  = page.replace("{{{ route }}}", request.modRel.pathOnly.toStr)
+		page  = page.replace("{{{ route }}}", request.url.pathOnly.toStr)
 		out.w(page)
 	}
 	

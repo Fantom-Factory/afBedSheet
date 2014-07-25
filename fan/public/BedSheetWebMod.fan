@@ -101,9 +101,10 @@ const class BedSheetWebMod : WebMod {
 				destroyer.start
 			}
 			
+			// print BedSheet connection details
 			configSrc := (IocConfigSource) registry.dependencyByType(IocConfigSource#)
-			host := (Uri?) configSrc.get(BedSheetConfigIds.host, Uri#)
-			verifyAndLogHost(bsMeta.appName, host)
+			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
+			log.info(BsLogMsgs.bedSheetWebModStarted(bsMeta.appName, host))
 
 		} catch (Err err) {
 			startupErr = err
@@ -200,17 +201,6 @@ const class BedSheetWebMod : WebMod {
 		return mod
 	}
 
-	static internal Void verifyAndLogHost(Str appName, Uri host) {
-		// assert host in correct format
-		if (host.scheme == null || host.auth == null)
-			throw BedSheetErr(BsErrMsgs.startupHostMustHaveSchemeAndAuth(BedSheetConfigIds.host, host))
-		if (!host.pathStr.isEmpty && host.pathStr != "/")
-			throw BedSheetErr(BsErrMsgs.startupHostMustNotHavePath(BedSheetConfigIds.host, host))
-		
-		// print BedSheet connection details
-		log.info(BsLogMsgs.bedSheetWebModStarted(appName, host))
-	}
-	
 	private static Str easterEgg(Str title) {
 		quotes := loadQuotes
 		if (quotes.isEmpty || (Int.random(0..8) != 2))
