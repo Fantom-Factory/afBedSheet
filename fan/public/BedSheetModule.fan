@@ -231,6 +231,8 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.srcCodeErrPadding]				= 5
 		config[BedSheetConfigIds.disableWelcomePage]			= false
 		config[BedSheetConfigIds.host]							= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs with method params!!
+
+		config[BedSheetConfigIds.fileHandlerCacheControl]		= "public"	// don't assume we know how long to cache for - just say it's not user specific.
 		
 		config[BedSheetConfigIds.requestLogDir]					= null
 		config[BedSheetConfigIds.requestLogFilenamePattern]		= "bedSheet-{YYYY-MM}.log"

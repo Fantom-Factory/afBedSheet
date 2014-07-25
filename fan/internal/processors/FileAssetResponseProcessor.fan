@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using web::WebUtil
 
 internal const class FileAssetResponseProcessor : ResponseProcessor {
@@ -6,6 +7,9 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 	@Inject	private const HttpRequest 	httpRequest
 	@Inject	private const HttpResponse 	httpResponse
 	@Inject	private const FileHandler 	fileHandler
+	
+	@Config { id = "afBedSheet.fileHandler.cacheControl" }
+	@Inject	private const Str			defaultCacheControl
 	
 	new make(|This|in) { in(this) }
 	
@@ -20,6 +24,10 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 		if (fileMeta.file.isDir)	// not allowed, until I implement it! 
 			throw HttpStatusErr(403, "Directory listing not allowed: $httpRequest.modRel")
 
+		// set cache headers
+		if (httpResponse.headers.cacheControl == null)
+			httpResponse.headers.cacheControl = defaultCacheControl
+		
 		// set identity headers
 		httpResponse.headers.eTag = fileMeta.etag
 		httpResponse.headers.lastModified = fileMeta.modified
