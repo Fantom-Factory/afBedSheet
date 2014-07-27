@@ -534,9 +534,9 @@ v1.3.12 [#v1.3.12]
  - New: Static files are served with a default 'Cache-Control' HTTP response header, change via Ioc Config.
  - New: Added 'BedSheetServer' to replace 'BedSheetMetaData', contains methods for generating absolute URLs.
  - New: Added 'toClientUrl()' and 'toAbsoluteUrl()' to 'BedSheetServer'.
- - New: Added 'HttpResponseHeaders.vary'.
+ - New: Added 'HttpResponseHeaders.vary' to responses that *could* be gzipped.
  - Chg: Updated to use [IoC 1.7.2]`pod:afIoc`.
- - Chg: Renamed 'HttpRequest.modRel' -> 'HttpRequest.url'.
+ - Chg: Renamed 'HttpRequest.modRel' -> 'HttpRequest.url'.], deprecated 'absUri', 'modBase', 'modRel' and 'uri'.
  - Chg: 'HttpSession' *fails fast* on attempts to store non-serialisable values.
  - Chg: Gzip responses also set a HTTP header of 'Vary: Accept-Encoding'.
  - Chg: Added the 'Cache-Control' HTTP response header to error pages to ensure they're never cached.
