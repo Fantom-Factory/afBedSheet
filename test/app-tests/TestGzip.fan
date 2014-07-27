@@ -24,6 +24,7 @@ internal class TestGzip : AppTest {
 		
 		verifyEq(client.resHeaders["Content-Length"], "18")
 		verifyFalse(client.resHeaders.containsKey("Content-Encoding"))
+		verifyEq(client.resHeaders["Vary"], 			"Accept-Encoding")
 		
 		res := client.resIn.readAllStr.trim
 		verifyEq(res, "Too small for gzip")
