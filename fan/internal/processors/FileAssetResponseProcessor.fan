@@ -4,11 +4,11 @@ using web::WebUtil
 
 internal const class FileAssetResponseProcessor : ResponseProcessor {
 	
-	@Inject	private const HttpRequest 	httpRequest
-	@Inject	private const HttpResponse 	httpResponse
-	@Inject	private const FileHandler 	fileHandler
+	@Inject	private const HttpRequest 		httpRequest
+	@Inject	private const HttpResponse 		httpResponse
+	@Inject	private const FileAssetCache 	fileCache
 	
-	@Config { id = "afBedSheet.fileHandler.cacheControl" }
+	@Config { id = "afBedSheet.fileAsset.cacheControl" }
 	@Inject	private const Str			defaultCacheControl
 	
 	new make(|This|in) { in(this) }
@@ -50,7 +50,7 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 		if (httpRequest.httpMethod != "HEAD") {
 			if (!fileMeta.file.exists) {
 				// file doesn't exist anymore - damn that cache!
-				fileHandler.removeFileAsset(fileMeta)
+				fileCache.remove(fileMeta)
 				throw HttpStatusErr(404, "File not found: $httpRequest.url")				
 			}
 			fileMeta.file.in.pipe(httpResponse.out, fileMeta.size, true)

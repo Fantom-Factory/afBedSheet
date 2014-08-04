@@ -5,7 +5,7 @@ internal class TestPodHandling : AppTest {
 	DateTime file1_date	:= DateTime(2010, Month.sep, 27, 09, 46, 40, 0, TimeZone.utc)
 	
 	Void testFileIsServed() {
-		verifyStatus(`/pod/icons/x256/flux.png`, 200)
+		verifyStatus(`/pods/icons/x256/flux.png`, 200)
 
 		verifyEq(client.resHeaders["ETag"], file1_eTag)
 		verifyEq(client.resHeaders["Content-Length"], "20517")
@@ -13,18 +13,18 @@ internal class TestPodHandling : AppTest {
 	}
 
 	Void test404_1() {
-		verify404(`/pod/iconz.png`)
+		verify404(`/pods/iconz.png`)
 	}
 
 	Void test404_2() {
-		verify404(`/pod/iconz/x256/flux.png`)
+		verify404(`/pods/iconz/x256/flux.png`)
 	}
 
 	Void test404_3() {
-		verify404(`/pod/icons/x69/flux.png`)
+		verify404(`/pods/icons/x69/flux.png`)
 	}
 
 	Void testFolder() {
-		verify404(`/pod/icons/x69/`)
+		verify404(`/pods/icons/x69/`)
 	}
 }

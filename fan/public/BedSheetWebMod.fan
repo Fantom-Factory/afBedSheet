@@ -3,6 +3,7 @@ using concurrent::ActorPool
 using concurrent::AtomicRef
 using concurrent::AtomicBool
 using web::WebMod
+using afIoc::IocErr
 using afIoc::Registry
 using afIoc::RegistryBuilder
 using afIocConfig::IocConfigSource
@@ -23,15 +24,16 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc	// advanced usage
 	const [Str:Obj?] 	registryOptions
 	
-	private const AtomicBool	started		:= AtomicBool(false)
-	private const AtomicRef		startupErrA	:= AtomicRef()
-	private const AtomicRef		atomicReg	:= AtomicRef()
-	private const AtomicRef		atomicPipe	:= AtomicRef()
+	private const AtomicBool	started			:= AtomicBool(false)
+	private const AtomicRef		startupErrA		:= AtomicRef()
+	private const AtomicRef		registryRef		:= AtomicRef()
+	private const AtomicRef		pipelineRef		:= AtomicRef()
+	private const AtomicRef		errPrinterRef	:= AtomicRef()
 	
 	** The 'afIoc' registry. Can be 'null' if BedSheet has not started.
 	Registry? registry {
-		get { atomicReg.val }
-		private set { atomicReg.val = it }
+		get { registryRef.val }
+		private set { registryRef.val = it }
 	}
 
 	** The Err (if any) that occurred on service startup
@@ -72,11 +74,19 @@ const class BedSheetWebMod : WebMod {
 			middlewarePipeline.service
 			
 		} catch (Err err) {
+			// nothing we can do here
+			if (err is IocErr && err.msg.contains("Method may no longer be invoked - Registry has already been shutdown"))
+				return
+			
 			// theoretically, this should have already been dealt with by our ErrMiddleware...
 			// ...but it's handy for BedSheet development!
 			if (registry != null) {	// reqs may come in before we've start up
-				errPrinter := (ErrPrinterStr) registry.dependencyByType(ErrPrinterStr#)
-				Env.cur.err.printLine(errPrinter.errToStr(err))
+				try {
+					errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
+					Env.cur.err.printLine(errPrinter.errToStr(err))
+				} catch {
+					err.trace(Env.cur.err)
+				}
 			}
 			throw err
 		}
@@ -210,11 +220,10 @@ const class BedSheetWebMod : WebMod {
 	
 	// lazy load the MiddlewarePipeline
 	private MiddlewarePipeline middlewarePipeline() {
-		pipe := atomicPipe.val
-		if (pipe != null)
-			return pipe
-		atomicPipe.val = registry.dependencyByType(MiddlewarePipeline#)
-		return atomicPipe.val
+		pipe := pipelineRef.val
+		if (pipe == null)
+			pipe = pipelineRef.val = registry.serviceById(MiddlewarePipeline#.qname)
+		return pipe
 	}
 	
 	private static Str[] loadQuotes() {

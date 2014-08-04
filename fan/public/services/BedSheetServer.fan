@@ -105,10 +105,12 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Uri toClientUrl(Uri localUrl) {
+		// TODO: validate localUrl
 		path + localUrl.relTo(`/`)
 	}
 	
 	override Uri toAbsoluteUrl(Uri localUrl, Str? scheme := null) {
+		// TODO: validate localUrl
 		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
 		return absUrl + toClientUrl(localUrl).relTo(`/`)
 	}
@@ -123,14 +125,14 @@ internal const class BedSheetServerImpl : BedSheetServer {
 		return regMeta.options["afBedSheet.metaData"] 
 	}
 	
-	static Void main() {
-		scheme := (Str?) null
-		host   := `http://example.com/`
-		path   := `/`
-		relUrl := `/index.html`
-		
-		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
-		a := absUrl + path.relTo(`/`) + relUrl.relTo(`/`)
-		echo(a)
-	}
+//	static Void main() {
+//		scheme := (Str?) null
+//		host   := `http://example.com/`
+//		path   := `/`
+//		relUrl := `/index.html`
+//		
+//		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
+//		a := absUrl + path.relTo(`/`) + relUrl.relTo(`/`)
+//		echo(a)
+//	}
 }

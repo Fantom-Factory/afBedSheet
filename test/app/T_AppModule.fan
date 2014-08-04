@@ -46,8 +46,8 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/welcome`, 				T_PageHandler#renderWelcome))
 
-		conf.add(Route(`/test-src/***`, 		FileHandler#service))
-		conf.add(Route(`/test-src2/***`, 		FileHandler#service))
+		conf.add(Route(`/test-src/***`, 		FileHandler#serviceRoute))
+		conf.add(Route(`/test-src2/***`, 		FileHandler#serviceRoute))
 		conf.add(Route(`/fh/test-src/***`, 		T_PageHandler#altFileHandler))
 		
 		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
@@ -57,7 +57,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/saveFlashMsg/*`, 		T_PageHandler#saveFlashMsg))
 		conf.add(Route(`/showFlashMsg`, 		T_PageHandler#showFlashMsg))
 
-		conf.add(Route(`/pod/***`, 				PodHandler#service))
+		conf.add(Route(`/pod/***`, 				PodHandler#serviceRoute))
 		
 		// no logging for now!
 //		conf.add(Route(`/***`, 					RequestLogFilter#service))
@@ -83,6 +83,6 @@ internal const class T_AppModule {
 
 	@Contribute { serviceType=RegistryStartup# }
 	static Void contributeRegStartup(Configuration conf) {
-		conf.remove("afIoc.showBanner")
+		conf.remove("afIoc.logBanner")
 	}
 }
