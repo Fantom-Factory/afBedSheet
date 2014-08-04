@@ -1,8 +1,5 @@
 using web::WebReq
 using afIoc
-using afIocEnv
-using afConcurrent
-using concurrent
 
 ** (Service) - Request Handler that maps URLs to files on the file system.
 ** 
@@ -48,7 +45,7 @@ using concurrent
 ** 
 ** Precedence with Other Routes [#RoutePrecedence] 
 ** ===============================================
-** the 'FileHandler' directory mappings are automatically added to the `Routes` service on startup.
+** The 'FileHandler' directory mappings are automatically added to the `Routes` service on startup.
 ** That means it is possible to specify a 'Route' URL with more than one handler; a custom handler *and* this 'FileHandler'.
 ** With a bit of configuration it is possible to specify which takes precedence. 
 **   
@@ -73,6 +70,11 @@ const mixin FileHandler {
 	** Returns the map of URL to directory mappings
 	abstract Uri:File directoryMappings()
 	
+	** The Route handler method. 
+	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
+	@NoDoc	// boring route handler method
+	abstract FileAsset? serviceRoute(Uri remainingUrl)	
+	
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	** Throws 'ArgErr' if the URL is not mapped.
 	abstract FileAsset fromLocalUrl(Uri localUrl)
@@ -80,75 +82,48 @@ const mixin FileHandler {
 	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'. 
 	** Throws 'ArgErr' if the file directory is not mapped.
 	abstract FileAsset fromServerFile(File serverFile)
-	
-	@NoDoc	// boring route handler method
-	abstract FileAsset? service(Uri remainingUrl)
-	
-	** Hook for asset caching strategies to advise and transform URLs.
-	@NoDoc
-	abstract Uri toClientUrl(Uri localUrl, File file)
-	
-	** Removes the given 'FileAsset' from the internal cache.
-	@NoDoc	// hide the leaky abstraction
-	abstract Void removeFileAsset(FileAsset fileAsset)
-
-	** Clears the internal 'FileAsset' cache.
-	@NoDoc	// hide the leaky abstraction
-	abstract Void clear()
 }
-
-
 
 internal const class FileHandlerImpl : FileHandler {
 	
 	@Inject	private const HttpRequest? 			httpRequest	// nullable for unit tests
-	@Inject	private const Registry	 			registry	// it's me!!!
-	@Inject	private const BedSheetServer		bedServer
-			private	const SynchronizedFileMap	fileCache
+	@Inject	private const FileAssetCache		fileCache
 			override const Uri:File 			directoryMappings
-	
-					** The duration between individual file checks.
-					const Duration 				cacheTimeout
-	
-	new make(Uri:File dirMappings, IocEnv env, ActorPools actorPools, |This|? in) {
-		this.cacheTimeout = env.isProd ? 2min : 2sec
 		
+	new make(Uri:File dirMappings, |This|? in) {
 		in?.call(this)
 		
-		this.fileCache = SynchronizedFileMap(actorPools["afBedSheet.system"], cacheTimeout) { it.valType = FileAsset# }
-
 		// verify file and uri mappings, normalise the files
 		this.directoryMappings = dirMappings.map |file, uri -> File| {
 			if (!file.exists)
-				throw BedSheetErr(BsErrMsgs.fileHandler_dirNotFound(file))
+				throw BedSheetErr(BsErrMsgs.fileNotFound(file))
 			if (!file.isDir)
-				throw BedSheetErr(BsErrMsgs.fileHandler_notDir(file))
+				throw BedSheetErr(BsErrMsgs.fileIsNotDirectory(file))
 			if (!uri.isPathOnly)
-				throw BedSheetErr(BsErrMsgs.fileHandler_urlNotPathOnly(uri, `/foo/bar/`))
+				throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(uri, `/foo/bar/`))
 			if (!uri.isPathAbs)
-				throw BedSheetErr(BsErrMsgs.fileHandler_urlMustStartWithSlash(uri, `/foo/bar/`))
+				throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(uri, `/foo/bar/`))
 			if (!uri.isDir)
-				throw BedSheetErr(BsErrMsgs.fileHandler_urlMustEndWithSlash(uri))
+				throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(uri, `/foo/bar/`))
 			return file.normalize
 		}
 	}
 
-	override FileAsset? service(Uri remainingUri) {
+	override FileAsset? serviceRoute(Uri remainingUri) {
 		try {
 			// use pathStr to knockout any unwanted query str
-			matchedUri := httpRequest.url.pathStr[0..<-remainingUri.pathStr.size].toUri
-			return fromLocalUrl(matchedUri.plusSlash + remainingUri)
+			return fromLocalUrl(httpRequest.url.pathStr.toUri)
 		} catch 
 			// don't bother making fromLocalUrl() checked, it's too much work for a 404!
-			// null means that Routes didn't process the request, so it continues down the pipeline. 
+			// null means that 'Routes' didn't process the request, so it continues down the pipeline. 
 			return null
 	}
 	
 	override FileAsset fromLocalUrl(Uri localUrl) {
 		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
-			throw ArgErr(BsErrMsgs.fileHandler_urlNotPathOnly(localUrl, `/css/myStyles.css`))
+			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, `/css/myStyles.css`))
 		if (!localUrl.isPathAbs)
-			throw ArgErr(BsErrMsgs.fileHandler_urlMustStartWithSlash(localUrl, `/css/myStyles.css`))
+			throw ArgErr(BsErrMsgs.urlMustStartWithSlash(localUrl, `/css/myStyles.css`))
 		
 		// TODO: what if 2 dirs map to the same url at the same level? 
 		// match the deepest uri
@@ -168,9 +143,9 @@ internal const class FileHandlerImpl : FileHandler {
 	override FileAsset fromServerFile(File file) {
 		fileCache.getOrAddOrUpdate(file) |File f->FileAsset| {
 			if (file.uri.isDir)
-				throw ArgErr(BsErrMsgs.fileHandler_notFile(file))
+				throw ArgErr(BsErrMsgs.fileIsDirectory(file))
 			if (!file.exists)
-				throw ArgErr(BsErrMsgs.fileHandler_fileNotFound(file))
+				throw ArgErr(BsErrMsgs.fileNotFound(file))
 			
 			fileUri	:= file.normalize.uri.toStr
 			prefix  := (Uri?) directoryMappings.eachWhile |af, uri->Uri?| { fileUri.startsWith(af.uri.toStr) ? uri : null }
@@ -180,10 +155,7 @@ internal const class FileHandlerImpl : FileHandler {
 			matchedFile := directoryMappings[prefix]
 			remaining	:= fileUri[matchedFile.uri.toStr.size..-1]
 			localUrl	:= prefix + remaining.toUri
-			
-			// go 'into' ourselves so the call is routed through the ColdFeet aspects 
-			fileHandler	:= (FileHandler) registry.serviceById(FileHandler#.qname)
-			clientUrl	:= fileHandler.toClientUrl(localUrl, file)
+			clientUrl	:= fileCache.toClientUrl(localUrl, file)
 			
 			return FileAsset {
 				it.file 		= f
@@ -195,19 +167,6 @@ internal const class FileHandlerImpl : FileHandler {
 				it.clientUrl	= clientUrl
 			}
 		}
-	}
-	
-	override Uri toClientUrl(Uri localUrl, File file) {
-		// file is used by Cold Feet so it can generate a digest 
-		bedServer.toClientUrl(localUrl)
-	}
-	
-	override Void removeFileAsset(FileAsset fileAsset) {
-		fileCache.remove(fileAsset.file)
-	}
-	
-	override Void clear() {
-		fileCache.clear
 	}
 }
 

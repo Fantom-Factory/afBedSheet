@@ -73,16 +73,25 @@ const mixin BedSheetConfigIds {
 	static const Str host							:= "afBedSheet.host"
 
 
+
+	// --- Handlers ----
+
+	** The URL under which pod resources are served.
+	** The URL must start and end with a slash.
+	** 
+	** Defaults to '`/pods/`' 
+	static const Str podHandlerUrl					:= "afBedSheet.podHandler.url"
+	
 	** The default 'Cache-Control' HTTP response header to set when serving static files. 
 	** To set caching to 1 day set this to:
 	** 
 	**   "max-age=${1day.toSec}"
 	** 
 	** Ideally you should use an asset caching strategy, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`, 
-	** to deal with static files. 
+	** which sets this for you. 
 	** 
-	** Defaults to the Str 'public'.
-	static const Str fileHandlerCacheControl		:= "afBedSheet.fileHandler.cacheControl"
+	** Defaults to the Str 'public'
+	static const Str fileAssetCacheControl			:= "afBedSheet.fileAsset.cacheControl"
 
 
 

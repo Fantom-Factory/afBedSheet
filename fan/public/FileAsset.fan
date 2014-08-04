@@ -3,7 +3,7 @@
 ** As every call to 'File.exists()' typically takes [at least 8ms-12ms]`http://stackoverflow.com/questions/6321180/how-expensive-is-file-exists-in-java#answer-6321277`, 
 ** this is probably a good thing!
 ** 
-** 'FileAssets' are acquired from 'FileHander' and should be used to embed client URLs in your web pages.
+** 'FileAssets' are acquired from 'FileHander' and 'PodHander' - use them to embed client URLs in your web pages.
 const class FileAsset {
 
 	** The file in question
@@ -30,17 +30,19 @@ const class FileAsset {
 	const Int?		size
 	
 	** The URL relative to the 'BedSheet' [WebMod]`web::WebMod` that corresponds to the file resource. 
-	** This *may* be the same as 'clientUrl' or it may not. 
+	** If your application is the ROOT WebMod then this will be the same as 'clientUrl'; bar any asset caching. 
 	** If in doubt, use the 'clientUrl' instead.
 	**  
 	** Returns 'null' if file doesn't exist
 	const Uri?		localUrl
 
-	** The URL that clients should use to access the file resource. 
+	** The URL that clients (e.g. web browsers) should use to access the file resource. 
 	** The 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
 	** It also contains path segments as provided by any asset caching strategies, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
 	** 
 	** Client URLs are designed to be used / embedded in your HTML. 
+	** 
+	** Note: use `BedSheetServer` should you want an absolute URL that starts with 'http://'. 
 	**   
 	** Returns 'null' if file doesn't exist
 	const Uri?		clientUrl

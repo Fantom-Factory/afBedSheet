@@ -32,17 +32,20 @@ const class BedSheetModule {
 		binder.bind(Routes#)
 		binder.bind(ValueEncoders#)
 		
-		// Other services
+		// Public services
 		binder.bind(BedSheetServer#)
 		binder.bind(GzipCompressible#)
-		binder.bind(NotFoundPrinterHtml#)
-		binder.bind(ErrPrinterHtml#)
-		binder.bind(ErrPrinterStr#)
 		binder.bind(HttpSession#)
 		binder.bind(HttpCookies#)
 		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
 		binder.bind(BedSheetPages#)
 		binder.bind(RequestLogMiddleware#)
+		
+		// Other services
+		binder.bind(NotFoundPrinterHtml#)
+		binder.bind(ErrPrinterHtml#)
+		binder.bind(ErrPrinterStr#)
+		binder.bind(FileAssetCache#)
 	}
 
 	@Build { serviceId="BedSheetMetaData" }
@@ -129,14 +132,21 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=Routes# }
-	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler) {
+	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler, IocConfigSource iocSrc) {
+		// FIXME:Routes to take []
 		config.addPlaceholder("afBedSheet.fileHandlerStart")
 		fileHandler.directoryMappings.each |dir, uri| {
-			config.add(Route(uri + `***`, FileHandler#service, "GET HEAD"))	// Me like!
+			config.add(Route(uri + `***`, FileHandler#serviceRoute, "GET HEAD"))	// Me like!
 		}
 		config.addPlaceholder("afBedSheet.fileHandlerEnd")
+		
+		podHandlerUrl := (Uri?) iocSrc.get(BedSheetConfigIds.podHandlerUrl, Uri?#)
+		if (podHandlerUrl != null)
+			config["afBedSheet.podHandler"] = Route(podHandlerUrl + `***`, PodHandler#serviceRoute, "GET HEAD")	// Me like!
+		else 
+			config.addPlaceholder("afBedSheet.podHandler")
 	}
-	
+
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(Configuration config) {
 		// add some standard compressible mime types
@@ -234,7 +244,8 @@ const class BedSheetModule {
 		// don't try injecting BedServer here, it relies on a WebReq being present
 		config[BedSheetConfigIds.host]							= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs with method params!!
 
-		config[BedSheetConfigIds.fileHandlerCacheControl]		= "public"	// don't assume we know how long to cache for - just say it's not user specific.
+		config[BedSheetConfigIds.podHandlerUrl]					= `/pods/`
+		config[BedSheetConfigIds.fileAssetCacheControl]			= "public"	// don't assume we know how long to cache for - just say it's not user specific.
 		
 		config[BedSheetConfigIds.requestLogDir]					= null
 		config[BedSheetConfigIds.requestLogFilenamePattern]		= "bedSheet-{YYYY-MM}.log"

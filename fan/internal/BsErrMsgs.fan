@@ -1,6 +1,37 @@
 
 internal const class BsErrMsgs {
 
+	// ---- Generic ----
+
+	static Str urlMustBePathOnly(Uri url, Uri example) {
+		"URL `${url}` must ONLY be a path. e.g. `${example}`"
+	}
+
+	static Str urlMustStartWithSlash(Uri url, Uri example) {
+		"URL `${url}` must start with a slash. e.g. `${example}`"
+	}
+
+	static Str urlMustEndWithSlash(Uri url, Uri example) {
+		"URL `${url}` must end with a slash. e.g. `${example}`"
+	}
+
+	static Str urlMustNotEndWithSlash(Uri url, Uri example) {
+		"URL `${url}` must NOT end with a slash. e.g. `${example}`"
+	}
+
+	static Str fileIsDirectory(File file) {
+		"File `${file.normalize.osPath}` is a directory!?"
+	}
+	
+	static Str fileIsNotDirectory(File file) {
+		"File `${file.normalize.osPath}` is NOT a directory!?"
+	}
+	
+	static Str fileNotFound(File file) {
+		type := file.isDir ? "Directory" : "File"
+		return "${type} `${file.normalize.osPath}` does not exist!"
+	}
+
 	// ---- Routes ----
 
 	static Str routeNotFound(Uri notFound) {
@@ -61,44 +92,20 @@ internal const class BsErrMsgs {
 		"@Config value '${configName}' must NOT have a path e.g. http://example.com - ${host}"
 	}
 	
-	// ---- FileHandler ----
-	
-	static Str fileHandler_dirNotFound(File file) {
-		"Directory '${file.normalize.osPath}' does not exist"		
-	}
-	
-	static Str fileHandler_notDir(File file) {
-		"File '${file.normalize.osPath}' is not a directory"
-	}
-
-	static Str fileHandler_urlNotPathOnly(Uri uri, Uri example) {
-		"Uri '${uri}' must only contain a path. e.g. `${example}`"
-	}
-
-	static Str fileHandler_urlMustStartWithSlash(Uri uri, Uri example) {
-		"Uri '${uri}' must start with a slash. e.g. `${example}`"
-	}
-
-	static Str fileHandler_urlMustEndWithSlash(Uri uri) {
-		"Uri '${uri}' must end with a slash. e.g. `/foo/bar/`"
-	}
-	
-	static Str fileHandler_urlNotMapped(Uri uri) {
-		"Asset URI `${uri}` does NOT map to any known FileHandler prefixes."
-	}
-	
-	static Str fileHandler_notFile(File file) {
-		"File `${file.normalize.osPath}` is a directory!?"
-	}
-	
-	static Str fileHandler_fileNotFound(File file) {
-		"File `${file.normalize.osPath}` does not exist."
+	// ---- Handlers ----
+		
+	static Str fileHandler_urlNotMapped(Uri url) {
+		"Asset URL `${url}` does NOT map to any known FileHandler prefixes."
 	}
 	
 	static Str fileHandler_fileNotMapped(File file) {
 		"File `${file.normalize.osPath}` does NOT map to any known FileHandler directories."
 	}
 	
+	static Str podHandler_urlNotMapped(Uri localUrl, Uri prefix) {
+		"Pod URL `${localUrl}` does NOT start with the handler prefix `${prefix}`"
+	}
+
 	// ---- Pipeline Service Messages -------------------------------------------------------------
 
 	static Str pipelineTypeMustBePublic(Str thing, Type type) {
