@@ -1,6 +1,4 @@
-using concurrent
 using afIoc
-using afIocEnv
 using afBeanUtils
 
 internal class TestFileHandler : BsTest {
@@ -35,7 +33,7 @@ internal class TestFileHandler : BsTest {
 		}
 	}
 
-	// ---- from Client Uri ----
+	// ---- fromLocalUrl() ----
 
 	Void testAssetUrlIsPathOnly() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
@@ -90,7 +88,7 @@ internal class TestFileHandler : BsTest {
 		verifyEq(unNormalised, `doc/pod.fdoc#v4.01`)
 	}	
 
-	// ---- from Server File ----
+	// ---- fromServerFile() ----
 	
 	Void testAssetFileIsDir() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )

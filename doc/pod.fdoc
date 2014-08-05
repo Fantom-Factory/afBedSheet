@@ -529,6 +529,12 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpac
 
 Release Notes [#releaseNotes]
 *****************************
+v1.3.14 [#v1.3.14]
+------------------
+ - Chg: Revamped 'PodHandler', now contains 'fromLocalUrl()' and 'fromPodResource()' to parallel 'FileHandler'.
+ - Chg: Deleted 'BedSheetMetaData'; not that you should have been using it anyway!
+ - Chg: 'BedSheetWebMod' no longer takes a BedSheet options map, all values have been merged with Registry options.
+
 v1.3.12 [#v1.3.12]
 ------------------
  - New: Static files are served with a default 'Cache-Control' HTTP response header, change via Ioc Config.

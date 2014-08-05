@@ -76,11 +76,11 @@ const mixin BedSheetConfigIds {
 
 	// --- Handlers ----
 
-	** The URL under which pod resources are served.
+	** The local URL under which pod resources are served.
 	** The URL must start and end with a slash.
 	** 
 	** Defaults to '`/pods/`' 
-	static const Str podHandlerUrl					:= "afBedSheet.podHandler.url"
+	static const Str podHandlerBaseUrl				:= "afBedSheet.podHandler.baseUrl"
 	
 	** The default 'Cache-Control' HTTP response header to set when serving static files. 
 	** To set caching to 1 day set this to:

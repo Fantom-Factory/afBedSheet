@@ -133,7 +133,7 @@ const class BedSheetModule {
 		}
 		config.addPlaceholder("afBedSheet.fileHandlerEnd")
 		
-		podHandlerUrl := (Uri?) iocSrc.get(BedSheetConfigIds.podHandlerUrl, Uri?#)
+		podHandlerUrl := (Uri?) iocSrc.get(BedSheetConfigIds.podHandlerBaseUrl, Uri?#)
 		if (podHandlerUrl != null)
 			config["afBedSheet.podHandler"] = Route(podHandlerUrl + `***`, PodHandler#serviceRoute, "GET HEAD")	// Me like!
 		else 
@@ -237,7 +237,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.disableWelcomePage]			= false
 		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
 
-		config[BedSheetConfigIds.podHandlerUrl]					= `/pods/`
+		config[BedSheetConfigIds.podHandlerBaseUrl]				= `/pods/`
 		config[BedSheetConfigIds.fileAssetCacheControl]			= "public"	// don't assume we know how long to cache for - just say it's not user specific.
 		
 		config[BedSheetConfigIds.requestLogDir]					= null

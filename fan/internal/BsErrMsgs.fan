@@ -106,6 +106,18 @@ internal const class BsErrMsgs {
 		"Pod URL `${localUrl}` does NOT start with the handler prefix `${prefix}`"
 	}
 
+	static Str podHandler_urlNotFanScheme(Uri podUrl) {
+		"Pod URL `${podUrl}` must have the scheme `fan:` e.g. `fan://icons/x256/flux.png`"
+	}
+
+	static Str podHandler_urlDoesNotResolve(Uri podUrl) {
+		"Pod URL `${podUrl}` does NOT resolve - does it exist?"
+	}
+
+	static Str podHandler_urlNotFile(Uri podUrl, Obj? obj) {
+		"Pod URL `${podUrl}` does NOT resolve to a File, but a ${obj?.typeof?.qname} - ${obj}"
+	}
+
 	// ---- Pipeline Service Messages -------------------------------------------------------------
 
 	static Str pipelineTypeMustBePublic(Str thing, Type type) {

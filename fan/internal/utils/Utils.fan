@@ -46,5 +46,13 @@ internal const class Utils {
 		Actor.locals.keys.sort.each { map[it] = Actor.locals[it] }
 		return map
 	}
+	
+	static Uri validateLocalUrl(Uri localUrl, Uri exampleUrl) {
+		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
+			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, exampleUrl))
+		if (!localUrl.isPathAbs)
+			throw ArgErr(BsErrMsgs.urlMustStartWithSlash(localUrl, exampleUrl))
+		return localUrl
+	}
 
 }

@@ -106,8 +106,8 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Uri toClientUrl(Uri localUrl) {
-		// TODO: validate localUrl
-		path + localUrl.relTo(`/`)
+		Utils.validateLocalUrl(localUrl, `/css/myStyles.css`)
+		return path + localUrl.relTo(`/`)
 	}
 	
 	override Uri toAbsoluteUrl(Uri localUrl, Str? scheme := null) {
