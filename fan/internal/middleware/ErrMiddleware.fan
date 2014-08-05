@@ -1,3 +1,4 @@
+using afIoc::IocShutdownErr
 using afIoc::Inject
 using afIoc::Registry
 using afIocConfig::Config
@@ -26,6 +27,10 @@ internal const class ErrMiddleware : Middleware {
 			try {
 				return pipeline.service
 				
+			// nothing we can do here
+			} catch (IocShutdownErr err) {
+				return true
+
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 
 			// would still expect it work
 			} catch (ReProcessErr reErr) {

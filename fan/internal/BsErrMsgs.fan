@@ -74,9 +74,9 @@ internal const class BsErrMsgs {
 		"Contributed ErrProcessor types must be subclasses of Err - ${type.qname}"
 	}
 	
-	static Str bedSheetMetaDataNotInOptions() {
-		"RegistryOptions does not contain key 'bedSheetMetaData'"
-	}
+//	static Str bedSheetMetaDataNotInOptions() {
+//		"RegistryOptions does not contain key 'bedSheetMetaData'"
+//	}
 	
 	static Str cookieNotFound(Str cookieName) {
 		"Could not find a cookie with the name '${cookieName}'"

@@ -1,3 +1,4 @@
+using afIoc::RegistryMeta
 using web::WebClient
 
 internal class TestMetaData : AppTest {
@@ -9,9 +10,9 @@ internal class TestMetaData : AppTest {
 		iocModules = [T_WelcomeMod2#]
 		super.setup
 		
-		meta := (BedSheetMetaData) registry.dependencyByType(BedSheetMetaData#)
-		verifyEq(meta.appModule, T_WelcomeMod2#)
-		verifyEq(meta.appPod, this.typeof.pod)
+		meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
+		verifyEq(meta["afBedSheet.appModule"], T_WelcomeMod2#)
+		verifyEq(meta["afBedSheet.appPod"], this.typeof.pod)
 	}
 }
 

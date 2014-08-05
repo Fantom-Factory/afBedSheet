@@ -20,7 +20,8 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 		statusCode := status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
 		
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
-		if (routes.routes.isEmpty && !disbleWelcomePage) {
+		
+		if (routes.routes.exclude { it.response == PodHandler#serviceRoute || it.response == FileHandler#serviceRoute }.isEmpty && !disbleWelcomePage) {
 			httpResponse.statusCode = statusCode
 			return responseProcessors.processResponse(bedSheetPages.renderWelcome)
 		}

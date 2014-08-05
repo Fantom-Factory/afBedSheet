@@ -48,13 +48,6 @@ const class BedSheetModule {
 		binder.bind(FileAssetCache#)
 	}
 
-	@Build { serviceId="BedSheetMetaData" }
-	static BedSheetMetaData buildBedSheetMetaData(RegistryMeta regMeta) {
-		if (!regMeta.options.containsKey("afBedSheet.metaData"))
-			throw BedSheetErr(BsErrMsgs.bedSheetMetaDataNotInOptions)
-		return regMeta.options["afBedSheet.metaData"] 
-	}
-
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
 	@Build { serviceId="MiddlewarePipeline"; disableProxy=true }
@@ -228,10 +221,11 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(Configuration config, IocEnv iocEnv, BedSheetMetaData meta) {
+	static Void contributeFactoryDefaults(Configuration config, IocEnv iocEnv, RegistryMeta meta) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
-
+		bedSheetPort	 := meta["afBedSheet.port"]	?: 0
+		
 		config[BedSheetConfigIds.proxyPingInterval]				= 1sec
 		config[BedSheetConfigIds.gzipDisabled]					= false
 		config[BedSheetConfigIds.gzipThreshold]					= 376
@@ -241,8 +235,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(75)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.srcCodeErrPadding]				= 5
 		config[BedSheetConfigIds.disableWelcomePage]			= false
-		// don't try injecting BedServer here, it relies on a WebReq being present
-		config[BedSheetConfigIds.host]							= "http://localhost:${meta.port}".toUri	// Stoopid F4 can't interpolate URIs with method params!!
+		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
 
 		config[BedSheetConfigIds.podHandlerUrl]					= `/pods/`
 		config[BedSheetConfigIds.fileAssetCacheControl]			= "public"	// don't assume we know how long to cache for - just say it's not user specific.

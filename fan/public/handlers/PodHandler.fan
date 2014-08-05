@@ -94,12 +94,4 @@ internal const class PodHandlerImpl : PodHandler {
 			}
 		}	
 	}
-	
-	static Void main() {
-		f:=`fan://icons/x256/flux.png?dude`.get as File
-		Env.cur.err.printLine(f)
-		Env.cur.err.printLine(f.exists)
-		Env.cur.err.printLine(f.modified)
-		Env.cur.err.printLine(f.size)
-	}
 }
