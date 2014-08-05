@@ -121,33 +121,16 @@ internal class TestFileHandler : BsTest {
 
 		
 	private FileHandler makeFileHandler(Uri:File dirMappings) {
-		actorPools := BeanFactory(Type.find("afIoc::ActorPoolsImpl")).add(["afBedSheet.system":ActorPool()]).create
-		bil := BeanFactory(FileHandlerImpl#)
-		bil.add(dirMappings)
-		bil.add(IocEnv.fromStr("dev"))
-		bil.add(actorPools)
-		bil.setByName("registry", RegistryMock(2))
-		bil.setByName("bedServer", BedSheetServerImpl(){})
-		
 		bob := BeanFactory(FileHandlerImpl#)
 		bob.add(dirMappings)
-		bob.add(IocEnv.fromStr("dev"))
-		bob.add(actorPools)		
-		bob.setByName("registry", RegistryMock(bil.create))
-		bob.setByName("bedServer", BedSheetServerImpl(){})
+		bob.setByName("fileCache", FileAssetCacheMock())
 		return bob.create
 	}
 }
 
-internal const class RegistryMock : Registry {
-	const Obj service
-	new make(Obj service) { this.service = service }
-	override This startup()		{ return this }
-	override This shutdown()	{ return this }
-    override Obj serviceById(Str serviceId) { service }
-    override Obj? dependencyByType(Type dependencyType, Bool checked := true) { 2 }
-    override Obj autobuild(Type type, Obj?[]? ctorArgs := null, [Field:Obj?]? fieldVals := null) { 2 }
-	override Obj createProxy(Type mixinType, Type? implType := null, Obj?[]? ctorArgs := null, [Field:Obj?]? fieldVals := null)	{ 2 }
-	override Obj injectIntoFields(Obj service) { service }
-	override Obj? callMethod(Method method, Obj? instance, Obj?[]? providedMethodArgs := null) { 2 }
+const class FileAssetCacheMock : FileAssetCache {
+	override FileAsset? getOrAddOrUpdate(File key, |File->Obj?| valFunc) { valFunc(key) }
+	override Void remove(FileAsset fileAsset) { }
+	override Void clear() { }
+	override Uri toClientUrl(Uri localUrl, File file) { localUrl }
 }

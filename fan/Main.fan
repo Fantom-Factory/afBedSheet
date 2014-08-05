@@ -52,8 +52,8 @@ class Main : AbstractMain {
 	@NoDoc
 	virtual Str:Obj? options() {
 		options	:= Utils.makeMap(Str#, Obj?#)
-		options["startProxy"] 	= proxy
-		options["noTransDeps"] 	= noTransDeps
+		options["afBedSheet.startProxy"] 	= proxy
+		options["afBedSheet.noTransDeps"] 	= noTransDeps
 		return options
 	}
 	

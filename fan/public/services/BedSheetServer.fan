@@ -1,5 +1,4 @@
 using afIoc::Inject
-using afIoc::Registry
 using afIoc::RegistryMeta
 using afIocConfig::IocConfigSource
 using web::WebReq
@@ -16,9 +15,7 @@ const mixin BedSheetServer {
 	abstract Type?	appModule()	
 	
 	** Returns 'proj.name' from the application's pod meta, or "Unknown" if no pod was found.
-	virtual Str appName() {
-		appPod?.meta?.get("proj.name") ?: "Unknown"
-	}
+	abstract Str appName()
 	
 	** The port BedSheet is listening to.
 	abstract Int port()
@@ -27,7 +24,7 @@ const mixin BedSheetServer {
 	** This is set by 'BedSheetConfigIds.host'. 
 	abstract Uri host()
 	
-	** The options BedSheet was started with
+	** The Registry options BedSheet was started with.
 	abstract [Str:Obj] 	options()
 	
 	** Returns a list of modules loaded by this BedSheet's IoC
@@ -69,19 +66,23 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	new make(|This|in) { in(this) }
 	
 	override Pod? appPod() {
-		bedSheetMeta.appPod
+		regMeta["afBedSheet.appPod"]
 	}
 	
 	override Type? appModule() {
-		bedSheetMeta.appModule
+		regMeta["afBedSheet.appModule"]
+	}
+	
+	override Str appName() {
+		regMeta["afBedSheet.appName"]
 	}
 	
 	override Int port() {
-		bedSheetMeta.port
+		regMeta["afBedSheet.port"]
 	}
 	
 	override [Str:Obj] options() {
-		bedSheetMeta.options
+		regMeta.options
 	}
 	
 	override Type[] moduleTypes() {
@@ -99,7 +100,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 
 	override Uri host() {
 		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
-		// DependencyProvider, so @Config is not available for injection then
+		// DependencyProvider, so @Config is not available for injection
 		// host is validated on startup, so we know it's okay
 		configSrc.get(BedSheetConfigIds.host, Uri#)
 	}
@@ -116,23 +117,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	private WebReq? webReq() {
+		// use Actor.locals (and not reg.serviceById) to avoid Errs being thrown during testing 
 		Actor.locals["web.req"]
 	}
-
-	private BedSheetMetaData bedSheetMeta() {
-		if (!regMeta.options.containsKey("afBedSheet.metaData"))
-			throw BedSheetErr(BsErrMsgs.bedSheetMetaDataNotInOptions)
-		return regMeta.options["afBedSheet.metaData"] 
-	}
-	
-//	static Void main() {
-//		scheme := (Str?) null
-//		host   := `http://example.com/`
-//		path   := `/`
-//		relUrl := `/index.html`
-//		
-//		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
-//		a := absUrl + path.relTo(`/`) + relUrl.relTo(`/`)
-//		echo(a)
-//	}
 }

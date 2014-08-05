@@ -4,6 +4,7 @@ using concurrent::AtomicRef
 using concurrent::AtomicBool
 using web::WebMod
 using afIoc::IocErr
+using afIoc::IocShutdownErr
 using afIoc::Registry
 using afIoc::RegistryBuilder
 using afIocConfig::IocConfigSource
@@ -19,8 +20,6 @@ const class BedSheetWebMod : WebMod {
 	** The port number this Bed App will be listening on. 
 	const Int 			port
 
-	@NoDoc	// advanced usage
-	const [Str:Obj?] 	bedSheetOptions
 	@NoDoc	// advanced usage
 	const [Str:Obj?] 	registryOptions
 	
@@ -44,10 +43,9 @@ const class BedSheetWebMod : WebMod {
 
 	** Creates this 'WebMod'.
 	** 'moduleName' can be a qualified type name of an AppModule or a pod name.
-	new make(Str moduleName, Int port, [Str:Obj?]? bedSheetOptions := null, [Str:Obj?]? registryOptions := null) {
+	new make(Str moduleName, Int port, [Str:Obj?]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
-		this.bedSheetOptions	= bedSheetOptions ?: Utils.makeMap(Str#, Obj?#)
 		this.registryOptions	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
 	}
 
@@ -73,20 +71,19 @@ const class BedSheetWebMod : WebMod {
 		try {
 			middlewarePipeline.service
 			
-		} catch (Err err) {
+		} catch (IocShutdownErr err) {
 			// nothing we can do here
-			if (err is IocErr && err.msg.contains("Method may no longer be invoked - Registry has already been shutdown"))
-				return
-			
+			return
+
+		} catch (Err err) {
 			// theoretically, this should have already been dealt with by our ErrMiddleware...
 			// ...but it's handy for BedSheet development!
 			if (registry != null) {	// reqs may come in before we've start up
 				try {
 					errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
 					Env.cur.err.printLine(errPrinter.errToStr(err))
-				} catch {
+				} catch
 					err.trace(Env.cur.err)
-				}
 			}
 			throw err
 		}
@@ -98,15 +95,14 @@ const class BedSheetWebMod : WebMod {
 		try {
 			log.info(BsLogMsgs.bedSheetWebModStarting(moduleName, port))
 
-			bob		:= createBob(moduleName, port, bedSheetOptions, registryOptions)
-			bsMeta	:= (BedSheetMetaData) bob.options["afBedSheet.metaData"] 
+			bob	:= createBob(moduleName, port, registryOptions)
 			
 			// Go!!!
 			registry = bob.build.startup
 	
 			// start the destroyer!
-			if (bedSheetOptions["pingProxy"] == true) {
-				pingPort := (Int) bedSheetOptions["pingProxyPort"]
+			if (registryOptions["afBedSheet.pingProxy"] == true) {
+				pingPort := (Int) registryOptions["afBedSheet.pingProxyPort"]
 				destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
 				destroyer.start
 			}
@@ -114,7 +110,7 @@ const class BedSheetWebMod : WebMod {
 			// print BedSheet connection details
 			configSrc := (IocConfigSource) registry.dependencyByType(IocConfigSource#)
 			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
-			log.info(BsLogMsgs.bedSheetWebModStarted(bsMeta.appName, host))
+			log.info(BsLogMsgs.bedSheetWebModStarted(bob["afBedSheet.appName"], host))
 
 		} catch (Err err) {
 			startupErr = err
@@ -129,9 +125,8 @@ const class BedSheetWebMod : WebMod {
 	}
 
 	** Returns a fully loaded IoC 'RegistryBuilder' that creates everything this Bed App needs. 
-	static RegistryBuilder createBob(Str moduleName, Int port, [Str:Obj?]? bedSheetOptions := null, [Str:Obj?]? registryOptions := null) {
-		bedSheetOptions = bedSheetOptions ?: Utils.makeMap(Str#, Obj?#)
-		registryOptions = registryOptions ?: Utils.makeMap(Str#, Obj?#)
+	static RegistryBuilder createBob(Str moduleName, Int port, [Str:Obj?]? options := null) {
+		options = options ?: Utils.makeMap(Str#, Obj?#)
 		
 		Pod?  pod
 		Type? mod
@@ -160,7 +155,7 @@ const class BedSheetWebMod : WebMod {
 		bob := RegistryBuilder()
 
 		// this defaults to false if not explicitly set to TRUE - trust me!
-		transDeps := !(bedSheetOptions["noTransDeps"] == true)
+		transDeps := !(options["afBedSheet.noTransDeps"] == true)
 		if (pod != null) {
 			if (transDeps)
 				bob.addModulesFromPod(pod, true)
@@ -178,16 +173,18 @@ const class BedSheetWebMod : WebMod {
 			 bob.addModule(BedSheetModule#)
 
 		// add extra modules - useful for testing
-		if (bedSheetOptions.containsKey("iocModules"))
-			bob.addModules(bedSheetOptions["iocModules"])
+		if (options.containsKey("afBedSheet.iocModules"))
+			bob.addModules(options["afBedSheet.iocModules"])
 
-		dPort 		 := (bedSheetOptions.containsKey("pingProxy") ? bedSheetOptions["pingProxyPort"] : null) ?: port
-		bsMeta		 := BedSheetMetaDataImpl(pod, mod, dPort, bedSheetOptions)
-		registryOpts := registryOptions.rw
-		registryOpts["afIoc.bannerText"] 	= easterEgg("Alien-Factory BedSheet v${BedSheetWebMod#.pod.version}, IoC v${Registry#.pod.version}")
-		registryOpts["afBedSheet.metaData"]	= bsMeta
+		dPort	:= (options.containsKey("afBedSheet.pingProxy") ? options["afBedSheet.pingProxyPort"] : null) ?: port
+		regOpts := options.rw
+		regOpts["afIoc.bannerText"] 	= easterEgg("Alien-Factory BedSheet v${BedSheetWebMod#.pod.version}, IoC v${Registry#.pod.version}")
+		regOpts["afBedSheet.appPod"]	= pod
+		regOpts["afBedSheet.appModule"]	= mod
+		regOpts["afBedSheet.port"]		= dPort
+		regOpts["afBedSheet.appName"]	= pod?.meta?.get("proj.name") ?: "Unknown"
 
-		bob.options.addAll(registryOpts)
+		bob.options.addAll(regOpts)
 		
 		// startup afIoc
 		return bob	
