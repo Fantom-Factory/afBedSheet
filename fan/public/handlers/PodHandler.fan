@@ -14,6 +14,11 @@ using afIocConfig::Config
 ** 
 ** Now a request to '/pods/icons/x256/flux.png' should return just that! 
 const mixin PodHandler {
+	
+	** The local URL under which pod resources are served.
+	** 
+	** Set by `BedSheetConfigIds.podHandlerBaseUrl`, defaults to '/pods/'.
+	abstract Uri baseUrl()
 
 	** The Route handler method. 
 	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
@@ -32,13 +37,19 @@ const mixin PodHandler {
 
 internal const class PodHandlerImpl : PodHandler {
 
-	@Config { id="afBedSheet.podHandler.url" }
-	@Inject private const Uri				podHandlerUrl
+	@Config { id="afBedSheet.podHandler.baseUrl" }
+	@Inject override const Uri				baseUrl
 	@Inject	private const FileAssetCache	fileCache
 		
 	new make(|This|? in) { 
 		in?.call(this) 
-		// FIXME: validate pod url
+		
+		if (!baseUrl.isPathOnly)
+			throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(baseUrl, `/pods/`))
+		if (!baseUrl.isPathAbs)
+			throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(baseUrl, `/pods/`))
+		if (!baseUrl.isDir)
+			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pods/`))
 	}
 
 	override FileAsset? serviceRoute(Uri remainingUrl) {
@@ -50,37 +61,34 @@ internal const class PodHandlerImpl : PodHandler {
 			// null means that 'Routes' didn't process the request, so it continues down the pipeline. 
 			return null
 	}
-	
-	override FileAsset fromLocalUrl(Uri localUrl) {
-		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
-			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, `/css/myStyles.css`))
-		if (!localUrl.isPathAbs)
-			throw ArgErr(BsErrMsgs.urlMustStartWithSlash(localUrl, `/css/myStyles.css`))
-		if (!localUrl.toStr.startsWith(podHandlerUrl.toStr))
-			throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, podHandlerUrl))
 
-		remainingUrl := localUrl.relTo(podHandlerUrl)
+	override FileAsset fromLocalUrl(Uri localUrl) {
+		Utils.validateLocalUrl(localUrl, `/pods/icons/x256/flux.png`)
+		if (!localUrl.toStr.startsWith(baseUrl.toStr))
+			throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
+
+		remainingUrl := localUrl.relTo(baseUrl)
 		
 		return fromPodResource(`fan://${remainingUrl}`)
 	}
 	
 	override FileAsset fromPodResource(Uri podUrl) {
 		if (podUrl.scheme != "fan")
-			throw ArgErr()
-		if (podUrl.host == null)
-			throw ArgErr()
+			throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
 		
 		resource := (Obj?) null
 		try 	resource = (podUrl).get
-		catch	throw ArgErr(podUrl.toStr)
-		if (resource isnot File)
-			throw ArgErr("Uri `${podUrl}` does not resolve to a File")
+		catch	throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
+		if (resource isnot File)	// WTF!?
+			throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
 
 		return fileCache.getOrAddOrUpdate(resource) |File file->FileAsset| {
 			if (!file.exists)
 				throw ArgErr(BsErrMsgs.fileNotFound(file))
 			
-			localUrl	:= podHandlerUrl + file.uri.pathOnly.relTo(`/`)
+			host		:= file.uri.host.toUri.plusSlash
+			path		:= file.uri.pathOnly.relTo(`/`)
+			localUrl	:= baseUrl + host + path 
 			clientUrl	:= fileCache.toClientUrl(localUrl, file)
 
 			return FileAsset {

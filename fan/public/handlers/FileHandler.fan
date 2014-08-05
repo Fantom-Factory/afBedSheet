@@ -120,10 +120,7 @@ internal const class FileHandlerImpl : FileHandler {
 	}
 	
 	override FileAsset fromLocalUrl(Uri localUrl) {
-		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
-			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, `/css/myStyles.css`))
-		if (!localUrl.isPathAbs)
-			throw ArgErr(BsErrMsgs.urlMustStartWithSlash(localUrl, `/css/myStyles.css`))
+		Utils.validateLocalUrl(localUrl, `/css/myStyles.css`)
 		
 		// TODO: what if 2 dirs map to the same url at the same level? 
 		// match the deepest uri
