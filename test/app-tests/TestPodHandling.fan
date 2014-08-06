@@ -1,9 +1,19 @@
+using afIoc
+using afIocConfig
 
 internal class TestPodHandling : AppTest {
 	
 	Str 	 file1_eTag	:= "\"5025-4b4001dcfcd0000\""
 	DateTime file1_date	:= DateTime(2010, Month.sep, 27, 09, 46, 40, 0, TimeZone.utc)
+
+	override Type[] iocModules	:= [T_AppModule#]
 	
+	override Void setup() { 
+		if (curTestMethod == #testNoPodHandling)
+			iocModules.add(T_WelcomeMod3#)
+		super.setup
+	}
+
 	Void testFileIsServed() {
 		verifyStatus(`/pods/icons/x256/flux.png`, 200)
 
@@ -26,5 +36,16 @@ internal class TestPodHandling : AppTest {
 
 	Void testFolder() {
 		verify404(`/pods/icons/x69/`)
+	}
+
+	Void testNoPodHandling() {
+		verify404(`/pods/icons/x256/flux.png`)		
+	}
+}
+
+internal class T_WelcomeMod3 { 
+	@Contribute { serviceType=ApplicationDefaults# } 
+	static Void contributeApplicationDefaults(Configuration conf) {
+		conf[BedSheetConfigIds.podHandlerBaseUrl] = null
 	}
 }

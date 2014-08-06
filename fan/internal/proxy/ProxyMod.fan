@@ -18,7 +18,7 @@ internal const class ProxyMod : WebMod {
 
 	override Void onStart() {
 		log.info(BsLogMsgs.proxyModStarting(proxyPort))
-		restarter.initialise		
+		restarter.initialise
 	}
 	
 	override Void onService() {

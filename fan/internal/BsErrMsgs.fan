@@ -118,6 +118,10 @@ internal const class BsErrMsgs {
 		"Pod URL `${podUrl}` does NOT resolve to a File, but a ${obj?.typeof?.qname} - ${obj}"
 	}
 
+	static Str podHandler_disabled() {
+		"Pod resource handling has been disabled - config ID '${BedSheetConfigIds.podHandlerBaseUrl}' has been set to null"
+	}
+
 	// ---- Pipeline Service Messages -------------------------------------------------------------
 
 	static Str pipelineTypeMustBePublic(Str thing, Type type) {
