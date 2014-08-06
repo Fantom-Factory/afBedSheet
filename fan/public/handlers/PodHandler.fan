@@ -18,7 +18,7 @@ const mixin PodHandler {
 	** The local URL under which pod resources are served.
 	** 
 	** Set by `BedSheetConfigIds.podHandlerBaseUrl`, defaults to '/pods/'.
-	abstract Uri baseUrl()
+	abstract Uri? baseUrl()
 
 	** The Route handler method. 
 	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
@@ -38,12 +38,15 @@ const mixin PodHandler {
 internal const class PodHandlerImpl : PodHandler {
 
 	@Config { id="afBedSheet.podHandler.baseUrl" }
-	@Inject override const Uri				baseUrl
+	@Inject override const Uri?				baseUrl
 	@Inject	private const FileAssetCache	fileCache
 		
 	new make(|This|? in) { 
 		in?.call(this) 
 		
+		if (baseUrl == null)
+			return
+
 		if (!baseUrl.isPathOnly)
 			throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(baseUrl, `/pods/`))
 		if (!baseUrl.isPathAbs)
@@ -63,6 +66,9 @@ internal const class PodHandlerImpl : PodHandler {
 	}
 
 	override FileAsset fromLocalUrl(Uri localUrl) {
+		if (baseUrl == null)
+			throw Err(BsErrMsgs.podHandler_disabled)
+
 		Utils.validateLocalUrl(localUrl, `/pods/icons/x256/flux.png`)
 		if (!localUrl.toStr.startsWith(baseUrl.toStr))
 			throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
@@ -73,6 +79,9 @@ internal const class PodHandlerImpl : PodHandler {
 	}
 	
 	override FileAsset fromPodResource(Uri podUrl) {
+		if (baseUrl == null)
+			throw Err(BsErrMsgs.podHandler_disabled)
+
 		if (podUrl.scheme != "fan")
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
 		
