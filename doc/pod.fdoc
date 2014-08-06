@@ -534,6 +534,7 @@ v1.3.14 [#v1.3.14]
  - Chg: Revamped 'PodHandler', now contains 'fromLocalUrl()' and 'fromPodResource()' to parallel 'FileHandler'.
  - Chg: Deleted 'BedSheetMetaData'; not that you should have been using it anyway!
  - Chg: 'BedSheetWebMod' no longer takes a BedSheet options map, all values have been merged with Registry options.
+ - Bug: Development Proxy process did not work on Mac OS-X - Thanks to [LightDye for Reporting]`http://stackoverflow.com/questions/25100460/error-cannot-init-sys-homedir-running-a-fantom-app-based-on-afbedsheet-on-mac-o`.
 
 v1.3.12 [#v1.3.12]
 ------------------

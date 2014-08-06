@@ -34,7 +34,7 @@ internal const class RoutesImpl : Routes {
 			return route
 		}
 		if (routes.isEmpty)
-			log.warn(BsLogMsgs.routesGotNone)
+			log.warn(BsLogMsgs.routes_gotNone)
 	}
 
 	override Bool processRequest(Uri modRel, Str httpMethod) {

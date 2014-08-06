@@ -104,8 +104,9 @@ const class BedSheetModule {
 
 	@Contribute { serviceId="HttpOutStream" }
 	static Void contributeHttpOutStream(Configuration config) {
-		config.set("afBedSheet.buffBuilder",	config.autobuild(HttpOutStreamBuffBuilder#)).before("afBedSheet.gzipBuilder")
-		config.set("afBedSheet.gzipBuilder",	config.autobuild(HttpOutStreamGzipBuilder#))
+		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
+		config["afBedSheet.buffBuilder"] = config.autobuild(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
+		config["afBedSheet.gzipBuilder"] = config.autobuild(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
