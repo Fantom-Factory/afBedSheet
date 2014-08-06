@@ -39,7 +39,7 @@ class Main : AbstractMain {
 
 	** Run baby, run!
 	@NoDoc	// point!
-	override Int run() {		
+	override Int run() {
 		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port, noTransDeps, env) : BedSheetWebMod(appModule, port, options))
 
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"

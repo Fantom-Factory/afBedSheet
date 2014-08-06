@@ -42,10 +42,6 @@ internal class GzipOutStream : OutStream {
 		in(this)
 		this.wrappedOut	= wrappedOut
 		this.lock 		= OneShotLock("Stream is closed")
-
-		// if the response *could* be gzipped, then set the vary header
-		// see http://blog.maxcdn.com/accept-encoding-its-vary-important/
-		response.headers.vary = "Accept-Encoding"		
 	}
 	
 	override This write(Int byte) {

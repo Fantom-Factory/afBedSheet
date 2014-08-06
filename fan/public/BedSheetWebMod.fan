@@ -7,7 +7,7 @@ using afIoc::IocErr
 using afIoc::IocShutdownErr
 using afIoc::Registry
 using afIoc::RegistryBuilder
-using afIocConfig::IocConfigSource
+using afIocConfig::ConfigSource
 
 ** The `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
@@ -108,7 +108,7 @@ const class BedSheetWebMod : WebMod {
 			}
 			
 			// print BedSheet connection details
-			configSrc := (IocConfigSource) registry.dependencyByType(IocConfigSource#)
+			configSrc := (ConfigSource) registry.dependencyByType(ConfigSource#)
 			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
 			log.info(BsLogMsgs.bedSheetWebModStarted(bob["afBedSheet.appName"], host))
 

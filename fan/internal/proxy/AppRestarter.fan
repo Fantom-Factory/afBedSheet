@@ -64,13 +64,13 @@ internal class AppRestarterState {
 			podTimeStamps[podName] = podFile(podName).modified
 		}
 		
-		log.info(BsLogMsgs.appRestarterCachedPodTimestamps(podTimeStamps.size))
+		log.info(BsLogMsgs.appRestarter_cachedPodTimestamps(podTimeStamps.size))
 	}
 	
 	Bool podsModified()	{
 		true == Env.cur.findAllPodNames.eachWhile |podName| {
 			if (podFile(podName).modified > podTimeStamps[podName]) {
-				log.info(BsLogMsgs.appRestarterPodUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
+				log.info(BsLogMsgs.appRestarter_podUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
 				return true
 			}
 			return null
@@ -78,19 +78,31 @@ internal class AppRestarterState {
 	}
 	
 	Void launchWebApp(Str appModule, Int appPort, Int proxyPort, Bool noTransDeps, Str? env) {
-		log.info(BsLogMsgs.appRestarterLauchingApp(appModule, appPort))
-		home := Env.cur.homeDir.osPath
-		deps := noTransDeps ? "-noTransDeps " : "" 
-		envS := (env == null) ? "" : "-env ${env} "
-		args := "java -cp \"${home}/lib/java/sys.jar\" -Dfan.home=\"${home}\" fanx.tools.Fan afBedSheet::MainProxied ${envS}-pingProxy -pingProxyPort $proxyPort ${deps}$appModule $appPort"
-		log.debug(args)
-		realWebApp = Process(args.split).run
+		log.info(BsLogMsgs.appRestarter_lauchingApp(appModule, appPort))
+		try {
+			home	:= Env.cur.homeDir.normalize
+			sysjar	:= home + `lib/java/sys.jar`
+			
+			args := ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, "-pingProxy", "-pingProxyPort", proxyPort.toStr, appModule, appPort.toStr]
+			
+			if (env != null) {
+				args.insert(-3, "-env")
+				args.insert(-3, env)
+			}
+			
+			if (noTransDeps)
+				args.insert(-3, "-noTransDeps")
+			
+			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
+			realWebApp = Process(args).run
+		} catch (Err err)
+			throw BedSheetErr(BsErrMsgs.appRestarter_couldNotLaunch(appModule), err)
 	}
 
 	Void killWebApp(Str appModule)	{
 		if (realWebApp == null)
 			return
-		log.info(BsLogMsgs.appRestarterKillingApp(appModule))
+		log.info(BsLogMsgs.appRestarter_killingApp(appModule))
 		realWebApp.kill
 	}
 	

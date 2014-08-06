@@ -9,41 +9,45 @@ internal const class BsLogMsgs {
 
 	// ---- AppRestarter --------------------------------------------------------------------------
 
-	static Str appRestarterCachedPodTimestamps(Int noOfPods) {
+	static Str appRestarter_cachedPodTimestamps(Int noOfPods) {
 		"Cached the timestamps of ${noOfPods} pods"
 	}	
 
-	static Str appRestarterLauchingApp(Str appModule, Int port) {
-		"Launching BedSheet WebApp '$appModule' on port $port\n"
+	static Str appRestarter_lauchingApp(Str appModule, Int port) {
+		"Launching BedSheet WebApp '$appModule' on port $port"
 	}	
 
-	static Str appRestarterKillingApp(Str appModule) {
+	static Str appRestarter_process(Str cmd) {
+		"Executing external process:\n\n${cmd}\n"
+	}	
+
+	static Str appRestarter_killingApp(Str appModule) {
 		"Killing BedSheet WebApp '$appModule'"
 	}	
 
-	static Str appRestarterPodUpdatd(Str podName, Duration timeDiff) {
+	static Str appRestarter_podUpdatd(Str podName, Duration timeDiff) {
 		"Pod '$podName' pod was updated $timeDiff.abs.toLocale ago"
 	}
 
 	// ---- AppDestroyer --------------------------------------------------------------------------
 	
-	static Str appDestroyerStarted(Duration pingInterval) {
+	static Str appDestroyer_started(Duration pingInterval) {
 		"Starting AppDestroyer. Pinging proxy every ${pingInterval}..."
 	}
 
-	static Str appDestroyerPingNotOk(Int resCode, Str resMsg) {
+	static Str appDestroyer_pingNotOk(Int resCode, Str resMsg) {
 		"Proxy ping returned $resCode $resMsg"
 	}
 
-	static Str appDestroyerPingOk() {
+	static Str appDestroyer_pingOk() {
 		"Proxy ping returned 200 OK - resetting strike count."
 	}
 
-	static Str appDestroyerStrikeOut(Int strikesLeft) {
+	static Str appDestroyer_strikeOut(Int strikesLeft) {
 		"Proxy has $strikesLeft strike(s) left before this app terminates"
 	}
 
-	static Str appDestroyerDESTROY(Int strikes) {
+	static Str appDestroyer_DESTROY(Int strikes) {
 		"Proxy is down. TERMINATING WEB APP WITH EXTREME PREDUDICE!!!"
 	}
 

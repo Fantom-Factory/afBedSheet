@@ -25,9 +25,14 @@ internal const class RoutesImpl : Routes {
 
 	@Inject	private const ResponseProcessors	responseProcessors  
 
-	internal new make(Route[] routes, |This|? in := null) {
+	internal new make(Obj[] routes, |This|? in := null) {
 		in?.call(this)
-		this.routes = routes
+		rs := routes.flatten
+		this.routes = rs.map |route->Route| {
+			if (route isnot Route)
+				throw ArgErr(BsErrMsgs.routes_wrongType(route))
+			return route
+		}
 		if (routes.isEmpty)
 			log.warn(BsLogMsgs.routesGotNone)
 	}

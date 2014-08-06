@@ -49,18 +49,17 @@ using afIoc
 ** That means it is possible to specify a 'Route' URL with more than one handler; a custom handler *and* this 'FileHandler'.
 ** With a bit of configuration it is possible to specify which takes precedence. 
 **   
-** The 'FileHandler' route contributions are sandwiched between 'afBedSheet.fileHanderStart' and 'afBedSheet.fileHandlerEnd' place holders. 
-** When 'Route' precedence is important, use these place holders in your config: 
+** The 'FileHandler' route contributions are set with the ID 'afBedSheet.fileHander', so when 'Route' precedence is important, use it in your config: 
 ** 
 ** pre>
 ** @Contribute { serviceType=Routes# }
 ** static Void contributeRoutes(Configuration config) {
 ** 
-**   // this Route will be served in place of the file 'uri1.txt'
-**   config.set("uri1", Route(`/uri1.txt`, ...)).before("afBedSheet.fileHandlerStart")
+**   // this Route will be served in place of the file 'url1.txt'
+**   config.set("beforeExample", Route(`/url1.txt`, ...)).before("afBedSheet.fileHandler")
 ** 
-**   // this Route will be served if there is no file called 'uri.txt'
-**   config.set("uri2", Route(`/uri2.txt`, ...)).after("afBedSheet.fileHandlerEnd")
+**   // this Route will be served if there is no file called 'url2.txt'
+**   config.set("afterExample", Route(`/url2.txt`, ...)).after("afBedSheet.fileHandler")
 ** }
 ** <pre
 ** 
