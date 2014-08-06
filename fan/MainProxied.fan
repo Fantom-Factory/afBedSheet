@@ -11,8 +11,8 @@ class MainProxied : Main {
 	
 	override Str:Obj? options() {
 		options	:= super.options
-		options["pingProxy"] 		= pingProxy
-		options["pingProxyPort"] 	= pingProxyPort ?: -1		
+		options["afBedSheet.pingProxy"] 	= pingProxy
+		options["afBedSheet.pingProxyPort"]	= pingProxyPort ?: -1		
 		return options
 	}
 }

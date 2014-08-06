@@ -52,6 +52,10 @@ internal const class BsErrMsgs {
 			: "Route Regex ${routeRegex} will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
 	}
 
+	static Str routes_wrongType(Obj obj) {
+		"Contribution is NOT of type ${Route#.name} - ${obj.typeof.qname} - ${obj}"
+	}
+
 	// ---- Other ----
 
 	static Str valueEncodingBuggered(Obj value, Type toType) {
@@ -74,14 +78,14 @@ internal const class BsErrMsgs {
 		"Contributed ErrProcessor types must be subclasses of Err - ${type.qname}"
 	}
 	
-//	static Str bedSheetMetaDataNotInOptions() {
-//		"RegistryOptions does not contain key 'bedSheetMetaData'"
-//	}
-	
 	static Str cookieNotFound(Str cookieName) {
 		"Could not find a cookie with the name '${cookieName}'"
 	}
 	
+	static Str appRestarter_couldNotLaunch(Str appModule) {
+		"Could not launch external process for proxied Web App '$appModule'\n"
+	}	
+
 	// ---- Startup Validation ----
 	
 	static Str startupHostMustHaveSchemeAndHost(Str configName, Uri host) {

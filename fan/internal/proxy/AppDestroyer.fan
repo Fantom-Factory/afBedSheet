@@ -24,7 +24,7 @@ internal const class AppDestroyer {
 	}
 	
 	Void start() {
-		log.info(BsLogMsgs.appDestroyerStarted(pingInterval))
+		log.info(BsLogMsgs.appDestroyer_started(pingInterval))
 		actor.sendLater(pingInterval, null)
 	}
 
@@ -38,10 +38,10 @@ internal const class AppDestroyer {
 			resBody	:= client.resIn.readAllStr.trim
 
 			if (client.resCode != 200 || resBody != "OK")
-				throw Err(BsLogMsgs.appDestroyerPingNotOk(client.resCode, client.resPhrase))
+				throw Err(BsLogMsgs.appDestroyer_pingNotOk(client.resCode, client.resPhrase))
 			
 			if (strikes.val > 0) {
-				log.info(BsLogMsgs.appDestroyerPingOk)
+				log.info(BsLogMsgs.appDestroyer_pingOk)
 				strikes.val = 0
 			}
 			
@@ -53,13 +53,13 @@ internal const class AppDestroyer {
 			// 2x = deliberate
 			// 3x = just takes too bloody long!
 			if (out >= maxNoOfStrikes) {
-				log.err(BsLogMsgs.appDestroyerDESTROY(maxNoOfStrikes))
+				log.err(BsLogMsgs.appDestroyer_DESTROY(maxNoOfStrikes))
 				
 				// BOOM BABY! BOOM!
 				Env.cur.exit(69)
 			}
 
-			log.warn(BsLogMsgs.appDestroyerStrikeOut(maxNoOfStrikes - out))
+			log.warn(BsLogMsgs.appDestroyer_strikeOut(maxNoOfStrikes - out))
 		}
 		
 		actor.sendLater(pingInterval, null)

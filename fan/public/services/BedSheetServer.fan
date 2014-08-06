@@ -1,6 +1,6 @@
 using afIoc::Inject
 using afIoc::RegistryMeta
-using afIocConfig::IocConfigSource
+using afIocConfig::ConfigSource
 using web::WebReq
 using concurrent
 
@@ -60,8 +60,8 @@ const mixin BedSheetServer {
 internal const class BedSheetServerImpl : BedSheetServer {
 
 	// nullable for testing
-	@Inject private const RegistryMeta?		regMeta 
-	@Inject private const IocConfigSource?	configSrc 
+	@Inject private const RegistryMeta?	regMeta 
+	@Inject private const ConfigSource?	configSrc 
 	
 	new make(|This|in) { in(this) }
 	

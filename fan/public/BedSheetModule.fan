@@ -104,7 +104,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceId="HttpOutStream" }
 	static Void contributeHttpOutStream(Configuration config) {
-		config.set("afBedSheet.bufBuilder",		config.autobuild(HttpOutStreamBuffBuilder#)).before("afBedSheet.gzipBuilder")
+		config.set("afBedSheet.buffBuilder",	config.autobuild(HttpOutStreamBuffBuilder#)).before("afBedSheet.gzipBuilder")
 		config.set("afBedSheet.gzipBuilder",	config.autobuild(HttpOutStreamGzipBuilder#))
 	}
 
@@ -125,12 +125,13 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=Routes# }
-	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler, IocConfigSource iocSrc) {
-		// FIXME:Routes to take []
+	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler, ConfigSource iocSrc) {
+		// @Deprecated placeholder
 		config.addPlaceholder("afBedSheet.fileHandlerStart")
-		fileHandler.directoryMappings.each |dir, uri| {
-			config.add(Route(uri + `***`, FileHandler#serviceRoute, "GET HEAD"))	// Me like!
-		}
+		config["afBedSheet.fileHandler"] = fileHandler.directoryMappings.map |dir, uri| {
+			Route(uri + `***`, FileHandler#serviceRoute, "GET HEAD")	// Me like!
+		}.vals
+		// @Deprecated placeholder
 		config.addPlaceholder("afBedSheet.fileHandlerEnd")
 		
 		podHandlerUrl := (Uri?) iocSrc.get(BedSheetConfigIds.podHandlerBaseUrl, Uri?#)
@@ -269,7 +270,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(Configuration config, PlasticCompiler plasticCompiler, IocConfigSource configSrc) {
+	static Void contributeRegistryStartup(Configuration config, PlasticCompiler plasticCompiler, ConfigSource configSrc) {
 		config["afBedSheet.srcCodePadding"] = |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
