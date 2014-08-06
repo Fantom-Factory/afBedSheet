@@ -93,7 +93,7 @@ const class BedSheetWebMod : WebMod {
 	override Void onStart() {
 		started.val = true
 		try {
-			log.info(BsLogMsgs.bedSheetWebModStarting(moduleName, port))
+			log.info(BsLogMsgs.bedSheetWebMod_starting(moduleName, port))
 
 			bob	:= createBob(moduleName, port, registryOptions)
 			
@@ -110,7 +110,7 @@ const class BedSheetWebMod : WebMod {
 			// print BedSheet connection details
 			configSrc := (ConfigSource) registry.dependencyByType(ConfigSource#)
 			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
-			log.info(BsLogMsgs.bedSheetWebModStarted(bob["afBedSheet.appName"], host))
+			log.info(BsLogMsgs.bedSheetWebMod_started(bob["afBedSheet.appName"], host))
 
 		} catch (Err err) {
 			startupErr = err
@@ -121,7 +121,7 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc
 	override Void onStop() {
 		registry?.shutdown
-		log.info(BsLogMsgs.bedSheetWebModStopping(moduleName))
+		log.info(BsLogMsgs.bedSheetWebMod_stopping(moduleName))
 	}
 
 	** Returns a fully loaded IoC 'RegistryBuilder' that creates everything this Bed App needs. 
@@ -136,20 +136,20 @@ const class BedSheetWebMod : WebMod {
 		// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
 		if (!moduleName.contains("::")) {
 			pod = Pod.find(moduleName, true)
-			log.info(BsLogMsgs.bedSheetWebModFoundPod(pod))
+			log.info(BsLogMsgs.bedSheetWebMod_foundPod(pod))
 			mod = findModFromPod(pod)
 		}
 
 		// AppModule name given...
 		if (moduleName.contains("::")) {
 			mod = Type.find(moduleName, true)
-			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+			log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
 			pod = mod.pod
 		}
 
 		// we're screwed! No module = no web app!
 		if (mod == null)
-			log.warn(BsLogMsgs.bedSheetWebModNoModuleFound)
+			log.warn(BsLogMsgs.bedSheetWebMod_noModuleFound)
 		
 		// construct after the above messages so logs look nicer ("...adding module IocModule")
 		bob := RegistryBuilder()
@@ -196,13 +196,13 @@ const class BedSheetWebMod : WebMod {
 		modName := pod.meta["afIoc.module"]
 		if (modName != null) {
 			mod = Type.find(modName, true)
-			log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
+			log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
 		} else {
 			// we have a pod with no module meta... so lets guess the name 'AppModule'
 			mod = pod.type("AppModule", false)
 			if (mod != null) {
-				log.info(BsLogMsgs.bedSheetWebModFoundType(mod))
-				log.warn(BsLogMsgs.bedSheetWebModAddModuleToPodMeta(pod, mod))
+				log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
+				log.warn(BsLogMsgs.bedSheetWebMod_addModuleToPodMeta(pod, mod))
 			}
 		}
 		return mod

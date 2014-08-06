@@ -179,6 +179,25 @@ internal const class T_PageHandler {
 		echo(remaining.toFile.normalize.osPath)
 		return `test/app-web/`.toFile.plus(remaining, false).normalize
 	}
+	
+	Bool slow() {
+		response.disableBuffering = true
+		response.disableGzip = true
+		response.headers.contentLength = Buf().print("OMFG!").size
+		response.headers.contentType = MimeType("text/plain")
+		concurrent::Actor.sleep(50ms)
+		response.out.writeChars("O")
+		concurrent::Actor.sleep(50ms)
+		response.out.writeChars("M")
+		concurrent::Actor.sleep(50ms)
+		response.out.writeChars("F")
+		concurrent::Actor.sleep(50ms)
+		response.out.writeChars("G")
+		concurrent::Actor.sleep(50ms)
+		response.out.writeChars("!")
+		concurrent::Actor.sleep(50ms)
+		return true
+	}
 }
 
 internal class AutoBoom {

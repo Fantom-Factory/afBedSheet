@@ -81,6 +81,10 @@ const mixin FileHandler {
 	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'. 
 	** Throws 'ArgErr' if the file directory is not mapped.
 	abstract FileAsset fromServerFile(File serverFile)
+	
+	** Finds the directory mapping that best fits the given local URL, or 'null' if not found.
+	@NoDoc	// Experimental advanced use - see Duvet
+	abstract Uri? findMappingFromLocalUrl(Uri localUrl)
 }
 
 internal const class FileHandlerImpl : FileHandler {
@@ -118,15 +122,19 @@ internal const class FileHandlerImpl : FileHandler {
 			return null
 	}
 	
-	override FileAsset fromLocalUrl(Uri localUrl) {
+	override Uri? findMappingFromLocalUrl(Uri localUrl) {
 		Utils.validateLocalUrl(localUrl, `/css/myStyles.css`)
-		
-		// TODO: what if 2 dirs map to the same url at the same level? 
+		// TODO: what if 2 dirs map to the same url at the same level?
+
 		// match the deepest uri
 		prefixes:= directoryMappings.keys.findAll { localUrl.toStr.startsWith(it.toStr) }
 		prefix 	:= prefixes.size == 1 ? prefixes.first : prefixes.sort |u1, u2 -> Int| { u1.path.size <=> u2.path.size }.last
-		if (prefix == null)
-			throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys)
+		return prefix
+	}
+	
+	override FileAsset fromLocalUrl(Uri localUrl) {
+		prefix	:= findMappingFromLocalUrl(localUrl)
+				?: throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys)
 
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour

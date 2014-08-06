@@ -1,6 +1,6 @@
 using afIoc::Inject
 using webmod::LogMod
-using afIocConfig::IocConfigSource
+using afIocConfig::ConfigSource
 using afIocConfig::Config
 
 ** Logs HTTP requests to file in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`. 
@@ -73,7 +73,7 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 
 	private const LogMod? logMod
 	
-	internal new make(IocConfigSource configSource, |This|in) { 
+	internal new make(ConfigSource configSource, |This|in) { 
 		in(this)
 
 		dir = configSource.get(BedSheetConfigIds.requestLogDir, File#)
@@ -83,7 +83,7 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 		logMod = LogMod { it.dir=this.dir; it.filename=this.filenamePattern; it.fields=this.fields }
 		logMod.onStart
 
-		log.info(BsLogMsgs.requestLogEnabled(dir + `${filenamePattern}`))
+		log.info(BsLogMsgs.requestLog_enabled(dir + `${filenamePattern}`))
 	}
 	
 	override Bool service(MiddlewarePipeline pipeline) {

@@ -1,7 +1,7 @@
 using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
-using afIocConfig::IocConfigSource
+using afIocConfig::ConfigSource
 using web::WebOutStream
 using afPlastic::SrcCodeErr
 
@@ -46,7 +46,7 @@ internal const class ErrPrinterStrSections {
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpSession		session
 	@Inject	private const HttpCookies		cookies
-	@Inject	private const IocConfigSource	configSrc
+	@Inject	private const ConfigSource		configSrc
 	@Inject	private const Routes			routes
 	@Inject	private const ActorPools		actorPools
 
