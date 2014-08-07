@@ -14,13 +14,13 @@ internal class TestRoute : BsTest {
 	Void bar4(Str? a, Str b := "") { }
 
 	Void testUriPathOnly() {
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeShouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_shouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
 			r := Route(`http://www.alienfactory.co.uk/`, #handler1)
 		}
 	}
 
 	Void testUriStartWithSlash() {
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeShouldStartWithSlash(`foo/bar`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_shouldStartWithSlash(`foo/bar`)) {
 			r := Route(`foo/bar`, #handler1)
 		}
 	}	
@@ -308,26 +308,26 @@ internal class TestRoute : BsTest {
 	}
 
 	Void testMethodValidation() {
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/***`, #handler1)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/***`, #handler1)) {
 			r := Route(`/route/***`, #handler1)
 		}
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/**`,  #handler1)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/**`,  #handler1)) {
 			r := Route(`/route/**`,  #handler1)
 		}
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/*`,   #handler1)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/*`,   #handler1)) {
 			r := Route(`/route/*`,   #handler1)
 		}
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/*/***`, #handler2)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/*/***`, #handler2)) {
 			r := Route(`/route/*/***`, #handler2)
 		}
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/*/**`,  #handler2)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/*/**`,  #handler2)) {
 			r := Route(`/route/*/**`,  #handler2)
 		}
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/*/*`,   #handler2)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/*/*`,   #handler2)) {
 			r := Route(`/route/*/*`,   #handler2)
 		}
 		
-		verifyErrMsg(ArgErr#, BsErrMsgs.routeUriWillNeverMatchMethod("".toRegex, `/route/*`, #handler6)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.route_uriWillNeverMatchMethod("".toRegex, `/route/*`, #handler6)) {
 			r := Route(`/route/*`,   #handler6)
 		}
 		

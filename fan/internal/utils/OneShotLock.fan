@@ -19,7 +19,7 @@ internal class OneShotLock {
 
 	public Void check() {
 		if (lockFlag)
-			throw BedSheetErr(BsErrMsgs.oneShotLockViolation(because))
+			throw BedSheetErr(BsErrMsgs.oneShotLock_violation(because))
 	}
 
 	override Str toStr() {

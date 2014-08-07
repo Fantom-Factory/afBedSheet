@@ -106,9 +106,9 @@ const class Route {
 	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
 	new makeFromGlob(Uri glob, Obj response, Str httpMethod := "GET") {
 	    if (glob.scheme != null || glob.host != null || glob.port!= null )
-			throw ArgErr(BsErrMsgs.routeShouldBePathOnly(glob))
+			throw ArgErr(BsErrMsgs.route_shouldBePathOnly(glob))
 	    if (!glob.isPathAbs)
-			throw ArgErr(BsErrMsgs.routeShouldStartWithSlash(glob))
+			throw ArgErr(BsErrMsgs.route_shouldStartWithSlash(glob))
 
 		uriGlob	:= glob.toStr
 		regex	:= "(?i)^"
@@ -281,12 +281,12 @@ internal const class MethodCallFactory : RouteResponseFactory {
 			count + (arg.contains(".*") ? 1 : 0)
 		}
 		if (args > method.params.size)
-			throw ArgErr(BsErrMsgs.routeUriWillNeverMatchMethod(routeRegex, routeGlob, method))
+			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(routeRegex, routeGlob, method))
 		
 		if (!matchAllSegs) {
 			defs := (Int) method.params.reduce(0) |Int count, param -> Int| { count + (param.hasDefault ? 0 : 1) }
 			if (args < defs)
-				throw ArgErr(BsErrMsgs.routeUriWillNeverMatchMethod(routeRegex, routeGlob, method))
+				throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(routeRegex, routeGlob, method))
 		}
 	}
 

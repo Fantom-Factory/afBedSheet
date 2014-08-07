@@ -23,7 +23,7 @@ internal const class ErrProcessorsImpl : ErrProcessors {
 		in(this)
 		errProcessors.keys.each |type| {
 			if (type.isClass && !type.fits(Err#))
-				throw BedSheetErr(BsErrMsgs.errProcessorsNotErrType(type))
+				throw BedSheetErr(BsErrMsgs.errProcessors_notErrType(type))
 		}
 		this.errProcessorLookup = CachingTypeLookup(errProcessors)
 	}

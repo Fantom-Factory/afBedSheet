@@ -1,18 +1,50 @@
 using afIoc::Inject
 using afIocConfig::Config
+using afBeanUtils::ArgNotFoundErr
 
-** (Service) - A Request Handler that maps URIs to file resources inside pods. 
+** (Service) - A Request Handler that maps URLs to file resources inside pods. 
 **
+** To access a pod resource use URLs in the format:
+** 
+**   /<baseUrl>/<podName>/<fileName>
+** 
+** By default the base url is '/pods/' which means you should always be able to access the flux icon.
+** 
+**   /pods/icons/x256/flux.png
+** 
+** Change the base url in the application defaults:
+** 
 ** pre>
-** @Contribute { serviceType=Routes# }
-** static Void contributeRoutes(Configuration conf) {
-**   ...
-**   conf.add(Route(`/pods/***`, PodHandler#service))
-**   ...
+** @Contribute { serviceType=ApplicationDefaults# } 
+** static Void contributeAppDefaults(Configuration conf) {
+**     conf[BedSheetConfigIds.podHandlerBaseUrl] = `/some/other/url/`
 ** }
 ** <pre
 ** 
-** Now a request to '/pods/icons/x256/flux.png' should return just that! 
+** Set the base url to 'null' to disable the serving of pod resources.
+** 
+** Because pods may contain sensitive data, the entire contents of all the pods are NOT available by default. Oh no!
+** 'PodHandler' has a whitelist of Regexes that specify which pod files are allowed to be served.
+** If a pod resource doesn't match a regex, it doesn't get served.
+** 
+** By default only a handful of files with common web extensions are allowed. These include:
+** 
+** pre>
+** .      web files: .css .htm .html .js
+**      image files: .bmp .gif .ico .jpg .png
+**   web font files: .eot .ttf .woff
+**      other files: .txt
+** <pre
+** 
+** To add or remove whitelist regexs, contribute to 'PodHandler':
+**  
+** pre>
+** @Contribute { serviceType=PodHandler# } 
+** static Void contributePodHandler(Configuration conf) {
+**     conf.remove(".txt")                      // prevent .txt files from being served
+**     conf["acmePodFiles"] = "^fan://acme/.*$" // serve all files from the acme pod
+** }
+** <pre
 const mixin PodHandler {
 	
 	** The local URL under which pod resources are served.
@@ -40,9 +72,12 @@ internal const class PodHandlerImpl : PodHandler {
 	@Config { id="afBedSheet.podHandler.baseUrl" }
 	@Inject override const Uri?				baseUrl
 	@Inject	private const FileAssetCache	fileCache
-		
-	new make(|This|? in) { 
-		in?.call(this) 
+			private const Regex[] 			whitelistFilters
+	
+	new make(Regex[] filters, |This|? in) {
+		this.whitelistFilters = filters
+
+		in?.call(this)
 		
 		if (baseUrl == null)
 			return
@@ -91,6 +126,10 @@ internal const class PodHandlerImpl : PodHandler {
 		if (resource isnot File)	// WTF!?
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
 
+		podPath := ((File) resource).uri.toStr
+		if (!whitelistFilters.any { it.matches(podPath) })
+			throw ArgNotFoundErr(BsErrMsgs.podHandler_notInWhitelist(podPath), whitelistFilters)
+		
 		return fileCache.getOrAddOrUpdate(resource) |File file->FileAsset| {
 			if (!file.exists)
 				throw ArgErr(BsErrMsgs.fileNotFound(file))
@@ -110,5 +149,5 @@ internal const class PodHandlerImpl : PodHandler {
 				it.clientUrl	= clientUrl
 			}
 		}	
-	}
+	}	
 }

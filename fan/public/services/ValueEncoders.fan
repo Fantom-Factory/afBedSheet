@@ -35,7 +35,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 			try {
 				return valEnc.toClient(value)
 			} catch (Err cause) {
-				throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(value, Str#), cause)
+				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(value, Str#), cause)
 			}
 		
 		return value?.toStr
@@ -54,19 +54,19 @@ internal const class ValueEncodersImpl : ValueEncoders {
 			} catch (ReProcessErr reprocess) {
 				throw reprocess
 			} catch (Err cause) {
-				throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(clientValue, valType), cause)
+				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 			}
 		
 		if (clientValue == null)
 			return null
 		
 		if (!typeCoercer.canCoerce(Str#, valType))
-			throw ValueEncodingErr(BsErrMsgs.valueEncodingNotFound(valType))
+			throw ValueEncodingErr(BsErrMsgs.valueEncoding_notFound(valType))
 		
 		try {
 			return typeCoercer.coerce(clientValue, valType) 
 		} catch (Err cause) {
-			throw ValueEncodingErr(BsErrMsgs.valueEncodingBuggered(clientValue, valType), cause)
+			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 		}
 	}
 

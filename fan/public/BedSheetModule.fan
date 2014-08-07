@@ -142,6 +142,32 @@ const class BedSheetModule {
 			config.addPlaceholder("afBedSheet.podHandler")
 	}
 
+	@Contribute { serviceType=PodHandler# }
+	static Void contributePodHandlerWhitelist(Configuration config) {
+		// by default, allow safe pod files to be served
+
+		// html files
+		config[".css"]	= "^.*\\.css\$"
+		config[".htm"]	= "^.*\\.htm\$"
+		config[".html"]	= "^.*\\.html\$"
+		config[".js"]	= "^.*\\.js\$"
+		
+		// image files
+		config[".bmp"]	= "^.*\\.bmp\$"
+		config[".gif"]	= "^.*\\.gif\$"
+		config[".ico"]	= "^.*\\.ico\$"
+		config[".jpg"]	= "^.*\\.jpg\$"
+		config[".png"]	= "^.*\\.png\$"
+		
+		// web font files
+		config[".eot"]	= "^.*\\.eot\$"
+		config[".ttf"]	= "^.*\\.ttf\$"
+		config[".woff"]	= "^.*\\.woff\$"
+		
+		// other files
+		config[".txt"]	= "^.*\\.txt\$"
+	}
+	
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(Configuration config) {
 		// add some standard compressible mime types
@@ -293,9 +319,9 @@ const class BedSheetModule {
 	
 	internal static Void validateHost(Uri host) {
 		if (host.scheme == null || host.host == null)
-			throw BedSheetErr(BsErrMsgs.startupHostMustHaveSchemeAndHost(BedSheetConfigIds.host, host))
+			throw BedSheetErr(BsErrMsgs.startup_hostMustHaveSchemeAndHost(BedSheetConfigIds.host, host))
 		if (!host.pathStr.isEmpty && host.pathStr != "/")
-			throw BedSheetErr(BsErrMsgs.startupHostMustNotHavePath(BedSheetConfigIds.host, host))		
+			throw BedSheetErr(BsErrMsgs.startup_hostMustNotHavePath(BedSheetConfigIds.host, host))		
 	}
 
 	private static Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
