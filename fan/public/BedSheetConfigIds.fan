@@ -83,14 +83,14 @@ const mixin BedSheetConfigIds {
 	static const Str podHandlerBaseUrl				:= "afBedSheet.podHandler.baseUrl"
 	
 	** The default 'Cache-Control' HTTP response header to set when serving static files. 
-	** To set caching to 1 day set this to:
+	** Example, to cache files for 1 day:
 	** 
 	**   "max-age=${1day.toSec}"
 	** 
 	** Ideally you should use an asset caching strategy, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`, 
 	** which sets this for you. 
 	** 
-	** Defaults to the Str 'public'
+	** Defaults to 'null'
 	static const Str fileAssetCacheControl			:= "afBedSheet.fileAsset.cacheControl"
 
 

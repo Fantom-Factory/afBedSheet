@@ -3,7 +3,6 @@ using afIoc
 using afIocEnv::IocEnv
 using afIocConfig::ApplicationDefaults
 
-
 internal class TestBoom : AppTest {
 
 	override Type[] iocModules	:= [T_AppModule#]
