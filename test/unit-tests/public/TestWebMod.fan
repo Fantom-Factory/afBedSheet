@@ -2,13 +2,13 @@
 internal class TestWebMod : BsTest {
 	
 	Void testHost() {
-		verifyBsErrMsg(BsErrMsgs.startupHostMustHaveSchemeAndHost(BedSheetConfigIds.host, `dude.com`)) {
+		verifyBsErrMsg(BsErrMsgs.startup_hostMustHaveSchemeAndHost(BedSheetConfigIds.host, `dude.com`)) {
 			BedSheetModule.validateHost(`dude.com`)
 		}
-		verifyBsErrMsg(BsErrMsgs.startupHostMustHaveSchemeAndHost(BedSheetConfigIds.host, `http:/`)) {
+		verifyBsErrMsg(BsErrMsgs.startup_hostMustHaveSchemeAndHost(BedSheetConfigIds.host, `http:/`)) {
 			BedSheetModule.validateHost(`http:/`)
 		}
-		verifyBsErrMsg(BsErrMsgs.startupHostMustNotHavePath(BedSheetConfigIds.host, `http://fantomfactory.org/pods`)) {
+		verifyBsErrMsg(BsErrMsgs.startup_hostMustNotHavePath(BedSheetConfigIds.host, `http://fantomfactory.org/pods`)) {
 			BedSheetModule.validateHost(`http://fantomfactory.org/pods`)
 		}
 		

@@ -37,41 +37,41 @@ internal class TestPipelineBuilder : BsTest {
 	}
 	
 	Void testPipelineTypeMustBePublic() {
-		verifyBsErrMsg(BsErrMsgs.pipelineTypeMustBePublic("Pipeline", T_MyService77#)) {
+		verifyBsErrMsg(BsErrMsgs.pipeline_typeMustBePublic("Pipeline", T_MyService77#)) {
 			bob.build(T_MyService77#, t76, [,], T_MyService77Impl())
 		}
 	}
 	
 	Void testPipelineTypeMustBeMixins() {
-		verifyBsErrMsg(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline", T_MyService78#)) {
+		verifyBsErrMsg(BsErrMsgs.pipeline_typeMustBeMixin("Pipeline", T_MyService78#)) {
 			bob.build(T_MyService78#, t76, [,], T_MyService78())
 		}
 
-		verifyBsErrMsg(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline Filter", T_MyService78#)) {
+		verifyBsErrMsg(BsErrMsgs.pipeline_typeMustBeMixin("Pipeline Filter", T_MyService78#)) {
 			bob.build(t75, T_MyService78#, [,], term)
 		}
 	}
 
 	Void testPipelineMustNotDeclareFields() {
-		verifyBsErrMsg(BsErrMsgs.pipelineTypeMustNotDeclareFields(T_MyService79#)) {
+		verifyBsErrMsg(BsErrMsgs.pipeline_typeMustNotDeclareFields(T_MyService79#)) {
 			bob.build(T_MyService79#, t76, [,], T_MyService79Impl())
 		}
 	}
 
 	Void testPipelineTerminatorMustExtendPipelineType() {
-		verifyBsErrMsg(BsErrMsgs.pipelineTerminatorMustExtendPipeline(T_MyService77#, term.typeof)) {
+		verifyBsErrMsg(BsErrMsgs.pipeline_terminatorMustExtendPipeline(T_MyService77#, term.typeof)) {
 			bob.build(T_MyService77#, t76, [,], term)
 		}
 	}
 
 	Void testPipelineFiltersMustExtendFilterType() {
-		verifyBsErrMsg(BsErrMsgs.middlewareMustExtendMiddleware(t76, T_MyService77Impl#)) {
+		verifyBsErrMsg(BsErrMsgs.middleware_mustExtendMiddleware(t76, T_MyService77Impl#)) {
 			bob.build(t75, t76, [T_MyService77Impl()], term)
 		}
 	}
 
 	Void testPipelineFilterMethodMustTakePipelineAsLastArg() {
-		verifyBsErrMsg(BsErrMsgs.middlewareMustDeclareMethod(T_MyService77#, "sys::Bool service(, ${t75.qname} handler)")) {
+		verifyBsErrMsg(BsErrMsgs.middleware_mustDeclareMethod(T_MyService77#, "sys::Bool service(, ${t75.qname} handler)")) {
 			bob.build(t75, T_MyService77#, [T_MyService77Impl()], term)
 		}
 	}

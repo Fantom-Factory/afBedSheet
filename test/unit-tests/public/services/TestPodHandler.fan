@@ -59,6 +59,19 @@ internal class TestPodHandler : BsTest {
 		}
 	}
 
+	Void testWhitelistFilter() {
+		// sad case
+		verifyErrMsg(ArgErr#, BsErrMsgs.podHandler_notInWhitelist("fan://icons/x256/flux.png")) {
+			podHandler(`/`, "^.*\\.fan\$").fromPodResource(`fan://icons/x256/flux.png`)
+		}
+
+		// happy case!
+		podHandler(`/`, ".*\\.png\$").fromPodResource(`fan://icons/x256/flux.png`)
+
+		// happy case!
+		podHandler(`/`, "^fan://icons/.*\$").fromPodResource(`fan://icons/x256/flux.png`)
+	}
+
 	// ---- Happy Cases ----
 	
 	Void testFromPodResource() {
@@ -75,8 +88,9 @@ internal class TestPodHandler : BsTest {
 		verifyEq(asset.clientUrl, `/pods/icons/x256/flux.png`)
 	}
 
-	private PodHandler podHandler(Uri url := `/pods/`) {
+	private PodHandler podHandler(Uri url := `/pods/`, Str filter := ".*") {
 		bob := BeanFactory(PodHandlerImpl#)
+		bob.add([filter.toRegex])
 		bob.setByName("baseUrl", url)
 		bob.setByName("fileCache", FileAssetCacheMock())
 		return bob.create

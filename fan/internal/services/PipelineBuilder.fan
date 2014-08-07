@@ -31,10 +31,10 @@ internal const class PipelineBuilderImpl : PipelineBuilder {
 	override Obj build(Type pipelineType, Type filterType, Obj[] filters, Obj terminator) {
 
 		if (!terminator.typeof.fits(pipelineType))
-			throw BedSheetErr(BsErrMsgs.pipelineTerminatorMustExtendPipeline(pipelineType, terminator.typeof))
+			throw BedSheetErr(BsErrMsgs.pipeline_terminatorMustExtendPipeline(pipelineType, terminator.typeof))
 		filters.each |filter| { 
 			if (!filter.typeof.fits(filterType))
-				throw BedSheetErr(BsErrMsgs.middlewareMustExtendMiddleware(filterType, filter.typeof))
+				throw BedSheetErr(BsErrMsgs.middleware_mustExtendMiddleware(filterType, filter.typeof))
 		}		
 		
 		bridgeType	:= buildBridgeType(pipelineType, filterType)
@@ -60,22 +60,22 @@ internal const class PipelineBuilderImpl : PipelineBuilder {
 			
 			// have the public checks last so we can test all other scenarios with internal test types
 			if (!pipelineType.isMixin)
-				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline", pipelineType))
+				throw BedSheetErr(BsErrMsgs.pipeline_typeMustBeMixin("Pipeline", pipelineType))
 			if (!filterType.isMixin)
-				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBeMixin("Pipeline Filter", filterType))
+				throw BedSheetErr(BsErrMsgs.pipeline_typeMustBeMixin("Pipeline Filter", filterType))
 			if (!pipelineType.fields.isEmpty)
-				throw BedSheetErr(BsErrMsgs.pipelineTypeMustNotDeclareFields(pipelineType))
+				throw BedSheetErr(BsErrMsgs.pipeline_typeMustNotDeclareFields(pipelineType))
 			pipelineMethods.each |method| {
 				fMeth := ReflectUtils.findMethod(filterType, method.name, method.params.map { it.type }.add(pipelineType), false, method.returns)
 				if (fMeth == null) {
 					sig := method.signature[0..-2] + ", ${pipelineType.qname} handler)"
-					throw BedSheetErr(BsErrMsgs.middlewareMustDeclareMethod(filterType, sig))
+					throw BedSheetErr(BsErrMsgs.middleware_mustDeclareMethod(filterType, sig))
 				}
 			}
 			if (!pipelineType.isPublic)
-				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBePublic("Pipeline", pipelineType))
+				throw BedSheetErr(BsErrMsgs.pipeline_typeMustBePublic("Pipeline", pipelineType))
 			if (!filterType.isPublic)
-				throw BedSheetErr(BsErrMsgs.pipelineTypeMustBePublic("Pipeline Filter", filterType))
+				throw BedSheetErr(BsErrMsgs.pipeline_typeMustBePublic("Pipeline Filter", filterType))
 			
 			model := IocClassModel("${pipelineType.name}Bridge", pipelineType.isConst)
 			model.extendMixin(pipelineType)
