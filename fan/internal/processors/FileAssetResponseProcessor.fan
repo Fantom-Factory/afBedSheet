@@ -9,7 +9,7 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 	@Inject	private const FileAssetCache 	fileCache
 	
 	@Config { id = "afBedSheet.fileAsset.cacheControl" }
-	@Inject	private const Str			defaultCacheControl
+	@Inject	private const Str?			defaultCacheControl
 	
 	new make(|This|in) { in(this) }
 	
@@ -25,7 +25,7 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 			throw HttpStatusErr(403, "Directory listing not allowed: $httpRequest.url")
 
 		// set cache headers
-		if (httpResponse.headers.cacheControl == null)
+		if (httpResponse.headers.cacheControl == null && defaultCacheControl != null)
 			httpResponse.headers.cacheControl = defaultCacheControl
 		
 		// set identity headers

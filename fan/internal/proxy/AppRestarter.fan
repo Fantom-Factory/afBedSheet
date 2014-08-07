@@ -86,12 +86,12 @@ internal class AppRestarterState {
 			args := ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, "-pingProxy", "-pingProxyPort", proxyPort.toStr, appModule, appPort.toStr]
 			
 			if (env != null) {
-				args.insert(-3, "-env")
-				args.insert(-3, env)
+				args.insert(-2, "-env")
+				args.insert(-2, env)
 			}
 			
 			if (noTransDeps)
-				args.insert(-3, "-noTransDeps")
+				args.insert(-2, "-noTransDeps")
 			
 			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
 			realWebApp = Process(args).run
@@ -108,5 +108,5 @@ internal class AppRestarterState {
 	
 	private File podFile(Str podName) {
 		Env.cur.findPodFile(podName)
-	}	
+	}
 }

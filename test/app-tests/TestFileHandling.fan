@@ -9,7 +9,8 @@ internal class TestFileHandling : AppTest {
 
 		verifyEq(text, "In da house!")
 		verifyEq(client.resHeaders["ETag"], etag(file1))
-		verifyEq(client.resHeaders["Cache-Control"], "public")
+//		verifyEq(client.resHeaders["Cache-Control"], "public")
+		verifyNull(client.resHeaders["Cache-Control"])
 		verifyLastModified(file1.modified)
 	}
 	
@@ -17,7 +18,8 @@ internal class TestFileHandling : AppTest {
 		text := getAsStr(`/test-src/mr-file.txt`, "HEAD")
 
 		verifyEq(client.resHeaders["ETag"], etag(file1))
-		verifyEq(client.resHeaders["Cache-Control"], "public")
+//		verifyEq(client.resHeaders["Cache-Control"], "public")
+		verifyNull(client.resHeaders["Cache-Control"])
 		verifyLastModified(file1.modified)
 		verifyEq(text, "")
 	}
@@ -27,7 +29,8 @@ internal class TestFileHandling : AppTest {
 
 		verifyEq(text, "Spaces I got!")
 		verifyEq(client.resHeaders["ETag"], etag(file2))
-		verifyEq(client.resHeaders["Cache-Control"], "public")
+//		verifyEq(client.resHeaders["Cache-Control"], "public")
+		verifyNull(client.resHeaders["Cache-Control"])
 		verifyLastModified(file2.modified)
 	}
 

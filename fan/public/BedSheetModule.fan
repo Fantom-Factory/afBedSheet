@@ -266,7 +266,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
 
 		config[BedSheetConfigIds.podHandlerBaseUrl]				= `/pods/`
-		config[BedSheetConfigIds.fileAssetCacheControl]			= "public"	// don't assume we know how long to cache for - just say it's not user specific.
+		config[BedSheetConfigIds.fileAssetCacheControl]			= null	// don't assume we know how long to cache for
 		
 		config[BedSheetConfigIds.requestLogDir]					= null
 		config[BedSheetConfigIds.requestLogFilenamePattern]		= "bedSheet-{YYYY-MM}.log"

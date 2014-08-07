@@ -11,10 +11,10 @@ internal class AppTest : Test {
 			Registry?		registry
 
 	override Void setup() {
-//		Log.get("web").level 		= LogLevel.warn
-//		Log.get("afIoc").level 		= LogLevel.warn
-//		Log.get("afIocEnv").level 	= LogLevel.warn
-//		Log.get("afBedSheet").level = LogLevel.warn
+		Log.get("web").level 		= LogLevel.warn
+		Log.get("afIoc").level 		= LogLevel.warn
+		Log.get("afIocEnv").level 	= LogLevel.warn
+		Log.get("afBedSheet").level = LogLevel.warn
 
 		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["afBedSheet.iocModules":iocModules.add(IocConfigModule#)])
 		willow 	= WispService { it.port=this.port; it.root=mod }

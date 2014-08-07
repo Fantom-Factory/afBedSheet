@@ -18,7 +18,7 @@ const mixin FileAssetCache {
 	abstract Uri toClientUrl(Uri localUrl, File file)
 }
 
-const class FileAssetCacheImpl : FileAssetCache {
+internal const class FileAssetCacheImpl : FileAssetCache {
 	
 					** The duration between individual file checks.
 					const Duration 				cacheTimeout

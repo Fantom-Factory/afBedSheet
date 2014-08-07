@@ -126,7 +126,7 @@ internal class TestFileHandler : BsTest {
 	}
 }
 
-const class FileAssetCacheMock : FileAssetCache {
+internal const class FileAssetCacheMock : FileAssetCache {
 	override FileAsset? getOrAddOrUpdate(File key, |File->Obj?| valFunc) { valFunc(key) }
 	override Void remove(FileAsset fileAsset) { }
 	override Void clear() { }
