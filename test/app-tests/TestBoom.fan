@@ -73,16 +73,16 @@ internal class TestBoom : AppTest {
 }
 
 internal class T_TestBoomMod1 {
-    @Contribute { serviceType=ServiceOverrides# }
-    static Void contributeServiceOverride(Configuration config) {
-        config["IocEnv"] = IocEnv.fromStr("dev")
+	@Override
+	static IocEnv overrideIocEnv() {
+        IocEnv.fromStr("dev")
     }
 }
 
 internal class T_TestBoomMod2 {
-    @Contribute { serviceType=ServiceOverrides# }
-    static Void contributeServiceOverride(Configuration config) {
-        config["IocEnv"] = IocEnv.fromStr("prod")
+	@Override
+	static IocEnv overrideIocEnv() {
+        IocEnv.fromStr("prod")
     }
 }
 

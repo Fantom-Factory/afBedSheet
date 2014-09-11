@@ -1,6 +1,6 @@
 using web::WebClient
 using wisp::WispService
-using afIocConfig::IocConfigModule
+using afIocConfig::ConfigModule
 using afIoc::Registry
 
 internal class AppTest : Test {
@@ -16,7 +16,7 @@ internal class AppTest : Test {
 		Log.get("afIocEnv").level 	= LogLevel.warn
 		Log.get("afBedSheet").level = LogLevel.warn
 
-		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["afBedSheet.iocModules":iocModules.add(IocConfigModule#)])
+		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["afBedSheet.iocModules":iocModules.add(ConfigModule#)])
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 		

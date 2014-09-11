@@ -11,11 +11,11 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 	@Inject	private const Registry 		registry
 	@Inject	private const ValueEncoders valueEncoders	
 
-	new make(ServiceStats serviceStats, |This|in) {
+	new make(|This|in) {
 		in(this) 
 		
 		// we can cache the stats 'cos we only care about the service types
-		this.serviceTypes = serviceStats.stats.vals.map { it.serviceType }
+		this.serviceTypes = registry.serviceDefinitions.vals.map { it.serviceType }
 	}
 
 	override Obj process(Obj response) {
