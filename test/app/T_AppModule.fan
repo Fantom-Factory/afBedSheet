@@ -3,8 +3,8 @@ using afIocConfig::ApplicationDefaults
 
 internal const class T_AppModule {
 	
-	static Void bind(ServiceBinder binder) {
-//		binder.bindImpl(Router#)
+	static Void defineServices(ServiceDefinitions defs) {
+//		defs.add(Router#)
 	}
 
 	@Contribute { serviceType=Routes# }

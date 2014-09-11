@@ -10,47 +10,47 @@ using afPlastic::PlasticCompiler
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc
-@SubModule { modules=[IocConfigModule#, IocEnvModule#] }
+@SubModule { modules=[ConfigModule#, IocEnvModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
 	
-	static Void bind(ServiceBinder binder) {
+	static Void defineServices(ServiceDefinitions defs) {
 		
 		// Utils
-		binder.bind(PipelineBuilder#)
-		binder.bind(StackFrameFilter#)
+		defs.add(PipelineBuilder#)
+		defs.add(StackFrameFilter#)
 
 		// Request handlers
-		binder.bind(FileHandler#)
-		binder.bind(PodHandler#)
+		defs.add(FileHandler#)
+		defs.add(PodHandler#)
 
 		// Collections (services with contributions)
-		binder.bind(ResponseProcessors#)
-		binder.bind(ErrProcessors#)
-		binder.bind(HttpStatusProcessors#) 
-		binder.bind(Routes#)
-		binder.bind(ValueEncoders#)
+		defs.add(ResponseProcessors#)
+		defs.add(ErrProcessors#)
+		defs.add(HttpStatusProcessors#) 
+		defs.add(Routes#)
+		defs.add(ValueEncoders#)
 		
 		// Public services
-		binder.bind(BedSheetServer#)
-		binder.bind(GzipCompressible#)
-		binder.bind(HttpSession#)
-		binder.bind(HttpCookies#)
-		binder.bind(HttpFlash#).withScope(ServiceScope.perThread)	// Because HttpFlash is thread scope, it needs a proxy to be injected into AppScope services
-		binder.bind(BedSheetPages#)
-		binder.bind(RequestLogMiddleware#)
+		defs.add(BedSheetServer#)
+		defs.add(GzipCompressible#)
+		defs.add(HttpSession#)
+		defs.add(HttpCookies#)
+		defs.add(HttpFlash#)
+		defs.add(BedSheetPages#).withProxy	// prevent recursion
+		defs.add(RequestLogMiddleware#)
 		
 		// Other services
-		binder.bind(NotFoundPrinterHtml#)
-		binder.bind(ErrPrinterHtml#)
-		binder.bind(ErrPrinterStr#)
-		binder.bind(FileAssetCache#)
+		defs.add(NotFoundPrinterHtml#)
+		defs.add(ErrPrinterHtml#)
+		defs.add(ErrPrinterStr#)
+		defs.add(FileAssetCache#)
 	}
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
-	@Build { serviceId="MiddlewarePipeline"; disableProxy=true }
+	@Build { serviceId="MiddlewarePipeline" }
 	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware[
@@ -73,7 +73,7 @@ const class BedSheetModule {
 		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))
 	}
 
-	@Build { serviceId="HttpOutStream"; disableProxy=true; scope=ServiceScope.perThread }
+	@Build { serviceId="HttpOutStream"; scope=ServiceScope.perThread }
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
 	}
@@ -297,7 +297,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(Configuration config, PlasticCompiler plasticCompiler, ConfigSource configSrc) {
+	static Void contributeRegistryStartup(Configuration config, Registry registry, PlasticCompiler plasticCompiler, ConfigSource configSrc) {
 		config["afBedSheet.srcCodePadding"] = |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
@@ -308,6 +308,10 @@ const class BedSheetModule {
 		}
 
 		config.remove("afIoc.logServices", "afBedSheet.logServices")
+//		config["afBedSheet.logNoOfServices"] = |->| {
+//			registry.serviceDefinitions.map { it. }
+//			validateHost(host)
+//		}
 	}
 
 	@Contribute { serviceType=RegistryShutdown# }

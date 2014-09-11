@@ -1,4 +1,9 @@
-using afIoc
+using afIoc::ActorPools
+using afIoc::Contribute
+using afIoc::Configuration
+using afIoc::Registry
+using afIoc::RegistryBuilder
+using afIoc::ServiceDefinitions
 using concurrent
 
 internal class TestPipelineBuilder : BsTest {
@@ -118,8 +123,8 @@ const class T_MyService76Num : T_MyService76 {
 }
 
 internal class T_PipeMod {
-	static Void bind(ServiceBinder binder) {
-		binder.bind(PipelineBuilder#)
+	static Void defineServices(ServiceDefinitions defs) {
+		defs.add(PipelineBuilder#)
 	}
 	
 	@Contribute { serviceType=ActorPools# }

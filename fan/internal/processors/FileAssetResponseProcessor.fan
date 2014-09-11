@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIocConfig::Config
+using afIocEnv::IocEnv
 using web::WebUtil
 
 internal const class FileAssetResponseProcessor : ResponseProcessor {
@@ -7,6 +8,7 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 	@Inject	private const HttpRequest 		httpRequest
 	@Inject	private const HttpResponse 		httpResponse
 	@Inject	private const FileAssetCache 	fileCache
+	@Inject	private const IocEnv			iocEnv
 	
 	@Config { id = "afBedSheet.fileAsset.cacheControl" }
 	@Inject	private const Str?			defaultCacheControl
@@ -25,7 +27,7 @@ internal const class FileAssetResponseProcessor : ResponseProcessor {
 			throw HttpStatusErr(403, "Directory listing not allowed: $httpRequest.url")
 
 		// set cache headers
-		if (httpResponse.headers.cacheControl == null && defaultCacheControl != null)
+		if (httpResponse.headers.cacheControl == null && defaultCacheControl != null && iocEnv.isProd)
 			httpResponse.headers.cacheControl = defaultCacheControl
 		
 		// set identity headers

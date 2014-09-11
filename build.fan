@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "Something fresh and clean to lay your web app on!"
-		version = Version("1.3.15")
+		version = Version("1.3.16")
 
 		meta = [	
 			"proj.name"			: "BedSheet",
@@ -32,9 +32,9 @@ class Build : BuildPod {
 			"afBeanUtils 1.0.2+",
 			"afConcurrent 1.0.6+",
 			"afPlastic 1.0.16+",
-			"afIoc 1.7.6+", 
-			"afIocConfig 1.0.14+", 
-			"afIocEnv 1.0.12+", 
+			"afIoc 2.0.0+", 
+			"afIocConfig 1.0.16+", 
+			"afIocEnv 1.0.14+", 
 			
 			// ---- Test ------------------------
 			"xml 1.0"
