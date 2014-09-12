@@ -175,9 +175,7 @@ internal const class T_PageHandler {
 	}
 	
 	File altFileHandler(Uri remaining) {
-		echo(remaining.toFile.normalize)
-		echo(remaining.toFile.normalize.osPath)
-		return `test/app-web/`.toFile.plus(remaining, false).normalize
+		`test/app-web/`.toFile.plus(remaining, false).normalize
 	}
 	
 	Bool slow() {

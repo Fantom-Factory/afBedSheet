@@ -216,7 +216,7 @@ To add a custom error page, contribute an [ErrProcessor](http://repo.status302.c
 
 ```
 @Contribute { serviceType=ErrProcessors# }
-static Void contributeErrProcessors(MappedConfig conf) {
+static Void contributeErrProcessors(Configuration conf) {
 
   conf[Err#] = conf.autobuild(MyErrHandler#)
 }
@@ -232,7 +232,7 @@ To set your own `404 Not Found` page, contribute a [HttpStatusProcessor](http://
 
 ```
 @Contribute { serviceType=HttpStatusProcessors# }
-static Void contributeHttpStatusProcessors(MappedConfig conf) {
+static Void contributeHttpStatusProcessors(Configuration conf) {
 
   conf[404] = conf.autobuild(My404Handler#)
 }
@@ -246,7 +246,7 @@ BedSheet sets the initial config values by contributing to the `FactoryDefaults`
 
 ```
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(MappedConfig conf) {
+static Void contributeApplicationDefaults(Configuration conf) {
     ...
     conf["afBedSheet.errPrinter.noOfStackFrames"] = 100
     ...

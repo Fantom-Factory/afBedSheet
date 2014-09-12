@@ -109,7 +109,7 @@ internal const class PodHandlerImpl : PodHandler {
 			throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
 
 		remainingUrl := localUrl.relTo(baseUrl)
-		
+
 		return fromPodResource(`fan://${remainingUrl}`)
 	}
 	
