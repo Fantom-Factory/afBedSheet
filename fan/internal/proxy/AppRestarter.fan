@@ -60,7 +60,7 @@ internal class AppRestarterState {
 	Void updateTimeStamps() {
 		// BugFix: Pod.list throws an Err if any pod is invalid (wrong dependencies etc) 
 		// this way we don't even load the pod into memory!
-		Env.cur().findAllPodNames.each |podName| {
+		Env.cur.findAllPodNames.each |podName| {
 			podTimeStamps[podName] = podFile(podName).modified
 		}
 		

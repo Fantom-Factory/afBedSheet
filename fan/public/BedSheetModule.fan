@@ -129,9 +129,9 @@ const class BedSheetModule {
 	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler, ConfigSource iocSrc) {
 		// @Deprecated placeholder
 		config.addPlaceholder("afBedSheet.fileHandlerStart")
-		config["afBedSheet.fileHandler"] = fileHandler.directoryMappings.map |dir, uri| {
-			Route(uri + `***`, FileHandler#serviceRoute, "GET HEAD")	// Me like!
-		}.vals
+		config["afBedSheet.fileHandler"] = fileHandler.directoryMappings.keys.map |url| {
+			Route(url + `***`, FileHandler#serviceRoute, "GET HEAD")	// Me like!
+		}
 		// @Deprecated placeholder
 		config.addPlaceholder("afBedSheet.fileHandlerEnd")
 		
@@ -260,7 +260,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
 		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= config.registry.createProxy(DefaultHttpStatusProcessor#)
 		config[BedSheetConfigIds.defaultErrProcessor]			= config.registry.createProxy(DefaultErrProcessor#)
-		config[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(75)	// big 'cos we hide a lot
+		config[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.srcCodeErrPadding]				= 5
 		config[BedSheetConfigIds.disableWelcomePage]			= false
 		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
@@ -286,6 +286,7 @@ const class BedSheetModule {
 		// Core Alien-Factory libs
 		config.add("^afIoc::.*\$")
 		config.add("^afBedSheet::.*\$")
+		config.add("^.*::MiddlewarePipelineBridge.service.*\$")
 		
 		// Java code
 		config.add("^fan.sys.Method\\\$MethodFunc\\..*\$")
@@ -297,7 +298,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(Configuration config, Registry registry, PlasticCompiler plasticCompiler, ConfigSource configSrc) {
+	static Void contributeRegistryStartup(Configuration config, Registry registry, PlasticCompiler plasticCompiler, ConfigSource configSrc, Log log) {
 		config["afBedSheet.srcCodePadding"] = |->| {
 			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
 		}
@@ -307,11 +308,26 @@ const class BedSheetModule {
 			validateHost(host)
 		}
 
-		config.remove("afIoc.logServices", "afBedSheet.logServices")
-//		config["afBedSheet.logNoOfServices"] = |->| {
-//			registry.serviceDefinitions.map { it. }
-//			validateHost(host)
-//		}
+		config.overrideValue("afIoc.logServices", |->| {
+			stats := registry.serviceDefinitions.vals
+			srvcs := "\n\n${stats.size} IoC Services:\n"
+			types := ServiceLifecycle:Int[:] { ordered=true }.add(ServiceLifecycle.builtin, 0)
+			ServiceLifecycle.vals.each { types[it] = 0 }
+			stats.each {
+				types[it.lifecycle] = types[it.lifecycle] + 1
+			}
+			unreal := 0
+			types.each |v, k| {
+				srvcs += "${v.toStr.padl(4)} ${k.name.toDisplayName}\n"
+				if (k == ServiceLifecycle.defined || k == ServiceLifecycle.proxied)
+					unreal += v
+			}
+
+			perce := (100d * unreal / stats.size).toLocale("0.00")
+			srvcs += "\n${perce}% of services are unrealised (${unreal}/${stats.size})\n"
+			
+			log.info(srvcs)
+		}, "afBedSheet.logServices")
 	}
 
 	@Contribute { serviceType=RegistryShutdown# }

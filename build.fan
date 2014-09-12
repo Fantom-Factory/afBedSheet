@@ -12,7 +12,7 @@ class Build : BuildPod {
 			"stackOverflow.tag"	: "afbedsheet",
 			"afIoc.module"		: "afBedSheet::BedSheetModule",
 			"tags"				: "web",
-			"repo.private"		: "true"
+			"repo.private"		: "false"
 		]
 
 		index = [

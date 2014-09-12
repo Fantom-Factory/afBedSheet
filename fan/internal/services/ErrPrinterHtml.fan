@@ -273,7 +273,7 @@ internal const class ErrPrinterHtmlSections {
 		map := [:]
 		// Pod.list throws an Err if any pod is invalid (wrong dependencies etc), using findAllPodNames we don't even 
 		// load the pod into memory!
-		Env.cur().findAllPodNames.each |podName| { map[podName] = readPodVersion(podName) }
+		Env.cur.findAllPodNames.each |podName| { map[podName] = readPodVersion(podName) }
 		prettyPrintMap(out, map, true)
 	}
 
