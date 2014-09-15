@@ -50,7 +50,7 @@ const class BedSheetModule {
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
-	@Build { serviceId="MiddlewarePipeline" }
+	@Build
 	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware[
@@ -63,29 +63,29 @@ const class BedSheetModule {
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
 	}
 
-	@Build { serviceId="HttpRequest" }
+	@Build
 	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(HttpRequestImpl#))
 	}
 
-	@Build { serviceId="HttpResponse" }
+	@Build
 	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))
 	}
 
-	@Build { serviceId="HttpOutStream"; scope=ServiceScope.perThread }
+	@Build { serviceId="afBedSheet::HttpOutStream"; scope=ServiceScope.perThread }
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
 	}
 
-	@Build { serviceId="WebReq"; scope=ServiceScope.perThread }	
+	@Build { scope=ServiceScope.perThread }	
 	private static WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
-	@Build { serviceId="WebRes"; scope=ServiceScope.perThread } 
+	@Build { scope=ServiceScope.perThread } 
 	private static WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
