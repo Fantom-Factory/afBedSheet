@@ -131,7 +131,7 @@ internal const class FileHandlerImpl : FileHandler {
 		prefix 	:= prefixes.size == 1 ? prefixes.first : prefixes.sort |u1, u2 -> Int| { u1.path.size <=> u2.path.size }.last
 		return prefix
 	}
-	
+
 	override FileAsset fromLocalUrl(Uri localUrl) {
 		prefix	:= findMappingFromLocalUrl(localUrl)
 				?: throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys)
@@ -161,16 +161,7 @@ internal const class FileHandlerImpl : FileHandler {
 			localUrl	:= prefix + remaining.toUri
 			clientUrl	:= fileCache.toClientUrl(localUrl, file)
 			
-			return FileAsset {
-				it.file 		= f
-				it.exists		= f.exists
-				it.modified		= f.modified?.floor(1sec)
-				it.size			= f.size
-				it.etag			= it.exists ? "${it.size?.toHex}-${it.modified?.ticks?.toHex}" : null
-				it.localUrl		= localUrl
-				it.clientUrl	= clientUrl
-			}
+			return FileAsset(f, localUrl, clientUrl)
 		}
 	}
 }
-

@@ -33,7 +33,7 @@ const class FileAsset {
 	** If your application is the ROOT WebMod then this will be the same as 'clientUrl'; bar any asset caching. 
 	** If in doubt, use the 'clientUrl' instead.
 	**  
-	** Returns 'null' if file doesn't exist
+	** Returns 'null' if file doesn't exist.
 	const Uri?		localUrl
 
 	** The URL that clients (e.g. web browsers) should use to access the file resource. 
@@ -44,10 +44,22 @@ const class FileAsset {
 	** 
 	** Note: use `BedSheetServer` should you want an absolute URL that starts with 'http://'. 
 	**   
-	** Returns 'null' if file doesn't exist
+	** Returns 'null' if file doesn't exist.
 	const Uri?		clientUrl
 	
-	internal new make(|This|in) { in(this) }
+	** Creates a 'FileAsset' for the given file. 
+	** 'localUrl' and 'clientUrl' may be 'null' if this instance is to be passed straight to 'FileResponseProcessor'.  
+	@NoDoc
+	new make(File file, Uri? localUrl := null, Uri? clientUrl := null, |This|? in := null) {
+		this.file 		= file
+		this.exists		= file.exists
+		this.modified	= file.modified?.floor(1sec)
+		this.size		= file.size
+		this.etag		= this.exists ? "${this.size?.toHex}-${this.modified?.ticks?.toHex}" : null
+		this.localUrl	= localUrl
+		this.clientUrl	= clientUrl
+		in?.call(this)
+	}
 	
 	@NoDoc
 	override Int hash() {

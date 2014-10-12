@@ -139,15 +139,7 @@ internal const class PodHandlerImpl : PodHandler {
 			localUrl	:= baseUrl + host + path 
 			clientUrl	:= fileCache.toClientUrl(localUrl, file)
 
-			return FileAsset {
-				it.file 		= file
-				it.exists		= file.exists
-				it.modified		= file.modified?.floor(1sec)
-				it.size			= file.size
-				it.etag			= it.exists ? "${it.size?.toHex}-${it.modified?.ticks?.toHex}" : null
-				it.localUrl		= localUrl
-				it.clientUrl	= clientUrl
-			}
+			return FileAsset(file, localUrl, clientUrl)
 		}	
 	}	
 }
