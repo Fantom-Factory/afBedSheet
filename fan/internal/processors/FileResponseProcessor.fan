@@ -10,14 +10,6 @@ internal const class FileResponseProcessor : ResponseProcessor {
 	// simply convert the File into a FileAsset...
 	override Obj process(Obj fileObj) {
 		file := ((File) fileObj).normalize
-		return FileAsset {
-			it.file 		= file
-			it.exists		= file.exists
-			it.modified		= file.modified?.floor(1sec)
-			it.size			= file.size
-			it.etag			= it.exists ? "${it.size?.toHex}-${it.modified?.ticks?.toHex}" : null
-			it.localUrl		= null
-			it.clientUrl	= null
-		}		
+		return FileAsset(file)
 	}
 }
