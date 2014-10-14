@@ -21,33 +21,33 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 	override Obj process(Obj response) {
 		methodCall := (MethodCall) response
 		
-		handlerType := methodCall.method.parent
-
 		handler := null
-		
-		if (serviceTypeCache.contains(handlerType))
-			handler = registry.dependencyByType(handlerType)
-
-		if (handlerTypeCache.containsKey(handlerType))
-			handler = handlerTypeCache[handlerType]
-		
-		if (autobuildTypeCache.contains(handlerType))
-			handler = registry.autobuild(handlerType)
-		
-		if (handler == null) {
-			if (serviceTypes.any { handlerType.fits(it) }) {
-				serviceTypeCache.add(handlerType)
+		if (!methodCall.method.isStatic) {
+			handlerType := methodCall.method.parent
+			if (serviceTypeCache.contains(handlerType))
 				handler = registry.dependencyByType(handlerType)
-			} else
+	
+			if (handlerTypeCache.containsKey(handlerType))
+				handler = handlerTypeCache[handlerType]
 			
-			if (handlerType.isConst) {
+			if (autobuildTypeCache.contains(handlerType))
 				handler = registry.autobuild(handlerType)
-				handlerTypeCache.set(handlerType, handler)
-			} else
 			
-			{
-				autobuildTypeCache.add(handlerType)
-				handler = registry.autobuild(handlerType)
+			if (handler == null) {
+				if (serviceTypes.any { handlerType.fits(it) }) {
+					serviceTypeCache.add(handlerType)
+					handler = registry.dependencyByType(handlerType)
+				} else
+				
+				if (handlerType.isConst) {
+					handler = registry.autobuild(handlerType)
+					handlerTypeCache.set(handlerType, handler)
+				} else
+				
+				{
+					autobuildTypeCache.add(handlerType)
+					handler = registry.autobuild(handlerType)
+				}
 			}
 		}
 

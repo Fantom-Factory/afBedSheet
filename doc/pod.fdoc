@@ -533,6 +533,7 @@ v1.3.18 [#v1.3.18]
 ------------------
  - Chg: All BedSheet services have qualified names.
  - Chg: Gave 'FileAsset' a public ctor.
+ - Bug: 'MethodCall' responses could not call static methods.
 
 v1.3.16 [#v1.3.16]
 ------------------
