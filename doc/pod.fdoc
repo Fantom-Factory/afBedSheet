@@ -18,7 +18,7 @@ Install '@{project.name}' with the Fantom Repository Manager ( [fanr]`docFanr::T
 
 To use in a [Fantom]`http://fantom.org/` project, add a dependency to 'build.fan':
 
-  depends = ["sys 1.0", ..., "@{pod.name} @{pod.version}+"]
+  depends = ["sys 1.0", ..., "@{pod.name} @{pod.version}"]
 
 
 
@@ -533,7 +533,9 @@ v1.3.18 [#v1.3.18]
 ------------------
  - Chg: All BedSheet services have qualified names.
  - Chg: Gave 'FileAsset' a public ctor.
+ - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL.
  - Bug: 'MethodCall' responses could not call static methods.
+ - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
 
 v1.3.16 [#v1.3.16]
 ------------------

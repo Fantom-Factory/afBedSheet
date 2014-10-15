@@ -50,11 +50,11 @@ const mixin BedSheetServer {
 	** The given 'WebMod' local URL should be relative to the BedSheet 'WebMod' and may, or may not, start with a '/'.
 	abstract Uri toClientUrl(Uri localUrl)
 	
-	** Creates an absolute URL for public use; includes scheme, authority and path to this 'WebMod'.
-	** The given 'WebMod' local URL should be relative to the BedSheet 'WebMod' and may, or may not, start with a '/'.
+	** Creates an absolute URL for public use; including scheme and authority (host).
+	** The given 'clientUrl' should be relative to the host and start with a '/'.
 	** 
 	** The scheme, if 'null', defaults to whatever was set in `BedSheetConfigIds.host`.
-	abstract Uri toAbsoluteUrl(Uri localUrl, Str? scheme := null)
+	abstract Uri toAbsoluteUrl(Uri clientUrl, Str? scheme := null)
 }
 
 internal const class BedSheetServerImpl : BedSheetServer {
@@ -106,14 +106,15 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Uri toClientUrl(Uri localUrl) {
-		Utils.validateLocalUrl(localUrl, `/css/myStyles.css`)
+		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
+			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, `/css/myStyles.css`))
 		return path + localUrl.relTo(`/`)
 	}
 	
-	override Uri toAbsoluteUrl(Uri localUrl, Str? scheme := null) {
-		Utils.validateLocalUrl(localUrl, `/css/myStyles.css`)
+	override Uri toAbsoluteUrl(Uri clientUrl, Str? scheme := null) {
+		Utils.validateLocalUrl(clientUrl, `/css/myStyles.css`)
 		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
-		return absUrl + toClientUrl(localUrl).relTo(`/`)
+		return absUrl + clientUrl.relTo(`/`)
 	}
 	
 	private WebReq? webReq() {

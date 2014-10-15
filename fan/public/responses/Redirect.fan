@@ -37,13 +37,14 @@ const final class Redirect {
 	}
 
 	** Use when the client should perform a HTTP GET on the returned uri. Typically this is 
-	** when the app subscribes to the 'Redirect After Post' paradigm. 
+	** when you implement the *Redirect After Post* paradigm. 
 	**  - 302 for HTTP 1.0 
 	**  - 303 for HTTP 1.1
 	static new afterPost(Uri redirectTo) {
 		Redirect.make(redirectTo, RedirectType.afterPost)
 	}
 	
+	@NoDoc
 	override Str toStr() {
 		"Redirect -> ${uri} (${type.toStr.toDisplayName})"
 	}

@@ -71,8 +71,8 @@ const class FileAsset {
 		file == (obj as FileAsset)?.file
 	}
 	
-	** Returns 'clientUrl' so this can be printed in HTML.
+	** Returns 'clientUrl' so this can be printed in HTML, or 'file.toStr' if 'clientUrl' is 'null'.
 	override Str toStr() {
-		clientUrl ?: file.toStr
+		clientUrl?.toStr ?: file.toStr
 	}
 }

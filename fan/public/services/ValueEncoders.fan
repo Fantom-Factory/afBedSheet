@@ -9,7 +9,7 @@ const mixin ValueEncoders {
 	** found, 'toStr()' is used. 
 	** 
 	** 'valType' is NOT 'Str#'!!! But rather the Type of the Obj that is being converted. 
-	** Required to ensure the correct 'ValueEncoder' is used.  
+	** Required to ensure the correct 'ValueEncoder' is used, and to convert 'null' to default instances.
 	abstract Str? toClient(Type valType, Obj? value)
 	
 	** Converts the given 'clientValue' into the given 'valType' via a contributed `ValueEncoder`. 
