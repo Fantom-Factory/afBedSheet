@@ -24,17 +24,17 @@ class Build : BuildPod {
 			"concurrent 1.0", 
 			"web 1.0", 
 			"webmod 1.0", // for LogMod
-			"wisp 1.0.66+", 
+			"wisp 1.0.66 - 1.0", 
 			"util 1.0", 
 			"inet 1.0",
 	
 			// ---- Core ------------------------
-			"afBeanUtils 1.0.2+",
-			"afConcurrent 1.0.6+",
-			"afPlastic 1.0.16+",
-			"afIoc 2.0.0+", 
-			"afIocConfig 1.0.16+", 
-			"afIocEnv 1.0.14+", 
+			"afBeanUtils  1.0.2  - 1.0",
+			"afConcurrent 1.0.6  - 1.0",
+			"afPlastic    1.0.16 - 1.0",
+			"afIoc        2.0.0  - 2.0", 
+			"afIocConfig  1.0.16 - 1.0", 
+			"afIocEnv     1.0.14 - 1.0", 
 			
 			// ---- Test ------------------------
 			"xml 1.0"
