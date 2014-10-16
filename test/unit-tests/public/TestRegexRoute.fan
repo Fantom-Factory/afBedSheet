@@ -31,6 +31,42 @@ internal class TestRegexRoute : BsTest {
 		verifyNull(match)
 	}
 
+	Void testUriDecoding() {
+		// lots of whitebox testing, trying to catch out the internals of RegexRoute
+		route   := Route(`/meep/**`, #handler3)
+
+		httpReq := T_HttpRequest { it.url = `/meep/-\/-/..\@..` }
+		match	:= (MethodCall?) route.match(httpReq)
+		verifyEq(match?.args[0], "-/-")
+		verifyEq(match?.args[1], "..@..")
+		
+		httpReq = T_HttpRequest { it.url = `/meep/--\\\\/..\@..` }
+		match	= (MethodCall?) route.match(httpReq)
+		verifyEq(match?.args[0], "--\\\\")
+		verifyEq(match?.args[1], "..@..")
+
+		route   = Route(`/meep/*`, #handler2)
+		httpReq = T_HttpRequest { it.url = `/meep/-\/-` }
+		match	= (MethodCall?) route.match(httpReq)
+		verifyEq(match?.args[0], "-/-")
+
+		route   = Route(`/meep/*`, #handler2)
+		httpReq = T_HttpRequest { it.url = `/meep/-\/-/-` }
+		match	= (MethodCall?) route.match(httpReq)
+		verifyNull(match)
+
+		route   = Route(`/meep/me\/ep/*`, #handler2)
+		httpReq = T_HttpRequest { it.url = `/meep/me\/ep/foo` }
+		match	= (MethodCall?) route.match(httpReq)
+		verifyEq(match?.args[0], "foo")
+
+		// test unicode - using a radioactive symbol!
+		route   = Route(`/meep/me\u2622ep/*`, #handler2)
+		httpReq = T_HttpRequest { it.url = `/meep/me\u2622ep/foo` }
+		match	= (MethodCall?) route.match(httpReq)
+		verifyEq(match?.args[0], "foo")
+	}
+
 	Void testNonMethodMatch() {
 		route := Route(`/greet.*`, 69)
 		

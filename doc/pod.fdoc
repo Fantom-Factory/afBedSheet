@@ -538,6 +538,7 @@ v1.3.18 [#v1.3.18]
  - Chg: Gave 'FileAsset' a public ctor.
  - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL.
  - Chg: All BedSheet services have qualified names.
+ - Bug: Route method params are now correctly URL decoded - see [URI Encoding / Decoding]`http://fantom.org/sidewalk/topic/2357`.
  - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.
  - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
