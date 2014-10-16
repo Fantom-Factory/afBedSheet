@@ -15,7 +15,7 @@ const mixin Routes {
 
 	** Returns true if the HTTP request was handled.
 	@NoDoc	// not for public use 
-	abstract Bool processRequest(Uri modRel, Str httpMethod)
+	abstract Bool processRequest(HttpRequest httpRequest)
 }
 
 internal const class RoutesImpl : Routes {
@@ -37,12 +37,10 @@ internal const class RoutesImpl : Routes {
 			log.warn(BsLogMsgs.routes_gotNone)
 	}
 
-	override Bool processRequest(Uri modRel, Str httpMethod) {
-		normalisedUri := normalise(modRel)
-
+	override Bool processRequest(HttpRequest httpRequest) {
 		// loop through all routes looking for a non-null response
 		handled := routes.eachWhile |route| {
-			response := route.match(normalisedUri, httpMethod)
+			response := route.match(httpRequest)
 
 			if (response == null)
 				return null
@@ -55,11 +53,5 @@ internal const class RoutesImpl : Routes {
 
 		return handled != null
 	}
-
-	private Uri normalise(Uri uri) {
-		if (!uri.isPathAbs)
-			uri = `/` + uri
-		return uri
-	}	
 }
 

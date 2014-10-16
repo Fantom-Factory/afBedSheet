@@ -47,7 +47,7 @@ internal const class NotFoundPrinterHtmlSections {
 
 			out.table
 			routes.routes.each |r| { 
-				w(out, "${r.httpMethod} - ${r.routeRegex}", r.factory.toStr)
+				w(out, r.matchHint, r.responseHint)
 			}
 			out.tableEnd
 		}

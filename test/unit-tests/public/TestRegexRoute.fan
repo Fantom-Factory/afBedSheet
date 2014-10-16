@@ -1,5 +1,5 @@
 
-internal class TestRoute : BsTest {
+internal class TestRegexRoute : BsTest {
 	
 	Void handler1() { }
 	Void handler2(Str p1) { }
@@ -26,21 +26,35 @@ internal class TestRoute : BsTest {
 	}	
 
 	Void testHttpMethodMismatch() {
-		match := Route(`/index`, #handler1).match(`/index`, "POST")
+		httpReq := T_HttpRequest { it.httpMethod = "POST"; it.url = `/index` }
+		match := Route(`/index`, #handler1).match(httpReq)
 		verifyNull(match)
+	}
+
+	Void testNonMethodMatch() {
+		route := Route(`/greet.*`, 69)
+		
+		httpReq := T_HttpRequest { it.url = `/greet.html` }
+		verifyEq(69, route.match(httpReq))
+
+		httpReq = T_HttpRequest { it.url = `/greet.php` }
+		verifyEq(69, route.match(httpReq))
+
+		httpReq = T_HttpRequest { it.url = `/greet` }
+		verifyNull(route.match(httpReq))
 	}
 	
 	Void testMatchRegex() {
 		Str?[]? match
 		
-		match = Route(Regex<|(?i)^\/index$|>, #handler1).matchUri(`/index`)
+		match = RegexRoute(Regex<|(?i)^\/index$|>, #handler1).matchUri(`/index`)
 		verifyEq(match.size,	0)
 
-		match = Route(Regex<|(?i)^\/index\/(.*?)$|>, #handler2).matchUri(`/index/dude`)
+		match = RegexRoute(Regex<|(?i)^\/index\/(.*?)$|>, #handler2).matchUri(`/index/dude`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"dude")
 		
-		match = Route(Regex<|(?i)^\/foobar\/(.*?)$|>, #handler2, "GET", true)
+		match = RegexRoute(Regex<|(?i)^\/foobar\/(.*?)$|>, #handler2, "GET", true)
 		.matchUri(`/foobar/dude/2/argh`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"dude")
@@ -51,54 +65,54 @@ internal class TestRoute : BsTest {
 	Void testMatchGlobFromDocs() {
 		Str?[]? match
 
-		match = Route(`/user/*`, #handler2).matchUri(`/user/`)
+		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
-		match = Route(`/user/*`, #handler2).matchUri(`/user/42`)
+		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
-		match = Route(`/user/*`, #handler2).matchUri(`/user/42/`)
+		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/42/`)
 		verifyNull(match)
-		match = Route(`/user/*`, #handler2).matchUri(`/user/42/dee`)
+		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/42/dee`)
 		verifyNull(match)
 
-		match = Route(`/user/*/*`, #handler3).matchUri(`/user/`)
+		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/`)
 		verifyNull(match)
-		match = Route(`/user/*/*`, #handler3).matchUri(`/user/42`)
+		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42`)
 		verifyNull(match)
-		match = Route(`/user/*/*`, #handler3).matchUri(`/user/42/`)
+		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
 		verifyEq(match[1],		null)
-		match = Route(`/user/*/*`, #handler3).matchUri(`/user/42/dee`)
+		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
 		verifyEq(match[1],		"dee")
 
-		match = Route(`/user/**`, #handler2).matchUri(`/user/`)
+		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
-		match = Route(`/user/**`, #handler2).matchUri(`/user/42`)
+		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
-		match = Route(`/user/**`, #handler2).matchUri(`/user/42/`)
+		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
-		match = Route(`/user/**`, #handler2).matchUri(`/user/42/dee`)
+		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
 		verifyEq(match[1],		"dee")
 
-		match = Route(`/user/***`, #handler2).matchUri(`/user/`)
+		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
-		match = Route(`/user/***`, #handler2).matchUri(`/user/42`)
+		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
-		match = Route(`/user/***`, #handler2).matchUri(`/user/42/`)
+		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/42/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42/")
-		match = Route(`/user/***`, #handler2).matchUri(`/user/42/dee`)
+		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42/dee")
 	}
@@ -106,85 +120,85 @@ internal class TestRoute : BsTest {
 	Void testMatchGlob() {
 		Str?[]? match
 		
-		match = Route(`/index`, #handler1).matchUri(`/wotever`)
+		match = RegexRoute(`/index`, #handler1).matchUri(`/wotever`)
 		verifyNull(match)
 		
-		match = Route(`/index`, #handler1).matchUri(`/index`)
+		match = RegexRoute(`/index`, #handler1).matchUri(`/index`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foo/?`, #handler1).matchUri(`/foo`)
+		match = RegexRoute(`/foo/?`, #handler1).matchUri(`/foo`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foo/?`, #handler1).matchUri(`/foo/`)
+		match = RegexRoute(`/foo/?`, #handler1).matchUri(`/foo/`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foo*`, #handler2).matchUri(`/foo`)
+		match = RegexRoute(`/foo*`, #handler2).matchUri(`/foo`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 		
-		match = Route(`/foo/*`, #handler2).matchUri(`/foo`)
+		match = RegexRoute(`/foo/*`, #handler2).matchUri(`/foo`)
 		verifyNull(match)
 
-		match = Route(`/foo/*`, #handler2).matchUri(`/foo/`)
+		match = RegexRoute(`/foo/*`, #handler2).matchUri(`/foo/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
-		match = Route(`/foo/*/`, #handler2).matchUri(`/foo//`)
+		match = RegexRoute(`/foo/*/`, #handler2).matchUri(`/foo//`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
 		// case-insensitive
-		match = Route(`/foo`,	#handler1).matchUri(`/fOO`)
+		match = RegexRoute(`/foo`,	#handler1).matchUri(`/fOO`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/foobar/*/*`, #handler3).matchUri(`/foobar/dude/3`)
+		match = RegexRoute(`/foobar/*/*`, #handler3).matchUri(`/foobar/dude/3`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"3")
 
-		match = Route(`/foobar/*/*`, #handler3).matchUri(`/foobar/dude`)
+		match = RegexRoute(`/foobar/*/*`, #handler3).matchUri(`/foobar/dude`)
 		verifyNull(match)
 
-		match = Route(`/foobar/*/*`, #handler3).matchUri(`/foobar/dude/2/3`)
+		match = RegexRoute(`/foobar/*/*`, #handler3).matchUri(`/foobar/dude/2/3`)
 		verifyNull(match)
 
-		match = Route(`/foobar/***`, #handler2)
+		match = RegexRoute(`/foobar/***`, #handler2)
 		.matchUri(`/foobar/dude/2/3`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"dude/2/3")
 
-		match = Route(`/foobar/**`, #handler2).matchUri(`/foobar/dude/2/argh`)
+		match = RegexRoute(`/foobar/**`, #handler2).matchUri(`/foobar/dude/2/argh`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
 
-		match = Route(`/foobar/**`, #handler2).matchUri(`/foobar/dude/2/argh/`)
+		match = RegexRoute(`/foobar/**`, #handler2).matchUri(`/foobar/dude/2/argh/`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
 		
-		match = Route(`/foobar**`, #handler2).matchUri(`/foobarbitch/mf/`)
+		match = RegexRoute(`/foobar**`, #handler2).matchUri(`/foobarbitch/mf/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"bitch")
 		verifyEq(match[1],		"mf")
 		
-		match = Route(`/index`, #handler1).matchUri(`/index?dude=3`)
+		match = RegexRoute(`/index`, #handler1).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
 		
-		match = Route(`/index/?`, #handler1).matchUri(`/index?dude=3`)
+		match = RegexRoute(`/index/?`, #handler1).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
 
-		match = Route(`/index*`, #handler2).matchUri(`/index?dude=3`)
+		match = RegexRoute(`/index*`, #handler2).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
-		match = Route(`/index**`, #handler2).matchUri(`/index?dude=3`)
+		match = RegexRoute(`/index**`, #handler2).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
-		match = Route(`/wot/*/ever/*`, #handler3).matchUri(`/wot/3/ever/4`)
+		match = RegexRoute(`/wot/*/ever/*`, #handler3).matchUri(`/wot/3/ever/4`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"3")
 		verifyEq(match[1],		"4")
@@ -302,7 +316,7 @@ internal class TestRoute : BsTest {
 	Void testFromModule() {
 		Str?[]? match
 
-		match = Route(`/route/optional/**`, #defaultParams).matchUri(`/route/optional/`)
+		match = RegexRoute(`/route/optional/**`, #defaultParams).matchUri(`/route/optional/`)
 		verifyEq(match.size, 1)
 		verifyEq(match[0],	null)
 	}
@@ -337,4 +351,10 @@ internal class TestRoute : BsTest {
 	}
 	
 	Void defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") { }
+}
+
+internal const class T_HttpRequest : HttpRequestImpl {
+	override const Str httpMethod := "GET"
+	override const Uri url
+	new make(|This|in) : super() { in(this) }
 }

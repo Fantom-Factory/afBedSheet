@@ -10,7 +10,7 @@ const class RoutesMiddleware : Middleware {
 	new make(|This|in) { in(this) }
 
 	override Bool service(MiddlewarePipeline pipeline) {
-		handled := routes.processRequest(httpRequest.url, httpRequest.httpMethod)
+		handled := routes.processRequest(httpRequest)
 		if (handled)
 			return true
 		return pipeline.service

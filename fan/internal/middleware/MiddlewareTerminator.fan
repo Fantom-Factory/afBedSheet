@@ -17,11 +17,14 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 	new make(|This|in) { in(this) }
 
 	override Bool service() {
+		// distinguish between Not Found and Not Implemented depending on the requested HTTP method.
 		statusCode := status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
 		
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
-		
-		if (routes.routes.exclude { it.response == PodHandler#serviceRoute || it.response == FileHandler#serviceRoute }.isEmpty && !disbleWelcomePage) {
+		if (routes.routes.exclude |route->Bool| {
+			regexRoute := route as RegexRoute
+			return (regexRoute?.response == PodHandler#serviceRoute || regexRoute?.response == FileHandler#serviceRoute)
+		}.isEmpty && !disbleWelcomePage) {
 			httpResponse.statusCode = statusCode
 			return responseProcessors.processResponse(bedSheetPages.renderWelcome)
 		}

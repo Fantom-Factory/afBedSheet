@@ -204,7 +204,7 @@ internal const class ErrPrinterHtmlSections {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
 			map := [:] { ordered = true }
-			routes.routes.each |r| { map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr }
+			routes.routes.each |r| { map[r.matchHint] = r.responseHint }
 			prettyPrintMap(out, map, false)
 		}
 	}

@@ -22,6 +22,7 @@ internal class TestStatusCodes : AppTest {
 		client.reqMethod = "DELETE"
 		client.writeReq
 		client.readRes
+		client.resIn.readAllBuf	// drain the stream to prevent errs on the server
 		verifyEq(client.resCode, 501, "$client.resCode - $client.resPhrase")		
 	}
 
@@ -29,7 +30,7 @@ internal class TestStatusCodes : AppTest {
 		client.reqUri = reqUri(`/statuscode/417`) 
 		client.writeReq
 		client.readRes
+		client.resIn.readAllBuf	// drain the stream to prevent errs on the server
 		verifyEq(client.resCode, 417, "$client.resCode "+ client.resPhrase)
 	}
-	
 }

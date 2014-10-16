@@ -171,7 +171,7 @@ internal const class ErrPrinterStrSections {
 			buf.add("\nBedSheet Routes:\n")
 			map := [:]
 			routes.routes.each |r| { 
-				map["${r.httpMethod} - ${r.routeRegex}"] = r.factory.toStr
+				map[r.matchHint] = r.responseHint
 			}
 			prettyPrintMap(buf, map, false)
 		}
