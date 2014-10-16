@@ -2,6 +2,7 @@ using afIoc::Inject
 using afIoc::Registry
 using web::WebReq
 using inet::IpAddr
+using concurrent
 
 ** (Service) - An injectable 'const' version of [WebReq]`web::WebReq`.
 ** 
@@ -110,14 +111,11 @@ const class HttpRequestWrapper : HttpRequest {
 	override Str:Obj? stash()				{ req.stash				}
 }
 
-internal const class HttpRequestImpl : HttpRequest {
-	
-	@Inject	private const Registry registry
-	
+internal const class HttpRequestImpl : HttpRequest {	
 	override const HttpRequestHeaders headers
 
-	new make(|This|in) { 
-		in(this) 
+	new make(|This|? in := null) { 
+		in?.call(this) 
 		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
 	}
 
@@ -163,6 +161,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.stash
 	}	
 	private WebReq webReq() {
-		registry.dependencyByType(WebReq#)
+		// let's simplify and optimise, no point in querying IoC for this.
+		Actor.locals["web.req"]
 	}
 }

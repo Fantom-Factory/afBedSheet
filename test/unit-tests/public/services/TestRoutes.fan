@@ -13,7 +13,8 @@ internal class TestRoutes : BsTest {
 		reg := RegistryBuilder().addModule(T_MyModule02#).build.startup
 		Routes routes := reg.serviceById("routes")
 
-		ret := routes.processRequest(`/1/2/3/4/5`, "GET")
+		httpReq := T_HttpRequest { it.url = `/1/2/3/4/5`; it.httpMethod = "GET" }
+		ret := routes.processRequest(httpReq)
 
 		verify    (ret)
 		verify    (Actor.locals["handler1"])

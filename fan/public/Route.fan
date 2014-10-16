@@ -1,11 +1,62 @@
 
-**
-** Matches uri paths to request handler methods. Any remaining path segments are converted into method 
-** arguments. Use '*' to capture (non-greedy) method arguments, '**' to capture all remaining path 
-** segments and '***' to capture the remaining url. Examples:
+** Matches HTTP Requests to a response objects.
 ** 
-** pre>
-**   glob pattern     uri             arguments
+** 'Route' is a mixin so you may provide your own implementations. The rest of this documentation 
+** relates to the default implementation which uses regular expressions to match against the 
+** Request URL and HTTP Method.
+** 
+** Regex Routes
+** ************
+** Matches the HTTP Request URL and HTTP Method to a response object using regular expressions.
+** 
+** Note that all URL matching is case-insensitive.
+** 
+** 
+** Response Objects
+** ================
+** A 'Route' may return *any* response object, be it `Text`, `HttpStatus`, 'File', or any other.
+** It simply returns whatever is passed into the ctor. 
+** 
+** Example, this matches the URL '/greet' and returns the string 'Hello Mum!'
+** 
+**   Route(`/greet`, Text.fromPlain("Hello Mum!")) 
+** 
+** And this redirects any request for '/home' to '/greet'
+** 
+**   Route(`/home`, Redirect.movedTemporarily(`/greet`)) 
+** 
+** You can use glob expressions in your URL, so:
+** 
+**   Route(`/greet.*`, ...) 
+** 
+** will match the URLs '/greet.html', '/greet.php' but not '/greet'. 
+** 
+** 
+** 
+** Response Methods
+** ================
+** Routes may also return `MethodCall` instances that call a Fantom method. 
+** To use, pass in the method as the response object. 
+** On a successful match, the 'Route' will convert the method into a 'MethodCall' object.
+** 
+**   Route(`/greet`, MyPage#Hello)
+** 
+** Method matching can also map URL path segments to method parameters and is a 2 stage process:
+** 
+** Stage 1 - URL Matching
+** ----------------------
+** First a special *glob* syntax is used to capture string sections from the request URL.
+** In stage 2 these strings are used as potential method arguments.
+** 
+** In brief, the special glob syntax is:
+**  - '?' optionally matches the last character, 
+**  - '/*' captures a path segment,
+**  - '/**' captures all path segments,
+**  - '/***' captures the remaining URL.
+** 
+** Full examples follow:
+** 
+**   glob pattern     URL             captures
 **   --------------------------------------------
 **   /user/*      --> /user/       => null
 **   /user/*      --> /user/42     => "42"
@@ -26,72 +77,156 @@
 **   /user/***    --> /user/42     => "42"
 **   /user/***    --> /user/42/    => "42/"
 **   /user/***    --> /user/42/dee => "42/dee"
-** <pre
 ** 
-** The argument list is then matched to the method parameters, taking into account nullable types 
-** and default values. Examples:
+** The intention of the '?' character is to optionally match a trailing slash. Example:
 ** 
-** pre>
-**   method params             arguments       match
-**   --------------------------------------------------
-**   Str a, Str b         -->               => no match  
-**   Str a, Str b         -->  null         => no match
-**   Str a, Str b         -->  null,  null  => no match 
-**   Str a, Str b         --> "wot", "ever" => match
-**   
-**   Str? a, Str? b       -->               => no match
-**   Str? a, Str? b       -->  null         => no match
-**   Str? a, Str? b       -->  null,  null  => match
-**   Str? a, Str? b       --> "wot", "ever" => match
-**
-**   Str? a, Str? b := "" -->               => no match
-**   Str? a, Str? b := "" -->  null         => match
-**   Str? a, Str? b := "" -->  null,  null  => match
-**   Str? a, Str? b := "" --> "wot", "ever" => match
-**
-**   Str? a, Str b := ""  -->               => no match
-**   Str? a, Str b := ""  -->  null         => match
-**   Str? a, Str b := ""  -->  null,  null  => no match
-**   Str? a, Str b := ""  --> "wot", "ever" => match
-** <pre
-** 
-** Method parameters can be any Obj (and not just 'Str') as they are converted using the  
-** [ValueEncoder]`ValueEncoder` service.
-**  
-** > TIP: Contribute 'ValueEncoders' to convert path segments into Entities. This means BedSheet can
-** call handlers with real entities, not just str IDs!
-** 
-** Parameters of type 'Str[]' are *capture all* parameters and match the remaining uri (split on '/').
-**
-** Request uri's (for matching purposes) are treated as case-insensitive. 
-** 
-** Use '?' to optional match the last character. Use to optionally match a trailing slash. e.g.
-** 
-** pre>
-**   glob         uri
+**   glob         url
 **   -----------------------------
 **   /index/? --> /index  => match
 **   /index/? --> /index/ => match
 **   vs
 **   /index/  --> /index  => no match
 **   /index   --> /index/ => no match
-** <pre
+**  
+** Should a match be found, even if 'null' is captured, then the captured strings are further processed in stage 2.
 ** 
-** If a handler class is a service, it is obtained from the IoC registry, otherwise it is
-** [autobuilt]`afIoc::Registry.autobuild`. If the class is 'const', the instance is cached for 
-** future use.
+** A 'no match' signifies just that.
 ** 
-const class Route {
+** 
+** 
+** Stage 2 - Method Parameter Matching
+** -----------------------------------
+** An attempt is now made to match the captured string to method parameters, taking into account nullable types 
+** and default values. 
+** 
+** In breif:
+**  - method parameters with default values are considered optional,
+**  - nullable method parameters may take, um, 'null'!
+** 
+** Full examples follow:
+** 
+**   method params             string args     match
+**   --------------------------------------------------
+**   Obj a, Obj b         -->               => no match  
+**   Obj a, Obj b         -->  null         => no match
+**   Obj a, Obj b         -->  null,  null  => no match 
+**   Obj a, Obj b         --> "wot", "ever" => match
+**   
+**   Obj? a, Obj? b       -->               => no match
+**   Obj? a, Obj? b       -->  null         => no match
+**   Obj? a, Obj? b       -->  null,  null  => match
+**   Obj? a, Obj? b       --> "wot", "ever" => match
+**
+**   Obj? a, Obj? b := "" -->               => no match
+**   Obj? a, Obj? b := "" -->  null         => match
+**   Obj? a, Obj? b := "" -->  null,  null  => match
+**   Obj? a, Obj? b := "" --> "wot", "ever" => match
+**
+**   Obj? a, Obj b := ""  -->               => no match
+**   Obj? a, Obj b := ""  -->  null         => match
+**   Obj? a, Obj b := ""  -->  null,  null  => no match
+**   Obj? a, Obj b := ""  --> "wot", "ever" => match
+** 
+** 'Obj' is used in the examples above, but method parameters can actually be *any* type.
+** Captured strings are converted to the appropriate type by the [ValueEncoder]`ValueEncoder` 
+** service.
+** 
+** Assuming you you have an entity object, such as 'User', with an ID field; you can contribute a 
+** 'ValueEncoder' that inflates (or otherwise reads from a database) 'User' objects from a string 
+** version of the ID. Then your methods can declare 'User' as a parameter and BedSheet will 
+** convert the captured strings for you! 
+** 
+** Method parameters of type 'Str[]' are *capture all* parameters and will match the remaining URL (split on '/').
+**
+**  
+** 
+** Method Invocation
+** -----------------
+** Handler methods may be non-static. 
+** They they belong to an IoC service then the service is obtained from the IoC registry.
+** Otherwise the containing class is [autobuilt]`afIoc::Registry.autobuild`. 
+** If the class is 'const', the instance is cached for future use.
+** 
+const mixin Route {
+	
+	@NoDoc @Deprecated { msg="Deprecated with no replacement. As Route is now a mixin, implementations matches may not be based on a regex." }
+	virtual Regex routeRegex() { Str.defVal.toRegex }
+	
+	@NoDoc @Deprecated { msg="Deprecated with no replacement. As Route is now a mixin, implementations matches may not be based on HTTP methods." }
+	virtual Str httpMethod() { Str.defVal }
+
+	@NoDoc @Deprecated { msg="Deprecated with no replacement. As Route is now a mixin, implementations may generate dynamic responses." }
+	virtual Obj response() { Str.defVal }
+
+	** Creates a Route that matches on the given URL glob pattern. 
+	** 'urlGlob' must start with a slash "/". Example: 
+	** 
+	**   Route(`/index/**`)
+	** 
+	** Note that matching is made against URI patterns in [Fantom standard form]`sys::Uri`. 
+	** That means certain delimiter characters in the path section will be escaped with a 
+	** backslash. Notably the ':/?#[]@\' characters. Glob expressions have to take account 
+	** of this.   
+	** 
+	** 'httpMethod' may specify multiple HTTP methods, separated by spaces and / or commas.  
+	** Each may also be a glob pattern. Example, all the following are valid:
+	**  - 'GET' 
+	**  - 'GET HEAD'
+	**  - 'GET, HEAD'
+	**  - 'GET, H*'
+	** 
+	** Use the simple string '*' to match all HTTP methods.
+	static new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET") {
+		RegexRoute(urlGlob, response, httpMethod)
+	}
+
+	** For hardcore users; make a Route from a regex. Capture groups are used to match arguments.
+	** Example:
+	** 
+	**   Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo, "GET", true) ==> Route(`/index/**`)
+	** 
+	** Set 'matchAllSegs' to 'true' to have the last capture group mimic the glob '**' operator, 
+	** splitting on "/" to match all remaining segments.  
+	** 
+	** Note that matching is made against URI patterns in [Fantom standard form]`sys::Uri`. 
+	** That means certain delimiter characters in the path section will be escaped with a 
+	** backslash. Notably the ':/?#[]@\' characters. Regular expressions have to take account 
+	** of this.
+	**    
+	** 'httpMethod' may specify multiple HTTP methods, separated by spaces and / or commas.  
+	** Each may also be a glob pattern. Example, all the following are valid:
+	**  - 'GET' 
+	**  - 'GET HEAD'
+	**  - 'GET, HEAD'
+	**  - 'GET, H*'
+	** 
+	** Use the simple string '*' to match all HTTP methods.
+	static new makeFromRegex(Regex uriRegex, Obj response, Str httpMethod := "GET", Bool matchAllSegs := false) {
+		RegexRoute(uriRegex, response, httpMethod, matchAllSegs)
+	}
+
+	** Returns a response object should the given uri (and http method) match this route. Returns 'null' if not.
+	abstract Obj? match(HttpRequest httpRequest)
+	
+	** Returns a hint at what this route matches on. Used for debugging and in 404 / 500 error pages. 
+	abstract Str matchHint()
+
+	** Returns a hint at what response this route returns. Used for debugging and in 404 / 500 error pages. 
+	abstract Str responseHint()
+}
+
+@NoDoc	// this class seems too important to keep internal!
+const class RegexRoute : Route {
 	private static const Str star	:= "(.*?)"
 
 	** The uri regex this route matches.
-	const Regex routeRegex
+	override const Regex routeRegex
 
 	** The response to be returned from this route. 
-	const Obj response
+	override const Obj response
 
 	** HTTP method used for this route
-	const Str httpMethod
+	override const Str httpMethod
 
 	private  const Regex[] 	httpMethodGlob
 	private  const Bool		matchAllSegs
@@ -99,18 +234,13 @@ const class Route {
 	private  const Bool		isGlob
 	internal const RouteResponseFactory	factory
 
-	** Make a Route that matches on the given glob pattern.
-	** 
-	** 'glob' must start with a slash "/"
-	** 
-	** 'httpMethod' may be a glob. Example, use "*" to match all methods.
-	new makeFromGlob(Uri glob, Obj response, Str httpMethod := "GET") {
-	    if (glob.scheme != null || glob.host != null || glob.port!= null )
-			throw ArgErr(BsErrMsgs.route_shouldBePathOnly(glob))
-	    if (!glob.isPathAbs)
-			throw ArgErr(BsErrMsgs.route_shouldStartWithSlash(glob))
+	new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET") {
+	    if (urlGlob.scheme != null || urlGlob.host != null || urlGlob.port!= null )
+			throw ArgErr(BsErrMsgs.route_shouldBePathOnly(urlGlob))
+	    if (!urlGlob.isPathAbs)
+			throw ArgErr(BsErrMsgs.route_shouldStartWithSlash(urlGlob))
 
-		uriGlob	:= glob.toStr
+		uriGlob	:= urlGlob.toStr
 		regex	:= "(?i)^"
 		uriGlob.each |c, i| {
 			if (c.isAlphaNum || c == '?')
@@ -143,16 +273,9 @@ const class Route {
 		this.matchToEnd		= matchToEnd
 		this.matchAllSegs	= matchAllSegs
 		this.isGlob			= true
-		this.factory.validate(routeRegex, glob, matchAllSegs)
+		this.factory.validate(routeRegex, urlGlob, matchAllSegs)
 	}
 
-	** For hardcore users; make a Route from a regex. Capture groups are used to match arguments.
-	** Example:
-	** 
-	**   Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo, "GET", true) -> Route(`/index/**`)
-	** 
-	** Set 'matchAllSegs' to 'true' to have the last capture group mimic the glob '**' operator, 
-	** splitting on "/" to match all remaining segments.  
 	new makeFromRegex(Regex uriRegex, Obj response, Str httpMethod := "GET", Bool matchAllSegs := false) {
 		this.routeRegex 	= uriRegex
 		this.response 		= response
@@ -166,11 +289,11 @@ const class Route {
 	}
 
 	** Returns a response object should the given uri (and http method) match this route. Returns 'null' if not.
-	Obj? match(Uri uri, Str httpMethod) {
-		if (!httpMethodGlob.any { it.matches(httpMethod) })
+	override Obj? match(HttpRequest httpRequest) {
+		if (!httpMethodGlob.any { it.matches(httpRequest.httpMethod) })
 			return null
 
-		segs := matchUri(uri)
+		segs := matchUri(httpRequest.url)
 		if (segs == null)
 			return null
 
@@ -223,6 +346,14 @@ const class Route {
 		if (response.typeof.fits(Method#))
 			return MethodCallFactory(response)
 		return NoOpFactory(response)
+	}
+	
+	override Str matchHint() {
+		"${httpMethod} - ${routeRegex}"
+	}
+	
+	override Str responseHint() {
+		factory.toStr
 	}
 	
 	override Str toStr() {

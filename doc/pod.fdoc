@@ -531,9 +531,14 @@ Release Notes [#releaseNotes]
 *****************************
 v1.3.18 [#v1.3.18]
 ------------------
- - Chg: All BedSheet services have qualified names.
+ - Chg: Converted 'Route' to a mixin so users can contribute their own implementations.
+ - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.  
+ - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'. 
+ - Chg: Overhauled the 'Route' documentation.
  - Chg: Gave 'FileAsset' a public ctor.
  - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL.
+ - Chg: All BedSheet services have qualified names.
+ - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.
  - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
 
@@ -624,7 +629,7 @@ v1.3.0 [#v1.3.0]
  - Chg: Removed '@Config', use '@afIocConfig::Config' instead. (Breaking change)
  - Chg: Renamed 'HttpPipelineFilter' -> 'Middleware' and updated the corresponding services. Hardcoded the default BedSheet filters / middleware to the start of the pipeline. (Breaking change)
  - Chg: Renamed 'HttpRequestLogFilter' -> 'RequestLogMiddleware' and updated the '@Config' values. (Breaking change)
- - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoder'.
+ - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoders'.
  - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
 
 v1.2.4 [#v1.2.4]

@@ -24,6 +24,8 @@ internal class AppTest : Test {
 	}
 
 	override Void teardown() {
+		// drain the stream to prevent errs on the server
+		try { client.resIn.readAllBuf } catch {}
 		willow?.uninstall
 	}
 
