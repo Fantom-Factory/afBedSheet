@@ -41,6 +41,6 @@ internal const class HttpFlashImpl : HttpFlash {
 	}
 
 	override [Str:Obj?]? getRes() {
-		res.isEmpty ? null : res.map.toImmutable 
+		res.isEmpty ? null : res.map // map doesn't need to be immutable, just serialisable
 	}
 }

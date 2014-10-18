@@ -42,7 +42,7 @@ const class RegexRoute : Route {
 			matchToEnd	= true
 			
 		} else if (uriGlob.endsWith("**")) {
-			regex = regex[0..<-star.size*2] + "(.*?)\\/?"
+			regex = regex[0..<-star.size*2] + "(.*?)"
 			matchAllSegs = true
 		}
 		
@@ -127,7 +127,14 @@ const class RegexRoute : Route {
 		// convert empty Strs to nulls
 		// see http://fantom.org/sidewalk/topic/2178#c14077
 		// 'seg' needs to be named to return an instance of Str[], not Obj[] -> important for method injection
-		return groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
+		groups = groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
+		
+		// a bit of dirty hack for optional last params
+		// only `xxxx/` can be null, `xxxx` doesn't have a param
+		if (!uri.toStr.endsWith("/") && !groups.isEmpty && groups.last == null)
+			groups.removeAt(-1)
+
+		return groups
 	}
 	
 	** Tricky... We need to split on '/' but not an escaped '\/'
