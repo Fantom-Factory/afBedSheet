@@ -8,7 +8,7 @@ Any fool can use a computer. Many do.
 Never trust a computer you can't throw out a window.
 If at first you don't succeed; call it version 1.0.
 Programmers convert caffeine into code.
-Hey! It compiles! Ship it!
+Hey, it compiles!? Ship it!
 An idiot with a computer is a faster, better idiot.
 First, solve the problem. Then, write the code.
 Good web applications should look like trifle.
@@ -21,13 +21,36 @@ Programming is like sex. One mistake and you have   to support it for the rest o
 I can't uninstall it, there seems to be some kind   of "Uninstall Shield"!?
 The Internet: where men are men, women are men, and children are FBI agents.
 "A computer once beat me at chess, but it was no    match for me at kick boxing."
+Never trust an atom; they make up everything.
+I would love to change the world,                   but they won't give me the source code. 
+A Life? Cool! Where can I download one of those?
+Artificial Intelligence is no match for             Natural Stupidity.
+Never make fun of geeks, one day we'll be your boss. 
+Girls are like internet domain names, the ones I    like are already taken.
+Software is like sex; it's better when it's free.
+Enter any 11-digit prime number to continue... 
+Alcohol & calculus don't mix. Never drink & derive.
+A thousand words are worth a picture, and they load a heck of a lot faster.
+Ethernet (n): something used to catch the Etherbunny
+I reject your reality and substitute my own.
+Who is General Failure and why's he reading my disk?
+I reject your reality and substitute my own.
+How do I set a laser pointer to stun?
+I'm not nerdy. I'm intellectually endowed.
+"You're jealous because the voices only talk to me."
+Hacking is like sex. You get in, you get out, and   hope that you didn't leave something that can be    traced back to you.
+Computer Science is no more about computers than    astronomy is about telescopes.
+There is only one satisfying way to boot a computer.
+The truth is out there... anybody got the URL?
+Roses are #FF0000, Violets are #0000FF,             And all my base, Are belong to you.  
 
 # Wargames (1983)
 # --------------------------------------------------
-"Good morning Professor Falken."                                                                - Joshua
+"Good morning Professor Falken."            - Joshua
 Do you want to play a game of "Thermo Nuclear War"?                                             - Joshua
-"Wouldn't you prefer a nice game of chess?"                                                     - Joshua
+"Wouldn't you prefer a nice game of chess?" - Joshua
 "Colonel Conley, take us to DEFCON five."                                             - General Beringer
+"After very careful consideration, sir, I’ve come tothe conclusion that your new defense system sucks."                                  - General Beringer
 
 # 2001: A Space Odyssey (1968)
 # --------------------------------------------------
@@ -51,3 +74,14 @@ End of message.
 
 # Sneakers (1992)
 "Hi, my name is Werner Brandes. My voice is my      passport. Verify Me."
+
+# Bill & Ted’s Excellent Adventure
+# --------------------------------------------------
+"Bill, strange things are afoot at the Circle K."                                                  - Ted
+
+# Star Wars
+# --------------------------------------------------
+"I find your lack of faith disturbing."
+
+
+

@@ -7,6 +7,7 @@ internal class TestRegexRoute : BsTest {
 	Void handler4(Str p1, Int p2 := 69) { }
 	Void handler5(Str? p1 := null, Obj p2 := 69) { }
 	Void handler6(Str p1, Str p2, Int p3 := 69) { }
+	Void handler7(Str? p1 := "wotever") { }
 	
 	Void bar1(Str a, Str b) { }
 	Void bar2(Str? a, Str? b) { }
@@ -29,6 +30,16 @@ internal class TestRegexRoute : BsTest {
 		httpReq := T_HttpRequest { it.httpMethod = "POST"; it.url = `/index` }
 		match := Route(`/index`, #handler1).match(httpReq)
 		verifyNull(match)
+	}
+
+	Void testNonNullableWithDefault() {
+		// tests from pillow
+		httpReq := T_HttpRequest { it.url = `/index` }
+		match := (MethodCall?) Route(`/index/**`, #handler7).match(httpReq)
+		verifyNull(match)
+
+		match = (MethodCall) Route(`/index/?**`, #handler7).match(httpReq)
+		verify(match.args.isEmpty)
 	}
 
 	Void testUriDecoding() {
@@ -132,8 +143,9 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/`)
-		verifyEq(match.size,	1)
+		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
+		verifyEq(match[1],		null)
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
@@ -169,8 +181,7 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match.size,	0)
 
 		match = RegexRoute(`/foo*`, #handler2).matchUri(`/foo`)
-		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match.size,	0)
 		
 		match = RegexRoute(`/foo/*`, #handler2).matchUri(`/foo`)
 		verifyNull(match)
@@ -210,15 +221,17 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match[2],		"argh")
 
 		match = RegexRoute(`/foobar/**`, #handler2).matchUri(`/foobar/dude/2/argh/`)
-		verifyEq(match.size,	3)
+		verifyEq(match.size,	4)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
+		verifyEq(match[3],		null)
 		
 		match = RegexRoute(`/foobar**`, #handler2).matchUri(`/foobarbitch/mf/`)
-		verifyEq(match.size,	2)
+		verifyEq(match.size,	3)
 		verifyEq(match[0],		"bitch")
 		verifyEq(match[1],		"mf")
+		verifyEq(match[2],		null)
 		
 		match = RegexRoute(`/index`, #handler1).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
@@ -227,12 +240,10 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match.size,	0)
 
 		match = RegexRoute(`/index*`, #handler2).matchUri(`/index?dude=3`)
-		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match.size,	0)
 
 		match = RegexRoute(`/index**`, #handler2).matchUri(`/index?dude=3`)
-		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match.size,	0)
 
 		match = RegexRoute(`/wot/*/ever/*`, #handler3).matchUri(`/wot/3/ever/4`)
 		verifyEq(match.size,	2)

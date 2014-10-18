@@ -542,6 +542,7 @@ v1.3.18 [#v1.3.18]
  - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.
  - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
+ - Bug: HTTP Flash objects no longed need to be immutable, just serialisable.
 
 v1.3.16 [#v1.3.16]
 ------------------

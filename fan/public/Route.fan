@@ -51,7 +51,7 @@
 ** In brief, the special glob syntax is:
 **  - '?' optionally matches the last character, 
 **  - '/*' captures a path segment,
-**  - '/**' captures all path segments,
+**  - '/**' captures all remaining path segments,
 **  - '/***' captures the remaining URL.
 ** 
 ** Full examples follow:
@@ -70,13 +70,15 @@
 ** 
 **   /user/**     --> /user/       => null
 **   /user/**     --> /user/42     => "42"
-**   /user/**     --> /user/42/    => "42"
+**   /user/**     --> /user/42/    => "42", null
 **   /user/**     --> /user/42/dee => "42", "dee"
 **
 **   /user/***    --> /user/       => null
 **   /user/***    --> /user/42     => "42"
 **   /user/***    --> /user/42/    => "42/"
 **   /user/***    --> /user/42/dee => "42/dee"
+** 
+** The pattern to note with '*' and '**' is that URLs that end with a '/' are converted to a 'null' parameter. 
 ** 
 ** The intention of the '?' character is to optionally match a trailing slash. Example:
 ** 

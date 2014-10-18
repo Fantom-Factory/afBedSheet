@@ -162,6 +162,8 @@ internal const class HttpRequestImpl : HttpRequest {
 	}	
 	private WebReq webReq() {
 		// let's simplify and optimise, no point in querying IoC for this.
-		Actor.locals["web.req"]
+		try return Actor.locals["web.req"]
+		catch (NullErr e) 
+			throw Err("No web request active in thread")
 	}
 }
