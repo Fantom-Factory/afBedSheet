@@ -1,15 +1,14 @@
 
 ** Implement to convert values to and from 'Str' objects. 
 ** 
-** 'ValueEncoders' are responsible for converting 'Strs' from request uri segments into request handler method 
-** arguments. 
+** 'ValueEncoders' are responsible for encoding 'Objs' to and from 'Strs' so they may be used in URLs and HTML forms. 
 ** 
 ** In general, Fantom objects use 'toStr()' and 'fromStr()' for Str conversion. While this works well for serialisation,
-** it often falls short in the context of a web application. This is because in an application, the object in question 
+** it often falls short in the context of a web application. Because in an web application, the object in question 
 ** is often an entity or DTO from a database, and you need services to create it... which you don't have in a static 
 ** 'fromStr()' ctor!
 ** 
-** Therefore 'ValueEncoders' allow you to use the standard 'afIoc' dependency injection and any service of your choice. 
+** Therefore 'ValueEncoders' allow you to use the standard IoC dependency injection and any service of your choice. 
 ** 
 ** IOC Configuration
 ** =================
@@ -27,10 +26,11 @@
 ** 
 const mixin ValueEncoder {
 
-	** Encode the given value into a Str.
-	abstract Str toClient(Obj value)
+	** Encode the given value into a 'Str'.
+	abstract Str toClient(Obj? value)
 
-	** Decode the given Str back into an Obj.
-	abstract Obj toValue(Str clientValue)
+	// FIXME: explain how to take account of nulls from empty str
+	** Decode the given 'Str' back into an 'Obj'.
+	abstract Obj? toValue(Str clientValue)
 
 }

@@ -35,8 +35,8 @@ const class HttpStatusErr : ReProcessErr {
 ** Throw by the routing mechanism when converting uri segments to method params 
 ** 
 ** Extends `HttpStatusErr` so, by default, they cause a 404.
-internal const class ValueEncodingErr : ReProcessErr {
-	new make(Str msg := "", Err? cause := null) : super(HttpStatus(404, msg), cause) {}
+internal const class ValueEncodingErr : BedSheetErr {
+	new make(Str msg := "", Err? cause := null) : super(msg, cause) { }
 }
 
 ** A generic 'NotFoundErr'.
