@@ -529,20 +529,21 @@ See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpac
 
 Release Notes [#releaseNotes]
 *****************************
-v1.3.18 [#v1.3.18]
+v1.4.0 [#v1.4.0]
 ------------------
  - Chg: Converted 'Route' to a mixin so users can contribute their own implementations.
  - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.  
  - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'. 
  - Chg: Overhauled the 'Route' documentation.
+ - Chg: Nullability within 'ValueEncoders' has now been property addressed. (Breaking change in 'ValueEncoder' mixin.) 
  - Chg: Gave 'FileAsset' a public ctor.
- - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL.
+ - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL, not a local URL.
  - Chg: All BedSheet services have qualified names.
  - Bug: Route method params are now correctly URL decoded - see [URI Encoding / Decoding]`http://fantom.org/sidewalk/topic/2357`.
  - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.
  - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
- - Bug: HTTP Flash objects no longed need to be immutable, just serialisable.
+ - Bug: HTTP Flash objects no longer need to be immutable, just serialisable.
 
 v1.3.16 [#v1.3.16]
 ------------------

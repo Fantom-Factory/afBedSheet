@@ -128,8 +128,8 @@ internal const class BsErrMsgs {
 	
 	// ---- Other ----
 
-	static Str valueEncoding_buggered(Obj value, Type toType) {
-		"Could not convert $value to ${toType.qname}"
+	static Str valueEncoding_buggered(Obj? value, Type toType) {
+		stripSys("Could not convert '$value' to ${toType.qname}")
 	}
 
 	static Str valueEncoding_notFound(Type valType) {
@@ -154,5 +154,9 @@ internal const class BsErrMsgs {
 	
 	static Str appRestarter_couldNotLaunch(Str appModule) {
 		"Could not launch external process for proxied Web App '$appModule'\n"
+	}
+	
+	static Str stripSys(Str str) {
+		str.replace("sys::", "")
 	}
 }

@@ -66,16 +66,18 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 
 	** Convert the Str from Routes into real arg objs
 	private Obj[] convertArgs(Method method, Obj?[] argsIn) {
-		argsOut := argsIn.map |arg, i -> Obj?| {
-			// guard against having more args than the method has params! 
-			// Should never happen if the Routes do their job!
-			paramType	:= method.params.getSafe(i)?.type
-			if (paramType == null)
-				return arg
-			decode 		:= arg != null && arg.typeof.fits(Str#)
-			value		:= decode ? valueEncoders.toValue(paramType, arg) : arg
-			return value
+		try
+			return argsIn.map |arg, i -> Obj?| {
+				// guard against having more args than the method has params! 
+				// Should never happen if the Routes do their job!
+				paramType	:= method.params.getSafe(i)?.type
+				if (paramType == null)
+					return arg
+				return arg is Str ? valueEncoders.toValue(paramType, arg) : arg
+			}
+		// if the args can't be converted then clearly the URL doesn't exist!
+		catch (ValueEncodingErr valEncErr) {
+			throw HttpStatusErr(404, valEncErr.msg, valEncErr)
 		}
-		return argsOut
 	}	
 }
