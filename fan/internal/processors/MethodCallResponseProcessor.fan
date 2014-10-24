@@ -3,10 +3,9 @@ using afConcurrent
 
 internal const class MethodCallResponseProcessor : ResponseProcessor {
 	private const static Log 	log 				:= Utils.getLog(MethodCallResponseProcessor#)
-	private const AtomicList	serviceTypeCache	:= AtomicList()
+	private const Type[] 		serviceTypeCache
+	private const AtomicMap		constTypeCache		:= AtomicMap()
 	private const AtomicList	autobuildTypeCache	:= AtomicList()
-	private const AtomicMap		handlerTypeCache	:= AtomicMap()
-	private const Type[] 		serviceTypes
 	
 	@Inject	private const Registry 		registry
 	@Inject	private const ValueEncoders valueEncoders	
@@ -15,7 +14,7 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 		in(this) 
 		
 		// we can cache the stats 'cos we only care about the service types
-		this.serviceTypes = registry.serviceDefinitions.vals.map { it.serviceType }
+		this.serviceTypeCache = registry.serviceDefinitions.vals.map { it.serviceType }
 	}
 
 	override Obj process(Obj response) {
@@ -27,24 +26,18 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 			if (serviceTypeCache.contains(handlerType))
 				handler = registry.dependencyByType(handlerType)
 	
-			if (handlerTypeCache.containsKey(handlerType))
-				handler = handlerTypeCache[handlerType]
+			if (constTypeCache.containsKey(handlerType))
+				handler = constTypeCache[handlerType]
 			
 			if (autobuildTypeCache.contains(handlerType))
 				handler = registry.autobuild(handlerType)
 			
 			if (handler == null) {
-				if (serviceTypes.any { handlerType.fits(it) }) {
-					serviceTypeCache.add(handlerType)
-					handler = registry.dependencyByType(handlerType)
-				} else
-				
 				if (handlerType.isConst) {
 					handler = registry.autobuild(handlerType)
-					handlerTypeCache.set(handlerType, handler)
-				} else
-				
-				{
+					constTypeCache.set(handlerType, handler)
+					
+				} else {
 					autobuildTypeCache.add(handlerType)
 					handler = registry.autobuild(handlerType)
 				}
