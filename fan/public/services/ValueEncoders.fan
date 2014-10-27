@@ -1,3 +1,4 @@
+using afBeanUtils::BeanFactory
 
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
@@ -33,6 +34,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 		if (value is Str)
 			return value
 		
+		// give the val encs a chance to handle nulls
 		valEnc := find(valType)
 		if (valEnc != null)
 			try {
@@ -43,13 +45,14 @@ internal const class ValueEncodersImpl : ValueEncoders {
 				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(value, Str#), cause)
 			}
 		
-		// represent null as an empty string
+		// don't bother with a TypeCoercer, just toStr it.
+		// by default, represent null as an empty string
 		return value?.toStr ?: Str.defVal
 	}
 
 	override Obj? toValue(Type valType, Str clientValue) {
 		// check the basics first!
-		if (valType.fits(Str#))
+		if (valType == Str#)
 			return clientValue
 
 		// give the val encs a chance to handle nulls
@@ -63,18 +66,18 @@ internal const class ValueEncodersImpl : ValueEncoders {
 				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 			}
 
-		// empty string values WILL ALWAYS DIE in the coercer, so treat them as nulls and give 
-		// them a fighting chance - i.e. they're okay if the valType is nullable
-		nullableValue := clientValue.isEmpty ? null : clientValue 
+		// empty string values WILL ALWAYS DIE in the coercer, so treat them as null and create a default value
+		if (clientValue.isEmpty)
+			try	return BeanFactory.defaultValue(valType)
+		catch (Err cause)
+			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 		
 		if (!typeCoercer.canCoerce(Str#, valType))
 			throw ValueEncodingErr(BsErrMsgs.valueEncoding_notFound(valType))
 		
-		try {
-			return typeCoercer.coerce(nullableValue, valType) 
-		} catch (Err cause) {
-			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(nullableValue, valType), cause)
-		}
+		try	return typeCoercer.coerce(clientValue, valType) 
+		catch (Err cause)
+			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 	}
 
 	override ValueEncoder? find(Type valueType) {

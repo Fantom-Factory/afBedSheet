@@ -18,14 +18,14 @@ const class RegexRoute : Route {
 	private  const Bool		isGlob
 	internal const RouteResponseFactory	factory
 
-	new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET") {
+	new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET", Bool caseInsensitive := true) {
 	    if (urlGlob.scheme != null || urlGlob.host != null || urlGlob.port!= null )
 			throw ArgErr(BsErrMsgs.route_shouldBePathOnly(urlGlob))
 	    if (!urlGlob.isPathAbs)
 			throw ArgErr(BsErrMsgs.route_shouldStartWithSlash(urlGlob))
 
 		uriGlob	:= urlGlob.toStr
-		regex	:= "(?i)^"
+		regex	:= caseInsensitive ? "(?i)^" : "^"
 		uriGlob.each |c, i| {
 			if (c.isAlphaNum || c == '?' || c == '\\')
 				regex += c.toChar
@@ -124,14 +124,14 @@ const class RegexRoute : Route {
 				return null
 		}
 
-		// convert empty Strs to nulls
+		// Empty strings MUST be kept as empty strings so they get sent to value encoders, 
+		// so *they* may convert it to a default value or null as they see fit
 		// see http://fantom.org/sidewalk/topic/2178#c14077
-		// 'seg' needs to be named to return an instance of Str[], not Obj[] -> important for method injection
-		groups = groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
+//		groups = groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
 		
 		// a bit of dirty hack for optional last params
-		// only `xxxx/` can be null, `xxxx` doesn't have a param
-		if (!uri.toStr.endsWith("/") && !groups.isEmpty && groups.last == null)
+		// only `xxxx/` can be an empty str, `xxxx` doesn't have a param
+		if (!uri.toStr.endsWith("/") && !groups.isEmpty && groups.last.isEmpty)
 			groups.removeAt(-1)
 
 		return groups
@@ -199,6 +199,7 @@ const mixin RouteResponseFactory {
 
 	virtual Void validate(Regex routeRegex, Uri? routeGlob, Bool matchAllSegs) { }
 
+	** Helper method for subclasses
 	static Bool matchesMethod(Method method, Str?[] segments) {
 		if (segments.size > method.params.size)
 			return false
@@ -209,6 +210,7 @@ const mixin RouteResponseFactory {
 		}
 	}
 
+	** Helper method for subclasses
 	static Bool matchesParams(Type[] params, Str?[] segments) {
 		if (segments.size > params.size)
 			return false

@@ -58,7 +58,7 @@ internal const class MethodCallResponseProcessor : ResponseProcessor {
 	}
 
 	** Convert the Str from Routes into real arg objs
-	private Obj[] convertArgs(Method method, Obj?[] argsIn) {
+	private Obj?[] convertArgs(Method method, Obj?[] argsIn) {
 		try
 			return argsIn.map |arg, i -> Obj?| {
 				// guard against having more args than the method has params! 

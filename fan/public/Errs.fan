@@ -32,9 +32,7 @@ const class HttpStatusErr : ReProcessErr {
 	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super(HttpStatus(statusCode, statusMsg), cause) { }
 }
 
-** Throw by the routing mechanism when converting uri segments to method params 
-** 
-** Extends `HttpStatusErr` so, by default, they cause a 404.
+** Throw by the routing mechanism / 'ValueEncoders' when converting URI segments to method params.
 internal const class ValueEncodingErr : BedSheetErr {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) { }
 }

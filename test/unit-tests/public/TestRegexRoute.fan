@@ -8,6 +8,8 @@ internal class TestRegexRoute : BsTest {
 	Void handler5(Str? p1 := null, Obj p2 := 69) { }
 	Void handler6(Str p1, Str p2, Int p3 := 69) { }
 	Void handler7(Str? p1 := "wotever") { }
+
+	Void objHandler2(Obj? p1) { }
 	
 	Void bar1(Str a, Str b) { }
 	Void bar2(Str? a, Str? b) { }
@@ -114,7 +116,7 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match[0],		"")
 		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
@@ -130,7 +132,7 @@ internal class TestRegexRoute : BsTest {
 		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
-		verifyEq(match[1],		null)
+		verifyEq(match[1],		"")
 		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
@@ -138,14 +140,14 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match[0],		"")
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
-		verifyEq(match[1],		null)
+		verifyEq(match[1],		"")
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
@@ -153,7 +155,7 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match[0],		"")
 		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
@@ -165,6 +167,9 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match[0],		"42/dee")
 	}
 
+	Void docMethod1(Obj p1, Obj p2) { }
+
+	
 	Void testMatchGlob() {
 		Str?[]? match
 		
@@ -186,13 +191,16 @@ internal class TestRegexRoute : BsTest {
 		match = RegexRoute(`/foo/*`, #handler2).matchUri(`/foo`)
 		verifyNull(match)
 
-		match = RegexRoute(`/foo/*`, #handler2).matchUri(`/foo/`)
+		match = matchRoute(`/foo/*`, #handler2, `/foo/`)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
+		match = matchRoute(`/foo/*`, #objHandler2, `/foo/`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
 		match = RegexRoute(`/foo/*/`, #handler2).matchUri(`/foo//`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		null)
+		verifyEq(match[0],		"")
 
 		// case-insensitive
 		match = RegexRoute(`/foo`,	#handler1).matchUri(`/fOO`)
@@ -225,13 +233,13 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
-		verifyEq(match[3],		null)
+		verifyEq(match[3],		"")
 		
 		match = RegexRoute(`/foobar**`, #handler2).matchUri(`/foobarbitch/mf/`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"bitch")
 		verifyEq(match[1],		"mf")
-		verifyEq(match[2],		null)
+		verifyEq(match[2],		"")
 		
 		match = RegexRoute(`/index`, #handler1).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
@@ -249,6 +257,71 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"3")
 		verifyEq(match[1],		"4")
+	}
+	
+	Void testParamsFromDocs() {
+		Obj?[]? match
+		
+		match = matchParams([""], #doc2)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		null)
+
+		match = matchParams([""], #doc3)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
+
+		match = matchParams(["wotever"], #doc3)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"wotever")
+
+		match = matchParams([""], #doc4)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		null)
+
+		match = matchParams([""], #doc5)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		0)
+
+		match = matchParams(["68"], #doc5)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		68)
+
+		match = matchParams(["wotever"], #doc5)
+		verifyNull(match)
+
+		match = matchParams([""], #doc6)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		null)
+
+		match = matchParams([""], #doc7)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
+	}
+	
+	Void doc2(Str? a) {}
+	Void doc3(Str a) {}
+	Void doc4(Int? a) {}
+	Void doc5(Int a) {}
+	Void doc6(Str? a, Int b := 68) {}
+	Void doc7(Str a, Int b := 68) {}
+	
+	ValueEncoders valueEncoders := ValueEncodersImpl([:])
+	Obj?[]? matchRoute(Uri regex, Method method, Uri req) {
+		httpReq := T_HttpRequest { it.url = req }
+		mCall := (MethodCall) RegexRoute(regex, method).match(httpReq)
+		return matchParams(mCall.args, method)
+	}
+	Obj?[]? matchParams(Obj?[] strs, Method method) {
+		try {
+			args := strs.map |arg, i -> Obj?| {
+				paramType	:= method.params.getSafe(i)?.type
+				if (paramType == null)
+					return arg
+				return arg is Str ? valueEncoders.toValue(paramType, arg) : arg
+			}
+			return args			
+		} catch (ValueEncodingErr err)
+			return null
 	}
 	
 	Void testArgList() {
@@ -363,7 +436,11 @@ internal class TestRegexRoute : BsTest {
 	Void testFromModule() {
 		Str?[]? match
 
-		match = RegexRoute(`/route/optional/**`, #defaultParams).matchUri(`/route/optional/`)
+		match = matchRoute(`/route/optional/*`, #defaultParams, `/route/optional/`)
+		verifyEq(match.size, 1)
+		verifyEq(match[0],	null)
+
+		match = matchRoute(`/route/optional/**`, #defaultParams, `/route/optional/`)
 		verifyEq(match.size, 1)
 		verifyEq(match[0],	null)
 	}
