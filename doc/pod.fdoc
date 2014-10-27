@@ -537,6 +537,7 @@ v1.4.0 [#v1.4.0]
  - Chg: Overhauled the 'Route' matching, argument conversion and documentation. (Possible breaking change.)
  - Chg: Nullability within 'ValueEncoders' has now been property addressed. (Breaking change in 'ValueEncoder' mixin.)
  - Chg: 'Middleware' now returns 'Void' not 'Bool'. (Breaking change.)
+ - Chg: Removed deprecated methods. (Breaking change.)
  - Chg: Gave 'FileAsset' a public ctor.
  - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL, not a local URL.
  - Chg: All BedSheet services have qualified names.
