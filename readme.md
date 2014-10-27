@@ -14,7 +14,7 @@ Install `BedSheet` with the Fantom Repository Manager ( [fanr](http://fantom.org
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afBedSheet 1.3+"]
+    depends = ["sys 1.0", ..., "afBedSheet 1.3"]
 
 ## Documentation 
 

@@ -88,7 +88,7 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 	
 	override Void service(MiddlewarePipeline pipeline) {
 		logMod?.onService
-		pipeline.service		
+		pipeline.service
 	}
 
 	override Void shutdown() {

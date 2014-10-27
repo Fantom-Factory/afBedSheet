@@ -11,8 +11,7 @@ const class RoutesMiddleware : Middleware {
 
 	override Void service(MiddlewarePipeline pipeline) {
 		handled := routes.processRequest(httpRequest)
-		if (handled)
-			return
-		pipeline.service
+		if (!handled)
+			pipeline.service
 	}	
 }

@@ -131,7 +131,8 @@ internal const class ErrPrinterHtmlSections {
 			
 			out.pre("id=\"stackFrames\" class=\"hideBoring\"")
 			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
-			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.each |frame| {
+			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.each |fra| {
+				frame := fra.trim
 				css := frameFilter.filter(frame) ? "dull" : "okay"
 				out.span("class=\"${css}\"")
 				out.writeXml("  ${frame}\n")

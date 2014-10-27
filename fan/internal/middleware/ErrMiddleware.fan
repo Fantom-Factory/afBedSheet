@@ -25,7 +25,8 @@ internal const class ErrMiddleware : Middleware {
 		try {
 			
 			try {
-				return pipeline.service
+				pipeline.service
+				return
 				
 			// nothing we can do here
 			} catch (IocShutdownErr err) {
