@@ -9,18 +9,6 @@ using concurrent
 ** This class is proxied and will always refer to the current web request.
 const mixin HttpRequest {
 
-	@NoDoc @Deprecated { msg="Use 'BedSheetServer.path()' instead" }
-	abstract Uri modBase()
-
-	@NoDoc @Deprecated { msg="Use 'url' instead" }
-	Uri modRel() { url }
-
-	@NoDoc @Deprecated { msg="Use 'BedSheetServer.toAbsoluteUrl(url)' instead" }
-	abstract Uri absUri()
-
-	@NoDoc @Deprecated { msg="Use 'BedSheetServer.path + url.relTo(`/`)' instead" }
-	abstract Uri uri()
-
 	** Returns 'true' if an 'XMLHttpRequest', as specified by the 'X-Requested-With' HTTP header.
 	abstract Bool isXmlHttpRequest()
 	
@@ -100,9 +88,6 @@ const class HttpRequestWrapper : HttpRequest {
 	override Str httpMethod()				{ req.httpMethod		}	
 	override IpAddr remoteAddr() 			{ req.remoteAddr		}
 	override Int remotePort() 				{ req.remotePort		}
-	override Uri uri() 						{ req.uri				}
-	override Uri absUri() 					{ req.absUri			}
-	override Uri modBase() 					{ req.modBase			}
 	override Uri url() 						{ req.url				}
 	override HttpRequestHeaders headers() 	{ req.headers			}
 	override [Str:Str]? form() 				{ req.form				}
@@ -133,15 +118,6 @@ internal const class HttpRequestImpl : HttpRequest {
 	}
 	override Int remotePort() {
 		webReq.remotePort		
-	}
-	override Uri uri() {
-		webReq.uri
-	}
-	override Uri absUri() {
-		webReq.absUri
-	}
-	override Uri modBase() {
-		webReq.modBase
 	}
 	override Uri url() {
 		rel := webReq.modRel

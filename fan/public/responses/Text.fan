@@ -69,11 +69,6 @@ const final class Text {
 		return fromMimeStr(text, "application/json", charset)
 	}
 
-	@NoDoc @Deprecated { msg="Use 'fromContentType()' instead" }
-	static new fromMimeType(Str text, MimeType mimeType) {
-		fromContentType(text, mimeType)
-	}
-
 	** Creates a 'Text' with the given content type.
 	static new fromContentType(Str text, MimeType contentType) {
 		Text.make(text, contentType)

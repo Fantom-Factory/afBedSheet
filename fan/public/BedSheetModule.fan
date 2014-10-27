@@ -127,13 +127,9 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=Routes# }
 	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler, ConfigSource iocSrc) {
-		// @Deprecated placeholder
-		config.addPlaceholder("afBedSheet.fileHandlerStart")
 		config["afBedSheet.fileHandler"] = fileHandler.directoryMappings.keys.map |url| {
 			Route(url + `***`, FileHandler#serviceRoute, "GET HEAD")	// Me like!
 		}
-		// @Deprecated placeholder
-		config.addPlaceholder("afBedSheet.fileHandlerEnd")
 		
 		podHandlerUrl := (Uri?) iocSrc.get(BedSheetConfigIds.podHandlerBaseUrl, Uri?#)
 		if (podHandlerUrl != null)
