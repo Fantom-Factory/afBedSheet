@@ -14,8 +14,6 @@ Add HttpRequest.isSecure()
 
 Future
 ------
-Middleware doesn't *need* to return Bool - never used. Should we remove it?
-
 Re-think middleware pipeline processing -> maybe have a pipeline for each type of response?
 
 Logging filter with reqId, SessId and configurable userId
@@ -39,10 +37,6 @@ Create a Units class:
 		Env.cur.err.printLine(size)
 	}
 
-Make MethodCallResponseProcessor configurable so it can call other types of classes
- - e.g. Pillow event methods
- - But man, that's a bucket load of work! And with no use case - it's not worth it!  
-
 Contribute ranges to HttpStatusProcessor?? - Naa, can't be arsed. Use case?
 
 Inspect the 'accept' headers to ensure the client likes what we're about to send back, send 406 otherwise
@@ -51,6 +45,7 @@ Inspect the 'accept' headers to ensure the client likes what we're about to send
 
 Move the app-restarting into separate thread which checks every X secs
  - Naa, the startup is too processor intensive - it just slows the computer down
+
 
 
 Doc Comments

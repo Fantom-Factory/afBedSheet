@@ -86,9 +86,9 @@ internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
 		log.info(BsLogMsgs.requestLog_enabled(dir + `${filenamePattern}`))
 	}
 	
-	override Bool service(MiddlewarePipeline pipeline) {
+	override Void service(MiddlewarePipeline pipeline) {
 		logMod?.onService
-		return pipeline.service		
+		pipeline.service		
 	}
 
 	override Void shutdown() {

@@ -17,7 +17,7 @@ internal const class ErrMiddleware : Middleware {
 
 	new make(|This|in) { in(this) }
 	
-	override Bool service(MiddlewarePipeline pipeline) {
+	override Void service(MiddlewarePipeline pipeline) {
 		firstErr := null
 		response := null
 
@@ -29,7 +29,7 @@ internal const class ErrMiddleware : Middleware {
 				
 			// nothing we can do here
 			} catch (IocShutdownErr err) {
-				return true
+				return
 
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 
 			// would still expect it work
@@ -50,8 +50,6 @@ internal const class ErrMiddleware : Middleware {
 					response = rpe.responseObj
 				}	
 			
-			return response
-
 		} catch (Err doubleErr) {
 			// the backup plan for when the err handler errs!
 			log.err("ERR thrown when processing $firstErr.typeof.qname", doubleErr)
@@ -64,7 +62,6 @@ internal const class ErrMiddleware : Middleware {
 				httpResponse.headers.cacheControl = "private, max-age=0, no-store"
 				httpResponse.out.print(errText.text)
 			}
-			return true
 		}
 	}
 	

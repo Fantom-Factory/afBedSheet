@@ -16,7 +16,7 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 	
 	new make(|This|in) { in(this) }
 
-	override Bool service() {
+	override Void service() {
 		// distinguish between Not Found and Not Implemented depending on the requested HTTP method.
 		statusCode := status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
 		
@@ -26,7 +26,7 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 			return (regexRoute?.response == PodHandler#serviceRoute || regexRoute?.response == FileHandler#serviceRoute)
 		}.isEmpty && !disbleWelcomePage) {
 			httpResponse.statusCode = statusCode
-			return responseProcessors.processResponse(bedSheetPages.renderWelcome)
+			responseProcessors.processResponse(bedSheetPages.renderWelcome)
 		}
 
 		throw HttpStatusErr(statusCode, BsErrMsgs.route404(httpRequest.url, httpRequest.httpMethod))
