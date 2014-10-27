@@ -10,6 +10,34 @@
 ** 
 ** Therefore 'ValueEncoders' allow you to use the standard IoC dependency injection and any service of your choice. 
 ** 
+** 
+** 
+** Nullablity
+** ==========
+** 'Obj' values may be 'null', but they must always be converted to a 'Str' instance since you can't express 'null' as 
+** a HTML attribute. Bear this in mind when constructing your 'ValueEncoder' for the empty string is used as a 'null' 
+** representation. Example:   
+** 
+** pre>
+** const class MyValueEncoder : ValueEncoder {
+** 
+**     override Str toClient(Obj? value) {
+**         if (value == null) return Str.defVal
+**         ...
+**     }
+** 
+**     override Obj? toValue(Str clientValue) {
+**         if (clientValue.isEmpty) return null
+**         ....
+**     }
+** }
+** <pre
+** 
+** The 'ValueEncoder' method signatures allow you to substitute 'null' for some other default value.
+** Example, should you wish, an 'Int' could default to '0' or 'Date' objects could default to today's date.
+** 
+** 
+** 
 ** IOC Configuration
 ** =================
 ** Instances of 'ValueEncoder' should be contributed to the 'ValueEncoders' service and mapped to a 

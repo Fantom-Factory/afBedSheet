@@ -9,7 +9,11 @@
 ** ************
 ** Matches the HTTP Request URL and HTTP Method to a response object using regular expressions.
 ** 
-** Note that all URL matching is case-insensitive.
+** Note that all URL matching is case-insensitive. If you really need case-sensitive matching (???)
+** use the 'RegexRoute' explicitly, passing 'false' as the 'caseInsensitive' argument. Example:
+** 
+**   RegexRoute(`/index`, MyPage#hello, "GET", false)
+** 
 ** 
 ** 
 ** Response Objects
@@ -39,7 +43,7 @@
 ** To use, pass in the method as the response object. 
 ** On a successful match, the 'Route' will convert the method into a 'MethodCall' object.
 ** 
-**   Route(`/greet`, MyPage#Hello)
+**   Route(`/greet`, MyPage#hello)
 ** 
 ** Method matching can also map URL path segments to method parameters and is a 2 stage process:
 ** 
@@ -58,31 +62,31 @@
 ** 
 **   glob pattern     URL             captures
 **   --------------------------------------------
-**   /user/*      --> /user/       => null
+**   /user/*      --> /user/       => ""
 **   /user/*      --> /user/42     => "42"
 **   /user/*      --> /user/42/    => no match
 **   /user/*      --> /user/42/dee => no match
 **
 **   /user/*/*    --> /user/       => no match
 **   /user/*/*    --> /user/42     => no match
-**   /user/*/*    --> /user/42/    => "42", null
+**   /user/*/*    --> /user/42/    => "42", ""
 **   /user/*/*    --> /user/42/dee => "42", "dee"
 ** 
-**   /user/**     --> /user/       => null
+**   /user/**     --> /user/       => ""
 **   /user/**     --> /user/42     => "42"
-**   /user/**     --> /user/42/    => "42", null
+**   /user/**     --> /user/42/    => "42", ""
 **   /user/**     --> /user/42/dee => "42", "dee"
 **
-**   /user/***    --> /user/       => null
+**   /user/***    --> /user/       => ""
 **   /user/***    --> /user/42     => "42"
 **   /user/***    --> /user/42/    => "42/"
 **   /user/***    --> /user/42/dee => "42/dee"
 ** 
-** The pattern to note with '*' and '**' is that URLs that end with a '/' are converted to a 'null' parameter. 
+** Note that in stage 2 empty strings may be converted to 'nulls'. 
 ** 
 ** The intention of the '?' character is to optionally match a trailing slash. Example:
 ** 
-**   glob         url
+**   glob         URL
 **   -----------------------------
 **   /index/? --> /index  => match
 **   /index/? --> /index/ => match
@@ -90,7 +94,7 @@
 **   /index/  --> /index  => no match
 **   /index   --> /index/ => no match
 **  
-** Should a match be found, even if 'null' is captured, then the captured strings are further processed in stage 2.
+** Should a match be found, then the captured strings are further processed in stage 2.
 ** 
 ** A 'no match' signifies just that.
 ** 
@@ -98,49 +102,44 @@
 ** 
 ** Stage 2 - Method Parameter Matching
 ** -----------------------------------
-** An attempt is now made to match the captured string to method parameters, taking into account nullable types 
-** and default values. 
+** An attempt is now made to match the captured strings to method parameters, taking into account nullable types 
+** and default values.
 ** 
-** In breif:
-**  - method parameters with default values are considered optional,
-**  - nullable method parameters may take, um, 'null'!
+** First, the number of captured strings have to match the number of method parameters, taking into 
+** account any optional / default values on the method.
 ** 
-** Full examples follow:
+** Next the captured strings are converted to method arguments using the [ValueEncoder]`ValueEncoder` 
+** service. If no value encoder is found then the following default behaviour is used:
+**  - Non-empty strings are converted using a [TypeCoercer]`afBeanUtils::TypeCoercer`
+**  - Empty strings are considered 'null' but
+**    - if the method parameter is not nullable, then [BeanFactory.defaultValue()]`afBeanUtils::BeanFactory.defaultValue` is used.
 ** 
-**   method params             string args     match
-**   --------------------------------------------------
-**   Obj a, Obj b         -->               => no match  
-**   Obj a, Obj b         -->  null         => no match
-**   Obj a, Obj b         -->  null,  null  => no match 
-**   Obj a, Obj b         --> "wot", "ever" => match
-**   
-**   Obj? a, Obj? b       -->               => no match
-**   Obj? a, Obj? b       -->  null         => no match
-**   Obj? a, Obj? b       -->  null,  null  => match
-**   Obj? a, Obj? b       --> "wot", "ever" => match
+** The above process may sound complicated but in practice it just works and does what you expect.
+** 
+** Here are a couple of examples:
+** 
+**   strings             method signature            args
+**   ---------------------------------------------------------------
+**                  -->  (Obj a, Obj b)          =>  no match
 **
-**   Obj? a, Obj? b := "" -->               => no match
-**   Obj? a, Obj? b := "" -->  null         => match
-**   Obj? a, Obj? b := "" -->  null,  null  => match
-**   Obj? a, Obj? b := "" --> "wot", "ever" => match
-**
-**   Obj? a, Obj b := ""  -->               => no match
-**   Obj? a, Obj b := ""  -->  null         => match
-**   Obj? a, Obj b := ""  -->  null,  null  => no match
-**   Obj? a, Obj b := ""  --> "wot", "ever" => match
+**   ""             -->  (Str? a)                =>  null
+**   ""             -->  (Str a)                 =>  ""
+**   "wotever"      -->  (Str a)                 =>  "wotever"
 ** 
-** 'Obj' is used in the examples above, but method parameters can actually be *any* type.
-** Captured strings are converted to the appropriate type by the [ValueEncoder]`ValueEncoder` 
-** service.
+**   ""             -->  (Int? a)                =>  null
+**   ""             -->  (Int a)                 =>  0
+**   "68"           -->  (Int a)                 =>  68
+**   "wotever"      -->  (Int a)                 =>  no match
+** 
+**   ""             -->  (Str? a, Int b := 68)   =>  null, (default)
+**   ""             -->  (Str a, Int b := 68)    =>  "", (default)
 ** 
 ** Assuming you you have an entity object, such as 'User', with an ID field; you can contribute a 
 ** 'ValueEncoder' that inflates (or otherwise reads from a database) 'User' objects from a string 
 ** version of the ID. Then your methods can declare 'User' as a parameter and BedSheet will 
-** convert the captured strings for you! 
+** convert the captured strings to User objects for you! 
 ** 
-** Method parameters of type 'Str[]' are *capture all* parameters and will match the remaining URL (split on '/').
-**
-**  
+** 
 ** 
 ** Method Invocation
 ** -----------------
