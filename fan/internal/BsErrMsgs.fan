@@ -132,10 +132,6 @@ internal const class BsErrMsgs {
 		stripSys("Could not convert '$value' to ${toType.qname}")
 	}
 
-	static Str valueEncoding_notFound(Type valType) {
-		"Could not find either a ValueEncoder or a suitable fromStr() static factory method for ${valType.qname}"
-	}
-	
 	static Str oneShotLock_violation(Str because) {
 		"Method may no longer be invoked - $because"
 	}

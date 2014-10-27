@@ -115,7 +115,7 @@ const class RegexRoute : Route {
 		}
 		
 		if (matchAllSegs && !groups.isEmpty && groups.last.contains("/")) {
-			groups.addAll(splitPath(groups.removeAt(-1)))				
+			groups.addAll(splitPath(groups.removeAt(-1)))
 		}
 		
 		if (isGlob && !matchToEnd && !matchAllSegs && groups.last.contains("/")) {

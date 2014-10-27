@@ -57,23 +57,26 @@ internal const class ValueEncodersImpl : ValueEncoders {
 
 		// give the val encs a chance to handle nulls
 		valEnc := find(valType)
-		if (valEnc != null)
+		if (valEnc != null) {
+			value := null
 			try {
-				return valEnc.toValue(clientValue)
+				value = valEnc.toValue(clientValue)
 			} catch (ReProcessErr reprocess) {
 				throw reprocess
 			} catch (Err cause) {
 				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 			}
+			// a final null compatibility check
+			if (value == null && !valType.isNullable)
+				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType))
+			return value
+		}
 
 		// empty string values WILL ALWAYS DIE in the coercer, so treat them as null and create a default value
 		if (clientValue.isEmpty)
 			try	return BeanFactory.defaultValue(valType)
 		catch (Err cause)
 			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
-		
-		if (!typeCoercer.canCoerce(Str#, valType))
-			throw ValueEncodingErr(BsErrMsgs.valueEncoding_notFound(valType))
 		
 		try	return typeCoercer.coerce(clientValue, valType) 
 		catch (Err cause)
