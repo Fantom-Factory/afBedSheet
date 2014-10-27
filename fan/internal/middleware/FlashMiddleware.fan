@@ -7,17 +7,15 @@ internal const class FlashMiddleware : Middleware {
 
 	new make(|This|in) { in(this) }
 	
-	override Bool service(MiddlewarePipeline pipeline) {
+	override Void service(MiddlewarePipeline pipeline) {
 		httpFlash.setReq(httpSession["bedSheet.flash"])
 		
-		handled := pipeline.service
+		pipeline.service
 		
 		val := httpFlash.getRes
 		if (val != null)
 			httpSession["bedSheet.flash"] = val
 		else 
 			httpSession.remove("bedSheet.flash")
-		
-		return handled
 	}
 }

@@ -32,6 +32,6 @@ const mixin Middleware {
 
 	** Return 'true' if you handled the request and no further request processing should be performed. 
 	** Otherwise the request should be sent down the pipeline.
-	abstract Bool service(MiddlewarePipeline pipeline) 
+	abstract Void service(MiddlewarePipeline pipeline) 
 
 }
