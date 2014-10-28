@@ -57,7 +57,6 @@ const mixin ValueEncoder {
 	** Encode the given value into a 'Str'.
 	abstract Str toClient(Obj? value)
 
-	// FIXME: explain how to take account of nulls from empty str
 	** Decode the given 'Str' back into an 'Obj'.
 	abstract Obj? toValue(Str clientValue)
 

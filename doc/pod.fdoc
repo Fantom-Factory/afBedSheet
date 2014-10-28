@@ -538,9 +538,11 @@ v1.4.0 [#v1.4.0]
  - Chg: Nullability within 'ValueEncoders' has now been property addressed. (Breaking change in 'ValueEncoder' mixin.)
  - Chg: 'Middleware' now returns 'Void' not 'Bool'. (Breaking change.)
  - Chg: Removed deprecated methods. (Breaking change.)
- - Chg: Gave 'FileAsset' a public ctor.
  - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL, not a local URL.
+ - Chg: 'HttpResponse.saveAsAttachment()' also sets the 'Content-Type' HTTP response header.
+ - Chg: Gave 'FileAsset' a public ctor.
  - Chg: All BedSheet services have qualified names.
+ - Chg: '.csv' files are gzip compressible.
  - Bug: Route method params are now correctly URL decoded - see [URI Encoding / Decoding]`http://fantom.org/sidewalk/topic/2357`.
  - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.

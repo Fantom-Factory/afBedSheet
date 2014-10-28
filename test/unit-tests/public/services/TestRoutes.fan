@@ -29,7 +29,6 @@ internal class T_MyModule02 {
 	static Void defineServices(ServiceDefinitions defs) {
 		defs.add(Routes#)
 		defs.add(ResponseProcessors#)
-		defs.add(MethodCallResponseProcessor#)
 		defs.add(ValueEncoders#)
 	}	
 

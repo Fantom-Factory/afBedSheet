@@ -172,6 +172,8 @@ const class BedSheetModule {
 		config["application/rss+xml"]			= true
 		config["application/xhtml+xml"]			= true
 		config["text/css"]						= true
+		config["text/csv"]						= true
+		config["text/fan"]						= true
 		config["text/html"]						= true
 		config["text/javascript"]				= true
 		config["text/plain"]					= true

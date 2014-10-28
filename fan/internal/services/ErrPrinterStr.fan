@@ -125,10 +125,13 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printFormParameters(StrBuf buf, Err? err) {
-		if (request.form != null) {
-			buf.add("\nForm:\n")
-			prettyPrintMap(buf, request.form, true)
-		}
+		try // req.form can throw Errs if badly formatted
+			if (request.form != null) {
+				buf.add("\nForm:\n")
+				prettyPrintMap(buf, request.form, true)
+			}
+		catch (Err eek)
+			buf.add("\nForm: ${eek.msg}\n")			
 	}
 	
 	Void printCookies(StrBuf buf, Err? err) {

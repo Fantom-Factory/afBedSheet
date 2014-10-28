@@ -8,7 +8,7 @@ using web::WebRes
 
 ** (Service) - An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
-** This is proxied and will always refers to the current web response.
+** This will always refers to the current web response.
 const mixin HttpResponse {
 
 	** Get / set the HTTP status code for this response.
@@ -25,7 +25,7 @@ const mixin HttpResponse {
 	**  - `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses`
 	abstract HttpResponseHeaders headers()
 	
-	** Return true if this response has been commmited.  A committed response has written its 
+	** Return true if this response has been committed.  A committed response has written its 
 	** response headers, and can no longer modify its status code or headers.  A response is 
 	** committed the first time that `out` is called.
 	** 
@@ -48,10 +48,11 @@ const mixin HttpResponse {
 	** @see `BufferedOutStream`
 	abstract Bool disableBuffering
 
-	** Directs the client to display a 'save as' dialog. 
-	** Sets the 'Content-Disposition' http response header. 
+	** Directs the client to display a 'save as' dialog by setting the 'Content-Disposition' HTTP 
+	** response header. 
 	** 
-	** Don't forget to set the 'Content-Type' header too!
+	** The 'Content-Type' HTTP response header is set to the MimeType derived from the fileName's 
+	** extension.
 	** 
 	** @see `HttpResponseHeaders.contentDisposition`
 	abstract Void saveAsAttachment(Str fileName)
@@ -115,6 +116,7 @@ internal const class HttpResponseImpl : HttpResponse {
 	}
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "Attachment; filename=${fileName}"
+		headers.contentType = fileName.toUri.mimeType
 	}
 	private WebRes webRes() {
 		registry.dependencyByType(WebRes#)
