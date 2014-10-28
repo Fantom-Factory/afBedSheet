@@ -6,7 +6,7 @@ using concurrent
 
 ** (Service) - An injectable 'const' version of [WebReq]`web::WebReq`.
 ** 
-** This class is proxied and will always refer to the current web request.
+** This class will always refer to the current web request.
 const mixin HttpRequest {
 
 	** Returns 'true' if an 'XMLHttpRequest', as specified by the 'X-Requested-With' HTTP header.

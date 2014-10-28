@@ -4,7 +4,7 @@ using web::WebReq
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
 ** 
-** This class is proxied and will always refer to the session in the current web request.
+** This class will always refer to the session in the current web request.
 const mixin HttpSession {
 	
 	** Get the unique id used to identify this session.

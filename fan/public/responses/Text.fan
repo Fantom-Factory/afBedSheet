@@ -29,17 +29,17 @@ const final class Text {
 
 	** Creates a 'Text' with the mime type 'text/plain'.
 	static new fromPlain(Str text, Charset charset := Charset.utf8) {
-		fromMimeStr(text, "text/plain", charset)
+		_fromMimeStr(text, "text/plain", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'text/html'.
 	static new fromHtml(Str text, Charset charset := Charset.utf8) {
-		fromMimeStr(text, "text/html", charset)
+		_fromMimeStr(text, "text/html", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/xml'.
 	static new fromXml(Str text, Charset charset := Charset.utf8) {
-		fromMimeStr(text, "application/xml", charset)
+		_fromMimeStr(text, "application/xml", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/xhtml+xml'.
@@ -50,14 +50,14 @@ const final class Text {
 	** 
 	** Or it will **not** be displayed correctly in the browser!  
 	static new fromXhtml(Str text, Charset charset := Charset.utf8) {
-		fromMimeStr(text, "application/xhtml+xml", charset)
+		_fromMimeStr(text, "application/xhtml+xml", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/json'.
 	** 'jsonObj' should be serialisable into Json via `util::JsonOutStream`
 	static new fromJson(Obj jsonObj, Charset charset := Charset.utf8) {
 		json := JsonOutStream.writeJsonToStr(jsonObj)
-		return fromMimeStr(json, "application/json", charset)
+		return _fromMimeStr(json, "application/json", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/json'.
@@ -66,7 +66,7 @@ const final class Text {
 	static new fromJsonP(Obj jsonObj, Str callbackFuncName, Charset charset := Charset.utf8) {
 		json := JsonOutStream.writeJsonToStr(jsonObj)
 		text := "${callbackFuncName}(${json});"
-		return fromMimeStr(text, "application/json", charset)
+		return _fromMimeStr(text, "application/json", charset)
 	}
 
 	** Creates a 'Text' with the given content type.
@@ -74,7 +74,7 @@ const final class Text {
 		Text.make(text, contentType)
 	}
 
-	private static new fromMimeStr(Str text, Str mimeType, Charset charset) {
+	private static new _fromMimeStr(Str text, Str mimeType, Charset charset) {
 		Text.make(text, MimeType.fromStr("$mimeType; charset=${charset.name}"))		
 	}
 	

@@ -131,8 +131,7 @@ internal const class ErrPrinterHtmlSections {
 			
 			out.pre("id=\"stackFrames\" class=\"hideBoring\"")
 			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
-			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines.each |fra| {
-				frame := fra.trim
+			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").splitLines.each |frame| {
 				css := frameFilter.filter(frame) ? "dull" : "okay"
 				out.span("class=\"${css}\"")
 				out.writeXml("  ${frame}\n")
@@ -158,9 +157,14 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printFormParameters(WebOutStream out, Err? err) {
-		if (request.form != null) {
+		try // req.form can throw Errs if badly formatted
+			if (request.form != null) {
+				title(out, "Form Parameters")
+				prettyPrintMap(out, request.form, true)
+			}
+		catch (Err eek) {
 			title(out, "Form Parameters")
-			prettyPrintMap(out, request.form, true)
+			w(out, "Error",	eek.msg)
 		}
 	}
 	
