@@ -18,6 +18,7 @@ internal const class FuncProcessor : ResponseProcessor {
 }
 
 // FIXME: Fantom bug - need internet!
+@NoDoc
 class Example {
 	Void main() {
 		// Compilation Err -> Cannot use '?:' operator on non-nullable type 'sys::Obj'

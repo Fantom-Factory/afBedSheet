@@ -1,6 +1,6 @@
 Overview [#overview]
 ********************
-'BedSheet' is a [Fantom]`http://fantom.org/` framework for delivering web applications.
+'BedSheet' is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
 
 Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
 BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
@@ -82,7 +82,7 @@ Wow! That's awesome! But what just happened!?
 Every 'BedSheet' application has an 'AppModule' that configures [IoC]`pod:afIoc` services.
 Here we told the `Routes` service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method
 for all requests that start with '/hello'.
-`Route` converts URI path segments into method arguments, or in our case, to 'Str name' and to an
+`Route` converts URL path segments into method arguments, or in our case, to 'Str name' and to an
 optional 'Int iq'.
 
 Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our
@@ -135,7 +135,7 @@ Note that 'AppModule' is named so out of convention but the class may be called 
 
 Request Routing [#requestRouting]
 *********************************
-The 'Routes' service maps HTTP request URIs to response objects and handler methods. It is where you would typically define
+The 'Routes' service maps HTTP request URLs to response objects and handler methods. It is where you would typically define
 how requests are handled. You configure the 'Routes' service by contributing instances of `Route`. Example:
 
 pre>
@@ -156,18 +156,8 @@ class AppModule {
 <pre
 
 [Route]`Route` objects take a matching 'glob' and a response object. A response object is any object that 'BedSheet' knows how to
-[process]`#responseObjects` or a 'Method' to be called. If a method is given, then request URI path segments are matched to the
+[process]`#responseObjects` or a 'Method' to be called. If a method is given, then request URL path segments are matched to the
 method parameters. See `Route` for more details.
-
-
-
-Draft Routes [#draftRoutes]
-===========================
-If you prefer the [draft]`https://bitbucket.org/afrankvt/draft` style of routing, that's no problem, you can use 'Draft Routes'
-in 'BedSheet'!
-
-Add [BedSheet Draft]`http://repo.status302.com/doc/afBedSheetDraft/#overview` and [draft]`https://bitbucket.org/afrankvt/draft`
-as dependencies in your 'build.fan' and you can contribute 'Draft Route' objects to the 'Routes' service.
 
 Routing lesson over.
 
@@ -177,29 +167,32 @@ Routing lesson over.
 
 Route Handling [#routeHandling]
 *******************************
-*Route Handler* is the name given to a method that is called by a 'Route'. They process logic and generally don't pipe
+*Route Handler* is the name given to a class or method that is processed by a 'Route'. They process logic and generally don't pipe
 anything to the HTTP response stream. Instead they return a *Response Object* for further processing.
-For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` object.
+For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` *response object*.
 
 Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with 'BedSheet':
- - `FileHandler`: Maps request URIs to files on file system.
- - `PodHandler` : Maps request URIs to pod file resources.
+ - `FileHandler`: Maps request URLs to files on file system.
+ - `PodHandler` : Maps request URLs to pod file resources.
 
 
 
 Response Objects [#responseObjects]
 ***********************************
 *Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to
-process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return a
-*Response Object*, which will be handled by another *Response Processor*.
+process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return 
+*Response Objects*, which will be handled by another *Response Processor*.
 
 You can define *Response Processors* and process *Response Objects* yourself; but by default, 'BedSheet' handles the
 following:
  - 'Void' / 'null' / 'false' : Processing should fall through to the next Route match.
  - 'true' : No further processing is required.
+ - 'Err' : An appropriate response object is selected from contributed Err responses. (See [Error Processing]`#errorProcessing`.)
  - [File]`sys::File` : The file is streamed to the client.
- - `HttpStatus` : Sets the HTTP response status and renders a mini html page. (See [HTTP Status Processing]`#httpStatusProcessing`.)
- - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guarenteed to be closed.
+ - `FileAsset` : The file is streamed to the client.
+ - 'Func' : The function is called, using IoC to inject the parameters, and the return value used for further processing.
+ - `HttpStatus` : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing]`#httpStatusProcessing`.)
+ - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guaranteed to be closed.
  - `MethodCall` : The method is called and the return value used for further processing.
  - `Redirect` : Sends a 3xx redirect response to the client.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding 'Content-Type'.
@@ -212,28 +205,26 @@ Templating, or formatting text (HTML or otherwise) is left for other 3rd party l
 That said, there a couple templating libraries *out there* and integrating them into 'BedSheet' is relatively simple.
 For instance, Alien-Factory provides the following libraries:
 
- - [Slim]`pod:afSlim` for rendering HTML,
- - [Pillow]`pod:afPillow` for integrating [efanXtra]`pod:afEfanXtra` components (may be used with [Slim]`pod:afSlim`!),
- - [BedSheet Efan]`http://repo.status302.com/doc/afBedSheetEfan/#overview` for basic
- [efan (Embedded Fantom)]`pod:afEfan` integration, and
- - [BedSheetMoustache]`http://repo.status302.com/doc/afBedSheetMoustache/#overview` for integrating [Mustache]`https://bitbucket.org/xored/mustache/` templates.
+ - [efan]`pod:afEfan` for basic templating,
+ - [Slim]`pod:afSlim` for concise HTML templating, and
+ - [Pillow]`pod:afPillow` for integrating [efanXtra]`pod:afEfanXtra` components (may be used with [Slim]`pod:afSlim`!)
 
-Taking [Slim]`pod:afSlim` as an example, simply inject the service in your *Route Handler*
-and use it to return a `Text` object:
+Taking [Slim]`pod:afSlim` as an example, simply inject the Slim service into your *Route Handler* and use it to return a 'Text' 
+response object:
 
 pre>
 syntax: fantom
 
-using afIoc
-using afBedSheet
-using afSlim
+using afIoc::Inject
+using afBedSheet::Text
+using afSlim::Slim
 
 class IndexPage {
     @Inject Slim? slim
 
     Text render() {
-        xhtml := slim.renderFromFile(`xmas.xhtml.slim`.toFile)
-        return Text.fromXhtml(xhtml)
+        html := slim.renderFromFile(`xmas.html.slim`.toFile)
+        return Text.fromHtml(html)
     }
 }
 <pre
@@ -258,64 +249,89 @@ See the FantomFactory article [Basic HTTP Authentication With BedSheet]`article:
 
 Error Processing [#errorProcessing]
 ***********************************
-When 'BedSheet' catches an Err it scans through a list of contributed [ErrProcessors]`ErrProcessor` to find one that can
-handle the Err. [ErrProcessors]`ErrProcessor` take an Err and return a *Response Object* for further processing
-(for example, `Text`). Or it may return 'true' if the error has been completely handled and no further processing is required.
-
-If no matching 'ErrProcessor' is found then 'BedSheet' displays its default Err500 page - which is extremely verbose, displays
-(a shed load of) debugging information and is highly customisable.
+When 'BedSheet' catches an Err it scans through a list of contributed response objects to find one that can
+handle the Err. If no matching response object is found then the *default err response object* is used. 
+This default response object displays BedSheet's extremely verbose Error 500 page. 
+It displays (a shed load of) debugging information and is highly customisable:
 
 ![BedSheet's Verbose Err500 Page]`http://static.alienfactory.co.uk/fantom-docs/Err500.png`
 
-The default Err page is great for development! But not so great for production - stack traces tend to scare Joe Public.
-So note that in a production environment (see [IocEnv]`pod:afIocEnv`) a simple HTTP status
-page is displayed instead.
+The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public!
+So note that in a production environment (see [IocEnv]`pod:afIocEnv`) a simple HTTP status page is displayed instead.
 
-> **ALIEN-AID:** BedSheet defaults to production mode, so set an environment variable called 'ENV' with the value 'development'
-to ensure you continue to see the BedSheet's verbose Err500 page. See this
-[Fantom-Factory article]`article:dev-test-or-prod-what-is-your-machine` for more details.
+> **ALIEN-AID:** BedSheet defaults to production mode, so to see the verbose error page you must switch to development mode.
+The easiest way to do this is to set an environment variable called 'ENV' with the value 'development'.
+See [IocEnv]`pod:afIocEnv` details.
 
-To add a custom error page, contribute an `ErrProcessor` to `ErrProcessors`:
+To handle a specific Err, contribute a response object to 'ErrResponses':
 
 pre>
-  @Contribute { serviceType=ErrProcessors# }
-  static Void contributeErrProcessors(Configuration conf) {
+@Contribute { serviceType=ErrResponses# }
+static Void contributeErrResponses(Configuration conf) {
 
-    conf[Err#] = conf.autobuild(MyErrHandler#)
-  }
+    conf[ArgErr#] = MethodCall(MyErrHandler#process).immutable
+}
 <pre
+
+Note that in the above example, 'ArgErr' and all subclasses of 'ArgErr' will be processed by 'MyErrHandler.process()'.
+
+You can also replace the default err response object:
+
+pre>
+@Contribute { serviceType=ApplicationDefaults# }
+static Void contributeApplicationDefaults(Configuration config) {
+    config[BedSheetConfigIds.defaultErrResponse] = Text.fromHtml("<html><b>Oops!</b></html>")
+}
+<pre
+
+'Err' objects are stored in the 'HttpRequest.stash' map and may be retrieved by handlers with the following:
+
+  err := (Err) httpRequest.stash["afBedSheet.err"]
 
 
 
 HTTP Status Processing [#httpStatusProcessing]
 **********************************************
-'HttpStatus' responses are handled by `HttpStatusProcessors` which select a contributed processor dependent on the HTTP status
-code. If none are found, a default catch all processor sets the HTTP status code and sends a mini html page to the
-client. This is the default page you see when you receive a '404 Not Found' error.
+'HttpStatus' objects are handled by a `ResponseProcessor` that selects a contributed response object that corresponds to the 
+HTTP status code. If no specific response object is found then the *default http status response object* is used. This default 
+response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a '404 Not Found' error.
 
 ![BedSheet's 404 Status Page]`http://static.alienfactory.co.uk/fantom-docs/Err404.png`
 
-To set your own '404 Not Found' page, contribute a `HttpStatusProcessor` to the `HttpStatusProcessors` service for the status
-code 404:
+To set your own '404 Not Found' page contribute a response object to `HttpStatusResponses` service with the status code '404':
 
 pre>
-  @Contribute { serviceType=HttpStatusProcessors# }
-  static Void contributeHttpStatusProcessors(Configuration conf) {
-
-    conf[404] = conf.autobuild(My404Handler#)
-  }
+@Contribute { serviceType=HttpStatusResponses# }
+static Void contribute404Response(Configuration config) {
+    conf[404] = MethodCall(Error404Page#process).immutable
+}
 <pre
+
+In the above example, all 404 status codes will be processed by 'Error404Page.process()'.
+
+To replace *all* status code responses, replace the default HTTP status response object:
+
+pre>
+@Contribute { serviceType=ApplicationDefaults# }
+static Void contributeApplicationDefaults(Configuration config) {
+    config[BedSheetConfigIds.defaultHttpStatusResponse] = Text.fromHtml("<html>Error</html>")
+}
+<pre
+
+'HttpStatus' objects are stored in the 'HttpRequest.stash' map and may be retrieved by handlers with the following:
+
+  httpStatus := (HttpStatus) httpRequest.stash["afBedSheet.httpStatus"]
 
 
 
 Config Injection [#injectConfig]
 ********************************
 BedSheet uses [IoC Config]`pod:afIocConfig` to give injectable '@Config' values. '@Config' values
-are essesntially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
+are essentially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
 config values to be immutable once the app has started).
 
 BedSheet sets the initial config values by contributing to the 'FactoryDefaults' service. An application may then override
-these values by contibuting to the 'ApplicationDefaults' service.
+these values by contributing to the 'ApplicationDefaults' service.
 
 pre>
 syntax: fantom
@@ -409,8 +425,8 @@ See [proxyPingInterval]`BedSheetConfigIds#proxyPingInterval` for more details.
 
 Gzip [#gzip]
 ************
-By default, BedSheet compresses HTTP responses with gzip where it can.(1) But it doesn't do this willy nilly, oh no! There are
-many hurdles to overcome...
+By default, BedSheet compresses HTTP responses with gzip where it can, for [optimisation]`http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/`.
+But it doesn't do this willy nilly, oh no! There are many hurdles to overcome...
 
 Disable All [#disablePerWebApp]
 -------------------------------
@@ -426,51 +442,47 @@ Gzip can be disabled on a per request / response basis by calling the following:
 
 Gzip'able Mime Types [#mimeTypes]
 ---------------------------------
-Not everything should be gzipped. For example, text files gzip very well and yield high compression rates. JPG images on the
-other hand, because they're already compressed, don't gzip well and can end up bigger than the original! For this reason you
-must contribute to the `GzipCompressible` service to enable gzip for specified [Mime Types]`sys::MimeType`:
+Text files gzip very well and yield high compression rates, but not everything should be gzipped. 
+For example, JPG images are already compressed when gzip'ed often end up larger than the original!
+For this reason only [Mime Types]`sys::MimeType` contributed to the `GzipCompressible` service will be gzipped:
 
     config["text/funky"] = true
 
-(Note: The GzipCompressible contrib type is actually `sys::MimeType` - [IoC]`pod:afIoc`
-kindly coerces the 'Str' to 'MimeType' for us.)
+(Note: The 'GzipCompressible' contrib type is actually `sys::MimeType` - IoC kindly coerces the 'Str' to 'MimeType' for us.)
 
-By default BedSheet will compress plain text, css, html, javascript, xml, json and other text responses.
+By default BedSheet will compress html, css, javascript, json, xml and other text responses.
 
 Gzip only when asked [#askNicely]
 ---------------------------------
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such,
-and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, we only gzip the
-response if the client actually *asked* for it!
+and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, the response is only 
+gzipped if the appropriate HTTP request header was set.
 
 Min content threshold [#minThreshold]
 -------------------------------------
 Gzip is great when compressing large files, but if you've only got a few bytes to squash... the compressed version is
-going to be bigger, which kinda defeats the point of using gzip in the first place! For that reason the response data must
-reach a minimum size / threshold before it gets gzipped.
+going to be bigger, which kinda defeats the point compression!
+For that reason the response data must reach a minimum size / threshold before it gets gzipped.
 
 See 'GzipOutStream' and [gzipThreshold]`BedSheetConfigIds#gzipThreshold` for more details.
 
 Phew! Made it! [#madeIt]
 ------------------------
-If (and only if!) your request passed all the tests above, will it then be lovingly gzipped and sent to the client.
-
- - (1) `http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/`
+If (and only if!) the request passed all the tests above, will it then be lovingly gzipped and sent to the client.
 
 
 
 Buffered Response [#bufferedResponse]
 *************************************
-By default, BedSheet attempts to set the 'Content-Length' HTTP response header.(2) It does this by buffering
-'HttpResponse.out'. When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real HTTP response.
+By default, BedSheet attempts to set the 'Content-Length' [HTTP response header]`http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`.
+It does this by buffering 'HttpResponse.out'. 
+When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real HTTP response.
 
 Response buffering can be disabled on a per HTTP response basis.
 
 A threshold can be set, whereby if the buffer exeeds that value, all content is streamed directly to the client.
 
 See 'BufferedOutStream' and [responseBufferThreshold]`BedSheetConfigIds#responseBufferThreshold` for more details.
-
- - (2) `http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`
 
 
 
@@ -531,6 +543,9 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.0 [#v1.4.0]
 ------------------
+ - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
+ - Chg: Err processing updated; gone are bespoke 'ErrProcessors', contribute generic repsonse objects instead. (Breaking change.) 
+ - Chg: HTTP Status processing updated; gone are bespoke 'HTTPStatusProcessors', contribute generic repsonse objects instead. (Breaking change.)
  - Chg: Converted 'Route' to a mixin so users can contribute their own implementations.
  - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.  
  - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'. 
@@ -632,7 +647,7 @@ v1.3.0 [#v1.3.0]
  - New: Added 'StackFrameFilter' to filter out lines in stack traces.
  - New: Added 'host' to 'BedSheetConfigIds', mainly for use by 3rd party libraries.
  - Chg: Upgraded to [IoC 1.5.2]`pod:afIoc`.
- - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`http://www.fantomfactory.org/pods/afBounce`. (Breaking change)
+ - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`pod:afBounce`. (Breaking change)
  - Chg: Removed '@Config', use '@afIocConfig::Config' instead. (Breaking change)
  - Chg: Renamed 'HttpPipelineFilter' -> 'Middleware' and updated the corresponding services. Hardcoded the default BedSheet filters / middleware to the start of the pipeline. (Breaking change)
  - Chg: Renamed 'HttpRequestLogFilter' -> 'RequestLogMiddleware' and updated the '@Config' values. (Breaking change)

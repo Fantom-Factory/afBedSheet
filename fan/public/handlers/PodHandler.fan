@@ -2,7 +2,7 @@ using afIoc::Inject
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 
-** (Service) - A Request Handler that maps URLs to file resources inside pods. 
+** (Service) - A Route Handler that maps URLs to file resources inside pods. 
 **
 ** To access a pod resource use URLs in the format:
 ** 

@@ -1,9 +1,13 @@
 
-** A wrapper around a 'File' object used to prevent excessive polling of the file system.
+** (Response Object) Use in place of a 'File' object to prevent excessive polling of the file system.
 ** As every call to 'File.exists()' typically takes [at least 8ms-12ms]`http://stackoverflow.com/questions/6321180/how-expensive-is-file-exists-in-java#answer-6321277`, 
 ** this is probably a good thing!
 ** 
-** 'FileAssets' are acquired from 'FileHander' and 'PodHander' - use them to embed client URLs in your web pages.
+** Generally you would acquire 'FileAssets' from the 'FileHander' and 'PodHander' services and use 
+** them to embed client URLs in your web pages.
+** 
+**   fileHandler.fromLocalUrl(`/images/fanny.jpg`).clientUrl
+** 
 const class FileAsset {
 
 	** The file in question
