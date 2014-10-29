@@ -3,7 +3,7 @@ using afIocConfig::Config
 using afIocEnv::IocEnv
 using web::WebUtil
 
-internal const class FileAssetResponseProcessor : ResponseProcessor {
+internal const class FileAssetProcessor : ResponseProcessor {
 	
 	@Inject	private const HttpRequest 		httpRequest
 	@Inject	private const HttpResponse 		httpResponse

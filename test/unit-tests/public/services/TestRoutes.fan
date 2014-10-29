@@ -43,6 +43,6 @@ internal class T_MyModule02 {
 	
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration conf) {
-		conf[MethodCall#]	= conf.autobuild(MethodCallResponseProcessor#)
+		conf[MethodCall#]	= conf.autobuild(MethodCallProcessor#)
 	}
 }

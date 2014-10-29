@@ -1,7 +1,7 @@
 using afIoc::Inject
 using web::WebUtil
 
-internal const class FileResponseProcessor : ResponseProcessor {
+internal const class FileProcessor : ResponseProcessor {
 	
 	@Inject	private const FileHandler 	fileHandler
 	

@@ -6,14 +6,17 @@ const class BedSheetErr : Err {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) {}
 }
 
-** Throw at any point to (re)process / (re)handle the wrapped response object. 
-** Use to change the processing flow. 
+** Throw at any point to process / handle the wrapped BedSheet response object. 
+** Use to change the processing flow. Often used to send a redirect to the client,
+** example:
+** 
+**   throw ReProcessErr(Redirect.movedTemporarily(`/admin/login`))
 const class ReProcessErr : Err {
 	
 	** I'm not proud of this but some response objs just aren't const (e.g. Pillow PageMeta)
 	** And as far as BedSheet is concerned - it *will* be processed in the same thread.
 	** I don't want to chance using LocalRefs, for if it does transcend threads (by other means),
-	** I won't be able to re-claim it!
+	** then I won't be able to re-claim it!
 	private const Unsafe responseObjRef
 
 	** The response object
@@ -27,7 +30,10 @@ const class ReProcessErr : Err {
 	}
 }
 
-** Throw at any point to (re)process / (re)handle the 'HttpStatus'. 
+** Throw at any point to process / handle the wrapped 'HttpStatus' object. Often used to return a 
+** 404 to the client, example:
+** 
+**   throw HttpStatusErr(404, "Page not found")
 const class HttpStatusErr : ReProcessErr {
 	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super(HttpStatus(statusCode, statusMsg), cause) { }
 }

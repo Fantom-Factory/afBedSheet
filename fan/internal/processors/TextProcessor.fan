@@ -1,6 +1,6 @@
 using afIoc::Inject
 
-internal const class TextResponseProcessor : ResponseProcessor {
+internal const class TextProcessor : ResponseProcessor {
 	
 	@Inject
 	private const HttpResponse res

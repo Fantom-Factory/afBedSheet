@@ -16,7 +16,7 @@ const mixin BedSheetPages {
 	abstract Text renderErr(Err err, Bool verbose)
 	
 	** Renders the 'BedSheet' welcome page. 
-	** Usually shown if no [Routes]`Route` have been contributed to the `Routes` service. 
+	** Usually shown in place of a 404 if no [Routes]`Route` have been contributed to the `Routes` service. 
 	abstract Text renderWelcome()
 }
 
