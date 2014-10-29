@@ -2,7 +2,7 @@
 ** (Service) - Contribute your `ResponseProcessor` implementations to this.
 ** 
 ** @uses a Configuration of 'Type:ResponseProcessor'
-@NoDoc	// don't overwhelm the masses!
+@NoDoc	// Don't overwhelm the masses!
 const mixin ResponseProcessors {
 
 	** Recursively processes the response object until 'true' or 'false' is returned

@@ -3,7 +3,7 @@ using afIocEnv
 using afConcurrent
 using concurrent
 
-@NoDoc	// advanced use only!
+@NoDoc	// Advanced use only
 const mixin FileAssetCache {
 	
 	abstract FileAsset? getOrAddOrUpdate(File key, |File->Obj?| valFunc)

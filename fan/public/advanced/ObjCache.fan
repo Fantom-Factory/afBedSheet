@@ -1,7 +1,7 @@
 using afIoc
 using afConcurrent
 
-@NoDoc	// advanced use - I may publicise it later as it is quite useful
+@NoDoc	// Advanced use only
 const class ObjCache {
 	private const Type[] 		serviceTypeCache
 	private const AtomicMap		constTypeCache		:= AtomicMap()

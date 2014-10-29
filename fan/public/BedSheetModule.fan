@@ -17,19 +17,14 @@ const class BedSheetModule {
 	
 	static Void defineServices(ServiceDefinitions defs) {
 
-		// Utils
-		defs.add(ObjCache#)
-		defs.add(PipelineBuilder#)
-		defs.add(StackFrameFilter#)
-
-		// Request handlers
+		// Route handlers
 		defs.add(FileHandler#)
 		defs.add(PodHandler#)
 
 		// Collections (services with contributions)
 		defs.add(ResponseProcessors#)
 		defs.add(ErrResponses#)
-		defs.add(HttpStatusProcessors#) 
+		defs.add(HttpStatusResponses#) 
 		defs.add(Routes#)
 		defs.add(ValueEncoders#)
 		
@@ -47,6 +42,9 @@ const class BedSheetModule {
 		defs.add(ErrPrinterHtml#)
 		defs.add(ErrPrinterStr#)
 		defs.add(FileAssetCache#)
+		defs.add(PipelineBuilder#)
+		defs.add(StackFrameFilter#)
+		defs.add(ObjCache#)
 	}
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
@@ -111,16 +109,16 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
-	static Void contributeResponseProcessors(Configuration config, HttpStatusProcessors httpStatusProcessor) {
+	static Void contributeResponseProcessors(Configuration config) {
 		config[Err#]		= config.autobuild(ErrProcessor#)
 		config[File#]		= config.autobuild(FileProcessor#)
 		config[FileAsset#]	= config.autobuild(FileAssetProcessor#)
 		config[Func#]		= config.autobuild(FuncProcessor#)
+		config[HttpStatus#]	= config.autobuild(HttpStatusProcessor#)
 		config[InStream#]	= config.autobuild(InStreamProcessor#)
 		config[MethodCall#]	= config.autobuild(MethodCallProcessor#)
 		config[Redirect#]	= config.autobuild(RedirectProcessor#)
 		config[Text#]		= config.autobuild(TextProcessor#)
-		config[HttpStatus#]	= httpStatusProcessor
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
@@ -255,24 +253,24 @@ const class BedSheetModule {
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
 		bedSheetPort	 := meta["afBedSheet.port"]	?: 0
 		
-		config[BedSheetConfigIds.proxyPingInterval]				= 1sec
-		config[BedSheetConfigIds.gzipDisabled]					= false
-		config[BedSheetConfigIds.gzipThreshold]					= 376
-		config[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
-		config[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
-		config[BedSheetConfigIds.srcCodeErrPadding]				= 5
-		config[BedSheetConfigIds.disableWelcomePage]			= false
-		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
+		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
+		config[BedSheetConfigIds.gzipDisabled]				= false
+		config[BedSheetConfigIds.gzipThreshold]				= 376
+		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024	// todo: why not kB?
+		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
+		config[BedSheetConfigIds.srcCodeErrPadding]			= 5
+		config[BedSheetConfigIds.disableWelcomePage]		= false
+		config[BedSheetConfigIds.host]						= `http://localhost:${bedSheetPort}`
 		
-		config[BedSheetConfigIds.defaultErrResponse]			= MethodCall(ErrHandler#process).immutable
-		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= config.registry.createProxy(DefaultHttpStatusProcessor#)
+		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).immutable
+		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).immutable
 
-		config[BedSheetConfigIds.podHandlerBaseUrl]				= `/pods/`
-		config[BedSheetConfigIds.fileAssetCacheControl]			= null	// don't assume we know how long to cache for
+		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
+		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		
-		config[BedSheetConfigIds.requestLogDir]					= null
-		config[BedSheetConfigIds.requestLogFilenamePattern]		= "bedSheet-{YYYY-MM}.log"
-		config[BedSheetConfigIds.requestLogFields]				= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+		config[BedSheetConfigIds.requestLogDir]				= null
+		config[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
+		config[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 	
 	@Contribute { serviceType=StackFrameFilter# }

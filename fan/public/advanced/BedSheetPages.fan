@@ -3,6 +3,7 @@ using web::WebOutStream
 using web::WebRes
 
 ** (Service) - Renders the standard 'BedSheet' web pages.
+@NoDoc	// Advanced use only
 const mixin BedSheetPages {
 
 	** Renders the 'BedSheet' status page, such as the 404 page.
