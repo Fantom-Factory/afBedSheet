@@ -20,14 +20,19 @@ class MethodCall {
 		this.args	= args
 	}
 	
-	** Returns an immutable func that represents this method call.
+	** Returns an immutable func that represents this method call. May be used as response object itself.
 	** 'instance' may be null id 
 	** 
 	** TODO: Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
-	Func immutable(Obj? instance) {
-		method.isStatic
-			? method.func.bind(args).toImmutable
-			: method.func.bind(args.dup.insert(0, instance)).toImmutable
+	virtual Func immutable() {
+		iMeth := this.method
+		iArgs := this.args.toImmutable
+		return |ObjCache objCache -> Obj?| {
+			if (iMeth.isStatic)
+				return iMeth.callList(iArgs)
+			handler := objCache[iMeth.parent]
+			return iMeth.callOn(handler, iArgs)
+		}.toImmutable
 	}
 	
 	@NoDoc

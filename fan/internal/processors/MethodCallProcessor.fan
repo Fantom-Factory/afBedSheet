@@ -1,11 +1,11 @@
 using afIoc
 using afConcurrent
 
-** Public in case someone want to switch on method calling via IoC.
+** Public in case someone wants to switch on method calling via IoC.
 ** pre>
 ** @Contribute { serviceType=ResponseProcessors# }
 ** static Void contributeResponseProcessors(Configuration config) {
-**     processor = config.autobuild(MethodCallProcessor#, null, [MethodCallProcessor#methodCallViaIoc:true])
+**     processor = config.autobuild(MethodCallProcessor#, null, [MethodCallProcessor#callWithIoc:true])
 **     config.overrideValue(MethodCall#, processor)
 ** }
 ** <pre
@@ -14,7 +14,7 @@ const class MethodCallProcessor : ResponseProcessor {
 	@Inject private const ObjCache		objCache
 	@Inject	private const Registry 		registry
 	@Inject	private const ValueEncoders valueEncoders	
- 					const Bool			methodCallViaIoc	:= false
+ 					const Bool			callWithIoc	:= false
 
 	new make(|This|in) { in(this)}
 
@@ -25,7 +25,7 @@ const class MethodCallProcessor : ResponseProcessor {
 		args 	:= convertArgs(methodCall.method, methodCall.args)
 		result	:= null
 		
-		if (methodCallViaIoc)
+		if (callWithIoc)
 			// use afIoc to call the method, injecting in any extra params
 			// This may seem pointless for routes (which need to match all params on the uri) but it *may* prove useful for
 			// other uses of MethodCalls. The Jury's out; I may remove this feature if it proves too bloated and under used.
@@ -50,6 +50,8 @@ const class MethodCallProcessor : ResponseProcessor {
 				return arg is Str ? valueEncoders.toValue(paramType, arg) : arg
 			}
 		// if the args can't be converted then clearly the URL doesn't exist!
+		// TODO: need to find a way of limiting this behaviour to Route calls
+		// maybe extend MethodCall and inject into it, and have MethodCall call the method
 		catch (ValueEncodingErr valEncErr) {
 			throw HttpStatusErr(404, valEncErr.msg, valEncErr)
 		}
