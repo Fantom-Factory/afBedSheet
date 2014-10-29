@@ -264,8 +264,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.disableWelcomePage]			= false
 		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
 		
-		errHandler := (ErrHandler) config.createProxy(ErrHandler#)
-		config[BedSheetConfigIds.defaultErrResponse]			= MethodCall(ErrHandler#process).immutable(errHandler)
+		config[BedSheetConfigIds.defaultErrResponse]			= MethodCall(ErrHandler#process).immutable
 		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= config.registry.createProxy(DefaultHttpStatusProcessor#)
 
 		config[BedSheetConfigIds.podHandlerBaseUrl]				= `/pods/`
