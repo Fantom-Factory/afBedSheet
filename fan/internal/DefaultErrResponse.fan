@@ -1,14 +1,7 @@
 using afIoc
 using afIocConfig
 
-** Mixin so we can create a proxy
-@NoDoc
-const mixin ErrHandler {
-	abstract Obj process()
-}
-
-@NoDoc
-const class ErrHandlerImpl : ErrHandler {
+internal const class DefaultErrResponse {
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool				inProd
 	@Inject	private const Log				log
@@ -19,7 +12,7 @@ const class ErrHandlerImpl : ErrHandler {
 
 	new make(|This|in) { in(this) }
 
-	override Obj process() {
+	Obj process() {
 		err := request.stash["afBedSheet.err"]
 		
 		log.err(errPrinterStr.errToStr(err))

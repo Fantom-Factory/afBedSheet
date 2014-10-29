@@ -34,12 +34,12 @@ const mixin BedSheetConfigIds {
 	** Defaults to '32 * 1024' (32Kb).
 	static const Str responseBufferThreshold		:= "afBedSheet.responseBuffer.threshold"
 
-	** The default `HttpStatusProcessor` to use when no specific processor has been defined for a given http status 
-	** code.
+	** The default response to process when no specific response has been defined for a given HTTP 
+	** status code.
 	** 
-	** Defaults to 'conf.autobuild(DefaultHttpStatusProcessor#)' which sets the http status code in the response and 
-	** renders the standard BedSheet status page.
-	static const Str defaultHttpStatusProcessor		:= "afBedSheet.httpStatusProcessors.default"
+	** Defaults to a method call to an internal handler which sets the HTTP status code and renders 
+	** the standard BedSheet status page.
+	static const Str defaultHttpStatusResponse		:= "afBedSheet.defaultHttpStatusResponse"
 
 	** The default response to process when no specific response has been defined for a given Err.
 	** 

@@ -1,7 +1,7 @@
 using afIoc::Inject
 using web::WebOutStream
 
-@NoDoc
+@NoDoc	// Advanced use only
 const class NotFoundPrinterHtml {
 	@Inject	private const Log log
 

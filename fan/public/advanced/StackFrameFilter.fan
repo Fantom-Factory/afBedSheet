@@ -10,7 +10,7 @@
 **   static Void contributeStackFrameFilter(Configuration config) {
 **       config.add("^afIoc::.*\$")
 **   }
-@NoDoc
+@NoDoc	// Advanced use only
 const mixin StackFrameFilter {
 	
 	** Returns 'true' if the stack frame should be filtered.

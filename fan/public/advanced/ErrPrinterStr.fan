@@ -6,7 +6,7 @@ using web::WebOutStream
 using afPlastic::SrcCodeErr
 
 ** (Service) - public, 'cos it's useful for emails. 
-@NoDoc
+@NoDoc	// Advanced use only
 const class ErrPrinterStr {
 	private const static Log log := Utils.getLog(ErrPrinterStr#)
 	

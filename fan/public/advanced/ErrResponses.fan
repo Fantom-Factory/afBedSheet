@@ -1,10 +1,16 @@
 using afIoc::Inject
 using afIocConfig::Config
 
-** (Service) - Contribute your 'ErrProcessor' implementations to this. 
+** (Service) - Contribute your Err responses to this. 
 ** 
 ** @uses a configuration of 'Type:Obj' where 'Type' is a subclass of 'Err' or a mixin.
-internal const class ErrResponses {
+@NoDoc	// Don't overwhelm the masses!
+const mixin ErrResponses {
+	
+	abstract Obj lookup(Err err)
+}
+
+internal const class ErrResponsesImpl : ErrResponses {
 	private const CachingTypeLookup errResponseLookup
 
 	@Inject @Config
@@ -19,7 +25,7 @@ internal const class ErrResponses {
 		this.errResponseLookup = CachingTypeLookup(errResponses)
 	}
 	
-	Obj lookupResponse(Err err) {
+	override Obj lookup(Err err) {
 		errResponseLookup.findParent(err.typeof, false) ?: defaultErrResponse
 	}
 }

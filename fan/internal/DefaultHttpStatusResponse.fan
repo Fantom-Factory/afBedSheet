@@ -2,20 +2,18 @@ using afIoc::Inject
 using afIocConfig::Config
 using web::WebRes
 
-** (Service) - Sends the status code and msg from `HttpStatusErr` to the client. 
-@NoDoc
-const mixin DefaultHttpStatusProcessor : HttpStatusProcessor { }
-
-internal const class DefaultHttpStatusProcessorImpl : DefaultHttpStatusProcessor {
-
+internal const class DefaultHttpStatusResponse {
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool				inProd
+	@Inject	private const HttpRequest 		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const BedSheetPages		bedSheetPages
 	
 	internal new make(|This|in) { in(this) }
 
-	override Obj process(HttpStatus httpStatus) {
+	Obj process() {
+		httpStatus := (HttpStatus) request.stash["afBedSheet.httpStatus"]
+
 		if (!response.isCommitted)	// a sanity check
 			response.statusCode = httpStatus.code
 
