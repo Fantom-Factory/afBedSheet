@@ -5,13 +5,12 @@ using afConcurrent
 ** pre>
 ** @Contribute { serviceType=ResponseProcessors# }
 ** static Void contributeResponseProcessors(Configuration config) {
-**     processor = config.autobuild(MethodCallResponseProcessor, null, [MethodCallResponseProcessor#methodCallViaIoc:true])
+**     processor = config.autobuild(MethodCallProcessor, null, [MethodCallProcessor#methodCallViaIoc:true])
 **     config.overrideValue(MethodCall#, processor)
 ** }
 ** <pre
 @NoDoc
-const class MethodCallResponseProcessor : ResponseProcessor {
-	private const static Log 	log 				:= Utils.getLog(MethodCallResponseProcessor#)
+const class MethodCallProcessor : ResponseProcessor {
 	private const Type[] 		serviceTypeCache
 	private const AtomicMap		constTypeCache		:= AtomicMap()
 	private const AtomicList	autobuildTypeCache	:= AtomicList()

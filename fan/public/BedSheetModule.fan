@@ -111,12 +111,12 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration config, HttpStatusProcessors httpStatusProcessor) {
-		config[Text#]		= config.autobuild(TextResponseProcessor#)
-		config[File#]		= config.autobuild(FileResponseProcessor#)
-		config[FileAsset#]	= config.autobuild(FileAssetResponseProcessor#)
-		config[Redirect#]	= config.autobuild(RedirectResponseProcessor#)
-		config[InStream#]	= config.autobuild(InStreamResponseProcessor#)
-		config[MethodCall#]	= config.autobuild(MethodCallResponseProcessor#)
+		config[Text#]		= config.autobuild(TextProcessor#)
+		config[File#]		= config.autobuild(FileProcessor#)
+		config[FileAsset#]	= config.autobuild(FileAssetProcessor#)
+		config[Redirect#]	= config.autobuild(RedirectProcessor#)
+		config[InStream#]	= config.autobuild(InStreamProcessor#)
+		config[MethodCall#]	= config.autobuild(MethodCallProcessor#)
 		config[HttpStatus#]	= httpStatusProcessor
 	}
 

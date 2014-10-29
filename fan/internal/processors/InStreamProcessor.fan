@@ -2,7 +2,7 @@ using afIoc::Inject
 using web::WebUtil
 
 ** Pipes the 'InStream' to res.out, closing the 'InStream'.
-internal const class InStreamResponseProcessor : ResponseProcessor {
+internal const class InStreamProcessor : ResponseProcessor {
 	
 	@Inject	private const HttpResponse 	res
 	

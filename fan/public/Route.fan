@@ -1,5 +1,5 @@
 
-** Matches HTTP Requests to a response objects.
+** Matches HTTP Requests to response objects.
 ** 
 ** 'Route' is a mixin so you may provide your own implementations. The rest of this documentation 
 ** relates to the default implementation which uses regular expressions to match against the 
