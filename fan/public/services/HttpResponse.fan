@@ -112,7 +112,7 @@ internal const class HttpResponseImpl : HttpResponse {
 		webRes.isCommitted
 	}
 	override OutStream out() {
-		registry.serviceById("HttpOutStream")
+		registry.serviceById("afBedSheet::HttpOutStream")
 	}
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "Attachment; filename=${fileName}"

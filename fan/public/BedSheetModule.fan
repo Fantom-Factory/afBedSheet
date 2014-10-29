@@ -16,8 +16,9 @@ const class BedSheetModule {
 	// dependencies on BedSheet startup
 	
 	static Void defineServices(ServiceDefinitions defs) {
-		
+
 		// Utils
+		defs.add(ObjCache#)
 		defs.add(PipelineBuilder#)
 		defs.add(StackFrameFilter#)
 
@@ -27,7 +28,7 @@ const class BedSheetModule {
 
 		// Collections (services with contributions)
 		defs.add(ResponseProcessors#)
-		defs.add(ErrProcessors#)
+		defs.add(ErrResponses#)
 		defs.add(HttpStatusProcessors#) 
 		defs.add(Routes#)
 		defs.add(ValueEncoders#)
@@ -72,7 +73,7 @@ const class BedSheetModule {
 	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))
 	}
-
+ 
 	@Build { serviceId="afBedSheet::HttpOutStream"; scope=ServiceScope.perThread }
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
 		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
@@ -102,7 +103,7 @@ const class BedSheetModule {
 		config["afBedSheet.routes"] = config.autobuild(RoutesMiddleware#)
 	}
 
-	@Contribute { serviceId="HttpOutStream" }
+	@Contribute { serviceId="afBedSheet::HttpOutStream" }
 	static Void contributeHttpOutStream(Configuration config) {
 		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
 		config["afBedSheet.buffBuilder"] = config.autobuild(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
@@ -111,12 +112,14 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration config, HttpStatusProcessors httpStatusProcessor) {
-		config[Text#]		= config.autobuild(TextProcessor#)
+		config[Err#]		= config.autobuild(ErrProcessor#)
 		config[File#]		= config.autobuild(FileProcessor#)
 		config[FileAsset#]	= config.autobuild(FileAssetProcessor#)
-		config[Redirect#]	= config.autobuild(RedirectProcessor#)
+		config[Func#]		= config.autobuild(FuncProcessor#)
 		config[InStream#]	= config.autobuild(InStreamProcessor#)
 		config[MethodCall#]	= config.autobuild(MethodCallProcessor#)
+		config[Redirect#]	= config.autobuild(RedirectProcessor#)
+		config[Text#]		= config.autobuild(TextProcessor#)
 		config[HttpStatus#]	= httpStatusProcessor
 	}
 
@@ -256,12 +259,14 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.gzipDisabled]					= false
 		config[BedSheetConfigIds.gzipThreshold]					= 376
 		config[BedSheetConfigIds.responseBufferThreshold]		= 32 * 1024	// todo: why not kB?
-		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= config.registry.createProxy(DefaultHttpStatusProcessor#)
-		config[BedSheetConfigIds.defaultErrProcessor]			= config.registry.createProxy(DefaultErrProcessor#)
 		config[BedSheetConfigIds.noOfStackFrames]				= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.srcCodeErrPadding]				= 5
 		config[BedSheetConfigIds.disableWelcomePage]			= false
 		config[BedSheetConfigIds.host]							= `http://localhost:${bedSheetPort}`
+		
+		errHandler := (ErrHandler) config.createProxy(ErrHandler#)
+		config[BedSheetConfigIds.defaultErrResponse]			= MethodCall(ErrHandler#process).immutable(errHandler)
+		config[BedSheetConfigIds.defaultHttpStatusProcessor]	= config.registry.createProxy(DefaultHttpStatusProcessor#)
 
 		config[BedSheetConfigIds.podHandlerBaseUrl]				= `/pods/`
 		config[BedSheetConfigIds.fileAssetCacheControl]			= null	// don't assume we know how long to cache for

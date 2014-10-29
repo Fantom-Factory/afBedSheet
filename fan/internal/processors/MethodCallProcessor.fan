@@ -5,55 +5,23 @@ using afConcurrent
 ** pre>
 ** @Contribute { serviceType=ResponseProcessors# }
 ** static Void contributeResponseProcessors(Configuration config) {
-**     processor = config.autobuild(MethodCallProcessor, null, [MethodCallProcessor#methodCallViaIoc:true])
+**     processor = config.autobuild(MethodCallProcessor#, null, [MethodCallProcessor#methodCallViaIoc:true])
 **     config.overrideValue(MethodCall#, processor)
 ** }
 ** <pre
 @NoDoc
 const class MethodCallProcessor : ResponseProcessor {
-	private const Type[] 		serviceTypeCache
-	private const AtomicMap		constTypeCache		:= AtomicMap()
-	private const AtomicList	autobuildTypeCache	:= AtomicList()
-			const Bool			methodCallViaIoc	:= false
-	
+	@Inject private const ObjCache		objCache
 	@Inject	private const Registry 		registry
 	@Inject	private const ValueEncoders valueEncoders	
+ 					const Bool			methodCallViaIoc	:= false
 
-	
-	new make(|This|in) {
-		in(this) 
-		
-		// we can cache the stats 'cos we only care about the service types
-		this.serviceTypeCache = registry.serviceDefinitions.vals.map { it.serviceType }
-	}
+	new make(|This|in) { in(this)}
 
 	override Obj process(Obj response) {
 		methodCall := (MethodCall) response
 		
-		handler := null
-		if (!methodCall.method.isStatic) {
-			handlerType := methodCall.method.parent
-			if (serviceTypeCache.contains(handlerType))
-				handler = registry.dependencyByType(handlerType)
-	
-			if (constTypeCache.containsKey(handlerType))
-				handler = constTypeCache[handlerType]
-			
-			if (autobuildTypeCache.contains(handlerType))
-				handler = registry.autobuild(handlerType)
-			
-			if (handler == null) {
-				if (handlerType.isConst) {
-					handler = registry.autobuild(handlerType)
-					constTypeCache.set(handlerType, handler)
-					
-				} else {
-					autobuildTypeCache.add(handlerType)
-					handler = registry.autobuild(handlerType)
-				}
-			}
-		}
-
+		handler := methodCall.method.isStatic ? null : objCache[methodCall.method.parent]
 		args 	:= convertArgs(methodCall.method, methodCall.args)
 		result	:= null
 		

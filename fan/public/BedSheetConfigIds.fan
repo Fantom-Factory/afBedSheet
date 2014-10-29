@@ -41,11 +41,11 @@ const mixin BedSheetConfigIds {
 	** renders the standard BedSheet status page.
 	static const Str defaultHttpStatusProcessor		:= "afBedSheet.httpStatusProcessors.default"
 
-	** The default `ErrProcessor` to use when no specific processor has been defined for a given Err.
+	** The default response to process when no specific response has been defined for a given Err.
 	** 
-	** Defaults to 'conf.autobuild(DefaultErrProcessor#)' which sets the http status code in the response to 500 and 
-	** renders the standard BedSheet verbose error page.
-	static const Str defaultErrProcessor			:= "afBedSheet.errProcessors.default"
+	** Defaults to a method call to an internal handler which sets the HTTP status code and renders 
+	** the standard verbose BedSheet error page.
+	static const Str defaultErrResponse				:= "afBedSheet.defaultErrResponse"
 	
 	** The number of stack frames to print in logs and error pages.
 	** 
