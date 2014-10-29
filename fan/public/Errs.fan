@@ -6,7 +6,7 @@ const class BedSheetErr : Err {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) {}
 }
 
-** Throw at any point to process / handle the wrapped BedSheet response object. 
+** Throw to process / handle the wrapped BedSheet response object. 
 ** Use to change the processing flow. Often used to send a redirect to the client,
 ** example:
 ** 
@@ -30,7 +30,7 @@ const class ReProcessErr : Err {
 	}
 }
 
-** Throw at any point to process / handle the wrapped 'HttpStatus' object. Often used to return a 
+** Throw to process / handle the wrapped 'HttpStatus' object. Often used to return a 
 ** 404 to the client, example:
 ** 
 **   throw HttpStatusErr(404, "Page not found")

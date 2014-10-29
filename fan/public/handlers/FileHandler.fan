@@ -1,7 +1,7 @@
 using web::WebReq
 using afIoc
 
-** (Service) - Request Handler that maps URLs to files on the file system.
+** (Service) - A Route Handler that maps URLs to files on the file system.
 ** 
 ** Example, to map all URLs prefixed with '/pub/' to files under the '<app>/etc/web/' directory, 
 ** add the following to your 'AppModule':
@@ -35,7 +35,7 @@ using afIoc
 ** =====================
 ** An understated advantage of using 'FileHandler' to generate URLs for your assets is that it fails fast.
 ** 
-** Should an asset not exist on the file system (due to a bodged rename, a case sensitivity issue, or other) then 'FileHandler' will throw an Err on the server when the client URI is constructed.
+** Should an asset not exist on the file system (due to a bodged rename, a case sensitivity issue, or other) then 'FileHandler' will throw an Err on the server when the client URL is constructed.
 ** This allows your web tests to quickly pick up these tricky errors.
 ** 
 ** The lesser appealing alternative is for the incorrect URL to be served to the browser which on following, will subsequently receive a '404 - Not Found'.

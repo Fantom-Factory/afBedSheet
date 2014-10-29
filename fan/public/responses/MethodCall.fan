@@ -1,5 +1,5 @@
 
-** Return from request handler methods to explicitly invoke Fantom methods. 
+** (Response Object) Use to explicitly invoke Fantom methods. 
 ** 
 ** Note that:
 **  - if the method belongs to an 'IoC' service, the class instance is obtained from afIoc. 

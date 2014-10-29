@@ -260,14 +260,13 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		config[BedSheetConfigIds.disableWelcomePage]		= false
-		config[BedSheetConfigIds.host]						= `http://localhost:${bedSheetPort}`
+		config[BedSheetConfigIds.host]						= `http://localhost:${bedSheetPort}`		
+		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
+		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		
 		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).immutable
 		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).immutable
 
-		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
-		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
-		
 		config[BedSheetConfigIds.requestLogDir]				= null
 		config[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
 		config[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"

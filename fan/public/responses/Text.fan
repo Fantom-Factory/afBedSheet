@@ -1,6 +1,6 @@
 using util::JsonOutStream
 
-** Return from request handler methods to send a text response to the client. 
+** (Response Object) Use to send a text response to the client. 
 ** 
 ** This is purposely a concrete final class so there is no ambiguity as to what it is. For example, 
 ** if a handler returned an Obj that was both a 'Text' and a 'Redirect' what is BedSheet 
@@ -10,13 +10,13 @@ using util::JsonOutStream
 ** the result of that.
 ** 
 ** pre>
-** Obj myHandler(MyEntity entity) {
+** Text myHandler(MyEntity entity) {
 **   ...
 **   return entity.toJson
 ** }
 ** <pre
 ** 
-** Note: prior to Fantom 1.0.66 the charset will always default to UTF-8 regardless of what Text is
+** Note: prior to Fantom 1.0.66 the charset would always default to UTF-8 regardless of what Text is
 ** constructed with. See `http://fantom.org/sidewalk/topic/2166#c13992`.
 const final class Text {
 	const Str 		text
