@@ -2,7 +2,11 @@
 ** Implement to define a 'ResponseProcessor'. 
 ** 
 ** 'ResponseProcessors' are responsible for processing the return values from request handlers. Often this involves 
-** sending content to the client.   
+** sending content to the client. 
+** 
+** Example 'ResponseProcessors' that are provided by BedSheet are:
+**  - 'RedirectProcessor' - sets the 'Location' HTTP response header and a corresponding HTTP status code. 
+**  - 'TextProcessor' - sets the 'Content-Type' HTTP response header and sends the text to the client.
 ** 
 ** IOC Configuration
 ** =================

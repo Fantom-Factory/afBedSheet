@@ -73,7 +73,7 @@ const mixin HttpRequest {
 	
 	** 'Stash' allows you to store temporary data on the request, to easily pass it between services and objects.
 	** 
-	** It is good for a quick hack, but if you find yourself relying on it, considering making a thread scoped service instead. 
+	** It is good for a quick win, but if you find yourself consistently relying on it, consider making a thread scoped service instead. 
   	abstract Str:Obj? stash()
 }
 

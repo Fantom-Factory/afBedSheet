@@ -20,6 +20,16 @@ class MethodCall {
 		this.args	= args
 	}
 	
+	** Returns an immutable func that represents this method call.
+	** 'instance' may be null id 
+	** 
+	** TODO: Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
+	Func immutable(Obj? instance) {
+		method.isStatic
+			? method.func.bind(args).toImmutable
+			: method.func.bind(args.dup.insert(0, instance)).toImmutable
+	}
+	
 	@NoDoc
 	override Str toStr() {
 		method.signature

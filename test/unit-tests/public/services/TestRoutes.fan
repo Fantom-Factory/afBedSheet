@@ -30,6 +30,7 @@ internal class T_MyModule02 {
 		defs.add(Routes#)
 		defs.add(ResponseProcessors#)
 		defs.add(ValueEncoders#)
+		defs.add(ObjCache#)
 	}	
 
 	@Contribute { serviceType=Routes# }

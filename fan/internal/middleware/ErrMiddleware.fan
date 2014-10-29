@@ -11,7 +11,6 @@ internal const class ErrMiddleware : Middleware {
 	@Inject private const Bool					inProd
 	
 	@Inject	private const ResponseProcessors	responseProcessors
-	@Inject	private const ErrProcessors			errProcessors
 	@Inject	private const HttpResponse			httpResponse
 	@Inject	private const BedSheetPages			bedSheetPages
 
@@ -41,7 +40,7 @@ internal const class ErrMiddleware : Middleware {
 			} catch (Err otherErr) {
 				firstErr = otherErr
 				setStackTraceHeader(otherErr)
-				response = errProcessors.processErr(otherErr)									
+				response = otherErr									
 			}
 
 			while (!response.typeof.fits(Bool#))
