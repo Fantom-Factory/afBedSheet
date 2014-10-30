@@ -1,8 +1,10 @@
 using web::WebRes
 
 ** (Response Object) Use to send a generic HTTP Status to the client.
+** 
+**   HttpStatus(404, "Page Not Found")
 const class HttpStatus {
-// FIXME: give 404 examople
+
 	** The HTTP status code.
 	** 
 	** @see `web::WebRes.statusMsg`

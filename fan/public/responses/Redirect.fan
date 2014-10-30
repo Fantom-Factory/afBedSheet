@@ -2,6 +2,8 @@
 ** (Response Object) Use to send redirect 3xx status codes to the client. Handles the 
 ** differences in HTTP 1.0 and HTTP 1.1. 
 ** 
+**   Redirect.movedTemporarily(`/newUrl`)
+** 
 ** @see
 **  - `http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection`
 **  - `http://www.iana.org/assignments/http-status-codes/http-status-codes.xml`

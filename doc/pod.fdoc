@@ -276,15 +276,14 @@ To handle a specific Err, contribute a response object to 'ErrResponses':
 
 pre>
 @Contribute { serviceType=ErrResponses# }
-static Void contributeErrResponses(Configuration conf) {
-
-    conf[ArgErr#] = MethodCall(MyErrHandler#process).toImmutableFunc
+static Void contributeErrResponses(Configuration config) {
+    config[ArgErr#] = MethodCall(MyErrHandler#process).toImmutableFunc
 }
 <pre
 
 Note that in the above example, 'ArgErr' and all subclasses of 'ArgErr' will be processed by 'MyErrHandler.process()'.
-
-You can also replace the default err response object:
+A contribute for just 'Err' will act as a capture all and be used should a more precise match not be found.  
+You could also replace the default err response object:
 
 pre>
 @Contribute { serviceType=ApplicationDefaults# }
@@ -553,6 +552,7 @@ Release Notes [#releaseNotes]
 v1.4.0 [#v1.4.0]
 ------------------
  - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
+ - New: Added 'HttpRequest.parseMultiPartForm()'.
  - Chg: Err processing updated; gone are bespoke 'ErrProcessors', contribute generic repsonse objects instead. (Breaking change.) 
  - Chg: HTTP Status processing updated; gone are bespoke 'HTTPStatusProcessors', contribute generic repsonse objects instead. (Breaking change.)
  - Chg: Replaced the 'HttpFlash' class with 'HttpSession.flash()'. (Breaking change.)

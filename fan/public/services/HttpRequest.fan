@@ -61,9 +61,9 @@ const mixin HttpRequest {
 	** @see `web::WebReq.locales`
 	abstract Locale[] locales()
 	
-	** Get the stream to read request body.  See `web::WebUtil.makeContentInStream` to check under which 
-	** conditions request content is available. If request content is not available, then throw an 
-	** exception.
+	** Get the stream to read request body.  See `web::WebUtil.makeContentInStream` to check under 
+	** which conditions request content is available. If request content is not available, then 
+	** throw an exception.
 	**
 	** If the client specified the "Expect: 100-continue" header, then the first access of the 
 	** request input stream will automatically send the client a '100 Continue' response.
@@ -71,12 +71,25 @@ const mixin HttpRequest {
 	** @see `web::WebReq.in`
 	abstract InStream in()
 	
-	** 'Stash' allows you to store temporary data on the request, to easily pass it between services and objects.
+	** 'Stash' allows you to store temporary data on the request, to easily pass it between 
+	** services and objects.
 	** 
-	** It is good for a quick win, but if you find yourself consistently relying on it, consider making a thread scoped service instead. 
+	** It is good for a quick win, but if you find yourself consistently relying on it, consider 
+	** making a thread scoped service instead. 
   	abstract Str:Obj? stash()
-}
+	
+	** This method will:
+	**   1. check that the content-type is form-data
+	**   2. get the boundary string
+	**   3. invoke the callback for each part (see `WebUtil.parseMultiPart`)
+	**
+	** For each part in the stream this calls the given callback function with the part's form 
+	** name, headers, and an input stream used to read the part's body.
+	** 
+	** @see `web::WebReq.parseMultiPartForm`
+	abstract Void parseMultiPartForm(|Str formName, InStream in, Str:Str headers| callback)
 
+}
 ** Wraps a given `HttpRequest`, delegating all its methods. 
 ** You may find it handy to use when contributing to the 'HttpRequest' delegate chain.
 @NoDoc
@@ -85,15 +98,16 @@ const class HttpRequestWrapper : HttpRequest {
 	new 	 make(HttpRequest req) 			{ this.req = req 		} 
 	override Bool isXmlHttpRequest()		{ req.isXmlHttpRequest	}
 	override Version httpVersion() 			{ req.httpVersion		}
-	override Str httpMethod()				{ req.httpMethod		}	
+	override Str httpMethod()				{ req.httpMethod		}
 	override IpAddr remoteAddr() 			{ req.remoteAddr		}
 	override Int remotePort() 				{ req.remotePort		}
 	override Uri url() 						{ req.url				}
-	override HttpRequestHeaders headers() 	{ req.headers			}
+	override HttpRequestHeaders headers()	{ req.headers			}
 	override [Str:Str]? form() 				{ req.form				}
 	override Locale[] locales() 			{ req.locales			}
 	override InStream in() 					{ req.in				}	
 	override Str:Obj? stash()				{ req.stash				}
+	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb)	{ req.parseMultiPartForm(cb) }
 }
 
 internal const class HttpRequestImpl : HttpRequest {	
@@ -135,7 +149,10 @@ internal const class HttpRequestImpl : HttpRequest {
 	}
 	override Str:Obj? stash() {
 		webReq.stash
-	}	
+	}
+	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb) {
+		webReq.parseMultiPartForm(cb)
+	}
 	private WebReq webReq() {
 		// let's simplify and optimise, no point in querying IoC for this.
 		try return Actor.locals["web.req"]
