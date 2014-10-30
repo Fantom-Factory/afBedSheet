@@ -38,8 +38,10 @@ using afIocConfig::Config
 ** 
 ** If any unknown fields are specified or not available then "-" is logged. Example log record:
 ** 
-**   2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
+** pre>
+** 2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 ** 
+** <pre
 const mixin RequestLogMiddleware : Middleware {
 
 	** Directory where the request log files are written.
@@ -57,6 +59,7 @@ const mixin RequestLogMiddleware : Middleware {
 	** @see `BedSheetConfigIds.requestLogFields`
 	abstract Str fields()
 	
+	@NoDoc
 	abstract Void shutdown()
 }
 
