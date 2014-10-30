@@ -2,6 +2,8 @@ using util::JsonOutStream
 
 ** (Response Object) Use to send a text response to the client. 
 ** 
+**   Text.fromHtml("<html>Hello!<html>")
+** 
 ** This is purposely a concrete final class so there is no ambiguity as to what it is. For example, 
 ** if a handler returned an Obj that was both a 'Text' and a 'Redirect' what is BedSheet 
 ** supposed to do? 

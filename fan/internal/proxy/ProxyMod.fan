@@ -2,7 +2,8 @@ using concurrent::Actor
 using web::WebClient
 using web::WebMod
 
-// TODO: Move the app-restarting into separate thread which checks every X secs
+// todo: Move the app-restarting into separate thread which checks every X secs
+//       actually, don't. It takes too much processor time to re-start the app.
 internal const class ProxyMod : WebMod {
 	private const static Log log := Utils.getLog(ProxyMod#)
 

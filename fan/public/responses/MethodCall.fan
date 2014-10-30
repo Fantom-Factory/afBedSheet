@@ -1,6 +1,8 @@
 
 ** (Response Object) Use to explicitly invoke Fantom methods. 
 ** 
+**   MethodCall(MyHandler#process, ["arg1", "arg2"]).toImmutableFunc
+** 
 ** Note that:
 **  - if the method belongs to an 'IoC' service, the class instance is obtained from afIoc. 
 **  - if the method belongs to a 'const' class, a new instance is created and cached. 
