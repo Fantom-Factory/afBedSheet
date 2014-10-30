@@ -571,6 +571,7 @@ v1.4.0 [#v1.4.0]
  - Bug: Route method params are now correctly URL decoded - see [URI Encoding / Decoding]`http://fantom.org/sidewalk/topic/2357`.
  - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.
+ - Bug: Route HTTP methods were not case-insenstive.
  - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
  - Bug: HTTP Flash objects no longer need to be immutable, just serialisable.
 

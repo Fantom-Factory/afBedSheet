@@ -32,6 +32,10 @@ internal class TestRegexRoute : BsTest {
 		httpReq := T_HttpRequest { it.httpMethod = "POST"; it.url = `/index` }
 		match := Route(`/index`, #handler1).match(httpReq)
 		verifyNull(match)
+
+		// test case-insensitive match
+		match = Route(`/index`, #handler1, "post").match(httpReq)
+		verifyNotNull(match)
 	}
 
 	Void testNonNullableWithDefault() {
@@ -103,8 +107,7 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"dude")
 		
-		match = RegexRoute(Regex<|(?i)^\/foobar\/(.*?)$|>, #handler2, "GET", true)
-		.matchUri(`/foobar/dude/2/argh`)
+		match = RegexRoute(Regex<|(?i)^\/foobar\/(.*?)$|>, #handler2, "GET", true).matchUri(`/foobar/dude/2/argh`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
