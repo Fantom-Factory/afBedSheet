@@ -4,7 +4,23 @@ using web::WebReq
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
 ** 
-** This class will always refer to the session in the current web request.
+** Provides a name/value map associated with a specific browser *connection* to the web server.
+** A cookie (with the name 'fanws') is used to track which session is made available to the request.
+** 
+** All values stored in the session must be serializable.
+** 
+** For scalable applications, the session should be used sparingly; house cleaned regularly and not used as a dumping ground. 
+** 
+** Flash 
+** -----
+** Whereas normal session values are persisted indefinitely, flash vales only exist until the end of the next request.
+** After that, they are removed from the session.
+** 
+** A common usage is to store message values before a redirect (usually after a form post).
+** When the following page is rendered, the message is retrieved and displayed.
+** After which the message is automatically discarded from the session. 
+** 
+** *(Flash: A-ah - Saviour of the Universe!)*  
 const mixin HttpSession {
 	
 	** Get the unique id used to identify this session.
@@ -81,6 +97,16 @@ const mixin HttpSession {
 	** 
 	** Does not create a session if it does not already exist.
 	abstract Bool exists()
+	
+	** Application name/value pairs which are persisted *only* until the user's next HTTP request. 
+	** Values stored in this map must be serializable.
+	** 
+	** Calling this **will** create a session if it doesn't already exist.
+	** 
+	** The returned map is *MODIFIABLE*. 
+	** 
+	** @see `web::WebSession`
+	abstract Str:Obj? flash()
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -125,6 +151,12 @@ internal const class HttpSessionImpl : HttpSession {
 	override Bool exists() {
 		// session support only for WISP web server
 		httpCookies.get("fanws") != null
+	}
+	
+	// TODO: replace flash map with a pseudo map so we can capture the get and set operations.
+	// - benefits are, we don't create a session on read and split map up into a req and res 
+	override Str:Obj? flash() {
+		getOrAdd("afBedSheet.flash") { Str:Obj?[:] }
 	}
 	
 	private Obj? testSerialisation(Obj? val) {

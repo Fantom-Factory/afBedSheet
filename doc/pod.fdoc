@@ -546,6 +546,7 @@ v1.4.0 [#v1.4.0]
  - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
  - Chg: Err processing updated; gone are bespoke 'ErrProcessors', contribute generic repsonse objects instead. (Breaking change.) 
  - Chg: HTTP Status processing updated; gone are bespoke 'HTTPStatusProcessors', contribute generic repsonse objects instead. (Breaking change.)
+ - Chg: Replaced the 'HttpFlash' class with 'HttpSession.flash()'. (Breaking change.)
  - Chg: Converted 'Route' to a mixin so users can contribute their own implementations.
  - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.  
  - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'. 

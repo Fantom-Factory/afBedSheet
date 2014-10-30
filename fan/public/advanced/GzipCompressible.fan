@@ -9,7 +9,8 @@
 **  }
 ** <pre
 ** 
-** @uses a MappedConfig of 'MimeType:Bool'
+** @uses a Configuration of 'MimeType:Bool'
+@NoDoc	// Don't overwhelm the masses!
 const mixin GzipCompressible {
 	
 	** Returns 'true' if the given `MimeType` may be compressed.

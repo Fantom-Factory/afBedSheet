@@ -33,7 +33,6 @@ const class BedSheetModule {
 		defs.add(GzipCompressible#)
 		defs.add(HttpSession#)
 		defs.add(HttpCookies#)
-		defs.add(HttpFlash#)
 		defs.add(BedSheetPages#).withProxy	// prevent recursion
 		defs.add(RequestLogMiddleware#)
 		

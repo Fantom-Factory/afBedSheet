@@ -1,6 +1,6 @@
 using web::Cookie
 
-** A wrapper for HTTP request headers with accessors for some commonly used headings.
+** A wrapper for HTTP request headers with accessors for commonly used headings.
 ** 
 ** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 const class HttpRequestHeaders {
@@ -78,7 +78,7 @@ const class HttpRequestHeaders {
 		private set { }
 	}
 
-	** Allows a 304 Not Modified to be returned if content is unchanged.
+	** Allows a '304 Not Modified' to be returned if content is unchanged.
 	** 
 	** Example: 'If-Modified-Since: Sat, 29 Oct 1994 19:43:31 GMT'
 	DateTime? ifModifiedSince {
@@ -86,7 +86,7 @@ const class HttpRequestHeaders {
 		private set { }
 	}
 
-	** Allows a 304 Not Modified to be returned if content is unchanged.
+	** Allows a '304 Not Modified' to be returned if content is unchanged.
 	** 
 	** Example: 'If-None-Match: "737060cd8c284d8af7ad3082f209582d"'
 	Str? ifNoneMatch {

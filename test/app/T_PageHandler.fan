@@ -6,7 +6,6 @@ internal const class T_PageHandler {
 	@Inject	private const Registry 			registry
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
-	@Inject	private const HttpFlash 		flash
 	@Inject	private const BedSheetPages		bedSheetPages
 	
 	new make(|This|in) { in(this) }
@@ -158,13 +157,13 @@ internal const class T_PageHandler {
 	// ---- Http Flash ----
 	
 	Obj saveFlashMsg(Str msg) {
-		oldMsg := flash["msg"]
-		flash["msg"] = msg
+		oldMsg := session.flash["msg"]
+		session.flash["msg"] = msg
 		return Text.fromPlain("Msg = $oldMsg")
 	}
 
 	Obj showFlashMsg() {
-		oldMsg := flash["msg"]
+		oldMsg := session.flash["msg"]
 		return Text.fromPlain("Msg = $oldMsg")
 	}
 	
