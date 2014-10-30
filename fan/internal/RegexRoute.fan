@@ -53,7 +53,7 @@ const class RegexRoute : Route {
 		this.factory 		= wrapResponse(response)
 		this.httpMethod 	= httpMethod
 		// split on both space and ','
-		this.httpMethodGlob	= httpMethod.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
+		this.httpMethodGlob	= httpMethod.upper.split.map { it.split(',') }.flatten.map { Regex.glob(it) }
 		this.matchToEnd		= matchToEnd
 		this.matchAllSegs	= matchAllSegs
 		this.isGlob			= true
