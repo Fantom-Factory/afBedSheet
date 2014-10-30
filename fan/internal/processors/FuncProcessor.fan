@@ -1,7 +1,7 @@
 using afIoc
 
 internal const class FuncProcessor : ResponseProcessor {
-	@Inject	private const Registry 		registry
+	@Inject	private const ObjCache	objCache
 
 	new make(|This|in) { in(this)}
 	
@@ -10,7 +10,7 @@ internal const class FuncProcessor : ResponseProcessor {
 		args	:= [,] 
 		func.params.each {
 			if (!it.hasDefault)
-				args.add(registry.dependencyByType(it.type))
+				args.add(objCache[it.type])
 		}
 		result	:= (Obj?) func.callList(args)
 		return result ?: false

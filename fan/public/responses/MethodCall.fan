@@ -20,23 +20,33 @@ class MethodCall {
 		this.args	= args
 	}
 	
-	** Returns an immutable func that represents this method call. May be used as response object itself.
-	** 'instance' may be null id 
+	** Returns an immutable func that represents this method call. 
+	** May be used as a response object itself.
+	** 
+	** If this 'MethodCall' wraps an instance method (not static) then the func's first (and only) 
+	** argument must be the target object. Otherwise the func takes no arguments.
 	** 
 	** TODO: Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
-	virtual Func immutable() {
+	virtual Func toImmutableFunc() {
 		iMeth := this.method
 		iArgs := this.args.toImmutable
-		return |ObjCache objCache -> Obj?| {
-			if (iMeth.isStatic)
-				return iMeth.callList(iArgs)
-			handler := objCache[iMeth.parent]
-			return iMeth.callOn(handler, iArgs)
-		}.toImmutable
+		if (iMeth.isStatic)
+			return |->Obj?| {
+				iMeth.callList(iArgs)			
+			}
+		
+		func := |Obj target -> Obj?| {
+			iMeth.callOn(target, iArgs)
+		}.toImmutable	// needed else the retype isn't immutatble
+		
+		// this is some hardcore reflective shit going down here!
+		targetType := iMeth.parent
+		funcType := Func#.parameterize(["A":targetType, "R":Obj?#])
+		return func.retype(funcType).toImmutable
 	}
 	
 	@NoDoc
 	override Str toStr() {
 		method.signature
-	}
+	}	
 }
