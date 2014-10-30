@@ -263,8 +263,8 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		
-		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).immutable
-		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).immutable
+		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).toImmutableFunc
+		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).toImmutableFunc
 
 		config[BedSheetConfigIds.requestLogDir]				= null
 		config[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"

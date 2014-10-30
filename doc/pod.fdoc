@@ -269,7 +269,7 @@ pre>
 @Contribute { serviceType=ErrResponses# }
 static Void contributeErrResponses(Configuration conf) {
 
-    conf[ArgErr#] = MethodCall(MyErrHandler#process).immutable
+    conf[ArgErr#] = MethodCall(MyErrHandler#process).toImmutableFunc
 }
 <pre
 
@@ -303,7 +303,7 @@ To set your own '404 Not Found' page contribute a response object to `HttpStatus
 pre>
 @Contribute { serviceType=HttpStatusResponses# }
 static Void contribute404Response(Configuration config) {
-    conf[404] = MethodCall(Error404Page#process).immutable
+    conf[404] = MethodCall(Error404Page#process).toImmutableFunc
 }
 <pre
 
