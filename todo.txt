@@ -14,8 +14,6 @@ Add HttpRequest.isSecure()
 
 Future
 ------
-Re-think middleware pipeline processing -> maybe have a pipeline for each type of response?
-
 Logging filter with reqId, SessId and configurable userId
 
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection

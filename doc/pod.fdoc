@@ -190,12 +190,21 @@ following:
  - 'Err' : An appropriate response object is selected from contributed Err responses. (See [Error Processing]`#errorProcessing`.)
  - [File]`sys::File` : The file is streamed to the client.
  - `FileAsset` : The file is streamed to the client.
- - 'Func' : The function is called, using IoC to inject the parameters, and the return value used for further processing.
+ - [Func]`sys::Func` : The function is called, using IoC to inject the parameters. The return value is treated as reposonse object for further processing.
  - `HttpStatus` : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing]`#httpStatusProcessing`.)
  - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guaranteed to be closed.
  - `MethodCall` : The method is called and the return value used for further processing.
  - `Redirect` : Sends a 3xx redirect response to the client.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding 'Content-Type'.
+
+Because of the nature of response object processing it is possible, nay normal, to *chain* multiple response objects together. Example: 
+
+ 1. If a Route returns or throws an 'Err',
+ 1. 'ErrProcessor' looks up its responses and returns a 'Func',
+ 1. 'FuncProcessor' calls a handler method which returns a 'Text',
+ 1. 'TextProcessor' serves content to the client and returns 'true'.
+
+Note that response object processing is extensible, just contribute your own [Response Processors]`ResponseProcessor`.
 
 
 
