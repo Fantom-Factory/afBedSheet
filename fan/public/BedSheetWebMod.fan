@@ -43,6 +43,7 @@ const class BedSheetWebMod : WebMod {
 
 	** Creates this 'WebMod'.
 	** 'moduleName' can be a qualified type name of an AppModule or a pod name.
+	** 'port' is required for reporting purposes only. (Wisp binds to the port, not BedSheet.)
 	new make(Str moduleName, Int port, [Str:Obj?]? registryOptions := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
