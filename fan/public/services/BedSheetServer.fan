@@ -106,6 +106,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Uri toClientUrl(Uri localUrl) {
+		// if we stop throwing an Err here, then we need to update ColdFeet
 		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
 			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, `/css/myStyles.css`))
 		return path + localUrl.relTo(`/`)
