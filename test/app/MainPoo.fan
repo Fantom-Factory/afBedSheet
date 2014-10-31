@@ -17,6 +17,7 @@ class MainPoo {
 	}
 }
 
+** A tiny BedSheet app that returns 'Hello Mum!' for every request.
 internal
 class TinyBedAppModule {
 	@Contribute { serviceType=Routes# }
