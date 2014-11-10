@@ -37,6 +37,7 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 	}	
 
 	private ResponseProcessor get(Type responseType) {
-		processorLookup.findParent(responseType)
+		// see http://stackoverflow.com/questions/25262348/why-afbedsheet-dont-see-my-types
+		processorLookup.findParent(responseType, false) ?: throw UnknownResponseObjectErr("Could not find a ResponseProcessor to handle an instance of ${responseType.qname}", processorLookup.types)
 	}
 }

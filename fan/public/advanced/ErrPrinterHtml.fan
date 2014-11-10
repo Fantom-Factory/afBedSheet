@@ -74,7 +74,7 @@ internal const class ErrPrinterHtmlSections {
 	
 	Void printAvailableValues(WebOutStream out, Err? err) {
 		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr->Bool| {
-			title(out, "Available Values")
+			title(out, notFoundErr.valueMsg)
 			out.ol
 			notFoundErr.availableValues.each { out.li.writeXml(it).liEnd }
 			out.olEnd

@@ -55,3 +55,16 @@ internal const class BedSheetNotFoundErr : ArgErr, NotFoundErr {
 		NotFoundErr.super.toStr		
 	}
 }
+
+internal const class UnknownResponseObjectErr : Err, NotFoundErr {
+	override const Str?[]	availableValues
+	override const Str 		valueMsg := "Known Response Objects:"
+	
+	new make(Str msg, Obj?[] availableValues, Err? cause := null) : super(msg, cause) {
+		this.availableValues = availableValues.map { it?.toStr }.sort
+	}
+	
+	override Str toStr() {
+		NotFoundErr.super.toStr
+	}
+}
