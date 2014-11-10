@@ -67,7 +67,7 @@ internal const class ErrPrinterStrSections {
 
 	Void printAvailableValues(StrBuf buf, Err? err) {
 		forEachCause(err, NotFoundErr#) |NotFoundErr notFoundErr->Bool| {
-			buf.add("\nAvailable Values:\n")
+			buf.add("\n${notFoundErr.valueMsg}\n")
 			notFoundErr.availableValues.each { buf.add("  $it\n") }
 			return false
 		}
