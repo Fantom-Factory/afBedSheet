@@ -27,7 +27,7 @@ internal class TestResponseProcessors : BsTest {
 		map := [Int#:T_ResPro01()]
 		rp := ResponseProcessorsImpl(map)
 		
-		verifyErr(TypeNotFoundErr#) {
+		verifyErr(UnknownResponseObjectErr#) {
 			rp.processResponse("Die!")			
 		}
 	}

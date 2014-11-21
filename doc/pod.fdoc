@@ -593,6 +593,10 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 
 Release Notes [#releaseNotes]
 *****************************
+v1.4.2 [#v1.4.2]
+----------------
+ - Bug: BedSheet welcome page had the 404 page appended to it - Firefox reported the page as *junk*!
+
 v1.4.0 [#v1.4.0]
 ----------------
  - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
