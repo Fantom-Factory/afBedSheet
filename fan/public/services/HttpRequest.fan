@@ -139,7 +139,11 @@ internal const class HttpRequestImpl : HttpRequest {
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override [Str:Str]? form() {
-		webReq.form
+		try {
+			return webReq.form
+		} catch (Err err) {
+			throw HttpStatusErr(400, "Invalid Form Data", err)
+		}
 	}
 	override Locale[] locales() {
 		webReq.locales
