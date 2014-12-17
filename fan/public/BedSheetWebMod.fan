@@ -3,6 +3,8 @@ using concurrent::ActorPool
 using concurrent::AtomicRef
 using concurrent::AtomicBool
 using web::WebMod
+using web::WebReq
+using web::WebRes
 using afIoc::IocErr
 using afIoc::IocShutdownErr
 using afIoc::Registry
@@ -23,8 +25,13 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc	// advanced usage
 	const [Str:Obj?] 	registryOptions
 	
+	** When HTTP requests are received when BedSheet is starting up, then this message is returned to the client with a 500 status code.
+	** 
+	** Defaults to: 'The website is starting up... Please retry in a few seconds.'
+	const Str			startupMessage	:= "The website is starting up... Please retry in a few seconds."
+	
 	private const AtomicBool	started			:= AtomicBool(false)
-	private const AtomicRef		startupErrA		:= AtomicRef()
+	private const AtomicRef		startupErrRef	:= AtomicRef()
 	private const AtomicRef		registryRef		:= AtomicRef()
 	private const AtomicRef		pipelineRef		:= AtomicRef()
 	private const AtomicRef		errPrinterRef	:= AtomicRef()
@@ -37,17 +44,18 @@ const class BedSheetWebMod : WebMod {
 
 	** The Err (if any) that occurred on service startup
 	Err? startupErr {
-		get { startupErrA.val }
-		private set { startupErrA.val = it }
+		get { startupErrRef.val }
+		private set { startupErrRef.val = it }
 	}
 
 	** Creates this 'WebMod'.
 	** 'moduleName' can be a qualified type name of an AppModule or a pod name.
 	** 'port' is required for reporting purposes only. (Wisp binds to the port, not BedSheet.)
-	new make(Str moduleName, Int port, [Str:Obj?]? registryOptions := null) {
+	new make(Str moduleName, Int port, [Str:Obj?]? registryOptions := null, |This|? f := null) {
 		this.moduleName 		= moduleName
 		this.port 				= port
 		this.registryOptions	= registryOptions ?: Utils.makeMap(Str#, Obj?#)
+		f?.call(this)
 	}
 
 	@NoDoc
@@ -57,12 +65,15 @@ const class BedSheetWebMod : WebMod {
 		// Hey! Why you call us when we're not running, eh!??
 		if (!started.val)
 			return
-		
-		// web reqs can come while we're still processing onStart() so lets wait for either  
-		// condition to occur (good or bad) - as some reg startup times may be seconds long
-		while (registry == null && startupErr == null) {
-			// 200ms should be un-noticable to humans but a lifetime to a computer!
-			Actor.sleep(200ms)
+
+		// web reqs still come in while we're processing onStart() so dispatch them quickly
+		// We used to sleep / queue them up until ready but then, when processing 100s at once, 
+		// it was easy to run into race conditions when lazily creating services.
+		if (registry == null && startupErr == null) {
+			echo("Waiting on startup...")
+			res := (WebRes) Actor.locals["web.res"]
+			res.sendErr(500, startupMessage)
+			return
 		}
 		
 		// rethrow the startup err if one occurred and let Wisp handle it
@@ -159,7 +170,7 @@ const class BedSheetWebMod : WebMod {
 		transDeps := !(options["afBedSheet.noTransDeps"] == true)
 		if (pod != null) {
 			if (transDeps)
-				bob.addModulesFromPod(pod, true)
+				bob.addModulesFromPod(pod.name, true)
 			else
 				log.info("Suppressing transitive dependencies...")
 		}

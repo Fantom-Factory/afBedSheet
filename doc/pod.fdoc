@@ -595,6 +595,9 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.2 [#v1.4.2]
 ----------------
+ - Chg: HTTP requests received when BedSheet is starting up are given a 500 status code and a starting up message.
+   Previous behaviour was to queue up the requests, but that can cause issues under heavy load.
+ - Chg: 'HttpRequest.form' throws a 'HttpStatusErr' (400 - Bad Request) should the form data be invalid - see `sys::Uri.decodeQuery`. SpamBots send you all sorts of crap!
  - Bug: BedSheet welcome page had the 404 page appended to it - Firefox reported the page as *junk*!
 
 v1.4.0 [#v1.4.0]
