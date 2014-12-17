@@ -9,6 +9,7 @@ using afIoc::IocErr
 using afIoc::IocShutdownErr
 using afIoc::Registry
 using afIoc::RegistryBuilder
+using afIocEnv::IocEnv
 using afIocConfig::ConfigSource
 
 ** The `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
@@ -35,6 +36,7 @@ const class BedSheetWebMod : WebMod {
 	private const AtomicRef		registryRef		:= AtomicRef()
 	private const AtomicRef		pipelineRef		:= AtomicRef()
 	private const AtomicRef		errPrinterRef	:= AtomicRef()
+	private const IocEnv		iocEnv			:= Type.find("afIocEnv::IocEnvImpl").make	// we can't use the registry, because we're waiting for it to startup!
 	
 	** The 'afIoc' registry. Can be 'null' if BedSheet has not started.
 	Registry? registry {
@@ -66,11 +68,16 @@ const class BedSheetWebMod : WebMod {
 		if (!started.val)
 			return
 
+		if (queueRequestsOnStartup)
+			while (registry == null && startupErr == null) {
+				// 200ms should be un-noticable to humans but a lifetime to a computer!
+				Actor.sleep(200ms)
+			}
+		
 		// web reqs still come in while we're processing onStart() so dispatch them quickly
 		// We used to sleep / queue them up until ready but then, when processing 100s at once, 
 		// it was easy to run into race conditions when lazily creating services.
 		if (registry == null && startupErr == null) {
-			echo("Waiting on startup...")
 			res := (WebRes) Actor.locals["web.res"]
 			res.sendErr(500, startupMessage)
 			return
@@ -134,6 +141,15 @@ const class BedSheetWebMod : WebMod {
 	override Void onStop() {
 		registry?.shutdown
 		log.info(BsLogMsgs.bedSheetWebMod_stopping(moduleName))
+	}
+
+	** Should HTTP requests be queued while BedSheet is starting up? 
+	** It is handy in dev, because it prevents you from constantly refreshing your browser!
+	** But under heavy load in prod, the requests can quickly build up to 100s; so not such a good idea.
+	** 
+	** Returns 'false' in prod, 'true' otherwise. 
+	virtual Bool queueRequestsOnStartup() {
+		!iocEnv.isProd
 	}
 
 	** Returns a fully loaded IoC 'RegistryBuilder' that creates everything this Bed App needs. 
