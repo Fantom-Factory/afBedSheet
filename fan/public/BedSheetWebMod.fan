@@ -94,16 +94,25 @@ const class BedSheetWebMod : WebMod {
 			// nothing we can do here
 			return
 
+		// theoretically, this should have already been dealt with by our ErrMiddleware...
+		// ...but it's handy for BedSheet development!
 		} catch (Err err) {
-			// theoretically, this should have already been dealt with by our ErrMiddleware...
-			// ...but it's handy for BedSheet development!
-			if (registry != null) {	// reqs may come in before we've start up
+			
+			// try to send something to the browser
+			errLog := err.traceToStr
+			if (registry != null) {
 				try {
 					errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
-					Env.cur.err.printLine(errPrinter.errToStr(err))
-				} catch
-					err.trace(Env.cur.err)
+					errLog = errPrinter.errToStr(err)
+				} catch {}
 			}
+
+			// log and throw, because we don't trust Wisp to log it
+			Env.cur.err.printLine(errLog)					
+			
+			if (!webRes.isCommitted)
+				webRes.sendErr(500, "${err.typeof} - ${err.msg}")
+
 			throw err
 		}
 	}
@@ -252,6 +261,12 @@ const class BedSheetWebMod : WebMod {
 		pipelineRef.val
 	}
 	
+	private static WebRes webRes() {
+		try return Actor.locals["web.res"]
+		catch (NullErr e) 
+			throw Err("No web request active in thread")
+	}
+
 	private static Str[] loadQuotes() {
 		BedSheetWebMod#.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
 	}
