@@ -131,6 +131,11 @@ const class BedSheetWebMod : WebMod {
 			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
 			log.info(BsLogMsgs.bedSheetWebMod_started(bob["afBedSheet.appName"], host))
 
+			// BUGFIX: eager load the middleware pipeline, so we can use the ErrMiddleware
+			// otherwise Errs thrown when instantiating middleware end up in limbo
+			// Errs from the FileHandler ctor are a prime example
+			pipelineRef.val = registry.serviceById(MiddlewarePipeline#.qname)
+			
 		} catch (Err err) {
 			startupErr = err
 			throw err
@@ -243,12 +248,8 @@ const class BedSheetWebMod : WebMod {
 		return quotes[Int.random(0..<quotes.size)]
 	}
 	
-	// lazy load the MiddlewarePipeline
 	private MiddlewarePipeline middlewarePipeline() {
-		pipe := pipelineRef.val
-		if (pipe == null)
-			pipe = pipelineRef.val = registry.serviceById(MiddlewarePipeline#.qname)
-		return pipe
+		pipelineRef.val
 	}
 	
 	private static Str[] loadQuotes() {
