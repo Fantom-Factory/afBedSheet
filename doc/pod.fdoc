@@ -593,6 +593,10 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 
 Release Notes [#releaseNotes]
 *****************************
+v1.4.6 [#v1.4.6]
+----------------
+ - Bug: BedSheet sometimes reported a 'NullErr' when starting up.
+
 v1.4.4 [#v1.4.4]
 ----------------
  - Bug: Startup Errs thrown by FileHandler (and middleware in general) ended up in limbo and weren't reported. 

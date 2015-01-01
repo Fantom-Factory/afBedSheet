@@ -69,7 +69,7 @@ const class BedSheetWebMod : WebMod {
 			return
 
 		if (queueRequestsOnStartup)
-			while (registry == null && startupErr == null) {
+			while (registry == null && startupErr == null && middlewarePipeline == null) {
 				// 200ms should be un-noticable to humans but a lifetime to a computer!
 				Actor.sleep(200ms)
 			}
@@ -77,7 +77,7 @@ const class BedSheetWebMod : WebMod {
 		// web reqs still come in while we're processing onStart() so dispatch them quickly
 		// We used to sleep / queue them up until ready but then, when processing 100s at once, 
 		// it was easy to run into race conditions when lazily creating services.
-		if (registry == null && startupErr == null) {
+		if (registry == null && startupErr == null && middlewarePipeline == null) {
 			res := (WebRes) Actor.locals["web.res"]
 			res.sendErr(500, startupMessage)
 			return
@@ -257,7 +257,7 @@ const class BedSheetWebMod : WebMod {
 		return quotes[Int.random(0..<quotes.size)]
 	}
 	
-	private MiddlewarePipeline middlewarePipeline() {
+	private MiddlewarePipeline? middlewarePipeline() {
 		pipelineRef.val
 	}
 	
