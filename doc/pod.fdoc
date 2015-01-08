@@ -595,7 +595,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.6 [#v1.4.6]
 ----------------
- - Bug: BedSheet sometimes reported a 'NullErr' when starting up.
+ - Bug: BedSheet sometimes reported a 'NullErr' when starting up in dev mode.
 
 v1.4.4 [#v1.4.4]
 ----------------
