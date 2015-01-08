@@ -61,7 +61,7 @@ internal class TestPodHandler : BsTest {
 
 	Void testWhitelistFilter() {
 		// sad case
-		verifyErrMsg(ArgErr#, BsErrMsgs.podHandler_notInWhitelist("fan://icons/x256/flux.png")) {
+		verifyErrMsg(ArgNotFoundErr#, BsErrMsgs.podHandler_notInWhitelist("fan://icons/x256/flux.png")) {
 			podHandler(`/`, "^.*\\.fan\$").fromPodResource(`fan://icons/x256/flux.png`)
 		}
 

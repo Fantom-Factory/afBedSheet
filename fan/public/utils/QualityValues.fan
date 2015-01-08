@@ -54,7 +54,7 @@ class QualityValues {
 	** Returns a joined-up Str of qvalues that may be set in a HTTP header. The names are sorted by 
 	** qvalue. 
 	override Str toStr() {
-		qvalues.keys.sortr |q1, q2| { qvalues[q1] <=> qvalues[q2] }.join(", ") |q| { qvalues[q] == 1.0f ? "$q" : "$q;q=" + qvalues[q].toLocale("0.###") }
+		qvalues.keys.sortr |q1, q2| { qvalues[q1] <=> qvalues[q2] }.join(", ") |q| { qvalues[q] == 1.0f ? "$q" : "$q;q=" + qvalues[q].toLocale("0.0##") }
 	}
 
 	** Returns the qvalue associated with 'name'. Defaults to '0' if 'name' was not supplied.

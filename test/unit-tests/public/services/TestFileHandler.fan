@@ -51,7 +51,7 @@ internal class TestFileHandler : BsTest {
 
 	Void testAssetUrlMustBeMapped() {
 		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(NotFoundErr#, BsErrMsgs.fileHandler_urlNotMapped(`/css/myStyles.css`)) {
+		verifyErrMsg(BedSheetNotFoundErr#, BsErrMsgs.fileHandler_urlNotMapped(`/css/myStyles.css`)) {
 			fh.fromLocalUrl(`/css/myStyles.css`)
 		}
 	}
@@ -106,7 +106,7 @@ internal class TestFileHandler : BsTest {
 	
 	Void testAssetFileNotMapped() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(ArgErr#, BsErrMsgs.fileHandler_fileNotMapped(`res/misc/quotes.txt`.toFile)) {
+		verifyErrMsg(BedSheetNotFoundErr#, BsErrMsgs.fileHandler_fileNotMapped(`res/misc/quotes.txt`.toFile)) {
 			fh.fromServerFile(`res/misc/quotes.txt`.toFile)
 		}
 	}

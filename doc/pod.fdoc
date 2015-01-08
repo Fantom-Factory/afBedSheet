@@ -595,6 +595,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.6 [#v1.4.6]
 ----------------
+ - Chg: Updates to make BedSheet compatible with [Fantom v1.0.67]`http://fantom.org/forum/topic/2387`.
  - Bug: BedSheet sometimes reported a 'NullErr' when starting up in dev mode.
 
 v1.4.4 [#v1.4.4]
