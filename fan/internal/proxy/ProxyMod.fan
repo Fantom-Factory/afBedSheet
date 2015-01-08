@@ -7,9 +7,10 @@ using web::WebMod
 internal const class ProxyMod : WebMod {
 	private const static Log log := Utils.getLog(ProxyMod#)
 
-	const Int proxyPort
-	const Int appPort
-	const AppRestarter restarter
+	const Int 			proxyPort
+	const Int 			appPort
+	const AppRestarter	restarter
+	const Version 		webVer		:= Pod.find("web").version
 	
 	new make(Str appModule, Int proxyPort, Bool noTransDeps, Str? env) {
 		this.proxyPort 	= proxyPort
@@ -40,14 +41,14 @@ internal const class ProxyMod : WebMod {
 		// with proxy server - create session here as a workaround
 		dummy := req.session
 
-		// proxy request
 		c := WebClient()
+		c.reqHeaders.clear
 		c.followRedirects = false
 		c.reqUri = "http://localhost:${appPort}${req.uri.relToAuth}".toUri
 		c.reqMethod = req.method
-		req.headers.each |v,k| {
-			if (k == "Host") return
-			c.reqHeaders[k] = v
+		req.headers.each |v, k| {
+			if (k != "Host")	// don't mess with the Hoff! Err, I mean host.
+				c.reqHeaders[k] = v
 		}
 		c.writeReq
 
@@ -56,7 +57,6 @@ internal const class ProxyMod : WebMod {
 		if (req.method == "POST" && ! is100Continue)
 			c.reqOut.writeBuf(req.in.readAllBuf).flush
 
-		// proxy response
 		c.readRes
 
 		if (is100Continue && c.resCode == 100) {
@@ -64,11 +64,35 @@ internal const class ProxyMod : WebMod {
 			c.readRes // final response after the 100continue
 		}
 
+		regzip := false
+		redeflate := false
 		res.statusCode = c.resCode
-		c.resHeaders.each |v,k| { res.headers[k] = v }
+		c.resHeaders.each |v, k| {
+			if (k == "Content-Encoding") {
+				if (v.trim == "gzip")
+					regzip = true
+				if (v.trim == "deflate")
+					redeflate = true
+			}
+			res.headers[k] = v
+		}
+		
 		if (c.resHeaders["Content-Type"]	!= null ||
-			c.resHeaders["Content-Length"] 	!= null)
-			res.out.writeBuf(c.resIn.readAllBuf).flush
+			c.resHeaders["Content-Length"] 	!= null) {
+			resBuf := c.resIn.readAllBuf
+			resOut := (OutStream) res.out
+
+			// because v1.0.67 auto de-gzips the response, we need to re-gzip it on the way out
+			// I'm not overly happy with this but it's ingrained deep in web::WebUtil.makeContentInStream()
+			if (webVer >= Version("1.0.67")) {
+				if (regzip)
+					resOut = Zip.gzipOutStream(resOut)
+				if (redeflate)
+					resOut = Zip.deflateOutStream(resOut)
+			}
+				
+			resOut.writeBuf(resBuf).flush.close
+		}
 		c.close
 	}
 }

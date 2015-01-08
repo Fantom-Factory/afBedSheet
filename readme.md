@@ -1,4 +1,4 @@
-## Overview 
+## Overview
 
 `BedSheet` is a platform for delivering web applications written in [Fantom](http://fantom.org/).
 
@@ -6,7 +6,7 @@ Built on top of [IoC](http://www.fantomfactory.org/pods/afIoc) and [Wisp](http:/
 
 BedSheet is inspired by Java's [Tapestry5](http://tapestry.apache.org/), Ruby's [Sinatra](http://www.sinatrarb.com/) and Fantom's [Draft](https://bitbucket.org/afrankvt/draft).
 
-## Install 
+## Install
 
 Install `BedSheet` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -16,11 +16,11 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afBedSheet 1.4"]
 
-## Documentation 
+## Documentation
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afBedSheet/).
 
-## Quick Start 
+## Quick Start
 
 1). Create a text file called `Example.fan`:
 
@@ -72,7 +72,7 @@ Every `BedSheet` application has an `AppModule` that configures [IoC](http://www
 
 Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our `HelloPage` route handler simply returns a plain [Text](http://repo.status302.com/doc/afBedSheet/Text.html) response, which `BedSheet` sends to the client via an appropriate [ResponseProcessor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html).
 
-## Starting BedSheet 
+## Starting BedSheet
 
 Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://www.fantomfactory.org/pods/afIoc) services. It is an [IoC](http://www.fantomfactory.org/pods/afIoc) concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
 
@@ -108,7 +108,7 @@ C:\> fan afBedSheet -env development myWebApp 8069
 
 Note that `AppModule` is named so out of convention but the class may be called anything you like.
 
-## Request Routing 
+## Request Routing
 
 The `Routes` service maps HTTP request URLs to response objects and handler methods. It is where you would typically define how requests are handled. You configure the `Routes` service by contributing instances of [Route](http://repo.status302.com/doc/afBedSheet/Route.html). Example:
 
@@ -133,7 +133,7 @@ Routing lesson over.
 
 (...you Aussies may stop giggling now.)
 
-## Route Handling 
+## Route Handling
 
 *Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](http://repo.status302.com/doc/afBedSheet/#quickStart.html) `HelloPage` *route handler* returns a [Text](http://repo.status302.com/doc/afBedSheet/Text.html) *response object*.
 
@@ -142,7 +142,7 @@ Route handlers are usually written by the application developer, but a couple of
 - [FileHandler](http://repo.status302.com/doc/afBedSheet/FileHandler.html): Maps request URLs to files on file system.
 - [PodHandler](http://repo.status302.com/doc/afBedSheet/PodHandler.html) : Maps request URLs to pod file resources.
 
-## Response Objects 
+## Response Objects
 
 *Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html) to process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return *Response Objects*, which will be handled by another *Response Processor*.
 
@@ -169,7 +169,7 @@ Because of the nature of response object processing it is possible, nay normal, 
 
 Note that response object processing is extensible, just contribute your own [Response Processor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html).
 
-## Template Rendering 
+## Template Rendering
 
 Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of `BedSheet`. That said, there a couple templating libraries *out there* and integrating them into `BedSheet` is relatively simple. For instance, Alien-Factory provides the following libraries:
 
@@ -194,7 +194,7 @@ class IndexPage {
 }
 ```
 
-## BedSheet Middleware 
+## BedSheet Middleware
 
 When a HTTP request is received, it is passed through a pipeline of BedSheet [Middleware](http://repo.status302.com/doc/afBedSheet/Middleware.html); this is a similar to [Java Servlet Filters](http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html). If the request reaches the end of the pipeline without being processed, a 404 is returned.
 
@@ -205,7 +205,7 @@ Middleware bundled with `BedSheet` include:
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation. See the FantomFactory article [Basic HTTP Authentication With BedSheet](http://www.fantomfactory.org/articles/basic-http-authentication-with-bedSheet) for working examples.
 
-## Error Processing 
+## Error Processing
 
 When `BedSheet` catches an Err it scans through a list of contributed response objects to find one that can handle the Err. If no matching response object is found then the *default err response object* is used. This default response object displays BedSheet's extremely verbose Error 500 page. It displays (a shed load of) debugging information and is highly customisable:
 
@@ -237,7 +237,7 @@ static Void contributeApplicationDefaults(Configuration config) {
 
     err := (Err) httpRequest.stash["afBedSheet.err"]
 
-## HTTP Status Processing 
+## HTTP Status Processing
 
 `HttpStatus` objects are handled by a [ResponseProcessor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html) that selects a contributed response object that corresponds to the HTTP status code. If no specific response object is found then the *default http status response object* is used. This default response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a `404 Not Found` error.
 
@@ -267,7 +267,7 @@ static Void contributeApplicationDefaults(Configuration config) {
 
     httpStatus := (HttpStatus) httpRequest.stash["afBedSheet.httpStatus"]
 
-## Config Injection 
+## Config Injection
 
 BedSheet uses [IoC Config](http://www.fantomfactory.org/pods/afIocConfig) to give injectable `@Config` values. `@Config` values are essentially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider config values to be immutable once the app has started).
 
@@ -297,7 +297,7 @@ Int noOfStackFrames
 
 The config mechanism is not just for BedSheet, you can use it too when creating 3rd Party libraries! Contributing initial values to `FactoryDefaults` gives users of your library an easy way to override your values.
 
-## Request Logging 
+## Request Logging
 
 BedSheet can generate standard HTTP request logs in the [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
 
@@ -321,7 +321,7 @@ The fields writen to the logs may be set by configuring `BedSheetConfigIds.reque
 
 ```
 
-## Development Proxy 
+## Development Proxy
 
 Never (manually) restart your app again!
 
@@ -347,17 +347,17 @@ BedSheet applications go a step further and, should it be started in proxy mode,
 
 See [proxyPingInterval](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#proxyPingInterval.html) for more details.
 
-## Gzip 
+## Gzip
 
 By default, BedSheet compresses HTTP responses with gzip where it can, for [optimisation](http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/). But it doesn't do this willy nilly, oh no! There are many hurdles to overcome...
 
-#### Disable All 
+#### Disable All
 
 Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
 
     config[BedSheetConfigIds.gzipDisabled] = true
 
-#### Gzip'able Mime Types 
+#### Gzip'able Mime Types
 
 Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types](http://fantom.org/doc/sys/MimeType.html) contributed to the [GzipCompressible](http://repo.status302.com/doc/afBedSheet/GzipCompressible.html) service will be gzipped:
 
@@ -367,27 +367,27 @@ Text files gzip very well and yield high compression rates, but not everything s
 
 By default BedSheet will compress html, css, javascript, json, xml and other text responses.
 
-#### Disable per Response 
+#### Disable per Response
 
 Gzip can be disabled on a per request / response basis by calling the following:
 
     httpResponse.disableGzip()
 
-#### Gzip only when asked 
+#### Gzip only when asked
 
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such, and as per [RFC 2616 HTTP1.1 Sec14.3](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3), the response is only gzipped if the appropriate HTTP request header was set.
 
-#### Min content threshold 
+#### Min content threshold
 
 Gzip is great when compressing large files, but if you've only got a few bytes to squash... the compressed version is going to be bigger, which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped.
 
 See `GzipOutStream` and [gzipThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#gzipThreshold.html) for more details.
 
-#### Phew! Made it! 
+#### Phew! Made it!
 
 If (and only if!) the request passed all the tests above, will it then be lovingly gzipped and sent to the client.
 
-## Buffered Response 
+## Buffered Response
 
 By default, BedSheet attempts to set the `Content-Length` [HTTP response header](http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding). It does this by buffering `HttpResponse.out`. When the stream is closed, it writes the `Content-Length` and pipes the buffer to the real HTTP response.
 
@@ -397,7 +397,7 @@ A threshold can be set, whereby if the buffer exeeds that value, all content is 
 
 See `BufferedOutStream` and [responseBufferThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#responseBufferThreshold.html) for more details.
 
-## Wisp Integration 
+## Wisp Integration
 
 To some, BedSheet may look like a behemoth web framework, but it is in fact just a standard Fantom [WebMod](http://fantom.org/doc/web/WebMod.html). This means it can be plugged into a [Wisp](http://fantom.org/doc/wisp/index.html) application along side other all the other standard [webmods](http://fantom.org/doc/webmod/index.html). Just create an instance of [BedSheetWebMod](http://repo.status302.com/doc/afBedSheet/BedSheetWebMod.html) and pass it to Wisp like any other.
 
@@ -437,7 +437,7 @@ When running BedSheet under a non-root path, be sure to transform all link hrefs
 
 Note that each `BedSheetWebMod` holds a reference to it's own IoC registry so you can run mulitple BedSheet instances side by side in the same Wisp application.
 
-## Go Live with Heroku 
+## Go Live with Heroku
 
 In a hurry to go live? Use [Heroku](http://www.heroku.com/)!
 
@@ -473,7 +473,7 @@ Main classes have the advantage of being easy to run from an IDE or cmd line.
 
 See [heroku-fantom-buildpack](https://bitbucket.org/AlienFactory/heroku-buildpack-fantom) for more details.
 
-## Tips 
+## Tips
 
 All route handlers and processors are built by [IoC](http://www.fantomfactory.org/pods/afIoc) so feel free to `@Inject` DAOs and other services.
 

@@ -3,8 +3,8 @@ using afIocConfig
 
 internal class TestPodHandling : AppTest {
 	
-	Str 	 file1_eTag	:= "\"5025-4b4001dcfcd0000\""
-	DateTime file1_date	:= DateTime(2010, Month.sep, 27, 09, 46, 40, 0, TimeZone.utc)
+	Str 	 file1_eTag	:= "\"5025-65f99ff945e5400\""
+	DateTime file1_date	:= DateTime(2014, Month.jul, 21, 10, 50, 10, 0, TimeZone.utc)
 
 	override Type[] iocModules	:= [T_AppModule#]
 	

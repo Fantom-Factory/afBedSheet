@@ -11,7 +11,9 @@ internal class TestGzip : AppTest {
 		verifyEq(client.resHeaders["Content-Length"], 	"73")
 		verifyEq(client.resHeaders["Vary"], 			"Accept-Encoding")
 		
-		res := Zip.gzipInStream(client.resIn).readAllStr.trim
+		// in Fantom v1.0.67 WebUtil.makeContentInStream() un-gzips the stream for me
+//		res := Zip.gzipInStream(client.resIn).readAllStr.trim
+		res := client.resStr
 		verifyEq(res, "This is a gzipped message. No really! Need 5 more bytes!")
 		verifyEq(client.resCode, 200)
 	}
@@ -42,7 +44,9 @@ internal class TestGzip : AppTest {
 		verifyEq(client.resHeaders["Content-Length"], 	"73")
 		verifyEq(client.resHeaders["Vary"], 			"Accept-Encoding")
 
-		res := Zip.gzipInStream(client.resIn).readAllStr.trim
+		// in Fantom v1.0.67 WebUtil.makeContentInStream() un-gzips the stream for me
+//		res := Zip.gzipInStream(client.resIn).readAllStr.trim
+		res := client.resStr
 		verifyEq(res, "This is a gzipped message. No really! Need 5 more bytes!")
 		verifyEq(client.resCode, 200)
 	}

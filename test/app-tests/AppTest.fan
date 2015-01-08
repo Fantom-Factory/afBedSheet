@@ -15,6 +15,8 @@ internal class AppTest : Test {
 		Log.get("afIoc").level 		= LogLevel.warn
 		Log.get("afIocEnv").level 	= LogLevel.warn
 		Log.get("afBedSheet").level = LogLevel.warn
+		
+		client.reqHeaders.clear
 
 		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["afBedSheet.iocModules":iocModules.add(ConfigModule#)])
 		willow 	= WispService { it.port=this.port; it.root=mod }
@@ -67,19 +69,6 @@ internal class AppTest : Test {
 		verifyEq(clientDate, lastModified.floor(1sec).toUtc)		
 	}
 	
-	Void verifyErrMsg(Type errType, Str errMsg, |Obj| func) {
-		try {
-			func(4)
-		} catch (Err e) {
-			if (!e.typeof.fits(errType)) 
-				throw Err("Expected $errType got $e.typeof", e)
-			msg := e.msg
-			if (msg != errMsg)
-				verifyEq(errMsg, msg)	// this gives the Str comparator in eclipse
-			return
-		}
-		throw Err("$errType not thrown")
-	}
 	Uri reqUri(Uri uri) {
 		"http://localhost:$port".toUri + uri
 	}

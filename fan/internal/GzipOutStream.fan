@@ -43,7 +43,7 @@ internal class GzipOutStream : OutStream {
 		this.wrappedOut	= wrappedOut
 		this.lock 		= OneShotLock("Stream is closed")
 	}
-	
+
 	override This write(Int byte) {
 		lock.check
 		switchToGzip(1)
@@ -91,11 +91,11 @@ internal class GzipOutStream : OutStream {
 				// - so we remove any previously set length 
 				response.headers.remove("Content-Length")
 				response.headers.contentEncoding = "gzip"				
+				bufOut = Zip.gzipOutStream(wrappedOut)
+				writeBufToOut
+				switched = true
+				return
 			}
-			bufOut = Zip.gzipOutStream(wrappedOut)
-			writeBufToOut
-			switched = true
-			return
 		}
 		
 		// wait until last minute before creating a buf
