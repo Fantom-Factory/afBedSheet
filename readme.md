@@ -1,6 +1,6 @@
 #BedSheet v1.4.6
 ---
-[![Made for: Fantom](http://img.shields.io/badge/made_for-Fantom-lightgray.svg)](http://fantom.org/)
+[![Made for: Fantom](http://img.shields.io/badge/made%20for-Fantom-lightgray.svg)](http://fantom.org/)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
