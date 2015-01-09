@@ -1,7 +1,7 @@
 #BedSheet v1.4.6
 ---
-[![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.png?style=flat)](http://fantom.org/)
-![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.png?style=flat)
+[![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat)](http://fantom.org/)
+![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.svg?style=flat)
 
 ## Overview
 
@@ -28,6 +28,7 @@ Full API & fandocs are available on the [Status302 repository](http://repo.statu
 ## Quick Start
 
 1. Create a text file called `Example.fan`:
+
         using afIoc
         using afBedSheet
         
@@ -53,6 +54,7 @@ Full API & fandocs are available on the [Status302 repository](http://repo.statu
 
 
 2. Run `Example.fan` as a Fantom script from the command line:
+
         C:\> fan Example.fan -env development
         
         [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
@@ -83,6 +85,7 @@ Full API & fandocs are available on the [Status302 repository](http://repo.statu
 
 
 3. Visit `localhost` to hit the web application:
+
         C:\> curl http://localhost:8080/index
         <html><body>Welcome to BedSheet!</body></html>
         
