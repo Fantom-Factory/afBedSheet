@@ -1,4 +1,6 @@
-![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat) ![Pod: v1.4](http://img.shields.io/badge/pod-v1.4-blue.svg?style=flat) ![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.svg?style=flat)
+#null v1.4.6
+
+![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat) ![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.svg?style=flat)
 
 ## Overview
 
