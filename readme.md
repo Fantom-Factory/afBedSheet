@@ -27,77 +27,72 @@ Full API & fandocs are available on the [Status302 repository](http://repo.statu
 
 ## Quick Start
 
-1). Create a text file called `Example.fan`:
+1. Create a text file called `Example.fan`:
+        using afIoc
+        using afBedSheet
+        
+        class HelloPage {
+          Text hello(Str name, Int iq := 666) {
+            return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+          }
+        }
+        
+        class AppModule {
+          @Contribute { serviceType=Routes# }
+          static Void contributeRoutes(Configuration conf) {
+            conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
+            conf.add(Route(`/hello/**`, HelloPage#hello))
+          }
+        }
+        
+        class Example {
+          Int main() {
+            afBedSheet::Main().main([AppModule#.qname, "8080"])
+          }
+        }
 
-```
-using afIoc
-using afBedSheet
 
-class HelloPage {
-  Text hello(Str name, Int iq := 666) {
-    return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
-  }
-}
+2. Run `Example.fan` as a Fantom script from the command line:
+        C:\> fan Example.fan -env development
+        
+        [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
+        [info] [afBedSheet] Found mod 'Example_0::AppModule'
+        [info] [afIoc] Adding module definitions from pod 'Example_0'
+        [info] [afIoc] Adding module definition for Example_0::AppModule
+        [info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
+        [info] [afIoc] Adding module definition for afIocConfig::ConfigModule
+        [info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
+        [info] [web] WispService started on port 8080
+        
+        40 IoC Services:
+          10 Builtin
+          26 Defined
+           0 Proxied
+           4 Created
+        
+        65.00% of services are unrealised (26/40)
+           ___    __                 _____        _
+          / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
+         / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
+        /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
+                   Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
+        
+        IoC Registry built in 210ms and started up in 20ms
+        
+        Bed App 'Unknown' listening on http://localhost:8080/
 
-class AppModule {
-  @Contribute { serviceType=Routes# }
-  static Void contributeRoutes(Configuration conf) {
-    conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
-    conf.add(Route(`/hello/**`, HelloPage#hello))
-  }
-}
 
-class Example {
-  Int main() {
-    afBedSheet::Main().main([AppModule#.qname, "8080"])
-  }
-}
-```
+3. Visit `localhost` to hit the web application:
+        C:\> curl http://localhost:8080/index
+        <html><body>Welcome to BedSheet!</body></html>
+        
+        C:\> curl http://localhost:8080/hello/Traci/69
+        Hello! I'm Traci and I have an IQ of 69!
+        
+        C:\> curl http://localhost:8080/hello/Luci
+        Hello! I'm Luci and I have an IQ of 666!
 
-2). Run `Example.fan` as a Fantom script from the command line:
 
-```
-C:\> fan Example.fan -env development
-
-[info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
-[info] [afBedSheet] Found mod 'Example_0::AppModule'
-[info] [afIoc] Adding module definitions from pod 'Example_0'
-[info] [afIoc] Adding module definition for Example_0::AppModule
-[info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
-[info] [afIoc] Adding module definition for afIocConfig::ConfigModule
-[info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
-[info] [web] WispService started on port 8080
-
-40 IoC Services:
-  10 Builtin
-  26 Defined
-   0 Proxied
-   4 Created
-
-65.00% of services are unrealised (26/40)
-   ___    __                 _____        _
-  / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
- / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
-/_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-           Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
-
-IoC Registry built in 210ms and started up in 20ms
-
-Bed App 'Unknown' listening on http://localhost:8080/
-```
-
-3). Visit `localhost` to hit the web application:
-
-```
-C:\> curl http://localhost:8080/index
-<html><body>Welcome to BedSheet!</body></html>
-
-C:\> curl http://localhost:8080/hello/Traci/69
-Hello! I'm Traci and I have an IQ of 69!
-
-C:\> curl http://localhost:8080/hello/Luci
-Hello! I'm Luci and I have an IQ of 666!
-```
 
 Wow! That's awesome! But what just happened!?
 
