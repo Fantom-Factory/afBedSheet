@@ -28,8 +28,8 @@ const class BedSheetWebMod : WebMod {
 	
 	** When HTTP requests are received when BedSheet is starting up, then this message is returned to the client with a 500 status code.
 	** 
-	** Defaults to: 'The website is starting up... Please retry in a few seconds.'
-	const Str			startupMessage	:= "The website is starting up... Please retry in a few seconds."
+	** Defaults to: 'The website is starting up... Please retry in a moment.'
+	const Str			startupMessage	:= "The website is starting up... Please retry in a moment."
 	
 	private const AtomicBool	started			:= AtomicBool(false)
 	private const AtomicRef		startupErrRef	:= AtomicRef()
