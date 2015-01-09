@@ -1,6 +1,7 @@
 #BedSheet v1.4.6
 ---
-![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat) ![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.svg?style=flat)
+[![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.png?style=flat)](http://fantom.org/)
+![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.png?style=flat)
 
 ## Overview
 
@@ -41,7 +42,7 @@ class HelloPage {
 class AppModule {
   @Contribute { serviceType=Routes# }
   static Void contributeRoutes(Configuration conf) {
-    conf.add(Route(`/index`, Text.fromPlain("Welcome to BedSheet!")))
+    conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
     conf.add(Route(`/hello/**`, HelloPage#hello))
   }
 }
@@ -80,12 +81,16 @@ C:\> fan Example.fan -env development
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
            Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
 
-IoC Registry built in 410ms and started up in 50ms
+IoC Registry built in 210ms and started up in 20ms
 
 Bed App 'Unknown' listening on http://localhost:8080/
+```
 
+3). Visit `localhost` to hit the web application:
+
+```
 C:\> curl http://localhost:8080/index
-Welcome to BedSheet!
+<html><body>Welcome to BedSheet!</body></html>
 
 C:\> curl http://localhost:8080/hello/Traci/69
 Hello! I'm Traci and I have an IQ of 69!
