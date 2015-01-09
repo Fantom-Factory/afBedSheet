@@ -1,3 +1,5 @@
+![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat) ![Pod: v1.4](http://img.shields.io/badge/pod-v1.4-blue.svg?style=flat) ![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.svg?style=flat)
+
 ## Overview
 
 `BedSheet` is a platform for delivering web applications written in [Fantom](http://fantom.org/).
@@ -53,8 +55,32 @@ class Example {
 
 ```
 C:\> fan Example.fan -env development
-...
-BedSheet v1.2 started up in 323ms
+
+[info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
+[info] [afBedSheet] Found mod 'Example_0::AppModule'
+[info] [afIoc] Adding module definitions from pod 'Example_0'
+[info] [afIoc] Adding module definition for Example_0::AppModule
+[info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
+[info] [afIoc] Adding module definition for afIocConfig::ConfigModule
+[info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
+[info] [web] WispService started on port 8080
+
+40 IoC Services:
+  10 Builtin
+  26 Defined
+   0 Proxied
+   4 Created
+
+65.00% of services are unrealised (26/40)
+   ___    __                 _____        _
+  / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
+ / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
+/_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
+           Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
+
+IoC Registry built in 410ms and started up in 50ms
+
+Bed App 'Unknown' listening on http://localhost:8080/
 
 C:\> curl http://localhost:8080/index
 Welcome to BedSheet!
@@ -410,15 +436,15 @@ using webmod
 using afIoc
 using afBedSheet
 
-class Example {    
+class Example {
     Void main() {
         mod := RouteMod { it.routes = [
             "poo" : BedSheetWebMod(TinyBedAppModule#.qname, 8069)
         ]}
-        
+
         WispService { it.port=8069; it.root=mod }.install.start
 
-        Actor.sleep(Duration.maxVal)    
+        Actor.sleep(Duration.maxVal)
     }
 }
 
@@ -427,7 +453,7 @@ class TinyBedAppModule {
     @Contribute { serviceType=Routes# }
     static Void contributeRoutes(Configuration conf) {
         conf.add(Route(`/***`, Text.fromPlain("Hello Mum!")))
-    }    
+    }
 }
 ```
 

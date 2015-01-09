@@ -1,3 +1,9 @@
+![Written in: Fantom]`http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat`
+![Pod: v@{pod.version}]`http://img.shields.io/badge/pod-v@{pod.version}-blue.svg?style=flat`
+![Licence: MIT]`http://img.shields.io/badge/licence-MIT-green.svg?style=flat`
+
+
+
 Overview [#overview]
 ********************
 'BedSheet' is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
@@ -64,8 +70,32 @@ pre>
 syntax: fantom
 
 C:\> fan Example.fan -env development
-...
-BedSheet v1.2 started up in 323ms
+
+[info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
+[info] [afBedSheet] Found mod 'Example_0::AppModule'
+[info] [afIoc] Adding module definitions from pod 'Example_0'
+[info] [afIoc] Adding module definition for Example_0::AppModule
+[info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
+[info] [afIoc] Adding module definition for afIocConfig::ConfigModule
+[info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
+[info] [web] WispService started on port 8080
+
+40 IoC Services:
+  10 Builtin
+  26 Defined
+   0 Proxied
+   4 Created
+
+65.00% of services are unrealised (26/40)
+   ___    __                 _____        _
+  / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
+ / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
+/_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
+           Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
+
+IoC Registry built in 410ms and started up in 50ms
+
+Bed App 'Unknown' listening on http://localhost:8080/
 
 C:\> curl http://localhost:8080/index
 Welcome to BedSheet!
@@ -180,7 +210,7 @@ Route handlers are usually written by the application developer, but a couple of
 Response Objects [#responseObjects]
 ***********************************
 *Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to
-process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return 
+process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return
 *Response Objects*, which will be handled by another *Response Processor*.
 
 You can define *Response Processors* and process *Response Objects* yourself; but by default, 'BedSheet' handles the
@@ -197,7 +227,7 @@ following:
  - `Redirect` : Sends a 3xx redirect response to the client.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding 'Content-Type'.
 
-Because of the nature of response object processing it is possible, nay normal, to *chain* multiple response objects together. Example: 
+Because of the nature of response object processing it is possible, nay normal, to *chain* multiple response objects together. Example:
 
  1. If a Route returns or throws an 'Err',
  1. 'ErrProcessor' looks up its responses and returns a 'Func',
@@ -218,7 +248,7 @@ For instance, Alien-Factory provides the following libraries:
  - [Slim]`pod:afSlim` for concise HTML templating, and
  - [Pillow]`pod:afPillow` for integrating [efanXtra]`pod:afEfanXtra` components (may be used with [Slim]`pod:afSlim`!)
 
-Taking [Slim]`pod:afSlim` as an example, simply inject the Slim service into your *Route Handler* and use it to return a 'Text' 
+Taking [Slim]`pod:afSlim` as an example, simply inject the Slim service into your *Route Handler* and use it to return a 'Text'
 response object:
 
 pre>
@@ -259,8 +289,8 @@ See the FantomFactory article [Basic HTTP Authentication With BedSheet]`article:
 Error Processing [#errorProcessing]
 ***********************************
 When 'BedSheet' catches an Err it scans through a list of contributed response objects to find one that can
-handle the Err. If no matching response object is found then the *default err response object* is used. 
-This default response object displays BedSheet's extremely verbose Error 500 page. 
+handle the Err. If no matching response object is found then the *default err response object* is used.
+This default response object displays BedSheet's extremely verbose Error 500 page.
 It displays (a shed load of) debugging information and is highly customisable:
 
 ![BedSheet's Verbose Err500 Page]`http://static.alienfactory.co.uk/fantom-docs/Err500.png`
@@ -282,7 +312,7 @@ static Void contributeErrResponses(Configuration config) {
 <pre
 
 Note that in the above example, 'ArgErr' and all subclasses of 'ArgErr' will be processed by 'MyErrHandler.process()'.
-A contribute for just 'Err' will act as a capture all and be used should a more precise match not be found.  
+A contribute for just 'Err' will act as a capture all and be used should a more precise match not be found.
 You could also replace the default err response object:
 
 pre>
@@ -300,8 +330,8 @@ static Void contributeApplicationDefaults(Configuration config) {
 
 HTTP Status Processing [#httpStatusProcessing]
 **********************************************
-'HttpStatus' objects are handled by a `ResponseProcessor` that selects a contributed response object that corresponds to the 
-HTTP status code. If no specific response object is found then the *default http status response object* is used. This default 
+'HttpStatus' objects are handled by a `ResponseProcessor` that selects a contributed response object that corresponds to the
+HTTP status code. If no specific response object is found then the *default http status response object* is used. This default
 response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a '404 Not Found' error.
 
 ![BedSheet's 404 Status Page]`http://static.alienfactory.co.uk/fantom-docs/Err404.png`
@@ -444,7 +474,7 @@ Gzip, although enabled by default, can be disabled for the entire web app by set
 
 Gzip'able Mime Types [#mimeTypes]
 ---------------------------------
-Text files gzip very well and yield high compression rates, but not everything should be gzipped. 
+Text files gzip very well and yield high compression rates, but not everything should be gzipped.
 For example, JPG images are already compressed when gzip'ed often end up larger than the original!
 For this reason only [Mime Types]`sys::MimeType` contributed to the `GzipCompressible` service will be gzipped:
 
@@ -463,7 +493,7 @@ Gzip can be disabled on a per request / response basis by calling the following:
 Gzip only when asked [#askNicely]
 ---------------------------------
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such,
-and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, the response is only 
+and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, the response is only
 gzipped if the appropriate HTTP request header was set.
 
 Min content threshold [#minThreshold]
@@ -483,7 +513,7 @@ If (and only if!) the request passed all the tests above, will it then be loving
 Buffered Response [#bufferedResponse]
 *************************************
 By default, BedSheet attempts to set the 'Content-Length' [HTTP response header]`http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding`.
-It does this by buffering 'HttpResponse.out'. 
+It does this by buffering 'HttpResponse.out'.
 When the stream is closed, it writes the 'Content-Length' and pipes the buffer to the real HTTP response.
 
 Response buffering can be disabled on a per HTTP response basis.
@@ -500,7 +530,7 @@ To some, BedSheet may look like a behemoth web framework, but it is in fact just
 This means it can be plugged into a [Wisp]`pod:wisp` application along side other all the other standard [webmods]`pod:webmod`.
 Just create an instance of `BedSheetWebMod` and pass it to Wisp like any other.
 
-For example, the following Wisp application places BedSheet under the path 'poo/'.  
+For example, the following Wisp application places BedSheet under the path 'poo/'.
 
 pre>
 using concurrent
@@ -509,15 +539,15 @@ using webmod
 using afIoc
 using afBedSheet
 
-class Example {    
+class Example {
     Void main() {
         mod := RouteMod { it.routes = [
             "poo" : BedSheetWebMod(TinyBedAppModule#.qname, 8069)
         ]}
-        
+
         WispService { it.port=8069; it.root=mod }.install.start
 
-        Actor.sleep(Duration.maxVal)    
+        Actor.sleep(Duration.maxVal)
     }
 }
 
@@ -526,14 +556,14 @@ class TinyBedAppModule {
     @Contribute { serviceType=Routes# }
     static Void contributeRoutes(Configuration conf) {
         conf.add(Route(`/***`, Text.fromPlain("Hello Mum!")))
-    }    
+    }
 }
 <pre
 
-When run, a request to 'http://localhost:8069/' will return a Wisp 404 and any request to 'http://localhost:8069/poo/*' will invoke BedSheet and return 'Hello Mum!'. 
+When run, a request to 'http://localhost:8069/' will return a Wisp 404 and any request to 'http://localhost:8069/poo/*' will invoke BedSheet and return 'Hello Mum!'.
 
 When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()]`afBedSheet::BedSheetServer.toClientUrl` to ensure the extra path info is added.
-Similarly, ensure asset URLs are retrieved from the `FileHandler` service. 
+Similarly, ensure asset URLs are retrieved from the `FileHandler` service.
 
 Note that each 'BedSheetWebMod' holds a reference to it's own IoC registry so you can run mulitple BedSheet instances side by side in the same Wisp application.
 
@@ -595,12 +625,12 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.6 [#v1.4.6]
 ----------------
- - Chg: BedSheet now compatible with [Fantom v1.0.67]`http://fantom.org/forum/topic/2387` - issues with gzip and the dev proxy. 
+ - Chg: BedSheet now compatible with [Fantom v1.0.67]`http://fantom.org/forum/topic/2387` - issues with gzip and the dev proxy.
  - Bug: BedSheet sometimes reported a 'NullErr' when starting up in dev mode.
 
 v1.4.4 [#v1.4.4]
 ----------------
- - Bug: Startup Errs thrown by FileHandler (and middleware in general) ended up in limbo and weren't reported. 
+ - Bug: Startup Errs thrown by FileHandler (and middleware in general) ended up in limbo and weren't reported.
 
 v1.4.2 [#v1.4.2]
 ----------------
@@ -614,12 +644,12 @@ v1.4.0 [#v1.4.0]
  - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
  - New: Added 'HttpRequest.parseMultiPartForm()'.
  - New: Added *Wisp Integration* section to the docs.
- - Chg: Err processing updated; gone are bespoke 'ErrProcessors', contribute generic repsonse objects instead. (Breaking change.) 
+ - Chg: Err processing updated; gone are bespoke 'ErrProcessors', contribute generic repsonse objects instead. (Breaking change.)
  - Chg: HTTP Status processing updated; gone are bespoke 'HTTPStatusProcessors', contribute generic repsonse objects instead. (Breaking change.)
  - Chg: Replaced the 'HttpFlash' class with 'HttpSession.flash()'. (Breaking change.)
  - Chg: Converted 'Route' to a mixin so users can contribute their own implementations.
- - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.  
- - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'. 
+ - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.
+ - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'.
  - Chg: Overhauled the 'Route' matching, argument conversion and documentation. (Possible breaking change.)
  - Chg: Nullability within 'ValueEncoders' has now been property addressed. (Breaking change in 'ValueEncoder' mixin.)
  - Chg: 'Middleware' now returns 'Void' not 'Bool'. (Breaking change.)
@@ -633,7 +663,7 @@ v1.4.0 [#v1.4.0]
  - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
  - Bug: 'MethodCall' responses could not call static methods.
  - Bug: Route HTTP methods were not case-insenstive.
- - Bug: 'FileAsset.toStr()' sometimes threw an Err. 
+ - Bug: 'FileAsset.toStr()' sometimes threw an Err.
  - Bug: HTTP Flash objects no longer need to be immutable, just serialisable.
 
 v1.3.16 [#v1.3.16]
