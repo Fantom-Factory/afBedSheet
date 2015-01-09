@@ -1,7 +1,7 @@
-#BedSheet v1.4.6
+#BedSheet v1.4.7
 ---
-[![Written in: Fantom](http://img.shields.io/badge/written_in-fantom-lightgray.svg?style=flat)](http://fantom.org/)
-![Licence: MIT](http://img.shields.io/badge/licence-MIT-green.svg?style=flat)
+[![Made for: Fantom](http://img.shields.io/badge/made_for-Fantom-lightgray.svg)](http://fantom.org/)
+![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
 
