@@ -10,7 +10,7 @@ class HelloPage {
 class AppModule {
   @Contribute { serviceType=Routes# }
   static Void contributeRoutes(Configuration conf) {
-    conf.add(Route(`/index`, Text.fromPlain("Welcome to BedSheet!")))
+    conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
     conf.add(Route(`/hello/**`, HelloPage#hello))
   }
 }
