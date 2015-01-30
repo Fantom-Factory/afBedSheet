@@ -75,12 +75,18 @@ const mixin FileHandler {
 	abstract FileAsset? serviceRoute(Uri remainingUrl)	
 	
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
+	** 
 	** Throws 'ArgErr' if the URL is not mapped.
-	abstract FileAsset fromLocalUrl(Uri localUrl)
+	** 
+	** Throws 'ArgErr' if checked and the URL does not exist. 
+	abstract FileAsset fromLocalUrl(Uri localUrl, Bool checked := true)
 
-	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'. 
+	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'.
+	**  
 	** Throws 'ArgErr' if the file directory is not mapped.
-	abstract FileAsset fromServerFile(File serverFile)
+	** 
+	** Throws 'ArgErr' if checked and the URL does not exist. 
+	abstract FileAsset fromServerFile(File serverFile, Bool checked := true)
 	
 	** Finds the directory mapping that best fits the given local URL, or 'null' if not found.
 	@NoDoc	// Experimental advanced use - see Duvet
@@ -132,7 +138,7 @@ internal const class FileHandlerImpl : FileHandler {
 		return prefix
 	}
 
-	override FileAsset fromLocalUrl(Uri localUrl) {
+	override FileAsset fromLocalUrl(Uri localUrl, Bool checked := true) {
 		prefix	:= findMappingFromLocalUrl(localUrl)
 				?: throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys)
 
@@ -141,14 +147,14 @@ internal const class FileHandlerImpl : FileHandler {
 		remaining := localUrl.getRange(prefix.path.size..-1).relTo(`/`)
 		file	  := directoryMappings[prefix].plus(remaining, false)
 
-		return fromServerFile(file)
+		return fromServerFile(file, checked)
 	}
 
-	override FileAsset fromServerFile(File file) {
+	override FileAsset fromServerFile(File file, Bool checked := true) {
 		fileCache.getOrAddOrUpdate(file) |File f->FileAsset| {
 			if (file.uri.isDir)
 				throw ArgErr(BsErrMsgs.fileIsDirectory(file))
-			if (!file.exists)
+			if (!file.exists && checked)
 				throw ArgErr(BsErrMsgs.fileNotFound(file))
 			
 			fileUri	:= file.normalize.uri.toStr
