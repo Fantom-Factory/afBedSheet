@@ -66,7 +66,7 @@ const mixin BedSheetConfigIds {
 	** Defaults to 'false'
 	static const Str disableWelcomePage				:= "afBedSheet.disableWelcomePage"
 
-	** The public facing domain; used by `BedServer` to create absolute URLs. 
+	** The public facing domain; used by `BedSheetServer` to create absolute URLs. 
 	** 3rd party libraries, such as SiteMap and Google Analytics, require this when running in production mode. 
 	** 
 	** Defaults to 'http://localhost:<PORT>'
@@ -101,7 +101,7 @@ const mixin BedSheetConfigIds {
 	** Set to enable request logging. 
 	** Must end in a trailing /slash/.
 	** 
-	** @see `RequestLogFilter`
+	** @see `RequestLogMiddleware`
 	static const Str requestLogDir					:= "afBedSheet.requestLog.dir"
 
 	** Log filename pattern.
@@ -110,14 +110,14 @@ const mixin BedSheetConfigIds {
 	** 
 	** Defaults to 'afBedSheet-{YYYY-MM}.log'
 	** 
-	** @see `RequestLogFilter`
+	** @see `RequestLogMiddleware`
 	static const Str requestLogFilenamePattern		:= "afBedSheet.requestLog.filenamePattern" 
 
 	** Format of the web log records as a string of names.
 	** 
 	** Defaults to 'date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)'
 	** 
-	** @see `RequestLogFilter`
+	** @see `RequestLogMiddleware`
 	static const Str requestLogFields				:= "afBedSheet.requestLog.fields"
 
 }

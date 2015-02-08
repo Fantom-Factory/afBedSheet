@@ -37,7 +37,7 @@ const mixin BedSheetServer {
 	abstract Pod[] modulePods()
 	
 	** The request path to this BedSheet 'WebMod'. 
-	** Only really relevant should BedSheet be started in a [RouteMod]`web::RouteMod`.
+	** Only really relevant should BedSheet be started in a [RouteMod]`webmod::RouteMod`.
 	** 
 	** Starts and ends with a '/'. Example, '`/pub/`'
 	** 

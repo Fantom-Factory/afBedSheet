@@ -37,13 +37,13 @@ Quick Start [#quickStart]
 
     using afIoc
     using afBedSheet
-    
+
     class HelloPage {
       Text hello(Str name, Int iq := 666) {
         return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
       }
     }
-    
+
     class AppModule {
       @Contribute { serviceType=Routes# }
       static Void contributeRoutes(Configuration conf) {
@@ -51,7 +51,7 @@ Quick Start [#quickStart]
         conf.add(Route(`/hello/**`, HelloPage#hello))
       }
     }
-    
+
     class Example {
       Int main() {
         afBedSheet::Main().main([AppModule#.qname, "8080"])
@@ -64,7 +64,7 @@ Quick Start [#quickStart]
     syntax: fantom
 
     C:\> fan Example.fan -env development
-    
+
     [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
     [info] [afBedSheet] Found mod 'Example_0::AppModule'
     [info] [afIoc] Adding module definitions from pod 'Example_0'
@@ -73,22 +73,22 @@ Quick Start [#quickStart]
     [info] [afIoc] Adding module definition for afIocConfig::ConfigModule
     [info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
     [info] [web] WispService started on port 8080
-    
+
     40 IoC Services:
       10 Builtin
       26 Defined
        0 Proxied
        4 Created
-    
+
     65.00% of services are unrealised (26/40)
        ___    __                 _____        _
       / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
      / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
     /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
                Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
-    
+
     IoC Registry built in 210ms and started up in 20ms
-    
+
     Bed App 'Unknown' listening on http://localhost:8080/
 
 
@@ -96,10 +96,10 @@ Quick Start [#quickStart]
 
     C:\> curl http://localhost:8080/index
     <html><body>Welcome to BedSheet!</body></html>
-    
+
     C:\> curl http://localhost:8080/hello/Traci/69
     Hello! I'm Traci and I have an IQ of 69!
-    
+
     C:\> curl http://localhost:8080/hello/Luci
     Hello! I'm Luci and I have an IQ of 666!
 
@@ -464,13 +464,13 @@ By default, BedSheet compresses HTTP responses with gzip where it can, for [opti
 But it doesn't do this willy nilly, oh no! There are many hurdles to overcome...
 
 Disable All [#disablePerWebApp]
--------------------------------
+===============================
 Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
 
     config[BedSheetConfigIds.gzipDisabled] = true
 
 Gzip'able Mime Types [#mimeTypes]
----------------------------------
+=================================
 Text files gzip very well and yield high compression rates, but not everything should be gzipped.
 For example, JPG images are already compressed when gzip'ed often end up larger than the original!
 For this reason only [Mime Types]`sys::MimeType` contributed to the `GzipCompressible` service will be gzipped:
@@ -482,19 +482,19 @@ For this reason only [Mime Types]`sys::MimeType` contributed to the `GzipCompres
 By default BedSheet will compress html, css, javascript, json, xml and other text responses.
 
 Disable per Response [#disablePerResponse]
-------------------------------------------
+==========================================
 Gzip can be disabled on a per request / response basis by calling the following:
 
     httpResponse.disableGzip()
 
 Gzip only when asked [#askNicely]
----------------------------------
+=================================
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such,
 and as per [RFC 2616 HTTP1.1 Sec14.3]`http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`, the response is only
 gzipped if the appropriate HTTP request header was set.
 
 Min content threshold [#minThreshold]
--------------------------------------
+=====================================
 Gzip is great when compressing large files, but if you've only got a few bytes to squash... the compressed version is
 going to be bigger, which kinda defeats the point compression!
 For that reason the response data must reach a minimum size / threshold before it gets gzipped.
@@ -502,7 +502,7 @@ For that reason the response data must reach a minimum size / threshold before i
 See 'GzipOutStream' and [gzipThreshold]`BedSheetConfigIds#gzipThreshold` for more details.
 
 Phew! Made it! [#madeIt]
-------------------------
+========================
 If (and only if!) the request passed all the tests above, will it then be lovingly gzipped and sent to the client.
 
 
@@ -620,24 +620,29 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 
 Release Notes [#releaseNotes]
 *****************************
+v1.4.8 [#v1.4.8]
+================
+ - Chg: 'FileHandler.fromLocalUrl()' and 'FileHandler.fromServerFile()' now take a 'checked' parameter.
+ - Chg: 'FileAssetProcessor' now copes with duff 'If-None-Match' Etag requests headers.
+
 v1.4.6 [#v1.4.6]
-----------------
+================
  - Chg: BedSheet now compatible with [Fantom v1.0.67]`http://fantom.org/forum/topic/2387` - issues with gzip and the dev proxy.
  - Bug: BedSheet sometimes reported a 'NullErr' when starting up in dev mode.
 
 v1.4.4 [#v1.4.4]
-----------------
+================
  - Bug: Startup Errs thrown by FileHandler (and middleware in general) ended up in limbo and weren't reported.
 
 v1.4.2 [#v1.4.2]
-----------------
+================
  - Chg: HTTP requests received when BedSheet is starting up are given a 500 status code and a starting up message.
    Previous behaviour was to queue up the requests, but that can cause issues under heavy load.
  - Chg: 'HttpRequest.form' throws a 'HttpStatusErr' (400 - Bad Request) should the form data be invalid - see `sys::Uri.decodeQuery`. SpamBots send you all sorts of crap!
  - Bug: BedSheet welcome page had the 404 page appended to it - Firefox reported the page as *junk*!
 
 v1.4.0 [#v1.4.0]
-----------------
+================
  - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
  - New: Added 'HttpRequest.parseMultiPartForm()'.
  - New: Added *Wisp Integration* section to the docs.
@@ -664,12 +669,12 @@ v1.4.0 [#v1.4.0]
  - Bug: HTTP Flash objects no longer need to be immutable, just serialisable.
 
 v1.3.16 [#v1.3.16]
-------------------
+==================
  - Chg: Updated to use [IoC 2.0.0]`pod:afIoc` and [IoC Config 1.0.16]`pod:afIocConfig`.
  - Chg: Default cache HTTP headers for 'FileAssets' are only set in prod.
 
 v1.3.14 [#v1.3.14]
-------------------
+==================
  - New: 'SafeOutStream' doesn't throw an 'IOErr' should the client close the connection early.
  - New: 'PodHandler' has a whitelist of files allowed to be served.
  - Chg: Revamped 'PodHandler', now contains 'fromLocalUrl()' and 'fromPodResource()' to parallel 'FileHandler'.
@@ -678,7 +683,7 @@ v1.3.14 [#v1.3.14]
  - Bug: Development Proxy process did not work on Mac OS-X - Thanks to [LightDye for Reporting]`http://stackoverflow.com/questions/25100460/error-cannot-init-sys-homedir-running-a-fantom-app-based-on-afbedsheet-on-mac-o`.
 
 v1.3.12 [#v1.3.12]
-------------------
+==================
  - New: Static files are served with a default 'Cache-Control' HTTP response header, change via Ioc Config.
  - New: Added 'BedSheetServer' to replace 'BedSheetMetaData', contains methods for generating absolute URLs.
  - New: Added 'toClientUrl()' and 'toAbsoluteUrl()' to 'BedSheetServer'.
@@ -692,14 +697,14 @@ v1.3.12 [#v1.3.12]
  - Chg: 'HttpRequestHeaders.host' is now a 'Str'.
 
 v1.3.10 [#v1.3.10]
-------------------
+==================
  - New: 'FileAsset' objects are generated by the 'FileHandler' service and contain 'clientUrls' for your web page.
  - Chg: 'ValueEncoders' service now lets 'ReProcessErrs' pass through un-hindered.
  - Chg: Overhauled 'FileHandler' API. (Breaking change)
  - Chg: Renamed 'Text.mimeType' -> 'Text.contentType'.
 
 v1.3.8 [#v1.3.8]
-----------------
+================
  - New: Set response headers 'X-BedSheet-errMsg', 'X-BedSheet-errType' and 'X-BedSheet-errStackTrace' when processing an Err. (Dev mode only)
  - New: Boring stack frames on the Err500 page are muted (greyed) and may be toggled on and off completely via a checkbox.
  - New: 'FileHandler' now responds to 'HEAD' requests.
@@ -710,7 +715,7 @@ v1.3.8 [#v1.3.8]
  - Bug: 'FlashMiddleware' needlessly created http sessions.
 
 v1.3.6 [#v1.3.6]
-----------------
+================
  - New: Added 'ActorPools' section to Err500 page.
  - Chg: Updated to use [IoC 1.6.0]`pod:afIoc` and [Concurrent]`pod:afConcurrent`.
  - Chg: 'Routes' now perform some basic validation to catch cases where the Uri would never match the method handler.
@@ -721,14 +726,14 @@ v1.3.6 [#v1.3.6]
  - Bug: 'HttpFlash' data could leak into concurrent web requests.
 
 v1.3.4 [#v1.3.4]
-----------------
+================
  - New: Added 'fromClientUri()' and 'fromServerFile()' to 'FileHandler'.
  - New: 'IocConfig' values, BedSheet Routes and Fantom Pods are now printed on the standard Err page.
  - Chg: Added some handy 'toStr' methods to 'Route' and response objects.
  - Chg: Pretty printed the Str maps that get logged on Err.
 
 v1.3.2 [#v1.3.2]
-----------------
+================
  - New: Added 'appName' to 'BedSheetMetaData' that returns the 'proj.name' from the application's pod meta.
  - Chg: Added 'matchesMethod()' and 'matchesParams()' helper methods to 'RouteResponseFactory'.
  - Chg: Made 'ErrPrinterStr' and 'ErrPrinterHtml' public, but '@NoDoc', as they're useful for emails et al.
@@ -737,7 +742,7 @@ v1.3.2 [#v1.3.2]
  - Bug: Application could NPE on startup if an 'AppModule' could not be found.
 
 v1.3.0 [#v1.3.0]
-----------------
+================
  - New: Added 'HttpCookies' service, removed corresponding cookie methods from 'HttpRequest' and 'HttpResponse'. (Breaking change)
  - New: Added 'stash()' to 'HttpRequest'
  - New: Added 'fromXhtml(...)' to 'Text'
@@ -754,12 +759,12 @@ v1.3.0 [#v1.3.0]
  - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
 
 v1.2.4 [#v1.2.4]
-----------------
+================
  - Chg: Upgraded to [IoC 1.5.0]`pod:afIoc`.
  - Chg: Upgraded to [IoC Config 1.0.0]`pod:afIocConfig`.
 
 v1.2.2 [#v1.2.2]
-----------------
+================
  - New: Added 'gzip' compression for web fonts.
  - New: BedSheet connection details printed on startup.
  - Chg: 'FileHandler' now lets non-existant files fall through.
@@ -769,7 +774,7 @@ v1.2.2 [#v1.2.2]
  - Bug: 'BedServer' generated the wrong info for 'BedSheetMetaData' - required when testing [Pillow]`pod:afPillow` web apps.
 
 v1.2.0 [#v1.2.0]
-----------------
+================
  - New: Route objects may take any response result - not just 'Methods'!
  - New: BedSheet now has a dependency on [IoC Env]`pod:afIocEnv`
  - Chg: 'HttpRequestLogFilter' is now in the Http Pipeline by default - it just needs enabling.
@@ -782,14 +787,14 @@ v1.2.0 [#v1.2.0]
  - Chg: Massaged a lot of the documentation.
 
 v1.1.4 [#v1.1.4]
-----------------
+================
  - New: The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.
  - Chg: Better Err msg if 'AppModule' type not found on startup.
  - Chg: Disabled afIoc service list on startup.
  - Bug: 'BedServer' would crash if the app required 'BedSheetMetaData'.
 
 v1.1.2 [#v1.1.2]
-----------------
+================
  - New: Added 'Causes' section to Err500 page.
  - Chg: Faster startup times when using a proxy
  - Chg: Better Err handling on app startup
@@ -797,7 +802,7 @@ v1.1.2 [#v1.1.2]
  - Bug: The '-noTransDeps' startup option now propogates through the proxy.
 
 v1.1.0 [#v1.1.0]
-----------------
+================
  - New: Added 'BedSheetMetaData' with information on which 'AppModule' afbedSheet was started with.
  - Chg: Renamed 'RouteHandler' -> 'MethodInvoker'. (Breaking change.)
  - Chg: Injectable services are now documented with '(Service)'.
@@ -808,20 +813,20 @@ v1.1.0 [#v1.1.0]
  (Thanks to 'LightDye' for reporting.)
 
 v1.0.16 [#v1.0.16]
-------------------
+==================
  - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
  - Chg: Broke '@Config' code out into its own module: [IoC Config]`pod:afIocConfig`.
  - Chg: Added a skull logo to the 'Err500' page.
  - Chg: Rejigged the 'Err500' section layout and tweaked the source code styling.
 
 v1.0.14 [#v1.0.14]
-------------------
+==================
  - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages.
  - New: Added 'ConfigSource.getCoerced()' method.
  - New: Added [Template Rendering]`#templateRendering` to fandoc.
 
 v1.0.12 [#v1.0.12]
-------------------
+==================
  - New: Added 'IoC Operation Trace' section to Err500 page.
  - New: Added 'Moustache Compilation Err' section to Err500 page.
  - Chg: Moved Moustache out into it's own project.
@@ -829,11 +834,11 @@ v1.0.12 [#v1.0.12]
  - Bug: Module name was not always found correctly on startup.
 
 v1.0.10 [#v1.0.10]
-------------------
+==================
  - Bug: This documentation page didn't render.
 
 v1.0.8 [#v1.0.8]
-----------------
+================
  - Chg: Updated to use 'afIoc-1.4.x'
  - Chg: Overhauled `Route` to match 'null' values. Thanks go to [LightDye]`http://fantom.org/sidewalk/topic/2178#c14076`.
  - Chg: Warnings on startup if an AppModule could not be found - see
@@ -844,16 +849,16 @@ v1.0.8 [#v1.0.8]
  - Chg: Test code is no longer distributed with the afBedSheet.pod.
 
 v1.0.6 [#v1.0.6]
-----------------
+================
  - Chg: 'HttpResponse.statusCode' is now a field.
  - Chg: 'HttpResponse.disableGzip' is now a field.
  - Chg: 'HttpResponse.disableBuffering' is now a field.
 
 v1.0.4 [#v1.0.4]
-----------------
+================
  - New: Added 'BedServer' and 'BedClient' to test BedSheet apps without using a real web server.
 
 v1.0.2 [#v1.0.2]
-----------------
+================
  - New: Initial release
 
