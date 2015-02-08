@@ -39,13 +39,9 @@ const mixin HttpResponse {
 	abstract OutStream out()
 	
 	** Set to 'true' to disable gzip compression for this response.
-	** 
-	** @see `GzipOutStream`
 	abstract Bool disableGzip
 	
 	** Set to 'true' to disable buffering for this response.
-	** 
-	** @see `BufferedOutStream`
 	abstract Bool disableBuffering
 
 	** Directs the client to display a 'save as' dialog by setting the 'Content-Disposition' HTTP 

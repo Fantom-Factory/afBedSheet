@@ -1,6 +1,7 @@
 #BedSheet v1.4.6
 ---
-[![Made for: Fantom](http://img.shields.io/badge/made%20for-Fantom-lightgray.svg)](http://fantom.org/)
+[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
+[![pod: v1.4.6](http://img.shields.io/badge/pod-v1.4.6-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -158,7 +159,7 @@ class AppModule {
 }
 ```
 
-[Route](http://repo.status302.com/doc/afBedSheet/Route.html) objects take a matching `glob` and a response object. A response object is any object that `BedSheet` knows how to [process](http://repo.status302.com/doc/afBedSheet/#responseObjects.html) or a `Method` to be called. If a method is given, then request URL path segments are matched to the method parameters. See [Route](http://repo.status302.com/doc/afBedSheet/Route.html) for more details.
+[Route](http://repo.status302.com/doc/afBedSheet/Route.html) objects take a matching `glob` and a response object. A response object is any object that `BedSheet` knows how to [process](#responseObjects) or a `Method` to be called. If a method is given, then request URL path segments are matched to the method parameters. See [Route](http://repo.status302.com/doc/afBedSheet/Route.html) for more details.
 
 Routing lesson over.
 
@@ -166,7 +167,7 @@ Routing lesson over.
 
 ## Route Handling
 
-*Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](http://repo.status302.com/doc/afBedSheet/#quickStart.html) `HelloPage` *route handler* returns a [Text](http://repo.status302.com/doc/afBedSheet/Text.html) *response object*.
+*Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](#quickStart) `HelloPage` *route handler* returns a [Text](http://repo.status302.com/doc/afBedSheet/Text.html) *response object*.
 
 Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with `BedSheet`:
 
@@ -181,11 +182,11 @@ You can define *Response Processors* and process *Response Objects* yourself; bu
 
 - `Void` / `null` / `false` : Processing should fall through to the next Route match.
 - `true` : No further processing is required.
-- [Err](http://fantom.org/doc/sys/Err.html) : An appropriate response object is selected from contributed Err responses. (See [Error Processing](http://repo.status302.com/doc/afBedSheet/#errorProcessing.html).)
+- [Err](http://fantom.org/doc/sys/Err.html) : An appropriate response object is selected from contributed Err responses. (See [Error Processing](#errorProcessing).)
 - [File](http://fantom.org/doc/sys/File.html) : The file is streamed to the client.
 - [FileAsset](http://repo.status302.com/doc/afBedSheet/FileAsset.html) : The file is streamed to the client.
 - [Func](http://fantom.org/doc/sys/Func.html) : The function is called, using IoC to inject the parameters. The return value is treated as reposonse object for further processing.
-- [HttpStatus](http://repo.status302.com/doc/afBedSheet/HttpStatus.html) : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing](http://repo.status302.com/doc/afBedSheet/#httpStatusProcessing.html).)
+- [HttpStatus](http://repo.status302.com/doc/afBedSheet/HttpStatus.html) : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing](#httpStatusProcessing).)
 - [InStream](http://fantom.org/doc/sys/InStream.html) : The `InStream` is piped to the client. The `InStream` is guaranteed to be closed.
 - [MethodCall](http://repo.status302.com/doc/afBedSheet/MethodCall.html) : The method is called and the return value used for further processing.
 - [Redirect](http://repo.status302.com/doc/afBedSheet/Redirect.html) : Sends a 3xx redirect response to the client.
@@ -232,7 +233,7 @@ When a HTTP request is received, it is passed through a pipeline of BedSheet [Mi
 Middleware bundled with `BedSheet` include:
 
 - `RequestLog`: Generates request logs in the standard [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
-- `Routes` : Performs the standard [request routing](http://repo.status302.com/doc/afBedSheet/#requestRouting.html)
+- `Routes` : Performs the standard [request routing](#requestRouting)
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation. See the FantomFactory article [Basic HTTP Authentication With BedSheet](http://www.fantomfactory.org/articles/basic-http-authentication-with-bedSheet) for working examples.
 
@@ -382,13 +383,13 @@ See [proxyPingInterval](http://repo.status302.com/doc/afBedSheet/BedSheetConfigI
 
 By default, BedSheet compresses HTTP responses with gzip where it can, for [optimisation](http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/). But it doesn't do this willy nilly, oh no! There are many hurdles to overcome...
 
-#### Disable All
+### Disable All
 
 Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
 
     config[BedSheetConfigIds.gzipDisabled] = true
 
-#### Gzip'able Mime Types
+### Gzip'able Mime Types
 
 Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types](http://fantom.org/doc/sys/MimeType.html) contributed to the [GzipCompressible](http://repo.status302.com/doc/afBedSheet/GzipCompressible.html) service will be gzipped:
 
@@ -398,23 +399,23 @@ Text files gzip very well and yield high compression rates, but not everything s
 
 By default BedSheet will compress html, css, javascript, json, xml and other text responses.
 
-#### Disable per Response
+### Disable per Response
 
 Gzip can be disabled on a per request / response basis by calling the following:
 
     httpResponse.disableGzip()
 
-#### Gzip only when asked
+### Gzip only when asked
 
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such, and as per [RFC 2616 HTTP1.1 Sec14.3](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3), the response is only gzipped if the appropriate HTTP request header was set.
 
-#### Min content threshold
+### Min content threshold
 
 Gzip is great when compressing large files, but if you've only got a few bytes to squash... the compressed version is going to be bigger, which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped.
 
 See `GzipOutStream` and [gzipThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#gzipThreshold.html) for more details.
 
-#### Phew! Made it!
+### Phew! Made it!
 
 If (and only if!) the request passed all the tests above, will it then be lovingly gzipped and sent to the client.
 

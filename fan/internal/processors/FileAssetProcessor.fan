@@ -69,7 +69,10 @@ internal const class FileAssetProcessor : ResponseProcessor {
 		// check If-Match-None
 		matchNone := headers.ifNoneMatch
 		if (matchNone != null) {
-			if (WebUtil.parseList(matchNone).map { WebUtil.fromQuotedStr(it) }.any { it == fileAsset.etag || it == "*" })
+			if (WebUtil.parseList(matchNone).map |str->Str| {
+				try   return WebUtil.fromQuotedStr(str)
+				catch return str
+			}.any { it == fileAsset.etag || it == "*" })
 				return true
 		}
 		
