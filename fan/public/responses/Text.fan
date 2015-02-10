@@ -46,7 +46,7 @@ const final class Text {
 
 	** Creates a 'Text' with the mime type 'application/xhtml+xml'.
 	** 
-	** Be sure to give your HTML an XML namespace:
+	** Be sure to give your XHTML an XML namespace:
 	** 
 	**   <html xmlns="http://www.w3.org/1999/xhtml"> ... </html>
 	** 
