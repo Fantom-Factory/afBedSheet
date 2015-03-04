@@ -1,18 +1,23 @@
+using util::Arg
 using util::Opt
+using util::AbstractMain
 
 @NoDoc
-class MainProxied : Main {
+class MainProxied : AbstractMain {
 
-	@Opt { help="[internal] Starts a thread that periodically pings the proxy to stay alive" }
-	private Bool pingProxy
+	// not used directly - Ioc Env checks the start args 
+	@Opt { help="The environment to start BedSheet in -> dev|test|prod" }
+	private Str? env
 
-	@Opt { help="[internal] The port the proxy runs under" }
-	private Int? pingProxyPort
-	
-	override Str:Obj? options() {
-		options	:= super.options
-		options["afBedSheet.pingProxy"] 	= pingProxy
-		options["afBedSheet.pingProxyPort"]	= pingProxyPort ?: -1		
-		return options
+	@Arg { help="A serialized BedSheetBuilder" } 
+	private Str? bob
+
+	override Int run() {
+		// all our double quotes loose their escaping when the arg is read, so put it back in
+		str := "\"" + this.bob.replace("\"", "\\\"") + "\""
+		bob	:= BedSheetBuilder.fromStr(str)
+		prt := bob.options["afBedSheet.appPort"]
+		mod := BedSheetWebMod(bob.build)
+		return WebModRunner().run(mod, prt)
 	}
 }

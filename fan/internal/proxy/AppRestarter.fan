@@ -8,18 +8,16 @@ internal const class AppRestarter {
 	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
 	private const SynchronizedState	conState
 	
-	const Str 	appModule
+	const Str	appName
 	const Int 	appPort
-	const Int 	proxyPort
-	const Bool	noTransDeps
+	const Str	params
 	const Str?	env
 	
-	new make(Str appModule, Int appPort, Int proxyPort, Bool noTransDeps, Str? env) { 
-		this.appModule 		= appModule
+	new make(BedSheetBuilder bob, Int appPort) {
+		this.appName 		= bob.appName
 		this.appPort 		= appPort
-		this.proxyPort		= proxyPort
-		this.noTransDeps	= noTransDeps
-		this.env			= env
+		this.params			= bob.toStr
+		this.env			= bob.options["afBedSheet.env"]
 		// as we're not run inside afIoc, we don't have ActorPools
 		this.conState		= SynchronizedState(ActorPool(), AppRestarterState#)
 	}
@@ -28,7 +26,7 @@ internal const class AppRestarter {
 		withState |state| {
 			if (state.realWebApp == null) {
 				state.updateTimeStamps
-				state.launchWebApp(appModule, appPort, proxyPort, noTransDeps, env)
+				state.launchWebApp(appName, appPort, params, env)
 			}
 		}
 	}
@@ -38,8 +36,8 @@ internal const class AppRestarter {
 		withState |state->Bool| {
 			modified := state.podsModified 
 			if (modified) {
-				state.killWebApp(appModule)
-				state.launchWebApp(appModule, appPort, proxyPort, noTransDeps, env)
+				state.killWebApp(appName)
+				state.launchWebApp(appName, appPort, params, env)
 				state.updateTimeStamps
 			}
 			return modified
@@ -77,32 +75,29 @@ internal class AppRestarterState {
 		}
 	}
 	
-	Void launchWebApp(Str appModule, Int appPort, Int proxyPort, Bool noTransDeps, Str? env) {
-		log.info(BsLogMsgs.appRestarter_lauchingApp(appModule, appPort))
+	Void launchWebApp(Str appName, Int appPort, Str params, Str? env) {
+		log.info(BsLogMsgs.appRestarter_lauchingApp(appName, appPort))
 		try {
 			home	:= Env.cur.homeDir.normalize
 			sysjar	:= home + `lib/java/sys.jar`
 			
-			args := ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, "-pingProxy", "-pingProxyPort", proxyPort.toStr, appModule, appPort.toStr]
+			args := ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
 			
 			if (env != null) {
 				args.insert(-2, "-env")
 				args.insert(-2, env)
 			}
 			
-			if (noTransDeps)
-				args.insert(-2, "-noTransDeps")
-			
 			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
 			realWebApp = Process(args).run
 		} catch (Err err)
-			throw BedSheetErr(BsErrMsgs.appRestarter_couldNotLaunch(appModule), err)
+			throw BedSheetErr(BsErrMsgs.appRestarter_couldNotLaunch(appName), err)
 	}
 
-	Void killWebApp(Str appModule)	{
+	Void killWebApp(Str appName)	{
 		if (realWebApp == null)
 			return
-		log.info(BsLogMsgs.appRestarter_killingApp(appModule))
+		log.info(BsLogMsgs.appRestarter_killingApp(appName))
 		realWebApp.kill
 	}
 	
