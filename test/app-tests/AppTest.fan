@@ -18,7 +18,9 @@ internal class AppTest : Test {
 		
 		client.reqHeaders.clear
 
-		mod 	:= BedSheetWebMod(iocModules[0].qname, port, ["afBedSheet.iocModules":iocModules.add(ConfigModule#)])
+		bob := BedSheetBuilder(iocModules[0].qname, true).setPort(port).addModule(ConfigModule#)
+		iocModules.each { bob.addModule(it) }
+		mod := BedSheetWebMod(bob.build)
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 		

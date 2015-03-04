@@ -1,9 +1,6 @@
-using concurrent::Actor
 using util::AbstractMain
 using util::Arg
 using util::Opt
-using web::WebMod
-using wisp::WispService
 
 ** Call to run a 'BedSheet' web application from the command line.
 ** 
@@ -40,52 +37,19 @@ class Main : AbstractMain {
 	** Run baby, run!
 	@NoDoc	// point!
 	override Int run() {
-		mod 	:= (WebMod) (proxy ? ProxyMod(appModule, port, noTransDeps, env) : BedSheetWebMod(appModule, port, options))
-
-		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
-		// then check all your ENV vars are being passed to java.
-		// see http://forum.springsource.org/showthread.php?106504-Error-running-grails-project-on-alternative-port-with-STS2-6-0&highlight=Unrecognized%20Windows%20Sockets%20error
-		willow 	:= WispService { it.port=this.port; it.root=mod }
-		return startWisp(willow)
+		bob	:= createBob
+		mod := proxy ? ProxyMod(bob, port) : BedSheetWebMod(bob.build)
+		return WebModRunner().run(mod, port)
 	}
 
 	@NoDoc
-	virtual Str:Obj? options() {
-		options	:= Utils.makeMap(Str#, Obj?#)
-		options["afBedSheet.startProxy"] 	= proxy
-		options["afBedSheet.noTransDeps"] 	= noTransDeps
-		return options
-	}
-	
-	private Int startWisp(WispService wisp) {
-		Env.cur.addShutdownHook |->| { shutdownWisp(wisp) }
-		wisp.install
-		wisp.start
-		
-		// give services a chance to init themselves
-		Actor.sleep(2sec)
-		
-		// exit if wisp didn't start
-		if (!wisp.isRunning) {
-			Env.cur.err.printLine("Service '${wisp.typeof}' did not start")
-			Env.cur.exit(69)
-		}
-		
-		// all good, so lets hang around for a bit...
-		Actor.sleep(Duration.maxVal)
-		return 0
-	}
-	
-	private static Void shutdownWisp(WispService wisp) {
-		wisp.stop
-		wisp.uninstall
-		
-		// log the cause, 'cos Service doesn't!!
-		// @see http://fantom.org/sidewalk/topic/2201
-		if (wisp.root is BedSheetWebMod) {
-			bsMod := (BedSheetWebMod) wisp.root
-			if (bsMod.startupErr?.cause != null)
-				Env.cur.err.printLine("\nCausing Err:\n\n${bsMod.startupErr.cause.traceToStr}")
-		}
+	protected virtual BedSheetBuilder createBob() {
+		bob := BedSheetBuilder(appModule, !noTransDeps)
+		bob.port = this.port
+		bob.options["afBedSheet.env"]			= env
+		// keep these for posterity
+		bob.options["afBedSheet.startProxy"] 	= proxy
+		bob.options["afBedSheet.noTransDeps"] 	= noTransDeps
+		return bob
 	}
 }

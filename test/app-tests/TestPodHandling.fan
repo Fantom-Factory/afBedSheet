@@ -39,7 +39,7 @@ internal class TestPodHandling : AppTest {
 	}
 
 	Void testNoPodHandling() {
-		verify404(`/pods/icons/x256/flux.png`)		
+		verify404(`/pods/icons/x256/flux.png`)
 	}
 }
 

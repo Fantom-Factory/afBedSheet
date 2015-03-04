@@ -12,10 +12,13 @@ internal const class ProxyMod : WebMod {
 	const AppRestarter	restarter
 	const Version 		webVer		:= Pod.find("web").version
 	
-	new make(Str appModule, Int proxyPort, Bool noTransDeps, Str? env) {
+	new make(BedSheetBuilder bob, Int proxyPort) {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
-		this.restarter 	= AppRestarter(appModule, appPort, proxyPort, noTransDeps, env)
+		bob.options["afBedSheet.proxyPort"] = this.proxyPort
+		bob.options["afBedSheet.appPort"] 	= this.appPort
+		bob.options["afBedSheet.pingProxy"] = true
+		this.restarter 	= AppRestarter(bob, appPort)
 	}
 
 	override Void onStart() {

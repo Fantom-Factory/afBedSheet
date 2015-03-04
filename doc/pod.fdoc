@@ -622,6 +622,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.8 [#v1.4.8]
 ================
+ - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries.
  - Chg: 'FileHandler.fromLocalUrl()' and 'FileHandler.fromServerFile()' now take a 'checked' parameter.
  - Chg: 'FileAssetProcessor' now copes with duff 'If-None-Match' Etag requests headers.
 
