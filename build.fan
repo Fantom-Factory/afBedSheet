@@ -32,7 +32,7 @@ class Build : BuildPod {
 			"afBeanUtils  1.0.4  - 1.0",
 			"afConcurrent 1.0.8  - 1.0",
 			"afPlastic    1.0.16 - 1.0",
-			"afIoc        2.0.2  - 2.0", 
+			"afIoc        2.0.6  - 2.0", 
 			"afIocConfig  1.0.16 - 1.0", 
 			"afIocEnv     1.0.14 - 1.0", 
 			

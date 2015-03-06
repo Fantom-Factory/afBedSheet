@@ -126,9 +126,9 @@ internal const class ErrPrinterStrSections {
 
 	Void printFormParameters(StrBuf buf, Err? err) {
 		try // req.form can throw Errs if badly formatted
-			if (request.form != null) {
+			if (request.body.form != null) {
 				buf.add("\nForm:\n")
-				prettyPrintMap(buf, request.form, true)
+				prettyPrintMap(buf, request.body.form, true)
 			}
 		catch (Err eek)
 			buf.add("\nForm: ${eek.msg}\n")			

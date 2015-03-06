@@ -10,13 +10,13 @@ using util::Opt
 ** 
 ** Where:
 **   env:          (optional) The environment to start BedSheet in -> dev|test|prod
-**   proxy:        (optional) Starts a dev proxy and launches the real web app on (<port> + 1)
+**   proxy:        (optional) Starts a dev proxy on <port> and launches the real web app on (<port> + 1)
 **   noTransDeps:  (optional) Do not load transitive dependencies.
 **   appModule:    The qname of the AppModule or pod which configures the BedSheet web app
-**   port:         The HTTP port to run the app on
+**   port:         The HTTP port to run the Bed App on
 class Main : AbstractMain {
 
-	@Opt { help="Starts a proxy and launches the real web app on (<port> + 1)" }
+	@Opt { help="Starts a dev proxy on <port> and launches the real web app on (<port> + 1)" }
 	private Bool proxy
 
 	@Opt { help="Do not load transitive dependencies." }
@@ -30,26 +30,12 @@ class Main : AbstractMain {
 	
 	// I could make this an @Opt but then it'd break backwards dependency and I'd have to update all
 	// the docs - meh!
-	@Arg { help="The HTTP port to run the app on" } 
+	@Arg { help="The HTTP port to run the Bed App on" } 
 	private Int port
 
-
 	** Run baby, run!
-	@NoDoc	// point!
-	override Int run() {
-		bob	:= createBob
-		mod := proxy ? ProxyMod(bob, port) : BedSheetWebMod(bob.build)
-		return WebModRunner().run(mod, port)
-	}
-
 	@NoDoc
-	protected virtual BedSheetBuilder createBob() {
-		bob := BedSheetBuilder(appModule, !noTransDeps)
-		bob.port = this.port
-		bob.options["afBedSheet.env"]			= env
-		// keep these for posterity
-		bob.options["afBedSheet.startProxy"] 	= proxy
-		bob.options["afBedSheet.noTransDeps"] 	= noTransDeps
-		return bob
+	override Int run() {
+		BedSheetBuilder(appModule, !noTransDeps).startWisp(port, proxy, env)
 	}
 }

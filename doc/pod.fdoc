@@ -623,6 +623,8 @@ Release Notes [#releaseNotes]
 v1.4.8 [#v1.4.8]
 ================
  - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries.
+ - New: 'HttpRequestBody' for convenience methods to access the request body. (Similar to [Butter]`pod:afButter`.)
+ - Chg: Renamed 'Text.json()' -> 'Text.jsonObj()'. 'Text.json()' now takes a Str. (Potential breaking change.)
  - Chg: 'FileHandler.fromLocalUrl()' and 'FileHandler.fromServerFile()' now take a 'checked' parameter.
  - Chg: 'FileAssetProcessor' now copes with duff 'If-None-Match' Etag requests headers.
 

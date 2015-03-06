@@ -53,7 +53,7 @@ internal const class T_PageHandler {
 	// ---- Json Pages ----
 	
 	Obj list() {
-		Text.fromJson("this is a json list".split)
+		Text.fromJsonObj("this is a json list".split)
 	}
 	
 	// ---- Redirect Pages ----

@@ -90,6 +90,11 @@ const class BedSheetModule {
 			throw Err("No web request active in thread")
 	}
 
+	@Override { overrideId="afBedSheet.IocEnv" }
+	private static IocEnv overrideIocEnv(RegistryMeta meta) {
+		meta["afBedSheet.env"] == null ? Type.find("afIocEnv::IocEnvImpl").make : IocEnv.fromStr(meta["afBedSheet.env"])
+	}
+	
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(Configuration config) {
 		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
@@ -247,7 +252,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(Configuration config, IocEnv iocEnv, RegistryMeta meta) {
+	static Void contributeFactoryDefaults(Configuration config, RegistryMeta meta) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
 		bedSheetPort	 := meta["afBedSheet.port"]	?: 0
