@@ -158,9 +158,9 @@ internal const class ErrPrinterHtmlSections {
 
 	Void printFormParameters(WebOutStream out, Err? err) {
 		try // req.form can throw Errs if badly formatted
-			if (request.form != null) {
+			if (request.body.form != null) {
 				title(out, "Form Parameters")
-				prettyPrintMap(out, request.form, true)
+				prettyPrintMap(out, request.body.form, true)
 			}
 		catch (Err eek) {
 			title(out, "Form Parameters")

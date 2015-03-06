@@ -11,13 +11,11 @@ internal const class AppRestarter {
 	const Str	appName
 	const Int 	appPort
 	const Str	params
-	const Str?	env
 	
 	new make(BedSheetBuilder bob, Int appPort) {
 		this.appName 		= bob.appName
 		this.appPort 		= appPort
 		this.params			= bob.toStr
-		this.env			= bob.options["afBedSheet.env"]
 		// as we're not run inside afIoc, we don't have ActorPools
 		this.conState		= SynchronizedState(ActorPool(), AppRestarterState#)
 	}
@@ -26,7 +24,7 @@ internal const class AppRestarter {
 		withState |state| {
 			if (state.realWebApp == null) {
 				state.updateTimeStamps
-				state.launchWebApp(appName, appPort, params, env)
+				state.launchWebApp(appName, appPort, params)
 			}
 		}
 	}
@@ -37,7 +35,7 @@ internal const class AppRestarter {
 			modified := state.podsModified 
 			if (modified) {
 				state.killWebApp(appName)
-				state.launchWebApp(appName, appPort, params, env)
+				state.launchWebApp(appName, appPort, params)
 				state.updateTimeStamps
 			}
 			return modified
@@ -75,18 +73,13 @@ internal class AppRestarterState {
 		}
 	}
 	
-	Void launchWebApp(Str appName, Int appPort, Str params, Str? env) {
+	Void launchWebApp(Str appName, Int appPort, Str params) {
 		log.info(BsLogMsgs.appRestarter_lauchingApp(appName, appPort))
 		try {
 			home	:= Env.cur.homeDir.normalize
 			sysjar	:= home + `lib/java/sys.jar`
 			
 			args := ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
-			
-			if (env != null) {
-				args.insert(-2, "-env")
-				args.insert(-2, env)
-			}
 			
 			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
 			realWebApp = Process(args).run

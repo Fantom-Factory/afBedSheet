@@ -35,13 +35,13 @@ const final class Text {
 	}
 
 	** Creates a 'Text' with the mime type 'text/html'.
-	static new fromHtml(Str text, Charset charset := Charset.utf8) {
-		_fromMimeStr(text, "text/html", charset)
+	static new fromHtml(Str html, Charset charset := Charset.utf8) {
+		_fromMimeStr(html, "text/html", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/xml'.
-	static new fromXml(Str text, Charset charset := Charset.utf8) {
-		_fromMimeStr(text, "application/xml", charset)
+	static new fromXml(Str xml, Charset charset := Charset.utf8) {
+		_fromMimeStr(xml, "application/xml", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/xhtml+xml'.
@@ -51,21 +51,33 @@ const final class Text {
 	**   <html xmlns="http://www.w3.org/1999/xhtml"> ... </html>
 	** 
 	** Or it will **not** be displayed correctly in the browser!  
-	static new fromXhtml(Str text, Charset charset := Charset.utf8) {
-		_fromMimeStr(text, "application/xhtml+xml", charset)
+	static new fromXhtml(Str xhtml, Charset charset := Charset.utf8) {
+		_fromMimeStr(xhtml, "application/xhtml+xml", charset)
+	}
+
+	** Creates a 'Text' with the mime type 'application/json'.
+	static new fromJson(Str json, Charset charset := Charset.utf8) {
+		return _fromMimeStr(json, "application/json", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/json'.
 	** 'jsonObj' should be serialisable into Json via `util::JsonOutStream`
-	static new fromJson(Obj jsonObj, Charset charset := Charset.utf8) {
+	static new fromJsonObj(Obj jsonObj, Charset charset := Charset.utf8) {
 		json := JsonOutStream.writeJsonToStr(jsonObj)
 		return _fromMimeStr(json, "application/json", charset)
 	}
 
 	** Creates a 'Text' with the mime type 'application/json'.
 	** The json is wrapped in the given callback function name. 
+	static new fromJsonP(Str json, Str callbackFuncName, Charset charset := Charset.utf8) {
+		text := "${callbackFuncName}(${json});"
+		return _fromMimeStr(text, "application/json", charset)
+	}
+
+	** Creates a 'Text' with the mime type 'application/json'.
+	** The json is wrapped in the given callback function name. 
 	** 'jsonObj' should be serialisable into Json via `util::JsonOutStream`.
-	static new fromJsonP(Obj jsonObj, Str callbackFuncName, Charset charset := Charset.utf8) {
+	static new fromJsonObjP(Obj jsonObj, Str callbackFuncName, Charset charset := Charset.utf8) {
 		json := JsonOutStream.writeJsonToStr(jsonObj)
 		text := "${callbackFuncName}(${json});"
 		return _fromMimeStr(text, "application/json", charset)

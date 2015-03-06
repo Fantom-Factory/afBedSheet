@@ -7,7 +7,7 @@ using afIoc
 internal
 class MainPoo {	
 	Void main() {
-		reg := BedSheetBuilder(TinyBedAppModule#.qname, true).setPort(8069).build
+		reg := BedSheetBuilder(TinyBedAppModule#.qname).buildRegistry
 		mod := RouteMod { it.routes = [
 			"poo" : BedSheetWebMod(reg)
 		]}

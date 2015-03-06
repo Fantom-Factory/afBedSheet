@@ -35,18 +35,12 @@ class BedSheetBuilder {
 	
 	** Creates a 'BedSheetBuilder'. If 
 	new make(Str appName, Bool addPodDependencies := true) {
-		this.registryBuilder	= RegistryBuilder()
-		this.port				= 8069
+		this.registryBuilder = RegistryBuilder()
+		this.port = 0
 		initModules(registryBuilder, appName, addPodDependencies)
 		initBanner(registryBuilder)
 	}
 
-	** Builder method for 'port'.
-	This setPort(Int port) {
-		this.port = port
-		return this
-	}
-	
 	** Adds a module to the registry. 
 	** Any modules defined with the '@SubModule' facet are also added.
 	** 
@@ -77,8 +71,16 @@ class BedSheetBuilder {
 	}
 	
 	** Build the IoC 'Registry'. Note the registry will still need to be started.
-	Registry build() {
+	Registry buildRegistry() {
 		registryBuilder.build
+	}
+
+	** Convenience method to start a Wisp server running BedSheet.
+	Int startWisp(Int port := 8069, Bool proxy := false, Str? env := null) {
+		this.port = port
+		options["afBedSheet.env"] = env
+		mod := proxy ? ProxyMod(this, port) : BedSheetWebMod(buildRegistry)
+		return WebModRunner().run(mod, port)
 	}
 
 	@NoDoc // for serialisation
@@ -96,7 +98,7 @@ class BedSheetBuilder {
 	}
 
 	@NoDoc // for serialisation
-	static BedSheetBuilder fromStr(Str str) {
+	static BedSheetBuilder fromString(Str str) {
 		nwl := (Str) str.toBuf.readObj
 		bob := (RegistryBuilder) nwl.toBuf.readObj
 		

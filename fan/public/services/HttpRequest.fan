@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIoc::Registry
+using afConcurrent::LocalRef
 using web::WebReq
 using inet::IpAddr
 using concurrent
@@ -44,16 +45,7 @@ const mixin HttpRequest {
 	** 
 	** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests`
 	abstract HttpRequestHeaders headers()
-	
-	** Get the key/value pairs of the form data.  The request content is read and parsed using 
-	** `sys::Uri.decodeQuery`.  
-	** 
-	** If the request content type is not 'application/x-www-form-urlencoded' this method returns 
-	** 'null'.
-	** 
-	** @see `web::WebReq.form`
-	abstract [Str:Str]? form()
-	
+		
 	** The accepted locales for this request based on the "Accept-Language" HTTP header. List is 
 	** sorted by preference, where 'locales.first' is best, and 'locales.last' is worst. This list 
 	** is guaranteed to contain Locale("en").
@@ -61,22 +53,15 @@ const mixin HttpRequest {
 	** @see `web::WebReq.locales`
 	abstract Locale[] locales()
 	
-	** Get the stream to read request body.  See `web::WebUtil.makeContentInStream` to check under 
-	** which conditions request content is available. If request content is not available, then 
-	** throw an exception.
-	**
-	** If the client specified the "Expect: 100-continue" header, then the first access of the 
-	** request input stream will automatically send the client a '100 Continue' response.
-	**
-	** @see `web::WebReq.in`
-	abstract InStream in()
-	
 	** 'Stash' allows you to store temporary data on the request, to easily pass it between 
 	** services and objects.
 	** 
 	** It is good for a quick win, but if you find yourself consistently relying on it, consider 
 	** making a thread scoped service instead. 
   	abstract Str:Obj? stash()
+
+	** Returns the request body.
+  	abstract HttpRequestBody body()
 	
 	** This method will:
 	**   1. check that the content-type is form-data
@@ -88,8 +73,14 @@ const mixin HttpRequest {
 	** 
 	** @see `web::WebReq.parseMultiPartForm`
 	abstract Void parseMultiPartForm(|Str formName, InStream in, Str:Str headers| callback)
+	
+	@NoDoc @Deprecated { msg="Use 'body.in()' instead." }
+	InStream in() { body.in }
 
+	@NoDoc @Deprecated { msg="Use 'body.form()' instead." }
+	[Str:Str]? form() { body.form }
 }
+
 ** Wraps a given `HttpRequest`, delegating all its methods. 
 ** You may find it handy to use when contributing to the 'HttpRequest' delegate chain.
 @NoDoc
@@ -103,16 +94,16 @@ const class HttpRequestWrapper : HttpRequest {
 	override Int remotePort() 				{ req.remotePort		}
 	override Uri url() 						{ req.url				}
 	override HttpRequestHeaders headers()	{ req.headers			}
-	override [Str:Str]? form() 				{ req.form				}
 	override Locale[] locales() 			{ req.locales			}
-	override InStream in() 					{ req.in				}	
 	override Str:Obj? stash()				{ req.stash				}
+	override HttpRequestBody body()			{ req.body				}
 	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb)	{ req.parseMultiPartForm(cb) }
 }
 
 internal const class HttpRequestImpl : HttpRequest {	
 	override const HttpRequestHeaders headers
-
+	@Inject private const LocalRef bodyRef
+	
 	new make(|This|? in := null) { 
 		in?.call(this) 
 		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
@@ -138,21 +129,16 @@ internal const class HttpRequestImpl : HttpRequest {
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel
 	}
-	override [Str:Str]? form() {
-		try {
-			return webReq.form
-		} catch (Err err) {
-			throw HttpStatusErr(400, "Invalid Form Data", err)
-		}
-	}
 	override Locale[] locales() {
 		webReq.locales
 	}
-	override InStream in() {
-		webReq.in
-	}
 	override Str:Obj? stash() {
 		webReq.stash
+	}
+	override HttpRequestBody body() {
+		if (bodyRef.val == null)
+			bodyRef.val = HttpRequestBody(webReq)
+		return bodyRef.val
 	}
 	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb) {
 		webReq.parseMultiPartForm(cb)
