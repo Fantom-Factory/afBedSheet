@@ -7,14 +7,14 @@ class BedSheetBuilder {
 	** The application name. Taken from the app pod's 'proj.name' meta, or the pod name if the meta doesn't exist.
 	** Read only.
 	Str appName {
-		get { options["afBedSheet.appName"] }
+		get { options[BsConstants.meta_appName] }
 		private set { throw Err("Read only") }
 	}
 	
 	** The HTTP port to run the app on. Defaults to '8069'
 	Int port {
-		get { registryBuilder.options["afBedSheet.port"] }
-		set { registryBuilder.options["afBedSheet.port"] = it }
+		get { registryBuilder.options[BsConstants.meta_appPort] }
+		set { registryBuilder.options[BsConstants.meta_appPort] = it }
 	}
 
 	** Returns the options from the IoC 'RegistryBuilder'.
@@ -89,9 +89,9 @@ class BedSheetBuilder {
 		bob.options.remove("afIoc.bannerText")
 		
 		// Pod's aren't serializable
-		appPod := (Pod) bob.options["afBedSheet.appPod"]
-		bob.options["afBedSheet.appPodName"] = appPod.name
-		bob.options.remove("afBedSheet.appPod")
+		appPod := (Pod) bob.options[BsConstants.meta_appPod]
+		bob.options[BsConstants.meta_appPodName] = appPod.name
+		bob.options.remove(BsConstants.meta_appPod)
 		
 		// we code into a Str so it's all on one line
 		return Buf().writeObj(bob).flip.readAllStr.toCode
@@ -103,9 +103,9 @@ class BedSheetBuilder {
 		bob := (RegistryBuilder) nwl.toBuf.readObj
 		
 		// re-instate appPod
-		appPodName	:= (Str) bob.options["afBedSheet.appPodName"]
-		bob.options["afBedSheet.appPod"] = Pod.find(appPodName, true)
-		bob.options.remove("afBedSheet.appPodName")
+		appPodName	:= (Str) bob.options[BsConstants.meta_appPodName]
+		bob.options[BsConstants.meta_appPod] = Pod.find(appPodName, true)
+		bob.options.remove(BsConstants.meta_appPodName)
 		
 		return BedSheetBuilder(bob)
 	}
@@ -155,9 +155,9 @@ class BedSheetBuilder {
 			 bob.addModule(BedSheetModule#)
 
 		regOpts := bob.options
-		regOpts["afBedSheet.appPod"]	= pod
-		regOpts["afBedSheet.appModule"]	= mod
-		regOpts["afBedSheet.appName"]	= (pod?.meta?.get("proj.name") ?: pod?.name) ?: "Unknown"
+		regOpts[BsConstants.meta_appName]	= (pod?.meta?.get("proj.name") ?: pod?.name) ?: "Unknown"
+		regOpts[BsConstants.meta_appPod]	= pod
+		regOpts[BsConstants.meta_appModule]	= mod
 	}
 
 	** Looks for an 'AppModule' in the given pod. 

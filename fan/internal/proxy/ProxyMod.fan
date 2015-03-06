@@ -15,9 +15,9 @@ internal const class ProxyMod : WebMod {
 	new make(BedSheetBuilder bob, Int proxyPort) {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
-		bob.options["afBedSheet.proxyPort"] = this.proxyPort
-		bob.options["afBedSheet.appPort"] 	= this.appPort
-		bob.options["afBedSheet.pingProxy"] = true
+		bob.options[BsConstants.meta_proxyPort] = this.proxyPort
+		bob.options[BsConstants.meta_appPort] 	= this.appPort
+		bob.options[BsConstants.meta_pingProxy] = true
 		this.restarter 	= AppRestarter(bob, appPort)
 	}
 
@@ -55,17 +55,10 @@ internal const class ProxyMod : WebMod {
 		}
 		c.writeReq
 
-		is100Continue := c.reqHeaders["Expect"] == "100-continue"
-
-		if (req.method == "POST" && ! is100Continue)
+		if (req.headers.containsKey("Content-Type") || req.headers.containsKey("Content-Length"))
 			c.reqOut.writeBuf(req.in.readAllBuf).flush
 
 		c.readRes
-
-		if (is100Continue && c.resCode == 100) {
-			c.reqOut.writeBuf(req.in.readAllBuf).flush
-			c.readRes // final response after the 100continue
-		}
 
 		regzip := false
 		redeflate := false
@@ -80,8 +73,7 @@ internal const class ProxyMod : WebMod {
 			res.headers[k] = v
 		}
 		
-		if (c.resHeaders["Content-Type"]	!= null ||
-			c.resHeaders["Content-Length"] 	!= null) {
+		if (c.resHeaders.containsKey("Content-Type") ||	c.resHeaders.containsKey("Content-Length")) {
 			resBuf := c.resIn.readAllBuf
 			resOut := (OutStream) res.out
 
@@ -96,6 +88,7 @@ internal const class ProxyMod : WebMod {
 				
 			resOut.writeBuf(resBuf).flush.close
 		}
+
 		c.close
 	}
 }

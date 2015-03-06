@@ -66,19 +66,19 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	new make(|This|in) { in(this) }
 	
 	override Pod? appPod() {
-		regMeta["afBedSheet.appPod"]
+		regMeta[BsConstants.meta_appPod]
 	}
 	
 	override Type? appModule() {
-		regMeta["afBedSheet.appModule"]
+		regMeta[BsConstants.meta_appModule]
 	}
 	
 	override Str appName() {
-		regMeta["afBedSheet.appName"]
+		regMeta[BsConstants.meta_appName]
 	}
 	
 	override Int port() {
-		regMeta["afBedSheet.port"]
+		regMeta[BsConstants.meta_appPort]
 	}
 	
 	override [Str:Obj] options() {

@@ -54,12 +54,12 @@ const class BedSheetWebMod : WebMod {
 	** Creates this 'WebMod'. Use 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
 	new make(Registry registry, |This|? f := null) {
 		meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
-		pod  := (Pod?)  meta.options["afBedSheet.appPod"]
-		mod  := (Type?) meta.options["afBedSheet.appModule"]
+		pod  := (Pod?)  meta.options[BsConstants.meta_appPod]
+		mod  := (Type?) meta.options[BsConstants.meta_appModule]
 		this.registry	= registry
 		this.moduleName = (pod?.name ?: mod?.qname) ?: "UNKNOWN"
-		this.appName 	= meta.options["afBedSheet.appName"]
-		this.port 		= meta.options["afBedSheet.port"]
+		this.appName 	= meta.options[BsConstants.meta_appName]
+		this.port 		= meta.options[BsConstants.meta_appPort]
 		this.iocEnv		= registry.serviceById(IocEnv#.qname)
 		f?.call(this)
 	}
@@ -130,8 +130,8 @@ const class BedSheetWebMod : WebMod {
 
 			// start the destroyer!
 			meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
-			if (meta.options["afBedSheet.pingProxy"] == true) {
-				pingPort := (Int) meta.options["afBedSheet.proxyPort"]
+			if (meta.options[BsConstants.meta_pingProxy] == true) {
+				pingPort := (Int) meta.options[BsConstants.meta_proxyPort]
 				destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
 				destroyer.start
 			}
@@ -139,7 +139,7 @@ const class BedSheetWebMod : WebMod {
 			// print BedSheet connection details
 			configSrc := (ConfigSource) registry.dependencyByType(ConfigSource#)
 			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
-			log.info(BsLogMsgs.bedSheetWebMod_started(meta.options["afBedSheet.appName"], host))
+			log.info(BsLogMsgs.bedSheetWebMod_started(appName, host))
 
 			// BUGFIX: eager load the middleware pipeline, so we can use the ErrMiddleware
 			// otherwise Errs thrown when instantiating middleware end up in limbo
