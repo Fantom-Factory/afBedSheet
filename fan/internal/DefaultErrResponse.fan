@@ -12,7 +12,7 @@ internal const class DefaultErrResponse {
 	new make(|This|in) { in(this) }
 
 	Obj process() {
-		err := request.stash["afBedSheet.err"]
+		err := request.stash[BsConstants.stash_err]
 		
 		log.err(errPrinterStr.errToStr(err))
 		
