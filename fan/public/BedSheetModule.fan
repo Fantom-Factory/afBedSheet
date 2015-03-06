@@ -255,7 +255,7 @@ const class BedSheetModule {
 	static Void contributeFactoryDefaults(Configuration config, RegistryMeta meta) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
-		bedSheetPort	 := meta["afBedSheet.port"]	?: 0
+		bedSheetPort	 := meta[BsConstants.meta_appPort]
 		
 		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		config[BedSheetConfigIds.gzipDisabled]				= false
@@ -264,7 +264,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		config[BedSheetConfigIds.disableWelcomePage]		= false
-		config[BedSheetConfigIds.host]						= `http://localhost:${bedSheetPort}`		
+		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		

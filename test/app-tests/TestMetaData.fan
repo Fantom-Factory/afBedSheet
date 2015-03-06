@@ -11,8 +11,8 @@ internal class TestMetaData : AppTest {
 		super.setup
 		
 		meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
-		verifyEq(meta["afBedSheet.appModule"], T_WelcomeMod2#)
-		verifyEq(meta["afBedSheet.appPod"], this.typeof.pod)
+		verifyEq(meta[BsConstants.meta_appModule], T_WelcomeMod2#)
+		verifyEq(meta[BsConstants.meta_appPod], this.typeof.pod)
 	}
 }
 
