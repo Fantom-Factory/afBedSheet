@@ -8,7 +8,7 @@ internal const class ErrProcessor : ResponseProcessor {
 	new make(|This|in) { in(this) }
 	
 	override Obj process(Obj err) {
-		httpRequest.stash["afBedSheet.err"] = err
+		httpRequest.stash[BsConstants.stash_err] = err
 		
 		// a sanity check
 		if (!httpResponse.isCommitted) {

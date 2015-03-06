@@ -55,7 +55,7 @@ const final class Text {
 		_fromMimeStr(xhtml, "application/xhtml+xml", charset)
 	}
 
-	** Creates a 'Text' with the mime type 'application/json'.
+	** Creates a 'Text' from the given 'Str' with the mime type 'application/json'.
 	static new fromJson(Str json, Charset charset := Charset.utf8) {
 		return _fromMimeStr(json, "application/json", charset)
 	}

@@ -3,37 +3,60 @@ using afIoc
 
 ** (Service) - A Route Handler that maps URLs to files on the file system.
 ** 
-** Example, to map all URLs prefixed with '/pub/' to files under the '<app>/etc/web/' directory, 
-** add the following to your 'AppModule':
+** Suppose your project has this directory structure:
+** 
+** pre>
+** myProj/
+**  |-- fan/
+**  |-- test/
+**  `-- etc
+**       `-- static-web/
+**            |-- css/
+**            |    `-- app.css
+**            |-- images/
+**            |    `-- logo.png
+**            `-- scripts/
+** <pre
+** 
+** Then to map the 'css/' dir add the following to 'AppModule':
 ** 
 ** pre>
 ** @Contribute { serviceType=FileHandler# }
 ** static Void contributeFileHandler(Configuration conf) {
-**   conf[`/pub/`] = `etc/web/`.toFile
+**   conf[`/stylesheets/`] = `etc/static-web/css/`.toFile
 ** }
 ** <pre
 ** 
-** Use the 'fromServerFile()' to generate client URLs to be used by the browser. Example:
+** Browsers may then access 'app.css' with the URL '/stylesheets/app.css'.
 ** 
-**   // note how the file uses a relative URL
-**   fromServerFile(`etc/web/css/mystyle.css`.toFile).clientUrl // --> `/pub/css/mystyle.css` 
+** Rather than hardcoding '/stylesheets/app.css' in the HTML, it is better to generate a client URL from 'FileHandler'.
 ** 
-** Now when the browser requests the URL '/pub/css/mystyle.css', 'BedSheet' will return the file '<app>/etc/web/css/mystyle.css'.
+**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl
 ** 
-** It is common to serve files from the root URL:
-** 
-**   conf[`/`] = `etc/web/`
-** 
-** That way 'etc/web/' may contain 'etc/web/css/', 'etc/web/images/' and 'etc/web/scripts/'.
-** 
+** Most of the time 'url' will be the same as the hardcoded URL but it has the added benefit of:
+**  - [Failing fast]`#failFast` if the file does not exist
+**  - generating correct URLs in non-root WebMods
+**  - using asset caching strategies
+**
 ** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
 ** It also contains path segments as provided by any asset caching strategies, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
+**  
+** 
+** 
+** Serve All Root Directories [#serveAllDirs]
+** ==========================================
+** Using the above example, extra config would need to be added to serve the 'images/' and the 'scripts/' directories. 
+** This is not ideal. So to serve all the files and directories under 'etc/static-web/' add config for the root URL:  
+** 
+**   conf[`/`] = `etc/static-web/`.toFile
+** 
+** This way everything under `etc/static-web/` is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
 ** 
 ** 
 ** 
 ** Fail Fast [#failFast]
 ** =====================
-** An understated advantage of using 'FileHandler' to generate URLs for your assets is that it fails fast.
+** An understated advantage of using 'FileHandler' to generate client URLs for your assets is that it fails fast.
 ** 
 ** Should an asset not exist on the file system (due to a bodged rename, a case sensitivity issue, or other) then 'FileHandler' will throw an Err on the server when the client URL is constructed.
 ** This allows your web tests to quickly pick up these tricky errors.
@@ -75,6 +98,8 @@ const mixin FileHandler {
 	abstract FileAsset? serviceRoute(Uri remainingUrl)	
 	
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
+	**  
+	**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl
 	** 
 	** Throws 'ArgErr' if the URL is not mapped.
 	** 

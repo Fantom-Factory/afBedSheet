@@ -39,25 +39,24 @@ Quick Start [#quickStart]
     using afBedSheet
 
     class HelloPage {
-      Text hello(Str name, Int iq := 666) {
-        return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
-      }
+        Text hello(Str name, Int iq := 666) {
+            return Text.fromPlain("Hello! I'm $name and I have an IQ of $iq!")
+        }
     }
 
     class AppModule {
-      @Contribute { serviceType=Routes# }
-      static Void contributeRoutes(Configuration conf) {
-        conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
-        conf.add(Route(`/hello/**`, HelloPage#hello))
-      }
+        @Contribute { serviceType=Routes# }
+        static Void contributeRoutes(Configuration conf) {
+            conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
+            conf.add(Route(`/hello/**`, HelloPage#hello))
+        }
     }
 
     class Example {
-      Int main() {
-        afBedSheet::Main().main([AppModule#.qname, "8080"])
-      }
+        Int main() {
+            BedSheetBuilder(AppModule#.qname).startWisp(8080)
+        }
     }
-
 
 2. Run 'Example.fan' as a Fantom script from the command line:
 
@@ -65,13 +64,13 @@ Quick Start [#quickStart]
 
     C:\> fan Example.fan -env development
 
-    [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
     [info] [afBedSheet] Found mod 'Example_0::AppModule'
     [info] [afIoc] Adding module definitions from pod 'Example_0'
     [info] [afIoc] Adding module definition for Example_0::AppModule
     [info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
     [info] [afIoc] Adding module definition for afIocConfig::ConfigModule
     [info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
+    [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
     [info] [web] WispService started on port 8080
 
     40 IoC Services:
@@ -85,11 +84,11 @@ Quick Start [#quickStart]
       / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
      / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
     /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-               Alien-Factory BedSheet v1.4.6, IoC v2.0.2 /___/
+               Alien-Factory BedSheet v1.4.8, IoC v2.0.6 /___/
 
     IoC Registry built in 210ms and started up in 20ms
 
-    Bed App 'Unknown' listening on http://localhost:8080/
+    Bed App 'Example_0' listening on http://localhost:8080/
 
 
 3. Visit 'localhost' to hit the web application:
@@ -178,6 +177,7 @@ class AppModule {
 
         conf.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
         conf.add(Route(`/index`, IndexPage#service))
+        conf.add(Route(`/work`,  WorkPage#service, "POST"))
     }
 }
 <pre
@@ -199,7 +199,7 @@ anything to the HTTP response stream. Instead they return a *Response Object* fo
 For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` *response object*.
 
 Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with 'BedSheet':
- - `FileHandler`: Maps request URLs to files on file system.
+ - `FileHandler`: Maps request URLs to files on the file system.
  - `PodHandler` : Maps request URLs to pod file resources.
 
 
@@ -400,6 +400,114 @@ values to 'FactoryDefaults' gives users of your library an easy way to override 
 
 
 
+RESTful Services [#restfulServices]
+***********************************
+BedSheet can be used to create RESTful applications. The general approach is to use 'Routes' to define the URLs and HTTP methods that your app responds to.
+
+For example, for a 'POST' method:
+
+pre>
+syntax: fantom
+
+class RestAppModule {
+    @Contribute { serviceType=Routes# }
+    static Void contributeRoutes(Configuration conf) {
+        conf.add(Route(`/restAPI/*`, RestService#post, "POST"))
+    }
+}
+<pre
+
+The routes then delegate to methods on a 'RouteHandler' service:
+
+pre>
+syntax: fantom
+
+using afIoc
+using afBedSheet
+
+class RestService {
+    @Inject HttpRequest  httpRequest
+    @Inject HttpResponse httpResponse
+
+    new make(|This| in) { in(this) }
+
+    Text post(Int id) {
+    	// use the request body to get submitted data as...
+
+    	// a [Str:Str] form map or
+        form := httpRequest.body.form
+
+        // as JSON objects
+        json := httpRequest.body.jsonObj
+
+        // return a different status code, e.g. 201 - Created
+        httpResponse.statusCode = 201
+
+        // return plain text or JSON objects to the client
+        return Text.fromPlainText("OK")
+    }
+}
+<pre
+
+
+
+File Uploading [#fileUploading]
+*******************************
+File uploading can be pretty horrendous in other languages, but here in Fantom land it's pretty easy.
+
+First create your HTML. Here's a form snippet:
+
+pre>
+syntax: html
+
+<form action="/uploadFile" method="POST" enctype="multipart/form-data">
+    <input name="theFile" type="file" />
+    <input type="submit" value="Upload File" />
+</form>
+<pre
+
+A 'Route' should then service the '/uploadFile' URL:
+
+pre>
+syntax: fantom
+
+class RestAppModule {
+    @Contribute { serviceType=Routes# }
+    static Void contributeRoutes(Configuration conf) {
+        conf.add(Route(`/uploadFile`, UploadService#uploadFile, "POST"))
+    }
+}
+<pre
+
+The 'UploadService' uses 'HttpRequest.parseMultiPartForm()' to gain access to the uploaded data and save it as a file:
+
+pre>
+syntax: fantom
+
+using afIoc
+using afBedSheet
+
+class UploadService {
+    @Inject HttpRequest? httpRequest
+
+    Text uploadFile() {
+        httpRequest.parseMultiPartForm |Str formName, InStream in, Str:Str headers| {
+            // this closure is called for each file in the form
+            quoted   := headers["Content-Disposition"].split(';').find { it.startsWith("filename") }.split('=')[1]
+            filename := WebUtil.fromQuotedStr(quoted)
+
+            // save file to temp dir
+            file := Env.cur.tempDir.createFile(filename)
+            in.pipe(file.out)
+            file.out.close
+        }
+        return Text.fromPlain("OK")
+    }
+}
+<pre
+
+
+
 Request Logging [#requestLogging]
 *********************************
 BedSheet can generate standard HTTP request logs in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
@@ -425,36 +533,6 @@ pre>
 2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 
 <pre
-
-
-
-Development Proxy [#DevelopmentProxy]
-*************************************
-Never (manually) restart your app again!
-
-Use the '-proxy' option when starting BedSheet to create a Development Proxy and your app will auto re-start when a pod is updated:
-
-pre>
-C:\> fan afBedSheet -proxy <mypod> <port>
-<pre
-
-The proxy sits on '<port>' and starts your real app on '<port>+1', forwarding all requests to it.
-
-pre>
-  Client <--> Proxy (port) <--> Web App (port+1)
-<pre
-
-A problem other (Fantom) web development proxies suffer from is that, when the proxy dies, your real web app is left hanging
-around; requiring you to manually kill it.
-
-pre>
-  Client <-->   ????????   <--> Web App (port+1)
-<pre
-
-BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
-the proxy not respond, the web app kills itself.
-
-See [proxyPingInterval]`BedSheetConfigIds#proxyPingInterval` for more details.
 
 
 
@@ -521,6 +599,36 @@ See 'BufferedOutStream' and [responseBufferThreshold]`BedSheetConfigIds#response
 
 
 
+Development Proxy [#DevelopmentProxy]
+*************************************
+Never (manually) restart your app again!
+
+Use the '-proxy' option when starting BedSheet to create a development Proxy and your app will auto re-start when a pod is updated:
+
+pre>
+C:\> fan afBedSheet -proxy <mypod> <port>
+<pre
+
+The proxy sits on '<port>' and starts your real app on '<port>+1', forwarding all requests to it.
+
+pre>
+  Client <--> Proxy (port) <--> Web App (port+1)
+<pre
+
+A problem other (Fantom) web development proxies suffer from is that, when the proxy dies, your real web app is left hanging
+around; requiring you to manually kill it.
+
+pre>
+  Client <-->   ????????   <--> Web App (port+1)
+<pre
+
+BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
+the proxy not respond, the web app kills itself.
+
+See [proxyPingInterval]`BedSheetConfigIds#proxyPingInterval` for more details.
+
+
+
 Wisp Integration [#wisp]
 ************************
 To some, BedSheet may look like a behemoth web framework, but it is in fact just a standard Fantom [WebMod]`web::WebMod`.
@@ -576,34 +684,35 @@ source and deploy it to a live environment!
 
 To have Heroku run your BedSheet web app you have 2 options:
 
-1) Create a Heroku text file called 'Procfile' at the same level as your 'build.fan' with the following line:
+1. Create a Heroku text file called 'Procfile' at the same level as your 'build.fan' with the following line:
 
-pre>
-web: fan afBedSheet <fully-qualified-app-module-name> $PORT
-<pre
+     web: fan afBedSheet <app-name> $PORT
 
-substituting '<fully-qualified-app-module-name>' with, err, your fully qualified app module name! Example, 'MyPod::AppModule'.
-Type '$PORT' verbatim, as it is.
+  substituting '<app-name>' with your fully qualified app module name. Type '$PORT' verbatim, as it is. Example:
 
-2) Create a Main class in your app:
+    web: fan afBedSheet acme::AppModule $PORT
 
-pre>
-using util
+  Now Heroku will start BedSheet, passing in your app name.
 
-class Main : AbstractMain {
+  OR
 
-  @Arg { help="The HTTP port to run the app on" }
-  private Int port
+2. Create a 'Main' class in your app:
 
-  override Int run() {
-    return afBedSheet::Main().main("<fully-qualified-app-module-name> $port".split)
-  }
-}
-<pre
+    using util
 
-Main classes have the advantage of being easy to run from an IDE or cmd line.
+    class Main : AbstractMain {
 
-See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpack-fantom` for more details.
+        @Arg { help="The HTTP port to run the app on" }
+        private Int port
+
+        override Int run() {
+            BedSheetBuilder(AppModule#.qname).startWisp(port)
+        }
+    }
+
+  Main classes have the advantage of being easy to run from an IDE or cmd line.
+
+  See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpack-fantom` for more details.
 
 
 
@@ -622,7 +731,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.8 [#v1.4.8]
 ================
- - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries.
+ - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries and start Wisp servers.
  - New: 'HttpRequestBody' for convenience methods to access the request body. (Similar to [Butter]`pod:afButter`.)
  - Chg: Renamed 'Text.json()' -> 'Text.jsonObj()'. 'Text.json()' now takes a Str. (Potential breaking change.)
  - Chg: 'FileHandler.fromLocalUrl()' and 'FileHandler.fromServerFile()' now take a 'checked' parameter.
