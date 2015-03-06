@@ -10,7 +10,7 @@ using afPlastic::PlasticCompiler
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc
-@SubModule { modules=[ConfigModule#, IocEnvModule#] }
+@SubModule { modules=[ConfigModule#, BedSheetEnvModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
@@ -90,11 +90,6 @@ const class BedSheetModule {
 			throw Err("No web request active in thread")
 	}
 
-	@Override { overrideId="afBedSheet.IocEnv" }
-	private static IocEnv overrideIocEnv(RegistryMeta meta) {
-		meta["afBedSheet.env"] == null ? Type.find("afIocEnv::IocEnvImpl").make : IocEnv.fromStr(meta["afBedSheet.env"])
-	}
-	
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(Configuration config) {
 		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }

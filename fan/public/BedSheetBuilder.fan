@@ -1,4 +1,5 @@
 using afIoc
+using afIocEnv
 
 @Serializable { simple = true }
 class BedSheetBuilder {
@@ -72,7 +73,8 @@ class BedSheetBuilder {
 	
 	** Build the IoC 'Registry'. Note the registry will still need to be started.
 	Registry buildRegistry() {
-		registryBuilder.build
+		registryBuilder.removeModule(IocEnvModule#)
+		return registryBuilder.build
 	}
 
 	** Convenience method to start a Wisp server running BedSheet.
