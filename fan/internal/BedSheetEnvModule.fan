@@ -4,7 +4,7 @@ using afIocEnv
 
 ** We want to make IocEnv ourselves, but we don't want to incur the overhead of an override Id 
 ** This is 'cos most people will want to override our override in tests - it makes it all, um, icky!
-class BedSheetEnvModule {
+internal class BedSheetEnvModule {
 	@Build
 	private static IocEnv buildIocEnv(RegistryMeta meta) {
 		meta["afBedSheet.env"] == null ? Type.find("afIocEnv::IocEnvImpl").make : IocEnv.fromStr(meta["afBedSheet.env"])
