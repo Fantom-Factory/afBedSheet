@@ -92,9 +92,8 @@ const mixin FileHandler {
 	** Returns the map of URL to directory mappings
 	abstract Uri:File directoryMappings()
 	
-	** The Route handler method. 
+	** The (boring) Route handler method. 
 	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
-	@NoDoc	// boring route handler method
 	abstract FileAsset? serviceRoute(Uri remainingUrl)	
 	
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
@@ -102,14 +101,12 @@ const mixin FileHandler {
 	**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl
 	** 
 	** Throws 'ArgErr' if the URL is not mapped.
-	** 
-	** Throws 'ArgErr' if checked and the URL does not exist. 
+	** Throws 'ArgErr' if checked and the file does not exist. 
 	abstract FileAsset fromLocalUrl(Uri localUrl, Bool checked := true)
 
 	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'.
 	**  
 	** Throws 'ArgErr' if the file directory is not mapped.
-	** 
 	** Throws 'ArgErr' if checked and the URL does not exist. 
 	abstract FileAsset fromServerFile(File serverFile, Bool checked := true)
 	

@@ -8,6 +8,5 @@ abstract internal class BsTest : Test {
 	
 	Void verifyBsErrMsg(Str errMsg, |Obj| func) {
 		verifyErrMsg(BedSheetErr#, errMsg, func)
-	}
-	
+	}	
 }

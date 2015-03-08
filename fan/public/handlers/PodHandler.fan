@@ -52,18 +52,17 @@ const mixin PodHandler {
 	** Set by `BedSheetConfigIds.podHandlerBaseUrl`, defaults to '/pods/'.
 	abstract Uri? baseUrl()
 
-	** The Route handler method. 
+	** The (boring) Route handler method. 
 	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
-	@NoDoc	// boring route handler method
 	abstract FileAsset? serviceRoute(Uri remainingUrl)
 		
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
-	** Throws 'ArgErr' if the URL is not mapped.
+	** Throws 'ArgErr' if the URL is not mapped or does not exist.
 	abstract FileAsset fromLocalUrl(Uri localUrl)
 
 	** Given a pod resource file, this returns a corresponding (cached) 'FileAsset'. 
 	** The URI must adhere to the 'fan://<pod>/<file>' scheme notation.
-	** Throws 'ArgErr' if the pod resource is not mapped or does not exist
+	** Throws 'ArgErr' if the URL is not mapped or does not exist.
 	abstract FileAsset fromPodResource(Uri podResource)
 }
 
@@ -119,10 +118,10 @@ internal const class PodHandlerImpl : PodHandler {
 
 		if (podUrl.scheme != "fan")
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
-		
-		resource := (Obj?) null
-		try 	resource = (podUrl).get
-		catch	throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
+
+		resource := podUrl.get(null, false)
+		if (resource == null)
+			throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
 		if (resource isnot File)	// WTF!?
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
 
@@ -140,6 +139,6 @@ internal const class PodHandlerImpl : PodHandler {
 			clientUrl	:= fileCache.toClientUrl(localUrl, file)
 
 			return FileAsset(file, localUrl, clientUrl)
-		}	
+		}
 	}	
 }

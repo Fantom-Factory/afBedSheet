@@ -14,6 +14,9 @@ const mixin FileAssetCache {
 	** Clears the internal 'FileAsset' cache.
 	abstract Void clear()
 	
+	** How many items in the cache.
+	abstract Int size()
+	
 	** Hook for asset caching strategies to advise and transform URLs.
 	abstract Uri toClientUrl(Uri localUrl, File file)
 }
@@ -37,16 +40,18 @@ internal const class FileAssetCacheImpl : FileAssetCache {
 		fileCache.getOrAddOrUpdate(key, valFunc)
 	}
 	
-	** Removes the given 'FileAsset' from the internal cache.
 	override Void remove(FileAsset fileAsset) {
 		fileCache.remove(fileAsset.file)
 	}
 	
-	** Clears the internal 'FileAsset' cache.
 	override Void clear() {
 		fileCache.clear
 	}
-	
+
+	override Int size() {
+		fileCache.size
+	}
+
 	override Uri toClientUrl(Uri localUrl, File file) {
 		// file is used by Cold Feet so it can generate a digest 
 		bedServer.toClientUrl(localUrl)		
