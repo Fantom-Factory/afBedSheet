@@ -7,7 +7,7 @@ using afIocEnv
 internal class BedSheetEnvModule {
 	@Build
 	private static IocEnv buildIocEnv(RegistryMeta meta) {
-		meta["afBedSheet.env"] == null ? Type.find("afIocEnv::IocEnvImpl").make : IocEnv.fromStr(meta["afBedSheet.env"])
+		IocEnv(meta["afBedSheet.env"])
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }

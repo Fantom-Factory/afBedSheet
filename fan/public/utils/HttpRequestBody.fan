@@ -62,7 +62,7 @@ class HttpRequestBody {
 		try return Uri.decodeQuery(str)
 		catch (Err err) throw HttpStatusErr(400, "Invalid Form Data", err)
 	}
-	
+
 	@NoDoc
 	override Str toStr() {
 		try return str ?: "null"

@@ -40,7 +40,7 @@ internal class T_WebReq : WebReq {
 	override Uri 		uri					:= `/wotever`
 	override Str:Str 	headers				:= [:]
 	override WebSession	session				:= T_WebSession()
-	override InStream 	in					:= "in".in
+	override InStream 	in					:= "in".toBuf.in
 }
 
 internal class T_WebRes : WebRes {

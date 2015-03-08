@@ -11,7 +11,7 @@ class MainProxied : AbstractMain {
 	override Int run() {
 		// all our double quotes loose their escaping when the arg is read, so put it back in
 		str := "\"" + this.bob.replace("\"", "\\\"") + "\""
-		bob	:= BedSheetBuilder.fromString(str)
+		bob	:= BedSheetBuilder.fromStringy(str)
 		prt := bob.options[BsConstants.meta_appPort]
 		mod := BedSheetWebMod(bob)
 		return WebModRunner().run(mod, prt)

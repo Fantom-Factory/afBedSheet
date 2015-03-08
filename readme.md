@@ -1,7 +1,7 @@
-#BedSheet v1.4.6
+#BedSheet v1.4.8
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.6](http://img.shields.io/badge/pod-v1.4.6-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.8](http://img.shields.io/badge/pod-v1.4.8-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -539,8 +539,9 @@ using afBedSheet
 
 class Example {
     Void main() {
+        reg := BedSheetBuilder(AppModule#.qname).buildRegistry
         mod := RouteMod { it.routes = [
-            "poo" : BedSheetWebMod(TinyBedAppModule#.qname, 8069)
+            "poo" : BedSheetWebMod(reg)
         ]}
 
         WispService { it.port=8069; it.root=mod }.install.start

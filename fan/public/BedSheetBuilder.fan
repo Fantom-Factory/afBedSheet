@@ -1,7 +1,6 @@
 using afIoc
 using afIocEnv
 
-@Serializable { simple = true }
 class BedSheetBuilder {
 	private const static Log log := Utils.getLog(BedSheetBuilder#)
 
@@ -86,7 +85,7 @@ class BedSheetBuilder {
 	}
 
 	@NoDoc // for serialisation
-	override Str toStr() {
+	Str toStringy() {
 		bob := registryBuilder.dup
 		bob.options.remove("afIoc.bannerText")
 		
@@ -100,7 +99,7 @@ class BedSheetBuilder {
 	}
 
 	@NoDoc // for serialisation
-	static BedSheetBuilder fromString(Str str) {
+	static BedSheetBuilder fromStringy(Str str) {
 		nwl := (Str) str.toBuf.readObj
 		bob := (RegistryBuilder) nwl.toBuf.readObj
 		
@@ -120,6 +119,7 @@ class BedSheetBuilder {
 	private static Void initModules(RegistryBuilder bob, Str moduleName, Bool transDeps) {
 		Pod?  pod
 		Type? mod
+		Type[] mods := Type#.emptyList
 		
 		// Pod name given...
 		// lots of start up checks looking for pods and modules... 
@@ -127,7 +127,8 @@ class BedSheetBuilder {
 		if (!moduleName.contains("::")) {
 			pod = Pod.find(moduleName, true)
 			log.info(BsLogMsgs.bedSheetWebMod_foundPod(pod))
-			mod = findModFromPod(pod)
+			mods = findModFromPod(pod)
+			mod = mods.first
 		}
 
 		// AppModule name given...
@@ -150,7 +151,8 @@ class BedSheetBuilder {
 			if (!bob.moduleTypes.contains(mod))
 				bob.addModule(mod)
 		}
-
+		bob.addModules(mods)
+		
 		// A simple thing - ensure the BedSheet module is added! 
 		// (transitive dependencies are added explicitly via @SubModule)
 		if (!bob.moduleTypes.contains(BedSheetModule#))
@@ -163,22 +165,22 @@ class BedSheetBuilder {
 	}
 
 	** Looks for an 'AppModule' in the given pod. 
-	private static Type? findModFromPod(Pod pod) {
-		mod := null
-		modName := pod.meta["afIoc.module"]
-		if (modName != null) {
-			mod = Type.find(modName, true)
-			log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
+	private static Type[] findModFromPod(Pod pod) {
+		mods := Type#.emptyList
+		modNames := pod.meta["afIoc.module"]
+		if (modNames != null) {
+			mods = modNames.split.map { Type.find(it, true) }
+			log.info(BsLogMsgs.bedSheetWebMod_foundType(mods.first))
 		} else {
 			// we have a pod with no module meta... so lets guess the name 'AppModule'
-			mod = pod.type("AppModule", false)
+			mod := pod.type("AppModule", false)
 			if (mod != null) {
+				mods = [mod]
 				log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
 				log.warn(BsLogMsgs.bedSheetWebMod_addModuleToPodMeta(pod, mod))
 			}
 		}
-		// FIXME: return list of types
-		return mod
+		return mods
 	}
 
 	private static Str easterEgg(Str title) {
