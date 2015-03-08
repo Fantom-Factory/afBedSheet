@@ -7,9 +7,9 @@ using afIoc
 internal
 class MainPoo {	
 	Void main() {
-		reg := BedSheetBuilder(TinyBedAppModule#.qname).buildRegistry
+		bob := BedSheetBuilder(TinyBedAppModule#.qname)
 		mod := RouteMod { it.routes = [
-			"poo" : BedSheetWebMod(reg)
+			"poo" : BedSheetWebMod(bob)
 		]}
 		
 		WispService { it.port=8069; it.root=mod }.install.start

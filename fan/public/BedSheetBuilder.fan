@@ -81,7 +81,7 @@ class BedSheetBuilder {
 	Int startWisp(Int port := 8069, Bool proxy := false, Str? env := null) {
 		this.port = port
 		options["afBedSheet.env"] = env
-		mod := proxy ? ProxyMod(this, port) : BedSheetWebMod(buildRegistry)
+		mod := proxy ? ProxyMod(this, port) : BedSheetWebMod(this)
 		return WebModRunner().run(mod, port)
 	}
 

@@ -13,7 +13,7 @@ class MainProxied : AbstractMain {
 		str := "\"" + this.bob.replace("\"", "\\\"") + "\""
 		bob	:= BedSheetBuilder.fromString(str)
 		prt := bob.options[BsConstants.meta_appPort]
-		mod := BedSheetWebMod(bob.buildRegistry)
+		mod := BedSheetWebMod(bob)
 		return WebModRunner().run(mod, prt)
 	}
 }

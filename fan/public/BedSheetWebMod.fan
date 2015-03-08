@@ -2,6 +2,7 @@ using concurrent::Actor
 using concurrent::ActorPool
 using concurrent::AtomicRef
 using concurrent::AtomicBool
+using afConcurrent::LocalRef
 using web::WebMod
 using web::WebReq
 using web::WebRes
@@ -25,8 +26,11 @@ const class BedSheetWebMod : WebMod {
 	** The port number this Bed App will be listening on. 
 	const Int 		port
 
-	** The IoC registry. 
-	const Registry registry
+	** The IoC registry. Can be 'null' if BedSheet has not yet started.
+	Registry? registry {
+		get { registryRef.val }
+		private set { registryRef.val = it }
+	}
 
 	** The Err (if any) that occurred on service startup
 	Err? startupErr {
@@ -47,20 +51,23 @@ const class BedSheetWebMod : WebMod {
 
 	private const AtomicBool	started			:= AtomicBool(false)
 	private const AtomicRef		startupErrRef	:= AtomicRef()
+	private const AtomicRef		registryRef		:= AtomicRef()
 	private const AtomicRef		pipelineRef		:= AtomicRef()
 	private const AtomicRef		errPrinterRef	:= AtomicRef()
-	private const IocEnv		iocEnv
+	private const IocEnv		iocEnv			:= Type.find("afIocEnv::IocEnvImpl").make	// we can't use the registry, because we're waiting for it to startup!
+	private const LocalRef		bobRef			:= LocalRef("bedSheetBuilder")
 
 	** Creates this 'WebMod'. Use 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
-	new make(Registry registry, |This|? f := null) {
-		meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
-		pod  := (Pod?)  meta.options[BsConstants.meta_appPod]
-		mod  := (Type?) meta.options[BsConstants.meta_appModule]
-		this.registry	= registry
+	new make(BedSheetBuilder bob, |This|? f := null) {
+		pod  := (Pod?)  bob.options[BsConstants.meta_appPod]
+		mod  := (Type?) bob.options[BsConstants.meta_appModule]
 		this.moduleName = (pod?.name ?: mod?.qname) ?: "UNKNOWN"
-		this.appName 	= meta.options[BsConstants.meta_appName]
-		this.port 		= meta.options[BsConstants.meta_appPort]
-		this.iocEnv		= registry.serviceById(IocEnv#.qname)
+		this.appName 	= bob.options[BsConstants.meta_appName]
+		this.port 		= bob.options[BsConstants.meta_appPort]
+		
+		// it would be cleaner to just pass in a Registry instance, but because it takes a second 
+		// or two to build, we want to handle requests in this period
+		this.bobRef.val	= bob
 		f?.call(this)
 	}
 
@@ -73,7 +80,7 @@ const class BedSheetWebMod : WebMod {
 			return
 
 		if (queueRequestsOnStartup)
-			while (middlewarePipeline == null && startupErr == null) {
+			while ((registry == null || middlewarePipeline == null) && startupErr == null) {
 				// 200ms should be un-noticable to humans but a lifetime to a computer!
 				Actor.sleep(200ms)
 			}
@@ -81,7 +88,7 @@ const class BedSheetWebMod : WebMod {
 		// web reqs still come in while we're processing onStart() so dispatch them quickly
 		// We used to sleep / queue them up until ready but then, when processing 100s at once, 
 		// it was easy to run into race conditions when lazily creating services.
-		if (middlewarePipeline == null && startupErr == null) {
+		if ((registry == null || middlewarePipeline == null) && startupErr == null) {
 			res := (WebRes) Actor.locals["web.res"]
 			res.sendErr(503, startupMessage)
 			return
@@ -92,6 +99,8 @@ const class BedSheetWebMod : WebMod {
 			throw startupErr
 		
 		try {
+			// this is actual call to BedSheet! 
+			// the rest of this class is just startup and error handling fluff! 
 			middlewarePipeline.service
 			
 		} catch (IocShutdownErr err) {
@@ -104,10 +113,12 @@ const class BedSheetWebMod : WebMod {
 			
 			// try to send something to the browser
 			errLog := err.traceToStr
-			try {
-				errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
-				errLog = errPrinter.errToStr(err)
-			} catch {}
+			if (registry != null) {
+				try {
+					errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
+					errLog = errPrinter.errToStr(err)
+				} catch {}
+			}
 
 			// log and throw, because we don't trust Wisp to log it
 			Env.cur.err.printLine(errLog)					
@@ -126,7 +137,8 @@ const class BedSheetWebMod : WebMod {
 			log.info(BsLogMsgs.bedSheetWebMod_starting(appName, port))
 
 			// Go!!!
-			registry.startup
+			bob := (BedSheetBuilder) bobRef.val
+			registry = bob.buildRegistry.startup
 
 			// start the destroyer!
 			meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)

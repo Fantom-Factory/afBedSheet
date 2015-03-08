@@ -20,7 +20,7 @@ internal class AppTest : Test {
 
 		bob := BedSheetBuilder(iocModules[0].qname).addModule(ConfigModule#)
 		iocModules.each { bob.addModule(it) }
-		mod := BedSheetWebMod(bob.buildRegistry)
+		mod := BedSheetWebMod(bob)
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 		
