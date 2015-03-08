@@ -15,7 +15,7 @@ internal const class AppRestarter {
 	new make(BedSheetBuilder bob, Int appPort) {
 		this.appName 		= bob.appName
 		this.appPort 		= appPort
-		this.params			= bob.toStr
+		this.params			= bob.toStringy
 		// as we're not run inside afIoc, we don't have ActorPools
 		this.conState		= SynchronizedState(ActorPool(), AppRestarterState#)
 	}

@@ -119,9 +119,9 @@ internal const class PodHandlerImpl : PodHandler {
 		if (podUrl.scheme != "fan")
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
 
-		resource := podUrl.get(null, false)
-		if (resource == null)
-			throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
+		resource := (Obj?) null
+		try resource = podUrl.get
+		catch throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
 		if (resource isnot File)	// WTF!?
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
 

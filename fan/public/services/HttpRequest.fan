@@ -107,6 +107,8 @@ internal const class HttpRequestImpl : HttpRequest {
 	new make(|This|? in := null) { 
 		in?.call(this) 
 		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
+		if (bodyRef == null)
+			bodyRef = LocalRef("body")
 	}
 
 	override Bool isXmlHttpRequest() {

@@ -54,7 +54,7 @@ const class BedSheetWebMod : WebMod {
 	private const AtomicRef		registryRef		:= AtomicRef()
 	private const AtomicRef		pipelineRef		:= AtomicRef()
 	private const AtomicRef		errPrinterRef	:= AtomicRef()
-	private const IocEnv		iocEnv			:= Type.find("afIocEnv::IocEnvImpl").make	// we can't use the registry, because we're waiting for it to startup!
+	private const IocEnv		iocEnv			:= IocEnv()
 	private const LocalRef		bobRef			:= LocalRef("bedSheetBuilder")
 
 	** Creates this 'WebMod'. Use 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
