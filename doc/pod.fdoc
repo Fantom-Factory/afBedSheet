@@ -646,9 +646,9 @@ using afBedSheet
 
 class Example {
     Void main() {
-        reg := BedSheetBuilder(AppModule#.qname).buildRegistry
+        bob := BedSheetBuilder(AppModule#.qname)
         mod := RouteMod { it.routes = [
-            "poo" : BedSheetWebMod(reg)
+            "poo" : BedSheetWebMod(bob)
         ]}
 
         WispService { it.port=8069; it.root=mod }.install.start
