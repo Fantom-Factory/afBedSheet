@@ -1,15 +1,14 @@
 
-After Ioc1.5 - blog how to instantiate a 2nd Filehandler to map 2 dirs to the one url
-
-Doc customising the ErrPrinters! Make them public?
-
-
-
-For BedSheet 1.4.02
+For BedSheet 1.4.10
 --------------------
 Run BedSheet under https...?
 Add HttpRequest.isSecure()
  - find out how to tell
+
+Doc customising the ErrPrinters! Make them public?
+
+Add IpAddr option to BedSheetBuilder / Wisp integration.
+ - http://fantom.org/forum/topic/2399 
 
 
 Future
@@ -18,6 +17,10 @@ Logging filter with reqId, SessId and configurable userId
 
 Create an afBedSheetProtection pod, based on Rubys Rack::Protection
 
+Move code to BedSheetCore and remove all dependencies on Wisp / Web
+ - create a BedSheetWisp default impl
+ - that way BedSheet could be run on different servers (afWillow?)
+ 
 
 
 Meh - Can't be arsed!

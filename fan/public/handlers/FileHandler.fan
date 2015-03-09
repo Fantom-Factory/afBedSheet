@@ -34,7 +34,7 @@ using afIoc
 **   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl
 ** 
 ** Most of the time 'url' will be the same as the hardcoded URL but it has the added benefit of:
-**  - [Failing fast]`#failFast` if the file does not exist
+**  - Failing fast if the file does not exist
 **  - generating correct URLs in non-root WebMods
 **  - using asset caching strategies
 **
@@ -50,7 +50,7 @@ using afIoc
 ** 
 **   conf[`/`] = `etc/static-web/`.toFile
 ** 
-** This way everything under `etc/static-web/` is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
+** This way everything under 'etc/static-web/' is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
 ** 
 ** 
 ** 
