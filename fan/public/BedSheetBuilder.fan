@@ -1,6 +1,7 @@
 using afIoc
 using afIocEnv
 
+** Use to create and launch BedSheet server instances.
 class BedSheetBuilder {
 	private const static Log log := Utils.getLog(BedSheetBuilder#)
 
