@@ -432,9 +432,9 @@ class RestService {
     new make(|This| in) { in(this) }
 
     Text post(Int id) {
-    	// use the request body to get submitted data as...
+        // use the request body to get submitted data as...
 
-    	// a [Str:Str] form map or
+        // a [Str:Str] form map or
         form := httpRequest.body.form
 
         // as JSON objects
@@ -730,6 +730,10 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 
 Release Notes [#releaseNotes]
 *****************************
+v1.4.10 [#v1.4.10]
+================
+ - New: 'BedSheetBuilder.makeFromType()' ctor to pass in 'AppModules'.
+
 v1.4.8 [#v1.4.8]
 ================
  - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries and start Wisp servers.

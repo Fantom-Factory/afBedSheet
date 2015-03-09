@@ -33,13 +33,18 @@ class BedSheetBuilder {
 		initBanner(registryBuilder)
 	}
 	
-	** Creates a 'BedSheetBuilder'. If 
+	** Creates a 'BedSheetBuilder'. 
+	** 'appName' may be a pod name or a qualified 'AppModule' type name. 
+	** 'addPodDependencies' is only used if a pod name is passed in.
 	new make(Str appName, Bool addPodDependencies := true) {
 		this.registryBuilder = RegistryBuilder()
 		this.port = 0
 		initModules(registryBuilder, appName, addPodDependencies)
 		initBanner(registryBuilder)
 	}
+
+	** Creates a 'BedSheetBuilder' from an 'AppModule' type.
+	new makeFromType(Type appModule) : this.make(appModule.qname) { }
 
 	** Adds a module to the registry. 
 	** Any modules defined with the '@SubModule' facet are also added.
