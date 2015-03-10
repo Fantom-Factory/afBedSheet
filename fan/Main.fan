@@ -2,7 +2,7 @@ using util::AbstractMain
 using util::Arg
 using util::Opt
 
-** Call to run a 'BedSheet' web application from the command line.
+** Runs a BedSheet web application (Bed App) from the command line.
 ** 
 ** pre>
 **   C:\> fan afBedSheet [-env <env>] [-proxy] [-noTransDeps] <appModule> <port>
@@ -14,6 +14,11 @@ using util::Opt
 **   noTransDeps:  (optional) Do not load transitive dependencies.
 **   appModule:    The qname of the AppModule or pod which configures the BedSheet web app
 **   port:         The HTTP port to run the Bed App on
+** 
+** Example:
+** 
+**   C:\> fan afBedSheet -env DEV -proxy acme::AppModule 8069
+** 
 class Main : AbstractMain {
 
 	@Opt { help="Starts a dev proxy on <port> and launches the real web app on (<port> + 1)" }
