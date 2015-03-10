@@ -1,7 +1,7 @@
-#BedSheet v1.4.8
+#BedSheet v1.4.8.2
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.8](http://img.shields.io/badge/pod-v1.4.8-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.8.2](http://img.shields.io/badge/pod-v1.4.8.2-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -100,15 +100,15 @@ Full API & fandocs are available on the [Status302 repository](http://repo.statu
 
 Wow! That's awesome! But what just happened!?
 
-Every `BedSheet` application has an `AppModule` that configures [IoC](http://www.fantomfactory.org/pods/afIoc) services. Here we told the [Routes](http://repo.status302.com/doc/afBedSheet/Routes.html) service to return some plain text in response to `/index` and to call the `HelloPage#hello` method for all requests that start with `/hello`. [Route](http://repo.status302.com/doc/afBedSheet/Route.html) converts URL path segments into method arguments, or in our case, to `Str name` and to an optional `Int iq`.
+Every BedSheet application has an `AppModule` that configures [IoC](http://www.fantomfactory.org/pods/afIoc) services. Here we told the [Routes](http://repo.status302.com/doc/afBedSheet/Routes.html) service to return some plain text in response to `/index` and to call the `HelloPage#hello` method for all requests that start with `/hello`. [Route](http://repo.status302.com/doc/afBedSheet/Route.html) converts URL path segments into method arguments, or in our case, to `Str name` and to an optional `Int iq`.
 
-Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our `HelloPage` route handler simply returns a plain [Text](http://repo.status302.com/doc/afBedSheet/Text.html) response, which `BedSheet` sends to the client via an appropriate [ResponseProcessor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html).
+Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our `HelloPage` route handler simply returns a plain [Text](http://repo.status302.com/doc/afBedSheet/Text.html) response, which BedSheet sends to the client via an appropriate [ResponseProcessor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html).
 
 ## Starting BedSheet
 
 Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://www.fantomfactory.org/pods/afIoc) services. It is an [IoC](http://www.fantomfactory.org/pods/afIoc) concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
 
-To start `BedSheet` from the command line, you need to tell it where to find the `AppModule` and which port to run on:
+To start BedSheet from the command line, you need to tell it where to find the `AppModule` and which port to run on:
 
 ```
 C:\> fan afBedSheet -env development <fully-qualified-app-module-name> <port-number>
@@ -132,7 +132,7 @@ meta = [
 ]
 ```
 
-This allows `BedSheet` to look up your `AppModule` from the pod. Example:
+This allows BedSheet to look up your `AppModule` from the pod. Example:
 
 ```
 C:\> fan afBedSheet -env development myWebApp 8069
@@ -160,7 +160,7 @@ class AppModule {
 }
 ```
 
-[Route](http://repo.status302.com/doc/afBedSheet/Route.html) objects take a matching `glob` and a response object. A response object is any object that `BedSheet` knows how to [process](#responseObjects) or a `Method` to be called. If a method is given, then request URL path segments are matched to the method parameters. See [Route](http://repo.status302.com/doc/afBedSheet/Route.html) for more details.
+[Route](http://repo.status302.com/doc/afBedSheet/Route.html) objects take a matching `glob` and a response object. A response object is any object that BedSheet knows how to [process](#responseObjects) or a `Method` to be called. If a method is given, then request URL path segments are matched to the method parameters. See [Route](http://repo.status302.com/doc/afBedSheet/Route.html) for more details.
 
 Routing lesson over.
 
@@ -170,16 +170,20 @@ Routing lesson over.
 
 *Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](#quickStart) `HelloPage` *route handler* returns a [Text](http://repo.status302.com/doc/afBedSheet/Text.html) *response object*.
 
-Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with `BedSheet`:
+Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with BedSheet:
 
 - [FileHandler](http://repo.status302.com/doc/afBedSheet/FileHandler.html): Maps request URLs to files on the file system.
 - [PodHandler](http://repo.status302.com/doc/afBedSheet/PodHandler.html) : Maps request URLs to pod file resources.
+
+See the [FileHandler](http://repo.status302.com/doc/afBedSheet/FileHandler.html) documentation for examples on how to serve up static files.
+
+See the [PodHandler](http://repo.status302.com/doc/afBedSheet/PodHandler.html) documentation for examples on how to serve up static pod files, including Fantom generated Javascript.
 
 ## Response Objects
 
 *Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html) to process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return *Response Objects*, which will be handled by another *Response Processor*.
 
-You can define *Response Processors* and process *Response Objects* yourself; but by default, `BedSheet` handles the following:
+You can define *Response Processors* and process *Response Objects* yourself; but by default, BedSheet handles the following:
 
 - `Void` / `null` / `false` : Processing should fall through to the next Route match.
 - `true` : No further processing is required.
@@ -204,7 +208,7 @@ Note that response object processing is extensible, just contribute your own [Re
 
 ## Template Rendering
 
-Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of `BedSheet`. That said, there a couple templating libraries *out there* and integrating them into `BedSheet` is relatively simple. For instance, Alien-Factory provides the following libraries:
+Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of BedSheet. That said, there a couple templating libraries *out there* and integrating them into BedSheet is relatively simple. For instance, Alien-Factory provides the following libraries:
 
 - [efan](http://www.fantomfactory.org/pods/afEfan) for basic templating,
 - [Slim](http://www.fantomfactory.org/pods/afSlim) for concise HTML templating, and
@@ -231,7 +235,7 @@ class IndexPage {
 
 When a HTTP request is received, it is passed through a pipeline of BedSheet [Middleware](http://repo.status302.com/doc/afBedSheet/Middleware.html); this is a similar to [Java Servlet Filters](http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html). If the request reaches the end of the pipeline without being processed, a 404 is returned.
 
-Middleware bundled with `BedSheet` include:
+Middleware bundled with BedSheet include:
 
 - `RequestLog`: Generates request logs in the standard [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
 - `Routes` : Performs the standard [request routing](#requestRouting)
@@ -240,7 +244,7 @@ You can define your own middleware to address cross cutting concerns such as aut
 
 ## Error Processing
 
-When `BedSheet` catches an Err it scans through a list of contributed response objects to find one that can handle the Err. If no matching response object is found then the *default err response object* is used. This default response object displays BedSheet's extremely verbose Error 500 page. It displays (a shed load of) debugging information and is highly customisable:
+When BedSheet catches an Err it scans through a list of contributed response objects to find one that can handle the Err. If no matching response object is found then the *default err response object* is used. This default response object displays BedSheet's extremely verbose Error 500 page. It displays (a shed load of) debugging information and is highly customisable:
 
 ![BedSheet's Verbose Err500 Page](http://static.alienfactory.co.uk/fantom-docs/Err500.png)
 
@@ -358,9 +362,9 @@ class RestService {
     new make(|This| in) { in(this) }
 
     Text post(Int id) {
-    	// use the request body to get submitted data as...
+        // use the request body to get submitted data as...
 
-    	// a [Str:Str] form map or
+        // a [Str:Str] form map or
         form := httpRequest.body.form
 
         // as JSON objects
