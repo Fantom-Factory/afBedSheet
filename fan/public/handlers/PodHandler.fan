@@ -23,6 +23,47 @@ using afBeanUtils::ArgNotFoundErr
 ** 
 ** Set the base url to 'null' to disable the serving of pod resources.
 ** 
+** 
+** 
+** Serve Fantom Code
+** =================
+** Fantom compiles all classes in a pod annotated with the '@Js' facet into a Javascript file that is saved in the pod.
+** These pod '.js' files can then be served up with 'PodHandler' allowing you execute Fantom code in the browser.
+** 
+** Here is an example that calls 'alert()' via Fantom's DOM pod. To run, just serve the example as static HTML:
+** 
+** pre>
+** syntax: html
+** 
+** <!DOCTYPE html>
+** <html>
+** <head>
+**     <script type="text/javascript" src="/pods/sys/sys.js"></script>
+**     <script type="text/javascript" src="/pods/gfx/gfx.js"></script>
+**     <script type="text/javascript" src="/pods/web/web.js"></script>
+**     <script type="text/javascript" src="/pods/dom/dom.js"></script>
+** </head>
+** <body>
+**     <h1>Old Skool Example</h1>
+** 
+**     <script type="text/javascript">
+**         fan.dom.Win.cur().alert("Hello Mum!");
+**     </script>
+** </body>
+** </html>
+** <pre
+** 
+** Note that the order in which the pod '.js' files are listed is very important; each pod's dependencies must be listed before the pod itself.
+** 
+** Fantom code may also be executed via the [web::WebUtil.jsMain()]`web::WebUtil.jsMain` method.
+** 
+** A much cleaner way injecting Fantom code is to use the [Duvet library]`http://www.fantomfactory.org/pods/afDuvet` which uses 
+** [RequireJS]`http://requirejs.org/docs/api.html` to wrap up the Fantom code as dependency managed Javascript modules. 
+** 
+** 
+** 
+** Resource Whitelist
+** ==================
 ** Because pods may contain sensitive data, the entire contents of all the pods are NOT available by default. Oh no!
 ** 'PodHandler' has a whitelist of Regexes that specify which pod files are allowed to be served.
 ** If a pod resource doesn't match a regex, it doesn't get served.
@@ -30,10 +71,10 @@ using afBeanUtils::ArgNotFoundErr
 ** By default only a handful of files with common web extensions are allowed. These include:
 ** 
 ** pre>
-** .      web files: .css .htm .html .js
+** .      web files: .css .htm .html .js .xhtml
 **      image files: .bmp .gif .ico .jpg .png
-**   web font files: .eot .ttf .woff
-**      other files: .txt
+**   web font files: .eot .otf .svg .ttf .woff
+**      other files: .csv .txt .xml
 ** <pre
 ** 
 ** To add or remove whitelist regexs, contribute to 'PodHandler':

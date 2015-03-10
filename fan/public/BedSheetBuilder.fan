@@ -1,7 +1,11 @@
 using afIoc
 using afIocEnv
 
-** Use to create and launch BedSheet server instances.
+** Use to programmatically create and launch BedSheet server instances.
+** 
+**   useDevProxy := true
+**   BedSheetBuilder(AppModule#).startWisp(8069, useDevProxy, "dev")
+** 
 class BedSheetBuilder {
 	private const static Log log := Utils.getLog(BedSheetBuilder#)
 

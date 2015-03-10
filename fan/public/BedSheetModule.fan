@@ -147,6 +147,7 @@ const class BedSheetModule {
 		config[".htm"]	= "^.*\\.htm\$"
 		config[".html"]	= "^.*\\.html\$"
 		config[".js"]	= "^.*\\.js\$"
+		config[".xhtml"]= "^.*\\.xhtml\$"
 		
 		// image files
 		config[".bmp"]	= "^.*\\.bmp\$"
@@ -154,16 +155,20 @@ const class BedSheetModule {
 		config[".ico"]	= "^.*\\.ico\$"
 		config[".jpg"]	= "^.*\\.jpg\$"
 		config[".png"]	= "^.*\\.png\$"
+		config[".svg"]	= "^.*\\.svg\$"
 		
 		// web font files
 		config[".eot"]	= "^.*\\.eot\$"
+		config[".otf"]	= "^.*\\.otf\$"
 		config[".ttf"]	= "^.*\\.ttf\$"
 		config[".woff"]	= "^.*\\.woff\$"
 		
 		// other files
+		config[".csv"]	= "^.*\\.csv\$"
 		config[".txt"]	= "^.*\\.txt\$"
+		config[".xml"]	= "^.*\\.xml\$"
 	}
-	
+
 	@Contribute { serviceType=GzipCompressible# }
 	static Void contributeGzipCompressible(Configuration config) {
 		// add some standard compressible mime types
@@ -250,8 +255,8 @@ const class BedSheetModule {
 	static Void contributeFactoryDefaults(Configuration config, RegistryMeta meta) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
-		bedSheetPort	 := meta[BsConstants.meta_appPort]
-		
+		bedSheetPort	 := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
+
 		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		config[BedSheetConfigIds.gzipDisabled]				= false
 		config[BedSheetConfigIds.gzipThreshold]				= 376
