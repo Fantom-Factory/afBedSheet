@@ -103,17 +103,22 @@ class BedSheetBuilder {
 		appPod := (Pod) bob.options[BsConstants.meta_appPod]
 		bob.options[BsConstants.meta_appPodName] = appPod.name
 		bob.options.remove(BsConstants.meta_appPod)
-		
-		// we code into a Str so it's all on one line
-		return Buf().writeObj(bob).flip.readAllStr.toCode
+
+		// from a std Fantom-Factory builder:
+		//  - raw str = 763 bytes
+		//  - base64  = 985 bytes
+		//  - gzipped = 421 bytes
+		buf := Buf()
+		Zip.gzipOutStream(buf.out).writeObj(bob).close
+		return buf.flip.toBase64.replace("/", "_").replace("+", "-")
 	}
 
 	@NoDoc // for serialisation
 	static BedSheetBuilder fromStringy(Str str) {
-		nwl := (Str) str.toBuf.readObj
-		bob := (RegistryBuilder) nwl.toBuf.readObj
+		b64 := str.replace("_", "/").replace("-", "+")
+		bob := (RegistryBuilder) Zip.gzipInStream(Buf.fromBase64(b64).in).readObj
 		
-		// re-instate appPod
+		// reinstate appPod
 		appPodName	:= (Str) bob.options[BsConstants.meta_appPodName]
 		bob.options[BsConstants.meta_appPod] = Pod.find(appPodName, true)
 		bob.options.remove(BsConstants.meta_appPodName)
