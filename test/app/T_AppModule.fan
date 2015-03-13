@@ -69,7 +69,7 @@ internal const class T_AppModule {
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(Configuration conf) {
 		conf[BedSheetConfigIds.gzipThreshold] 			= 50
-//		conf[BedSheetConfigIds.httpRequestLogDir] 		= `./`.toFile
+//		conf[BedSheetConfigIds.requestLogDir] 			= `./`.toFile
 		conf[BedSheetConfigIds.responseBufferThreshold]	= 1 * 1024
 	}
 	

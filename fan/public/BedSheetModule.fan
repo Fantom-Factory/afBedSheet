@@ -53,9 +53,11 @@ const class BedSheetModule {
 		// hardcode BedSheet default middleware
 		middleware := Middleware[
 			reg.autobuild(CleanupMiddleware#),
+			// this wraps ErrMiddleware so it can report 500 errors
+			// TODO: How may others insert their own middleware here?
+			reg.serviceById(RequestLogMiddleware#.qname),
 			reg.autobuild(ErrMiddleware#),
-			reg.autobuild(FlashMiddleware#),
-			reg.serviceById(RequestLogMiddleware#.qname)
+			reg.autobuild(FlashMiddleware#)
 		].addAll(userMiddleware)
 		terminator := reg.autobuild(MiddlewareTerminator#)
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)

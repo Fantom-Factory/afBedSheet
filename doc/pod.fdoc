@@ -734,6 +734,10 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 
 Release Notes [#releaseNotes]
 *****************************
+v1.4.10 [#v1.4.10]
+==================
+ - Bug: 'RequestLogMiddleware' logged all requests with a status code of 200 - See [RequestLogMiddleware - wrong HTTP Status for errors]`https://bitbucket.org/AlienFactory/afbedsheet/issue/4/requestlogmiddleware-wrong-http-status-for` for details.
+
 v1.4.8.4 [#v1.4.8.4]
 ====================
  - Bug: Proxy didn't work on MacOS - thanks go to [Shturman]`https://bitbucket.org/AlienFactory/afbedsheet/issue/3/proxy-mode-error`.
