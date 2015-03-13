@@ -1,7 +1,7 @@
-#BedSheet v1.4.8.4
+#BedSheet v1.4.8
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.8.4](http://img.shields.io/badge/pod-v1.4.8.4-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.8](http://img.shields.io/badge/pod-v1.4.8-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -285,7 +285,7 @@ To set your own `404 Not Found` page contribute a response object to [HttpStatus
 ```
 @Contribute { serviceType=HttpStatusResponses# }
 static Void contribute404Response(Configuration config) {
-    conf[404] = MethodCall(Error404Page#process).toImmutableFunc
+    config[404] = MethodCall(Error404Page#process).toImmutableFunc
 }
 ```
 

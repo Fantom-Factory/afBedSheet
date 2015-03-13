@@ -342,7 +342,7 @@ To set your own '404 Not Found' page contribute a response object to `HttpStatus
 pre>
 @Contribute { serviceType=HttpStatusResponses# }
 static Void contribute404Response(Configuration config) {
-    conf[404] = MethodCall(Error404Page#process).toImmutableFunc
+    config[404] = MethodCall(Error404Page#process).toImmutableFunc
 }
 <pre
 
