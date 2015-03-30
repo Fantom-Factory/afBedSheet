@@ -2,8 +2,8 @@ using afIoc::Inject
 
 internal const class TextProcessor : ResponseProcessor {
 	
-	@Inject
-	private const HttpResponse res
+	@Inject	private const HttpRequest	req
+	@Inject	private const HttpResponse	res
 	
 	new make(|This|in) { in(this) }
 	
@@ -14,9 +14,12 @@ internal const class TextProcessor : ResponseProcessor {
 		// Text objs and we don't wanna override the 500 status code!
 //		res.setStatusCode(200)
 
-		res.headers.contentType = text.contentType
-		res.out.print(text.text)
-		
+		res.headers.contentType 	= text.contentType
+		res.headers.contentLength	= text.text.toBuf.size
+
+		if (req.httpMethod != "HEAD")
+			res.out.writeChars(text.text)
+
 		return true
 	}
 	

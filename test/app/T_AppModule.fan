@@ -9,7 +9,7 @@ internal const class T_AppModule {
 
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(Configuration conf, BedSheetPages bedSheetPages) {
-		conf.add(Route(`/textResult/plain`,		T_PageHandler#plain))
+		conf.add(Route(`/textResult/plain`,		T_PageHandler#plain, "GET HEAD"))
 		conf.add(Route(`/textResult/html`,	 	T_PageHandler#html))
 		conf.add(Route(`/textResult/xml`, 		T_PageHandler#xml))
 

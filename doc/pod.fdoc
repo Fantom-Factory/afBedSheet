@@ -736,12 +736,13 @@ Release Notes [#releaseNotes]
 *****************************
 v1.4.10 [#v1.4.10]
 ==================
+ - Chg: 'TextProcessor' now handles HEAD requests.
  - Bug: 'RequestLogMiddleware' logged all requests with a status code of 200 - See [RequestLogMiddleware - wrong HTTP Status for errors]`https://bitbucket.org/AlienFactory/afbedsheet/issue/4/requestlogmiddleware-wrong-http-status-for` for details.
  - Bug: HEAD requests head their 'Content-Length' header reset to '0'.
 
 v1.4.8.4 [#v1.4.8.4]
 ====================
- - Bug: Proxy didn't work on MacOS - thanks go to [Shturman]`https://bitbucket.org/AlienFactory/afbedsheet/issue/3/proxy-mode-error`.
+ - Bug: New Proxy code didn't work on MacOS - thanks go to [Shturman]`https://bitbucket.org/AlienFactory/afbedsheet/issue/3/proxy-mode-error`.
 
 v1.4.8.2 [#v1.4.8.2]
 ====================
@@ -751,6 +752,7 @@ v1.4.8 [#v1.4.8]
 ================
  - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries and start Wisp servers.
  - New: 'HttpRequestBody' for convenience methods to access the request body. (Similar to [Butter]`pod:afButter`.)
+ - Chg: New Proxy code ensures all build parameters are passed to the real app.
  - Chg: Renamed 'Text.json()' -> 'Text.jsonObj()'. 'Text.json()' now takes a Str. (Potential breaking change.)
  - Chg: 'FileHandler.fromLocalUrl()' and 'FileHandler.fromServerFile()' now take a 'checked' parameter.
  - Chg: 'FileAssetProcessor' now copes with duff 'If-None-Match' Etag requests headers.
