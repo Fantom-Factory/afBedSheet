@@ -11,6 +11,10 @@ internal const class InStreamProcessor : ResponseProcessor {
 	override Obj process(Obj inStreamObj) {
 		in := (InStream) inStreamObj
 
+		// if we don't throw this, Wisp does, only it gets swallowed server side as the response is comitted 
+		if (res.headers.contentLength == null && res.headers.contentType == null)
+			throw BedSheetErr("Must set Content-Length or Content-Type to stream content")
+
 		in.pipe(res.out, null, true)
 
 		return true
