@@ -6,6 +6,14 @@ internal class TestTextResult : AppTest {
 		res := getAsStr(`/textResult/plain`)
 		verifyEq(res, "This is plain text")
 		verifyEq(client.resHeaders["Content-Type"], "text/plain; charset=UTF-8")
+		verifyEq(client.resHeaders["Content-Length"], "18")
+	}
+
+	Void testPlainHead() {		
+		res := getAsStr(`/textResult/plain`, "HEAD")
+		verifyEq(res, "")
+		verifyEq(client.resHeaders["Content-Type"], "text/plain; charset=UTF-8")
+		verifyEq(client.resHeaders["Content-Length"], "18")
 	}
 
 	Void testHtml() {
