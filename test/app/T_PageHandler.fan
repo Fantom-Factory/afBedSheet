@@ -32,7 +32,8 @@ internal const class T_PageHandler {
 
 	Obj noBuff() {
 		response.disableBuffering = true
-		return Text.fromPlain("This is not Buff!")
+		response.headers.contentType = MimeType("text/plain")
+		return "This is not Buff!".toBuf.in
 	}
 	
 	// ---- GZIP Pages ----
@@ -150,7 +151,6 @@ internal const class T_PageHandler {
 	
 	Obj saveAs(Str saveAs) {
 		response.saveAsAttachment(saveAs)
-		response.headers.contentType = MimeType.forExt(".txt")
 		return Buf().print("Short Skirts!").flip.in
 	}
 

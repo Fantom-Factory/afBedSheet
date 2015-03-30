@@ -10,6 +10,7 @@ internal class BufferedOutStream : OutStream {
 
 	@Config { id="afBedSheet.responseBuffer.threshold" }
 	@Inject private Int 			resBufThreadhold
+	@Inject	private HttpRequest		request
 	@Inject	private HttpResponse	response
 	
 	private OutStream	realOut
@@ -55,7 +56,9 @@ internal class BufferedOutStream : OutStream {
 		// 'Content-Length' header!
 		if (!switched) {
 			if (!response.isCommitted)	// a sanity check
-				response.headers.contentLength = buf?.size ?: 0
+				// don't overwrite HEAD requests with an empty buffer value!
+				if (buf != null || request.httpMethod != "HEAD")
+					response.headers.contentLength = buf?.size ?: 0
 			bufOut = realOut
 			writeBufToOut
 		}
