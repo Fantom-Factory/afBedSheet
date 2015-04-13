@@ -112,6 +112,7 @@ const class BedSheetModule {
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration config) {
 		config[Err#]		= config.autobuild(ErrProcessor#)
+		config[Field#]		= config.autobuild(FieldProcessor#)
 		config[File#]		= config.autobuild(FileProcessor#)
 		config[FileAsset#]	= config.autobuild(FileAssetProcessor#)
 		config[Func#]		= config.autobuild(FuncProcessor#)

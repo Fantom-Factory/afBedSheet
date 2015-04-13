@@ -27,5 +27,10 @@ internal class TestTextResult : AppTest {
 		verifyEq(res, "This is xml text <honest!/>")
 		verifyEq(client.resHeaders["Content-Type"], "application/xml; charset=UTF-8")
 	}
+
+	Void testField() {
+		res := getAsStr(`/fieldResponse`)
+		verifyEq(res, "From Field")
+	}
 	
 }
