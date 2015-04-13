@@ -34,10 +34,28 @@ const mixin HttpRequest {
 	abstract Int remotePort()
 
 	** The URL relative to `BedSheetWebMod`, includes query string and fragment. 
-	** Always starts with a '/'. Example, '/index.html'
+	** Always starts with a '/'.
+	** 
+	** Examples:
+	**   /a/b/index.html
+	**   /a?q=bar
 	** 
 	** @see `web::WebReq.modRel`
 	abstract Uri url()
+
+	** The absolute request URL including the full authority and the query string.  
+	** This method is equivalent to:
+	** 
+	**   "http://" + headers["Host"] + path + url
+	**
+	** where 'path' is the request path to the current 'WebMod'.
+	** 
+	** Examples:
+	**   http://www.foo.com/a/b/index.html
+	**   http://www.foo.com/a?q=bar
+	** 
+	** @see `web::WebReq.absUri`
+	abstract Uri urlAbs()
 
 	** Map of HTTP request headers. The map is readonly and case insensitive.
 	** 
@@ -93,6 +111,7 @@ const class HttpRequestWrapper : HttpRequest {
 	override IpAddr remoteAddr() 			{ req.remoteAddr		}
 	override Int remotePort() 				{ req.remotePort		}
 	override Uri url() 						{ req.url				}
+	override Uri urlAbs() 					{ req.urlAbs			}
 	override HttpRequestHeaders headers()	{ req.headers			}
 	override Locale[] locales() 			{ req.locales			}
 	override Str:Obj? stash()				{ req.stash				}
@@ -130,6 +149,10 @@ internal const class HttpRequestImpl : HttpRequest {
 		rel := webReq.modRel
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel
+	}
+	override Uri urlAbs() {
+		host := headers.host ?: throw Err("Missing Host header")
+		return `http://${host}/` + webReq.uri
 	}
 	override Locale[] locales() {
 		webReq.locales

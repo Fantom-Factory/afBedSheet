@@ -4,6 +4,7 @@ using afIoc::Registry
 internal const class T_PageHandler {
 	
 	@Inject	private const Registry 			registry
+	@Inject	private const HttpRequest		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
 	@Inject	private const BedSheetPages		bedSheetPages
@@ -194,6 +195,11 @@ internal const class T_PageHandler {
 		response.out.writeChars("!")
 		concurrent::Actor.sleep(50ms)
 		return true
+	}
+	
+	Obj postForm() {
+		str := request.body.form.toCode
+		return Text.fromPlain(str)
 	}
 }
 

@@ -735,10 +735,11 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 Release Notes [#releaseNotes]
 *****************************
 v1.4.10 [#v1.4.10]
-==================
+================
+ - New: 'HttpRequest.urlAbs' gives the absolute request URL.
  - Chg: 'TextProcessor' now handles HEAD requests.
  - Bug: 'RequestLogMiddleware' logged all requests with a status code of 200 - See [RequestLogMiddleware - wrong HTTP Status for errors]`https://bitbucket.org/AlienFactory/afbedsheet/issue/4/requestlogmiddleware-wrong-http-status-for` for details.
- - Bug: HEAD requests head their 'Content-Length' header reset to '0'.
+ - Bug: HEAD requests had their 'Content-Length' header reset to '0'.
 
 v1.4.8.4 [#v1.4.8.4]
 ====================
@@ -746,6 +747,7 @@ v1.4.8.4 [#v1.4.8.4]
 
 v1.4.8.2 [#v1.4.8.2]
 ====================
+ - New: 'BedSheetBuilder.makeFromType()' ctor to pass in 'AppModule'.
  - Chg: Documentation tweaks and fixes.
 
 v1.4.8 [#v1.4.8]
