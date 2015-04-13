@@ -60,6 +60,8 @@ internal const class T_AppModule {
 		conf.add(Route(`/pod/***`, 				PodHandler#serviceRoute))
 
 		conf.add(Route(`/slow`, 				T_PageHandler#slow))
+
+		conf.add(Route(`/postForm`, 			T_PageHandler#postForm, "POST"))
 		
 		// no logging for now!
 //		conf.add(Route(`/***`, 					RequestLogFilter#service))
