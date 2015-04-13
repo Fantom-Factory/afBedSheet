@@ -96,4 +96,9 @@ internal class T_TestBoomMod3 {
 	static Void contributeErrPrinterStr(Configuration config) {
 		config.set("Die", |StrBuf out, Err? err| { throw Err("Ouch!") }).before("afBedSheet.requestDetails")
 	}
+	
+	@Override
+	static IocEnv overrideIocEnv() {
+        IocEnv("dev")
+    }
 }
