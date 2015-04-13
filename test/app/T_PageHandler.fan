@@ -8,6 +8,8 @@ internal const class T_PageHandler {
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
 	@Inject	private const BedSheetPages		bedSheetPages
+
+					const Text				fieldResponse := Text.fromPlain("From Field")
 	
 	new make(|This|in) { in(this) }
 	
