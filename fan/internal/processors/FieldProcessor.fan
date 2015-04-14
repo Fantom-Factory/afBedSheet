@@ -1,7 +1,7 @@
 using afIoc
 using afConcurrent
 
-const class FieldProcessor : ResponseProcessor {
+internal const class FieldProcessor : ResponseProcessor {
 	@Inject private const ObjCache		objCache
 
 	new make(|This|in) { in(this)}

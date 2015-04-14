@@ -28,6 +28,11 @@ const class ReProcessErr : Err {
 	new make(Obj responseObj, Err? cause := null) : super(msg, cause) {
 		this.responseObjRef = Unsafe(responseObj)
 	}
+
+	** Make a 'ReProcessErr' passing in a response obj to be processed. 
+	new makeWithMsg(Obj responseObj, Str msg, Err? cause := null) : super.make(msg, cause) {
+		this.responseObjRef = Unsafe(responseObj)
+	}
 }
 
 ** Throw to process / handle the wrapped 'HttpStatus' object. Often used to return a 
@@ -35,7 +40,7 @@ const class ReProcessErr : Err {
 ** 
 **   throw HttpStatusErr(404, "Page not found")
 const class HttpStatusErr : ReProcessErr {
-	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super(HttpStatus(statusCode, statusMsg), cause) { }
+	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super.makeWithMsg(HttpStatus(statusCode, statusMsg), statusMsg, cause) { }
 }
 
 ** Throw by the routing mechanism / 'ValueEncoders' when converting URI segments to method params.

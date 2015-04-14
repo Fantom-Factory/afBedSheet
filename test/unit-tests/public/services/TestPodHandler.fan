@@ -76,23 +76,23 @@ internal class TestPodHandler : BsTest {
 	
 	Void testFromPodResource() {
 		asset := podHandler.fromPodResource(`fan://icons/x256/flux.png`)
-		verifyEq(asset.file.uri, `fan://icons/x256/flux.png`)
-		verifyEq(asset.localUrl, `/pods/icons/x256/flux.png`)
-		verifyEq(asset.clientUrl, `/pods/icons/x256/flux.png`)
+		verifyEq(asset->file->uri,	`fan://icons/x256/flux.png`)
+		verifyEq(asset.localUrl,	`/pods/icons/x256/flux.png`)
+		verifyEq(asset.clientUrl,	`/pods/icons/x256/flux.png`)
 	}
 
 	Void testFromLocalUrl() {
 		asset := podHandler.fromLocalUrl(`/pods/icons/x256/flux.png`)
-		verifyEq(asset.file.uri, `fan://icons/x256/flux.png`)
-		verifyEq(asset.localUrl, `/pods/icons/x256/flux.png`)
-		verifyEq(asset.clientUrl, `/pods/icons/x256/flux.png`)
+		verifyEq(asset->file->uri,	`fan://icons/x256/flux.png`)
+		verifyEq(asset.localUrl,	`/pods/icons/x256/flux.png`)
+		verifyEq(asset.clientUrl,	`/pods/icons/x256/flux.png`)
 	}
 
 	private PodHandler podHandler(Uri url := `/pods/`, Str filter := ".*") {
 		bob := BeanFactory(PodHandlerImpl#)
 		bob.add([filter.toRegex])
 		bob.setByName("baseUrl", url)
-		bob.setByName("fileCache", FileAssetCacheMock())
+		bob.setByName("assetCache", AssetCacheMock())
 		return bob.create
 	}
 }

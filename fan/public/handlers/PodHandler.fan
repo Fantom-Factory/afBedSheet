@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIoc::Registry
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 
@@ -95,24 +96,24 @@ const mixin PodHandler {
 
 	** The (boring) Route handler method. 
 	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
-	abstract FileAsset? serviceRoute(Uri remainingUrl)
+	abstract CachableAsset? serviceRoute(Uri remainingUrl)
 		
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	** Throws 'ArgErr' if the URL is not mapped or does not exist.
-	abstract FileAsset fromLocalUrl(Uri localUrl)
+	abstract CachableAsset fromLocalUrl(Uri localUrl)
 
 	** Given a pod resource file, this returns a corresponding (cached) 'FileAsset'. 
 	** The URI must adhere to the 'fan://<pod>/<file>' scheme notation.
 	** Throws 'ArgErr' if the URL is not mapped or does not exist.
-	abstract FileAsset fromPodResource(Uri podResource)
+	abstract CachableAsset fromPodResource(Uri podResource)
 }
 
 internal const class PodHandlerImpl : PodHandler {
 
 	@Config { id="afBedSheet.podHandler.baseUrl" }
-	@Inject override const Uri?				baseUrl
-	@Inject	private const FileAssetCache	fileCache
-			private const Regex[] 			whitelistFilters
+	@Inject override const Uri?			baseUrl
+	@Inject	private const AssetCache	assetCache
+			private const Regex[] 		whitelistFilters
 	
 	new make(Regex[] filters, |This|? in) {
 		this.whitelistFilters = filters
@@ -130,7 +131,7 @@ internal const class PodHandlerImpl : PodHandler {
 			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pods/`))
 	}
 
-	override FileAsset? serviceRoute(Uri remainingUrl) {
+	override CachableAsset? serviceRoute(Uri remainingUrl) {
 		try {
 			// use pathStr to knockout any unwanted query str
 			return fromPodResource(`fan://${remainingUrl.pathStr}`)
@@ -140,7 +141,7 @@ internal const class PodHandlerImpl : PodHandler {
 			return null
 	}
 
-	override FileAsset fromLocalUrl(Uri localUrl) {
+	override CachableAsset fromLocalUrl(Uri localUrl) {
 		if (baseUrl == null)
 			throw Err(BsErrMsgs.podHandler_disabled)
 
@@ -153,7 +154,7 @@ internal const class PodHandlerImpl : PodHandler {
 		return fromPodResource(`fan://${remainingUrl}`)
 	}
 	
-	override FileAsset fromPodResource(Uri podUrl) {
+	override CachableAsset fromPodResource(Uri podUrl) {
 		if (baseUrl == null)
 			throw Err(BsErrMsgs.podHandler_disabled)
 
@@ -166,20 +167,20 @@ internal const class PodHandlerImpl : PodHandler {
 		if (resource isnot File)	// WTF!?
 			throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
 
-		podPath := ((File) resource).uri.toStr
+		file	:= (File) resource
+		podPath := file.uri.toStr
 		if (!whitelistFilters.any { it.matches(podPath) })
 			throw ArgNotFoundErr(BsErrMsgs.podHandler_notInWhitelist(podPath), whitelistFilters)
 		
-		return fileCache.getOrAddOrUpdate(resource) |File file->FileAsset| {
+		host		:= file.uri.host.toUri.plusSlash
+		path		:= file.uri.pathOnly.relTo(`/`)
+		localUrl	:= baseUrl + host + path
+
+		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->CachableAsset| {
 			if (!file.exists)
 				throw ArgErr(BsErrMsgs.fileNotFound(file))
 			
-			host		:= file.uri.host.toUri.plusSlash
-			path		:= file.uri.pathOnly.relTo(`/`)
-			localUrl	:= baseUrl + host + path 
-			clientUrl	:= fileCache.toClientUrl(localUrl, file)
-
-			return FileAsset(file, localUrl, clientUrl)
+			return FileAsset.makeCachable(localUrl, file, assetCache)
 		}
 	}	
 }

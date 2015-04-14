@@ -32,6 +32,10 @@ internal const class BsErrMsgs {
 		return "${type} `${file.normalize.osPath}` does not exist!"
 	}
 
+	static Str directoryListingNotAllowed(Uri? url) {
+		"Directory listing not allowed: ${url}"
+	}
+
 	// ---- Routes ----
 
 	static Str route_notFound(Uri notFound) {
