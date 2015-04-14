@@ -221,12 +221,12 @@ following:
  - [Err]`sys::Err` : An appropriate response object is selected from contributed Err responses. (See [Error Processing]`#errorProcessing`.)
  - [Field]`sys::Field` : The field is returned for further processing. If the field is not static and not on a service, then a new object instance is created.
  - [File]`sys::File` : The file is streamed to the client.
- - `FileAsset` : The file is streamed to the client.
  - [Func]`sys::Func` : The function is called, using IoC to inject the parameters. The return value is treated as reposonse object for further processing.
  - `HttpStatus` : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing]`#httpStatusProcessing`.)
  - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guaranteed to be closed.
  - `MethodCall` : The method is called and the return value used for further processing. If the method is not static and not on a service, then a new object instance is created.
  - `Redirect` : Sends a 3xx redirect response to the client.
+ - `StaticAsset` : The asset is streamed to the client.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding 'Content-Type'.
 
 Because of the nature of response object processing it is possible, nay normal, to *chain* multiple response objects together. Example:
@@ -736,7 +736,7 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 Release Notes [#releaseNotes]
 *****************************
 v1.4.10 [#v1.4.10]
-================
+==================
  - New: 'HttpRequest.urlAbs' gives the absolute request URL.
  - New: 'FieldProcessor' lets fields be returned for further processing.
  - Chg: 'TextProcessor' now handles HEAD requests.

@@ -94,7 +94,7 @@ const mixin FileHandler {
 	
 	** The (boring) Route handler method. 
 	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
-	abstract FileAsset? serviceRoute(Uri remainingUrl)	
+	abstract CachableAsset? serviceRoute(Uri remainingUrl)	
 	
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	**  
@@ -102,13 +102,13 @@ const mixin FileHandler {
 	** 
 	** Throws 'ArgErr' if the URL is not mapped.
 	** Throws 'ArgErr' if checked and the file does not exist. 
-	abstract FileAsset fromLocalUrl(Uri localUrl, Bool checked := true)
+	abstract CachableAsset fromLocalUrl(Uri localUrl, Bool checked := true)
 
 	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'.
 	**  
 	** Throws 'ArgErr' if the file directory is not mapped.
 	** Throws 'ArgErr' if checked and the URL does not exist. 
-	abstract FileAsset fromServerFile(File serverFile, Bool checked := true)
+	abstract CachableAsset fromServerFile(File serverFile, Bool checked := true)
 	
 	** Finds the directory mapping that best fits the given local URL, or 'null' if not found.
 	@NoDoc	// Experimental advanced use - see Duvet
@@ -117,9 +117,9 @@ const mixin FileHandler {
 
 internal const class FileHandlerImpl : FileHandler {
 	
-	@Inject	private const HttpRequest? 			httpRequest	// nullable for unit tests
-	@Inject	private const FileAssetCache		fileCache
-			override const Uri:File 			directoryMappings
+	@Inject	private const HttpRequest? 		httpRequest	// nullable for unit tests
+	@Inject	private const AssetCache		assetCache
+			override const Uri:File 		directoryMappings
 		
 	new make(Uri:File dirMappings, |This|? in) {
 		in?.call(this)
@@ -140,7 +140,7 @@ internal const class FileHandlerImpl : FileHandler {
 		}
 	}
 
-	override FileAsset? serviceRoute(Uri remainingUri) {
+	override CachableAsset? serviceRoute(Uri remainingUri) {
 		try {
 			// use pathStr to knockout any unwanted query str
 			return fromLocalUrl(httpRequest.url.pathStr.toUri)
@@ -160,7 +160,7 @@ internal const class FileHandlerImpl : FileHandler {
 		return prefix
 	}
 
-	override FileAsset fromLocalUrl(Uri localUrl, Bool checked := true) {
+	override CachableAsset fromLocalUrl(Uri localUrl, Bool checked := true) {
 		prefix	:= findMappingFromLocalUrl(localUrl)
 				?: throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys)
 
@@ -172,24 +172,25 @@ internal const class FileHandlerImpl : FileHandler {
 		return fromServerFile(file, checked)
 	}
 
-	override FileAsset fromServerFile(File file, Bool checked := true) {
-		fileCache.getOrAddOrUpdate(file) |File f->FileAsset| {
-			if (file.uri.isDir)
-				throw ArgErr(BsErrMsgs.fileIsDirectory(file))
+	override CachableAsset fromServerFile(File file, Bool checked := true) {
+		fileUri	:= file.normalize.uri.toStr
+		prefix  := (Uri?) directoryMappings.eachWhile |af, uri->Uri?| { fileUri.startsWith(af.uri.toStr) ? uri : null }
+		if (prefix == null)
+			throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_fileNotMapped(file), directoryMappings.vals.map { it.osPath })
+		
+		matchedFile := directoryMappings[prefix]
+		remaining	:= fileUri[matchedFile.uri.toStr.size..-1]
+		localUrl	:= prefix + remaining.toUri
+
+		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->CachableAsset| {
+			// I dunno if this should be a 403 or 404. 
+			// 403 gives any would be attacker info about your server.
+			if (file.isDir)	// not allowed, until I implement it! 
+				throw HttpStatusErr(403, BsErrMsgs.directoryListingNotAllowed(localUrl))	// should be clientUrl - pfft.
 			if (!file.exists && checked)
 				throw ArgErr(BsErrMsgs.fileNotFound(file))
-			
-			fileUri	:= file.normalize.uri.toStr
-			prefix  := (Uri?) directoryMappings.eachWhile |af, uri->Uri?| { fileUri.startsWith(af.uri.toStr) ? uri : null }
-			if (prefix == null)
-				throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_fileNotMapped(file), directoryMappings.vals.map { it.osPath })
-			
-			matchedFile := directoryMappings[prefix]
-			remaining	:= fileUri[matchedFile.uri.toStr.size..-1]
-			localUrl	:= prefix + remaining.toUri
-			clientUrl	:= fileCache.toClientUrl(localUrl, file)
-			
-			return FileAsset(f, localUrl, clientUrl)
+
+			return FileAsset.makeCachable(localUrl, file, assetCache)
 		}
 	}
 }
