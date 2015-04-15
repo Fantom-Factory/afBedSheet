@@ -1,14 +1,25 @@
 using concurrent
 
-** (Response Object) An asset, such as a 'File', which may be stored on the file system or in a database. 
+** (Response Object) - 
+** An asset, such as 'File', which may be sent to the client.  
 ** 
-** Generally 'StaticAssets' are acquired from the 'FileHander' and 'PodHander' services and used to embed client URLs in your web pages.
+** An 'Asset' instance wraps up all the information needed to send it to a client. 
+** The corresponding Asset *ResponseProcessor* sets the following HTTP headers: 
 ** 
-**   url := fileHandler.fromLocalUrl(`/images/fanny.jpg`).clientUrl.encode
+**  - 'Cache-Control'
+**  - 'Content-Length'
+**  - 'Content-Type'
+**  - 'ETag'
+**  - 'Last-Modified'
 ** 
-** Alternatively you may create your own 'StaticAsset' objects for returning files from a database.
+** Should the request headers allow, it may also respond with a '304 - Modified' response.
+** The Asset *ResponseProcessor* also correctly responds to HEAD requests.
 ** 
-abstract const class StaticAsset {
+** When serving up your own files and images (say, from a database), it is recommended that your *Route Handler*
+** return a custom 'Asset' instance, from your own 'Asset' subclass. 
+** 
+** You may also wish to consider returning a `ClientAsset`.  
+abstract const class Asset {
 	private const AtomicRef	_etagRef		:= AtomicRef()
 	
 	** Returns 'true' if the asset exists. (Or did at the time this class was created.)
@@ -45,19 +56,23 @@ abstract const class StaticAsset {
 	** Returns 'null' if asset doesn't exist.
 	abstract MimeType?	contentType()
 	
-	** Creates a 'StaticAsset' for the given file. Note this asset is not a 'ClientAsset'.
+	** Creates a 'Asset' for the given file. 
+	** 
+	** To create a 'ClientAsset' use the 'FileHandler' or 'PodHandler' service:
+	** 
+	**   fileHandler.fromServerFile(file) 
 	static new makeFromFile(File file) {
 		FileAsset(file, null)
 	}
 
 	@NoDoc
 	override Int hash() {
-		etag.hash
+		etag?.hash ?: 0
 	}
 	
 	@NoDoc
 	override Bool equals(Obj? obj) {
-		etag == (obj as StaticAsset)?.etag
+		etag == (obj as Asset)?.etag
 	}
 	
 	@NoDoc

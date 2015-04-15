@@ -2,8 +2,8 @@ using afIoc
 using concurrent
 
 // TODO: make FileAsset internal and remove @Deprecated
-@NoDoc @Deprecated { msg="Use StaticAsset or CachableAsset instead" }
-const class FileAsset : CachableAsset {
+@NoDoc @Deprecated { msg="Use Asset or ClientAsset instead" }
+const class FileAsset : ClientAsset {
 
 			 const 	File			file
 	override const 	Bool			exists
@@ -13,7 +13,7 @@ const class FileAsset : CachableAsset {
 	override const 	Uri?			localUrl
 
 	@NoDoc
-	new makeStatic(File file, AssetCache? assetCache) : super.make(assetCache) {
+	new makeStatic(File file, ClientAssetCache? assetCache) : super.make(assetCache) {
 		this.file 		= file
 		this.exists		= file.exists
 		this.modified	= file.modified?.floor(1sec)
@@ -27,7 +27,7 @@ const class FileAsset : CachableAsset {
 	}
 
 	@NoDoc @Inject
-	new makeCachable(Uri localUrl, File file, AssetCache assetCache) : this.makeStatic(file, assetCache) {
+	new makeCachable(Uri localUrl, File file, ClientAssetCache assetCache) : this.makeStatic(file, assetCache) {
 		this.localUrl		= localUrl
 	}
 

@@ -3,9 +3,9 @@ using afIocEnv
 using afConcurrent
 
 @NoDoc	// Advanced use only
-const mixin AssetCache {
+const mixin ClientAssetCache {
 	
-	abstract CachableAsset getOrAddOrUpdate(Uri key, |Uri->CachableAsset| valFunc)
+	abstract ClientAsset getOrAddOrUpdate(Uri key, |Uri->ClientAsset| valFunc)
 	
 	** Removes the given asset from the internal cache.
 	abstract Void remove(Uri? key)
@@ -18,11 +18,11 @@ const mixin AssetCache {
 	
 	** Hook for asset caching strategies to advise and transform URLs.
 	@NoDoc // not sure I like this method here - but not sure where else to put it!?
-	abstract Uri toClientUrl(Uri localUrl, CachableAsset asset)
+	abstract Uri toClientUrl(Uri localUrl, ClientAsset asset)
 }
 
 
-internal const class AssetCacheImpl : AssetCache {
+internal const class ClientAssetCacheImpl : ClientAssetCache {
 	
 					** The duration between individual file checks.
 					const Duration 			cacheTimeout
@@ -34,11 +34,11 @@ internal const class AssetCacheImpl : AssetCache {
 		
 		in?.call(this)
 		
-		this.assetCache = SynchronizedMap(actorPools["afBedSheet.system"]) { it.keyType = Uri#; it.valType = CachableAsset# }
+		this.assetCache = SynchronizedMap(actorPools["afBedSheet.system"]) { it.keyType = Uri#; it.valType = ClientAsset# }
 	}
 	
-	override CachableAsset getOrAddOrUpdate(Uri key, |Uri->CachableAsset| valFunc) {
-		asset := (CachableAsset) assetCache.getOrAdd(key, valFunc)
+	override ClientAsset getOrAddOrUpdate(Uri key, |Uri->ClientAsset| valFunc) {
+		asset := (ClientAsset) assetCache.getOrAdd(key, valFunc)
 
 		// I'm aware there could be race conditions here - but it's just a cache, so the losses are acceptable.
 		if (!asset.exists)
@@ -63,7 +63,7 @@ internal const class AssetCacheImpl : AssetCache {
 		assetCache.size
 	}
 
-	override Uri toClientUrl(Uri localUrl, CachableAsset asset) {
+	override Uri toClientUrl(Uri localUrl, ClientAsset asset) {
 		// asset is used by Cold Feet so it can generate a digest 
 		bedServer.toClientUrl(localUrl)		
 	}
