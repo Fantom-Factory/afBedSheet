@@ -122,7 +122,6 @@ internal class TestFileHandler : BsTest {
 		bob := BeanFactory(FileHandlerImpl#)
 		bob.add(dirMappings)
 		bob.setByName("assetCache", AssetCacheMock())
-//		bob.setByName("registry",   RegistryBuilder().build)
 		return bob.create
 	}
 }
