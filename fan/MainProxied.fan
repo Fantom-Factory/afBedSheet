@@ -11,7 +11,7 @@ class MainProxied : AbstractMain {
 	override Int run() {
 		bob	:= BedSheetBuilder.fromStringy(builder)
 		prt := bob.options[BsConstants.meta_appPort]
-		mod := BedSheetWebMod(bob)
+		mod := BedSheetBootMod(bob)
 		return WebModRunner().run(mod, prt)
 	}
 }
