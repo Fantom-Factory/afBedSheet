@@ -20,11 +20,11 @@ internal class AppTest : Test {
 
 		bob := BedSheetBuilder(iocModules[0].qname).addModule(ConfigModule#)
 		iocModules.each { bob.addModule(it) }
-		mod := BedSheetWebMod(bob)
+		mod := BedSheetBootMod(bob)
 		willow 	= WispService { it.port=this.port; it.root=mod }
 		willow.start
 		
-		registry = mod.registry
+		registry = mod.webMod->registry
 	}
 
 	override Void teardown() {

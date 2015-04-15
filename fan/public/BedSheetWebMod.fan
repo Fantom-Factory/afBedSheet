@@ -13,13 +13,10 @@ using afIoc::RegistryMeta
 using afIocEnv::IocEnv
 using afIocConfig::ConfigSource
 
-** The `web::WebMod` to be passed to [Wisp]`http://fantom.org/doc/wisp/index.html`. 
+** The `web::WebMod` that runs in [Wisp]`http://fantom.org/doc/wisp/index.html`. 
 const class BedSheetWebMod : WebMod {
 	private const static Log log := Utils.getLog(BedSheetWebMod#)
 
-	@NoDoc @Deprecated { msg="Use 'appName' instead" }
-	const Str 		moduleName
-	
 	** Returns 'proj.name' from the application's pod meta, or the pod name if not defined.
 	const Str		appName
 	
@@ -27,84 +24,35 @@ const class BedSheetWebMod : WebMod {
 	const Int 		port
 
 	** The IoC registry. Can be 'null' if BedSheet has not yet started.
-	Registry? registry {
-		get { registryRef.val }
-		private set { registryRef.val = it }
-	}
+	const Registry	registry
 
-	** The Err (if any) that occurred on service startup
-	Err? startupErr {
-		get { startupErrRef.val }
-		private set { startupErrRef.val = it }
-	}
+	private const MiddlewarePipeline pipeline
 
-	** When HTTP requests are received when BedSheet is starting up, then this message is returned to the client with a 500 status code.
-	** 
-	** Defaults to: 'The website is starting up... Please retry in a moment.'
-	** 
-	** Change it using a ctor it-block:
-	** 
-	**   BedSheetWebMod(reg) {
-	**       it.startupMessage = "Computer Says No..."
-	**   }
-	const Str startupMessage	:= "The website is starting up... Please retry in a moment."
-
-	private const AtomicBool	started			:= AtomicBool(false)
-	private const AtomicRef		startupErrRef	:= AtomicRef()
-	private const AtomicRef		registryRef		:= AtomicRef()
-	private const AtomicRef		pipelineRef		:= AtomicRef()
-	private const AtomicRef		errPrinterRef	:= AtomicRef()
-	private const IocEnv		iocEnv			:= IocEnv()
-	private const LocalRef		bobRef			:= LocalRef("bedSheetBuilder")
-
-	** Creates this 'WebMod'. Use 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
-	new make(BedSheetBuilder bob, |This|? f := null) {
-		pod  := (Pod?)  bob.options[BsConstants.meta_appPod]
-		mod  := (Type?) bob.options[BsConstants.meta_appModule]
-		this.moduleName = (pod?.name ?: mod?.qname) ?: "UNKNOWN"
-		this.appName 	= bob.options[BsConstants.meta_appName]
-		this.port 		= bob.options[BsConstants.meta_appPort]
-		
-		// it would be cleaner to just pass in a Registry instance, but because it takes a second 
-		// or two to build, we want to handle requests in this period
-		this.bobRef.val	= bob
-		f?.call(this)
+	** Creates this 'WebMod'. Use a 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
+	new make(Registry registry) {
+		bedServer 		:= (BedSheetServer) registry.serviceById(BedSheetServer#.qname)
+		this.registry	= registry		
+		this.appName 	= bedServer.appName
+		this.port 		= bedServer.port
+		// BUGFIX: eager load the middleware pipeline, so we can use the ErrMiddleware
+		// otherwise Errs thrown when instantiating middleware end up in limbo
+		// Errs from the FileHandler ctor are a prime example
+		this.pipeline	= registry.serviceById(MiddlewarePipeline#.qname)
 	}
 
 	@NoDoc
 	override Void onService() {
 		req.mod = this
 		
-		// Hey! Why you call us when we're not running, eh!??
-		if (!started.val)
-			return
-
-		if (queueRequestsOnStartup)
-			while ((registry == null || middlewarePipeline == null) && startupErr == null) {
-				// 200ms should be un-noticable to humans but a lifetime to a computer!
-				Actor.sleep(200ms)
-			}
-		
-		// web reqs still come in while we're processing onStart() so dispatch them quickly
-		// We used to sleep / queue them up until ready but then, when processing 100s at once, 
-		// it was easy to run into race conditions when lazily creating services.
-		if ((registry == null || middlewarePipeline == null) && startupErr == null) {
-			res := (WebRes) Actor.locals["web.res"]
-			res.sendErr(503, startupMessage)
-			return
-		}
-
-		// rethrow the startup err if one occurred and let Wisp handle it
-		if (startupErr != null)
-			throw startupErr
-		
 		try {
 			// this is actual call to BedSheet! 
 			// the rest of this class is just startup and error handling fluff! 
-			middlewarePipeline.service
+			pipeline.service
 			
 		} catch (IocShutdownErr err) {
 			// nothing we can do here
+			if (!webRes.isCommitted)
+				webRes.sendErr(500, "BedSheet shutting down...")
 			return
 
 		// theoretically, this should have already been dealt with by our ErrMiddleware...
@@ -113,12 +61,10 @@ const class BedSheetWebMod : WebMod {
 			
 			// try to send something to the browser
 			errLog := err.traceToStr
-			if (registry != null) {
-				try {
-					errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
-					errLog = errPrinter.errToStr(err)
-				} catch {}
-			}
+			try {
+				errPrinter := (ErrPrinterStr) registry.serviceById(ErrPrinterStr#.qname)
+				errLog = errPrinter.errToStr(err)
+			} catch {}
 
 			// log and throw, because we don't trust Wisp to log it
 			Env.cur.err.printLine(errLog)					
@@ -132,36 +78,18 @@ const class BedSheetWebMod : WebMod {
 
 	@NoDoc
 	override Void onStart() {
-		started.val = true
-		try {
-			log.info(BsLogMsgs.bedSheetWebMod_starting(appName, port))
-
-			// Go!!!
-			bob := (BedSheetBuilder) bobRef.val
-			registry = bob.buildRegistry.startup
-
-			// start the destroyer!
-			meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
-			if (meta.options[BsConstants.meta_pingProxy] == true) {
-				pingPort := (Int) meta.options[BsConstants.meta_proxyPort]
-				destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
-				destroyer.start
-			}
-
-			// print BedSheet connection details
-			configSrc := (ConfigSource) registry.dependencyByType(ConfigSource#)
-			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
-			log.info(BsLogMsgs.bedSheetWebMod_started(appName, host))
-
-			// BUGFIX: eager load the middleware pipeline, so we can use the ErrMiddleware
-			// otherwise Errs thrown when instantiating middleware end up in limbo
-			// Errs from the FileHandler ctor are a prime example
-			pipelineRef.val = registry.serviceById(MiddlewarePipeline#.qname)
-			
-		} catch (Err err) {
-			startupErr = err
-			throw err
+		// start the destroyer!
+		meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
+		if (meta.options[BsConstants.meta_pingProxy] == true) {
+			pingPort := (Int) meta.options[BsConstants.meta_proxyPort]
+			destroyer := (AppDestroyer) registry.autobuild(AppDestroyer#, [ActorPool(), pingPort])
+			destroyer.start
 		}
+
+		// print BedSheet connection details
+		configSrc := (ConfigSource) registry.dependencyByType(ConfigSource#)
+		host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
+		log.info(BsLogMsgs.bedSheetWebMod_started(appName, host))
 	}
 	
 	@NoDoc
@@ -170,18 +98,6 @@ const class BedSheetWebMod : WebMod {
 		log.info(BsLogMsgs.bedSheetWebMod_stopping(appName))
 	}
 
-	** Should HTTP requests be queued while BedSheet is starting up? 
-	** It is handy in dev, because it prevents you from constantly refreshing your browser!
-	** But under heavy load in prod, the requests can quickly build up to 100s; so not such a good idea.
-	** 
-	** Returns 'false' in prod, 'true' otherwise. 
-	virtual Bool queueRequestsOnStartup() {
-		!iocEnv.isProd
-	}
-	
-	private MiddlewarePipeline? middlewarePipeline() {
-		pipelineRef.val
-	}
 	
 	private static WebRes webRes() {
 		try return Actor.locals["web.res"]

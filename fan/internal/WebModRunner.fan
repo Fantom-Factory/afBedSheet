@@ -38,7 +38,7 @@ internal const class WebModRunner {
 		// log the cause, 'cos Service doesn't!!
 		// @see http://fantom.org/sidewalk/topic/2201
 		if (wisp.root is BedSheetWebMod) {
-			bsMod := (BedSheetWebMod) wisp.root
+			bsMod := (BedSheetBootMod) wisp.root
 			if (bsMod.startupErr?.cause != null)
 				Env.cur.err.printLine("\nCausing Err:\n\n${bsMod.startupErr.cause.traceToStr}")
 		}
