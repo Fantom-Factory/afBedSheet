@@ -40,7 +40,7 @@ const class BedSheetModule {
 		defs.add(NotFoundPrinterHtml#)
 		defs.add(ErrPrinterHtml#)
 		defs.add(ErrPrinterStr#)
-		defs.add(AssetCache#)
+		defs.add(ClientAssetCache#)
 		defs.add(PipelineBuilder#)
 		defs.add(StackFrameFilter#)
 		defs.add(ObjCache#)
@@ -111,10 +111,10 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration config) {
+		config[Asset#]		= config.autobuild(AssetProcessor#)
 		config[Err#]		= config.autobuild(ErrProcessor#)
 		config[Field#]		= config.autobuild(FieldProcessor#)
 		config[File#]		= config.autobuild(FileProcessor#)
-		config[StaticAsset#]= config.autobuild(StaticAssetProcessor#)
 		config[Func#]		= config.autobuild(FuncProcessor#)
 		config[HttpStatus#]	= config.autobuild(HttpStatusProcessor#)
 		config[InStream#]	= config.autobuild(InStreamProcessor#)

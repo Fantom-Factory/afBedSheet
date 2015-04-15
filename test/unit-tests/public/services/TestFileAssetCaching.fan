@@ -6,7 +6,7 @@ internal class TestFileAssetCaching : BsTest {
 	Void testFileHandlerCaching() {
 		reg := BedSheetBuilder(T_AppModule#.qname).buildRegistry
 		fileHandler	:= (FileHandler) 	reg.serviceById(FileHandler#.qname)
-		assetCache	:= (AssetCache)		reg.serviceById(AssetCache#.qname)
+		assetCache	:= (ClientAsset)	reg.serviceById(ClientAssetCache#.qname)
 		
 		verifyEq(assetCache.size, 0)
 		
@@ -24,8 +24,8 @@ internal class TestFileAssetCaching : BsTest {
 
 	Void testPodHandlerCaching() {
 		reg := BedSheetBuilder(T_AppModule#.qname).buildRegistry
-		podHandler	:= (PodHandler) 	reg.serviceById(PodHandler#.qname)
-		assetCache	:= (AssetCache)		reg.serviceById(AssetCache#.qname)
+		podHandler	:= (PodHandler) 		reg.serviceById(PodHandler#.qname)
+		assetCache	:= (ClientAssetCache)	reg.serviceById(ClientAssetCache#.qname)
 		
 		verifyEq(assetCache.size, 0)
 		

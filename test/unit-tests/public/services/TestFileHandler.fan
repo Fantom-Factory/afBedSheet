@@ -127,10 +127,10 @@ internal class TestFileHandler : BsTest {
 	}
 }
 
-internal const class AssetCacheMock : AssetCache {
-	override CachableAsset getOrAddOrUpdate(Uri key, |Uri->CachableAsset| valFunc) { valFunc(key) }
+internal const class AssetCacheMock : ClientAssetCache {
+	override ClientAsset getOrAddOrUpdate(Uri key, |Uri->ClientAsset| valFunc) { valFunc(key) }
 	override Void remove(Uri? asset) { }
 	override Void clear() { }
 	override Int size() { 0 }
-	override Uri toClientUrl(Uri localUrl, CachableAsset asset) { localUrl }
+	override Uri toClientUrl(Uri localUrl, ClientAsset asset) { localUrl }
 }

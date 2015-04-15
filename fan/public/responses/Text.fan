@@ -1,6 +1,7 @@
 using util::JsonOutStream
 
-** (Response Object) Use to send a text response to the client. 
+** (Response Object) - 
+** Use to send a text response to the client. 
 ** 
 **   Text.fromHtml("<html>Hello!<html>")
 ** 

@@ -3,12 +3,12 @@ using afIocConfig::Config
 using afIocEnv::IocEnv
 using web::WebUtil
 
-internal const class StaticAssetProcessor : ResponseProcessor {
+internal const class AssetProcessor : ResponseProcessor {
 	
-	@Inject	private const HttpRequest 	httpRequest
-	@Inject	private const HttpResponse 	httpResponse
-	@Inject	private const AssetCache 	assetCache
-	@Inject	private const IocEnv		iocEnv
+	@Inject	private const HttpRequest 		httpRequest
+	@Inject	private const HttpResponse 		httpResponse
+	@Inject	private const ClientAssetCache 	assetCache
+	@Inject	private const IocEnv			iocEnv
 	
 	@Config { id = "afBedSheet.fileAsset.cacheControl" }
 	@Inject	private const Str?			defaultCacheControl
@@ -16,11 +16,10 @@ internal const class StaticAssetProcessor : ResponseProcessor {
 	new make(|This|in) { in(this) }
 	
 	override Obj process(Obj obj) {
-		asset := (StaticAsset) obj
+		asset := (Asset) obj
 
 		if (!asset.exists) {
-			// file doesn't exist anymore - damn that cache!
-			assetCache.remove((asset as CachableAsset)?.localUrl)
+			assetCache.remove((asset as ClientAsset)?.localUrl)
 			throw HttpStatusErr(404, "File not found: $httpRequest.url")
 		}
 
@@ -47,8 +46,15 @@ internal const class StaticAssetProcessor : ResponseProcessor {
 		if (mime != null) 
 			httpResponse.headers.contentType = mime
 
-		if (httpRequest.httpMethod != "HEAD")
-			f := asset.in?.pipe(httpResponse.out, asset.size, true) ?: throw HttpStatusErr(404, "File not found: $httpRequest.url")
+		if (httpRequest.httpMethod != "HEAD") {
+			in := asset.in
+			if (in == null) {
+				// oh, it really doesn't exist! (damn that caching!)
+				assetCache.remove((asset as ClientAsset)?.localUrl)
+				throw HttpStatusErr(404, "File not found: $httpRequest.url")
+			}
+			in.pipe(httpResponse.out, asset.size, true) 
+		}
 
 		return true
 	}
@@ -57,7 +63,7 @@ internal const class StaticAssetProcessor : ResponseProcessor {
 	** 'true' If the file has not been modified.
 	** 
 	** This method supports ETag "If-None-Match" and "If-Modified-Since" modification time.
-	virtual Bool notModified(HttpRequestHeaders headers, StaticAsset asset) {
+	virtual Bool notModified(HttpRequestHeaders headers, Asset asset) {
 		// check If-Match-None
 		matchNone := headers.ifNoneMatch
 		if (matchNone != null) {

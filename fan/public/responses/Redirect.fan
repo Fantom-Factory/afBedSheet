@@ -1,5 +1,6 @@
 
-** (Response Object) Use to send redirect 3xx status codes to the client. Handles the 
+** (Response Object) - 
+** Use to send redirect 3xx status codes to the client. Handles the 
 ** differences in HTTP 1.0 and HTTP 1.1. 
 ** 
 **   Redirect.movedTemporarily(`/newUrl`)
