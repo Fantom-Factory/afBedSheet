@@ -17,6 +17,7 @@ const mixin ClientAssetCache {
 	abstract Int size()
 	
 	** Hook for asset caching strategies to advise and transform URLs.
+	// localUrl is needed as it's own param to give the ColdFeet aspect something to change
 	@NoDoc // not sure I like this method here - but not sure where else to put it!?
 	abstract Uri toClientUrl(Uri localUrl, ClientAsset asset)
 }
