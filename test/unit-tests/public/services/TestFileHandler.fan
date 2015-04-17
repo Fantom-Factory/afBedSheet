@@ -3,67 +3,67 @@ using afBeanUtils
 
 internal class TestFileHandler : BsTest {
 	
-//	Void testFilesAreDirs() {
-//		verifyBsErrMsg(BsErrMsgs.fileIsNotDirectory(File(`build.fan`))) {
-//			makeFileHandler( [`/wotever/`:File(`build.fan`)] )
-//		}
-//	}
-//
-//	Void testFilesExist() {
-//		verifyBsErrMsg(BsErrMsgs.fileNotFound(File(`wotever`))) {
-//			makeFileHandler( [`/wotever/`:File(`wotever`)] )
-//		}
-//	}
-//
-//	Void testUrlPathOnly() {
-//		verifyBsErrMsg(BsErrMsgs.urlMustBePathOnly(`http://wotever.com`, `/foo/bar/`)) {
-//			makeFileHandler( [`http://wotever.com`:File(`test/`)] )
-//		}
-//	}
-//
-//	Void testUrlNotStartWithSlash() {
-//		verifyBsErrMsg(BsErrMsgs.urlMustStartWithSlash(`wotever/`, `/foo/bar/`)) {
-//			makeFileHandler( [`wotever/`:File(`test/`)] )
-//		}
-//	}
-//
-//	Void testUrlNotEndWithSlash() {
-//		verifyBsErrMsg(BsErrMsgs.urlMustEndWithSlash(`/wotever`, `/foo/bar/`)) {
-//			makeFileHandler( [`/wotever`:File(`test/`)] )
-//		}
-//	}
-//
-//	// ---- fromLocalUrl() ----
-//
-//	Void testAssetUrlIsPathOnly() {
-//		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-//		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustBePathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
-//			fh.fromLocalUrl(`http://myStyles.css`)
-//		}
-//	}
-//
-//	Void testAssetUrlStartsWithSlash() {
-//		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-//		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
-//			fh.fromLocalUrl(`css/myStyles.css`)
-//		}
-//	}
-//
-//	Void testAssetUrlMustBeMapped() {
-//		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-//		verifyErrMsg(BedSheetNotFoundErr#, BsErrMsgs.fileHandler_urlNotMapped(`/css/myStyles.css`)) {
-//			fh.fromLocalUrl(`/css/myStyles.css`)
-//		}
-//	}
-//	
-//	Void testAssetUrlDoesNotExist() {
-//		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-//		verifyErrMsg(ArgErr#, BsErrMsgs.fileNotFound(`doc/myStyles.css`.toFile)) {
-//			fh.fromLocalUrl(`/over-there/myStyles.css`)
-//		}
-//		file := fh.serviceRoute(`/over-there/myStyles.css`)
-//		verifyNull(file)
-//	}
+	Void testFilesAreDirs() {
+		verifyBsErrMsg(BsErrMsgs.fileIsNotDirectory(File(`build.fan`))) {
+			makeFileHandler( [`/wotever/`:File(`build.fan`)] )
+		}
+	}
+
+	Void testFilesExist() {
+		verifyBsErrMsg(BsErrMsgs.fileNotFound(File(`wotever`))) {
+			makeFileHandler( [`/wotever/`:File(`wotever`)] )
+		}
+	}
+
+	Void testUrlPathOnly() {
+		verifyBsErrMsg(BsErrMsgs.urlMustBePathOnly(`http://wotever.com`, `/foo/bar/`)) {
+			makeFileHandler( [`http://wotever.com`:File(`test/`)] )
+		}
+	}
+
+	Void testUrlNotStartWithSlash() {
+		verifyBsErrMsg(BsErrMsgs.urlMustStartWithSlash(`wotever/`, `/foo/bar/`)) {
+			makeFileHandler( [`wotever/`:File(`test/`)] )
+		}
+	}
+
+	Void testUrlNotEndWithSlash() {
+		verifyBsErrMsg(BsErrMsgs.urlMustEndWithSlash(`/wotever`, `/foo/bar/`)) {
+			makeFileHandler( [`/wotever`:File(`test/`)] )
+		}
+	}
+
+	// ---- fromLocalUrl() ----
+
+	Void testAssetUrlIsPathOnly() {
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
+		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustBePathOnly(`http://myStyles.css`, `/css/myStyles.css`)) {
+			fh.fromLocalUrl(`http://myStyles.css`)
+		}
+	}
+
+	Void testAssetUrlStartsWithSlash() {
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
+		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustStartWithSlash(`css/myStyles.css`, `/css/myStyles.css`)) {
+			fh.fromLocalUrl(`css/myStyles.css`)
+		}
+	}
+
+	Void testAssetUrlMustBeMapped() {
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
+		verifyErrMsg(BedSheetNotFoundErr#, BsErrMsgs.fileHandler_urlNotMapped(`/css/myStyles.css`)) {
+			fh.fromLocalUrl(`/css/myStyles.css`)
+		}
+	}
+	
+	Void testAssetUrlDoesNotExist() {
+		fh := makeFileHandler( [`/over-there/`:File(`doc/`)] )
+		verifyErrMsg(ArgErr#, BsErrMsgs.fileNotFound(`doc/myStyles.css`.toFile)) {
+			fh.fromLocalUrl(`/over-there/myStyles.css`)
+		}
+		file := fh.fromLocalUrl(`/over-there/myStyles.css`, false)
+		verifyNull(file)
+	}
 
 	Void testAssetUrl() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
@@ -92,7 +92,7 @@ internal class TestFileHandler : BsTest {
 	
 	Void testAssetFileIsDir() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		verifyErrMsg(HttpStatusErr#, BsErrMsgs.directoryListingNotAllowed(`/over-there/`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.directoryListingNotAllowed(`/over-there/`)) {
 			fh.fromServerFile(`doc/`.toFile)
 		}
 	}	
@@ -127,7 +127,9 @@ internal class TestFileHandler : BsTest {
 }
 
 internal const class AssetCacheMock : ClientAssetCache {
-	override ClientAsset getOrAddOrUpdate(Uri key, |Uri->ClientAsset| valFunc) { valFunc(key) }
+	override ClientAsset? get(Uri key, Bool checked := true) { null }
+	override ClientAsset? getOrAdd(Uri key, Bool checked := true) { null }
+	override ClientAsset? getOrAddOrUpdate(Uri key, |Uri->ClientAsset?| valFunc) { valFunc(key) }
 	override Void remove(Uri? asset) { }
 	override Void clear() { }
 	override Int size() { 0 }

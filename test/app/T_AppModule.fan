@@ -46,8 +46,6 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/welcome`, 				T_PageHandler#renderWelcome))
 
-		conf.add(Route(`/test-src/***`, 		FileHandler#serviceRoute))
-		conf.add(Route(`/test-src2/***`, 		FileHandler#serviceRoute))
 		conf.add(Route(`/fh/test-src/***`, 		T_PageHandler#altFileHandler))
 		
 		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))

@@ -18,8 +18,8 @@ const class BedSheetModule {
 	static Void defineServices(ServiceDefinitions defs) {
 
 		// Route handlers
-		defs.add(FileHandler#)
-		defs.add(PodHandler#)
+		defs.add(FileHandler#).withProxy
+		defs.add(PodHandler#).withProxy
 
 		// Collections (services with contributions)
 		defs.add(ResponseProcessors#)
@@ -54,7 +54,7 @@ const class BedSheetModule {
 		middleware := Middleware[
 			reg.autobuild(CleanupMiddleware#),
 			// this wraps ErrMiddleware so it can report 500 errors
-			// TODO: How may others insert their own middleware here?
+			// FIXME: How may others insert their own middleware here?
 			reg.serviceById(RequestLogMiddleware#.qname),
 			reg.autobuild(ErrMiddleware#),
 			reg.autobuild(FlashMiddleware#)
@@ -99,7 +99,14 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=MiddlewarePipeline# }
 	static Void contributeMiddlewarePipeline(Configuration config) {
+		config["afBedSheet.assets"] = config.autobuild(AssetsMiddleware#)
 		config["afBedSheet.routes"] = config.autobuild(RoutesMiddleware#)
+	}
+
+	@Contribute { serviceType=ClientAssetCache# }
+	static Void contributeAssetProducers(Configuration config, FileHandler fileHandler, PodHandler podHandler) {
+		config["afBedSheet.fileHandler"] = fileHandler
+		config["afBedSheet.podHandler"]  = podHandler
 	}
 
 	@Contribute { serviceId="afBedSheet::HttpOutStream" }
@@ -126,19 +133,6 @@ const class BedSheetModule {
 	@Contribute { serviceType=ValueEncoders# }
 	static Void contributeValueEncoders(Configuration config) {
 		// wot no value encoders!? Aha! I see you're using TypeCoercer as a backup!
-	}
-
-	@Contribute { serviceType=Routes# }
-	static Void contributeFileHandlerRoutes(Configuration config, FileHandler fileHandler, ConfigSource iocSrc) {
-		config["afBedSheet.fileHandler"] = fileHandler.directoryMappings.keys.map |url| {
-			Route(url + `***`, FileHandler#serviceRoute, "GET HEAD")	// Me like!
-		}
-		
-		podHandlerUrl := (Uri?) iocSrc.get(BedSheetConfigIds.podHandlerBaseUrl, Uri?#)
-		if (podHandlerUrl != null)
-			config["afBedSheet.podHandler"] = Route(podHandlerUrl + `***`, PodHandler#serviceRoute, "GET HEAD")	// Me like!
-		else 
-			config.addPlaceholder("afBedSheet.podHandler")
 	}
 
 	@Contribute { serviceType=PodHandler# }
