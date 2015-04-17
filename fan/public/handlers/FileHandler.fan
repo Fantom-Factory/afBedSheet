@@ -87,28 +87,22 @@ using afIoc
 ** <pre
 ** 
 ** @uses Configuration of 'Uri:File'
-const mixin FileHandler {
+const mixin FileHandler : ClientAssetProducer {
 
 	** Returns the map of URL to directory mappings
 	abstract Uri:File directoryMappings()
 	
-	** The (boring) Route handler method. 
-	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
-	abstract ClientAsset? serviceRoute(Uri remainingUrl)	
-	
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	**  
-	**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl
+	**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl.encode
 	** 
-	** Throws 'ArgErr' if the URL is not mapped.
-	** Throws 'ArgErr' if checked and the file does not exist. 
-	abstract ClientAsset fromLocalUrl(Uri localUrl, Bool checked := true)
+	** Throws 'ArgErr' if the checked and file does not exist, 'null' otherwise.
+	abstract override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
 
-	** Given a file on the server, this returns a corresponding (cached) 'FileAsset'.
+	** Given a file on the server, this returns a corresponding (cached) 'ClientAsset'.
 	**  
-	** Throws 'ArgErr' if the file directory is not mapped.
-	** Throws 'ArgErr' if checked and the URL does not exist. 
-	abstract ClientAsset fromServerFile(File serverFile, Bool checked := true)
+	** Throws 'ArgErr' if the checked and file does not exist, 'null' otherwise.
+	abstract ClientAsset? fromServerFile(File serverFile, Bool checked := true)
 	
 	** Finds the directory mapping that best fits the given local URL, or 'null' if not found.
 	@NoDoc	// Experimental advanced use - see Duvet
@@ -139,20 +133,13 @@ internal const class FileHandlerImpl : FileHandler {
 			return file.normalize
 		}
 	}
-
-	override ClientAsset? serviceRoute(Uri remainingUri) {
-		try {
-			// use pathStr to knockout any unwanted query str
-			return fromLocalUrl(httpRequest.url.pathStr.toUri)
-		} catch 
-			// don't bother making fromLocalUrl() checked, it's too much work for a 404!
-			// null means that 'Routes' didn't process the request, so it continues down the pipeline. 
-			return null
-	}
 	
-	override Uri? findMappingFromLocalUrl(Uri localUrl) {
-		Utils.validateLocalUrl(localUrl, `/css/myStyles.css`)
+	override Uri? findMappingFromLocalUrl(Uri localUri) {
+		Utils.validateLocalUrl(localUri, `/css/myStyles.css`)
 		// TODO: what if 2 dirs map to the same url at the same level?
+
+		// use pathStr to knockout any unwanted query str
+		localUrl := localUri.pathStr.toUri
 
 		// match the deepest uri
 		prefixes:= directoryMappings.keys.findAll { localUrl.toStr.startsWith(it.toStr) }
@@ -160,9 +147,12 @@ internal const class FileHandlerImpl : FileHandler {
 		return prefix
 	}
 
-	override ClientAsset fromLocalUrl(Uri localUrl, Bool checked := true) {
+	override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true) {
 		prefix	:= findMappingFromLocalUrl(localUrl)
-				?: throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys)
+		
+		if (prefix == null)
+			if (checked) throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys) 
+			else return null
 
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
@@ -172,23 +162,25 @@ internal const class FileHandlerImpl : FileHandler {
 		return fromServerFile(file, checked)
 	}
 
-	override ClientAsset fromServerFile(File file, Bool checked := true) {
+	override ClientAsset? fromServerFile(File file, Bool checked := true) {
 		fileUri	:= file.normalize.uri.toStr
 		prefix  := (Uri?) directoryMappings.eachWhile |af, uri->Uri?| { fileUri.startsWith(af.uri.toStr) ? uri : null }
 		if (prefix == null)
-			throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_fileNotMapped(file), directoryMappings.vals.map { it.osPath })
+			if (checked) throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_fileNotMapped(file), directoryMappings.vals.map { it.osPath })
+			else return null
 		
 		matchedFile := directoryMappings[prefix]
 		remaining	:= fileUri[matchedFile.uri.toStr.size..-1]
 		localUrl	:= prefix + remaining.toUri
 
-		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset| {
-			// I dunno if this should be a 403 or 404. 
-			// 403 gives any would be attacker info about your server.
+		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset?| {
+			// don't throw HttpStatusErrs 'cos this is an API call (for template generation), not a response. 
 			if (file.isDir)	// not allowed, until I implement it! 
-				throw HttpStatusErr(403, BsErrMsgs.directoryListingNotAllowed(localUrl))	// should be clientUrl - pfft.
-			if (!file.exists && checked)
-				throw ArgErr(BsErrMsgs.fileNotFound(file))
+				if (checked) throw ArgErr(BsErrMsgs.directoryListingNotAllowed(localUrl))	// should be clientUrl - pfft.
+				else return null
+			if (!file.exists)
+				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
+				else return null
 
 			return FileAsset.makeCachable(localUrl, file, assetCache)
 		}

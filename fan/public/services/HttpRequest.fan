@@ -40,6 +40,8 @@ const mixin HttpRequest {
 	**   /a/b/index.html
 	**   /a?q=bar
 	** 
+	** This is equivalent to a *local URL*. 
+	** 
 	** @see `web::WebReq.modRel`
 	abstract Uri url()
 

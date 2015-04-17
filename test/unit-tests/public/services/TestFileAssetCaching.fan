@@ -12,7 +12,7 @@ internal class TestFileAssetCaching : BsTest {
 		
 		// check that non-existant files are NOT cached
 		asset := fileHandler.fromLocalUrl(`/test-src/missing.wotever`, false)
-		verifyEq(asset.exists, false)
+		verifyNull(asset)
 		verifyEq(assetCache.size, 0)
 		
 		asset = fileHandler.fromLocalUrl(`/test-src/mr-file.txt`)

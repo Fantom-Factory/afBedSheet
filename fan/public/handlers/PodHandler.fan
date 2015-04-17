@@ -87,7 +87,7 @@ using afBeanUtils::ArgNotFoundErr
 **     conf["acmePodFiles"] = "^fan://acme/.*$" // serve all files from the acme pod
 ** }
 ** <pre
-const mixin PodHandler {
+const mixin PodHandler : ClientAssetProducer {
 	
 	** The local URL under which pod resources are served.
 	** 
@@ -100,12 +100,12 @@ const mixin PodHandler {
 		
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	** Throws 'ArgErr' if the URL is not mapped or does not exist.
-	abstract ClientAsset fromLocalUrl(Uri localUrl)
+	abstract override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
 
 	** Given a pod resource file, this returns a corresponding (cached) 'FileAsset'. 
 	** The URI must adhere to the 'fan://<pod>/<file>' scheme notation.
 	** Throws 'ArgErr' if the URL is not mapped or does not exist.
-	abstract ClientAsset fromPodResource(Uri podResource)
+	abstract ClientAsset? fromPodResource(Uri podResource, Bool checked := true)
 }
 
 internal const class PodHandlerImpl : PodHandler {
@@ -141,44 +141,54 @@ internal const class PodHandlerImpl : PodHandler {
 			return null
 	}
 
-	override ClientAsset fromLocalUrl(Uri localUrl) {
+	override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true) {
 		if (baseUrl == null)
-			throw Err(BsErrMsgs.podHandler_disabled)
+			if (checked) throw Err(BsErrMsgs.podHandler_disabled)
+			else return null
 
 		Utils.validateLocalUrl(localUrl, `/pods/icons/x256/flux.png`)
 		if (!localUrl.toStr.startsWith(baseUrl.toStr))
-			throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
+			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
+			else return null
 
 		remainingUrl := localUrl.relTo(baseUrl)
 
-		return fromPodResource(`fan://${remainingUrl}`)
+		return fromPodResource(`fan://${remainingUrl}`, checked)
 	}
 	
-	override ClientAsset fromPodResource(Uri podUrl) {
+	override ClientAsset? fromPodResource(Uri podUrl, Bool checked := true) {
 		if (baseUrl == null)
-			throw Err(BsErrMsgs.podHandler_disabled)
+			if (checked) throw Err(BsErrMsgs.podHandler_disabled)
+			else return null
 
 		if (podUrl.scheme != "fan")
-			throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
+			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
+			else return null
 
 		resource := (Obj?) null
 		try resource = podUrl.get
-		catch throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
+		catch 
+			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlDoesNotResolve(podUrl))
+			else return null
+
 		if (resource isnot File)	// WTF!?
-			throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
+			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlNotFile(podUrl, resource))
+			else return null
 
 		file	:= (File) resource
 		podPath := file.uri.toStr
 		if (!whitelistFilters.any { it.matches(podPath) })
-			throw ArgNotFoundErr(BsErrMsgs.podHandler_notInWhitelist(podPath), whitelistFilters)
+			if (checked) throw ArgNotFoundErr(BsErrMsgs.podHandler_notInWhitelist(podPath), whitelistFilters)
+			else return null
 		
 		host		:= file.uri.host.toUri.plusSlash
 		path		:= file.uri.pathOnly.relTo(`/`)
 		localUrl	:= baseUrl + host + path
 
-		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset| {
+		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset?| {
 			if (!file.exists)
-				throw ArgErr(BsErrMsgs.fileNotFound(file))
+				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
+				else return null
 			
 			return FileAsset.makeCachable(localUrl, file, assetCache)
 		}
