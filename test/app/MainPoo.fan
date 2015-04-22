@@ -8,8 +8,9 @@ internal
 class MainPoo {	
 	Void main() {
 		bob := BedSheetBuilder(TinyBedAppModule#.qname)
+		reg := bob.build.startup
 		mod := RouteMod { it.routes = [
-			"poo" : BedSheetBootMod(bob)
+			"poo" : BedSheetWebMod(reg)
 		]}
 		
 		WispService { it.port=8069; it.root=mod }.install.start

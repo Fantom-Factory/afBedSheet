@@ -1,12 +1,22 @@
 
-** (Service) - Holds a list of 'MimeTypes' that may be gzip'ed in a HTTP response. 
+** (Service) - 
+** Holds a list of 'MimeTypes' that may be gzip'ed in a HTTP response. 
 ** A standard set of types are configured by default. To add to the list:
 ** 
 ** pre>
-**  @Contribute { serviceType=GzipCompressible# }
-**  static Void configureGzipCompressible(Configuration conf) {
-**     conf[MimeType("text/funky")] = true
-**  }
+** @Contribute { serviceType=GzipCompressible# }
+** static Void configureGzipCompressible(Configuration config) {
+**     config[MimeType("text/funky")] = true
+** }
+** <pre
+**
+** Because IoC kindly coerces the contribution types for us, the above could be re-written as: 
+** 
+** pre>
+** @Contribute { serviceType=GzipCompressible# }
+** static Void configureGzipCompressible(Configuration config) {
+**     config["text/funky"] = true
+** }
 ** <pre
 ** 
 ** @uses a Configuration of 'MimeType:Bool'

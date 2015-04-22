@@ -40,6 +40,7 @@ const class BedSheetModule {
 		defs.add(NotFoundPrinterHtml#)
 		defs.add(ErrPrinterHtml#)
 		defs.add(ErrPrinterStr#)
+		defs.add(ClientAssetProducers#)
 		defs.add(ClientAssetCache#)
 		defs.add(PipelineBuilder#)
 		defs.add(StackFrameFilter#)
@@ -103,7 +104,7 @@ const class BedSheetModule {
 		config["afBedSheet.routes"] = config.autobuild(RoutesMiddleware#)
 	}
 
-	@Contribute { serviceType=ClientAssetCache# }
+	@Contribute { serviceType=ClientAssetProducers# }
 	static Void contributeAssetProducers(Configuration config, FileHandler fileHandler, PodHandler podHandler) {
 		config["afBedSheet.fileHandler"] = fileHandler
 		config["afBedSheet.podHandler"]  = podHandler

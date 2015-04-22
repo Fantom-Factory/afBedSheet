@@ -71,7 +71,16 @@ internal class BufferedOutStream : OutStream {
 	private Void switchToReal(Int noOfBytes) {
 		if (switched)
 			return
+
+		// if a contentLength was supplied - who are we to argue!?
+		if (response.headers.contentLength != null) {
+			switched = true
+			bufOut = realOut
+			writeBufToOut
+			return			
+		}
 		
+		// if the write is bigger than our threshold, then write straight to the real out 
 		if (((buf?.size ?: 0) + noOfBytes) > resBufThreadhold) {
 			switched = true
 			bufOut = realOut
@@ -80,7 +89,6 @@ internal class BufferedOutStream : OutStream {
 		}
 		
 		// wait until last minute before creating a buf
-		// if the first write is bigger than our threshold, then we write straight to the real out 
 		if (buf == null) {
 			buf		= Buf(resBufThreadhold)
 			bufOut 	= buf.out
