@@ -187,13 +187,15 @@ You can define *Response Processors* and process *Response Objects* yourself; bu
 
 - `Void` / `null` / `false` : Processing should fall through to the next Route match.
 - `true` : No further processing is required.
+- [Asset](http://repo.status302.com/doc/afBedSheet/Asset.html) : The asset is piped to the client.
+- [ClientAsset](http://repo.status302.com/doc/afBedSheet/ClientAsset.html) : Caching and identity headers are set and the asset piped to the client.
 - [Err](http://fantom.org/doc/sys/Err.html) : An appropriate response object is selected from contributed Err responses. (See [Error Processing](#errorProcessing).)
-- [File](http://fantom.org/doc/sys/File.html) : The file is streamed to the client.
-- [FileAsset](http://repo.status302.com/doc/afBedSheet/FileAsset.html) : The file is streamed to the client.
-- [Func](http://fantom.org/doc/sys/Func.html) : The function is called, using IoC to inject the parameters. The return value is treated as reposonse object for further processing.
+- [Field](http://fantom.org/doc/sys/Field.html) : The field value is returned for further processing. (*)
+- [File](http://fantom.org/doc/sys/File.html) : The file is piped to the client.
+- [Func](http://fantom.org/doc/sys/Func.html) : The function is called, using IoC to inject the parameters. The return value is treated as a new reposonse object for further processing.
 - [HttpStatus](http://repo.status302.com/doc/afBedSheet/HttpStatus.html) : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing](#httpStatusProcessing).)
 - [InStream](http://fantom.org/doc/sys/InStream.html) : The `InStream` is piped to the client. The `InStream` is guaranteed to be closed.
-- [MethodCall](http://repo.status302.com/doc/afBedSheet/MethodCall.html) : The method is called and the return value used for further processing.
+- [MethodCall](http://repo.status302.com/doc/afBedSheet/MethodCall.html) : The method is called and the return value used for further processing. (*)
 - [Redirect](http://repo.status302.com/doc/afBedSheet/Redirect.html) : Sends a 3xx redirect response to the client.
 - [Text](http://repo.status302.com/doc/afBedSheet/Text.html) : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding `Content-Type`.
 
@@ -205,6 +207,12 @@ Because of the nature of response object processing it is possible, nay normal, 
 4. `TextProcessor` serves content to the client and returns `true`.
 
 Note that response object processing is extensible, just contribute your own [Response Processor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html).
+
+(*) If the slot is not static, then if the parent class:
+
+- is a service then it is retrieved from IoC,
+- is `const` then a single instance is created, used, and cached for future use,
+- is not `const` then an instance is created, used, and discarded.
 
 ## Template Rendering
 
@@ -454,53 +462,49 @@ The fields writen to the logs may be set by configuring `BedSheetConfigIds.reque
 
 ## Gzip
 
-By default, BedSheet compresses HTTP responses with gzip where it can, for [optimisation](http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/). But it doesn't do this willy nilly, oh no! There are many hurdles to overcome...
+BedSheet compresses HTTP responses with gzip where it can for [HTTP optimisation](http://betterexplained.com/articles/how-to-optimize-your-site-with-gzip-compression/). Gzipping in BedSheet is highly configurable.
 
-### Disable All
+Gzip may be disabled for the entire web app by setting the following config property:
 
-Gzip, although enabled by default, can be disabled for the entire web app by setting the following config property:
-
+```
+@Contribute { serviceType=ApplicationDefaults# }
+static Void contributeApplicationDefaults(Configuration config) {
     config[BedSheetConfigIds.gzipDisabled] = true
+}
+```
 
-### Gzip'able Mime Types
+Or Gzip can be disabled on a per request / response basis by calling:
 
-Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types](http://fantom.org/doc/sys/MimeType.html) contributed to the [GzipCompressible](http://repo.status302.com/doc/afBedSheet/GzipCompressible.html) service will be gzipped:
+```
+HttpResponse.disableGzip()
+```
 
-    config["text/funky"] = true
+Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types](http://fantom.org/doc/sys/MimeType.html) contributed to the [GzipCompressible](http://repo.status302.com/doc/afBedSheet/GzipCompressible.html) service will be gzipped.
 
-(Note: The `GzipCompressible` contrib type is actually [sys::MimeType](http://fantom.org/doc/sys/MimeType.html) - IoC kindly coerces the `Str` to `MimeType` for us.)
+Most standard compressible types are already contributed to `GzipCompressible` including html, css, javascript, json, xml and other text responses. You may contribute your own with:
 
-By default BedSheet will compress html, css, javascript, json, xml and other text responses.
+```
+@Contribute { serviceType=GzipCompressible# }
+static Void configureGzipCompressible(Configuration config) {
+    config[MimeType("text/funky")] = true
+}
+```
 
-### Disable per Response
+Guaranteed that someone, somewhere is still using Internet Explorer 3.0 - or some other client that can't handle gzipped content from the server. As such, and as per [RFC 2616 HTTP1.1 Sec14.3](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3), the response is only gzipped if the appropriate HTTP request header was set.
 
-Gzip can be disabled on a per request / response basis by calling the following:
-
-    httpResponse.disableGzip()
-
-### Gzip only when asked
-
-Guaranteed that someone, somewhere is still using Internet Explorer 3.0 and they can't handle gzipped content. As such, and as per [RFC 2616 HTTP1.1 Sec14.3](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3), the response is only gzipped if the appropriate HTTP request header was set.
-
-### Min content threshold
-
-Gzip is great when compressing large files, but if you've only got a few bytes to squash... the compressed version is going to be bigger, which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped.
-
-See `GzipOutStream` and [gzipThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#gzipThreshold.html) for more details.
-
-### Phew! Made it!
-
-If (and only if!) the request passed all the tests above, will it then be lovingly gzipped and sent to the client.
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger than the original - which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped. See [gzipThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#gzipThreshold.html) for more details.
 
 ## Buffered Response
 
-By default, BedSheet attempts to set the `Content-Length` [HTTP response header](http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding). It does this by buffering `HttpResponse.out`. When the stream is closed, it writes the `Content-Length` and pipes the buffer to the real HTTP response.
+If a `Content-Length` header was not supplied then BedSheet attempts to calculate it by buffering `HttpResponse.out`. When the response stream is closed, it writes the `Content-Length` and pipes the buffer to the real HTTP response. This is part of [HTTP optimisation](http://stackoverflow.com/questions/2419281/content-length-header-versus-chunked-encoding).
 
-Response buffering can be disabled on a per HTTP response basis.
+Response buffering may be disabled on a per request / response basis by calling:
 
-A threshold can be set, whereby if the buffer exeeds that value, all content is streamed directly to the client.
+```
+HttpResponse.disableBuffering()
+```
 
-See `BufferedOutStream` and [responseBufferThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#responseBufferThreshold.html) for more details.
+A threshold can be set, whereby if the buffer size exeeds that value, all content is streamed directly to the client. See [responseBufferThreshold](http://repo.status302.com/doc/afBedSheet/BedSheetConfigIds#responseBufferThreshold.html) for more details.
 
 ## Development Proxy
 
@@ -544,8 +548,9 @@ using afBedSheet
 class Example {
     Void main() {
         bob := BedSheetBuilder(AppModule#.qname)
+		reg := bob.build.startup
         mod := RouteMod { it.routes = [
-            "poo" : BedSheetWebMod(bob)
+            "poo" : BedSheetWebMod(reg)
         ]}
 
         WispService { it.port=8069; it.root=mod }.install.start
@@ -567,7 +572,7 @@ When run, a request to `http://localhost:8069/` will return a Wisp 404 and any r
 
 When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()](http://repo.status302.com/doc/afBedSheet/BedSheetServer.html#toClientUrl) to ensure the extra path info is added. Similarly, ensure asset URLs are retrieved from the [FileHandler](http://repo.status302.com/doc/afBedSheet/FileHandler.html) service.
 
-Note that each `BedSheetWebMod` holds a reference to it's own IoC registry so you can run mulitple BedSheet instances side by side in the same Wisp application.
+Note that each mulitple BedSheet instances may be run side by side in the same Wisp application.
 
 ## Go Live with Heroku
 
