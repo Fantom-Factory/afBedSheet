@@ -11,6 +11,16 @@ using concurrent
 ** 
 **   url := fileHandler.fromLocalUrl(`/images/fanny.jpg`).clientUrl.encode
 ** 
+** (Advanced) - 
+** If you subclass and create your own 'ClientAssets' then your asset service should extend 'ClientAssetProducer' and be contributed 
+** to the 'ClientAssetProducers' service:
+**
+**   @Contribute { serviceType=ClientAssetProducers# }
+**   static Void contributeAssetProducers(Configuration config, MyAssetProducer assetProducer) {
+**       config["acme.myAssetProducer"] = assetProducer
+**   }
+** 
+** This ensures your assets will adopt any asset caching strategy set by Cold Feet.
 const abstract class ClientAsset : Asset {
 
 	private const ClientAssetCache?	_assetCache 
@@ -66,6 +76,7 @@ const abstract class ClientAsset : Asset {
 		clientUrl?.encode ?: super.toStr
 	}
 	
+	@NoDoc
 	virtual Bool isModified(Duration? timeout) {
 		lastChecked	:= (DateTime) _lastCheckedRef.getAndSet(DateTime.now)
 		if (timeout == null	|| (DateTime.now - lastChecked) > timeout)

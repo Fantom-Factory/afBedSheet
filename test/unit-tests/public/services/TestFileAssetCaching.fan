@@ -4,7 +4,7 @@ using afBeanUtils
 internal class TestFileAssetCaching : BsTest {
 	
 	Void testFileHandlerCaching() {
-		reg := BedSheetBuilder(T_AppModule#.qname).buildRegistry
+		reg := BedSheetBuilder(T_AppModule#.qname).build
 		fileHandler	:= (FileHandler) 		reg.serviceById(FileHandler#.qname)
 		assetCache	:= (ClientAssetCache)	reg.serviceById(ClientAssetCache#.qname)
 		
@@ -23,7 +23,7 @@ internal class TestFileAssetCaching : BsTest {
 	}
 
 	Void testPodHandlerCaching() {
-		reg := BedSheetBuilder(T_AppModule#.qname).buildRegistry
+		reg := BedSheetBuilder(T_AppModule#.qname).build
 		podHandler	:= (PodHandler) 		reg.serviceById(PodHandler#.qname)
 		assetCache	:= (ClientAssetCache)	reg.serviceById(ClientAssetCache#.qname)
 		

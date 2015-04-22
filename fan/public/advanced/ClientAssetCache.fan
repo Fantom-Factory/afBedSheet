@@ -32,16 +32,13 @@ internal const class ClientAssetCacheImpl : ClientAssetCache {
 					** The duration between individual file checks.
 					const Duration 				cacheTimeout
 			private	const SynchronizedMap		assetCache
-			private const ClientAssetProducer[] producers
+	@Inject private const ClientAssetProducers	assetProducers
 	@Inject	private const BedSheetServer		bedServer
 
-	new make(ClientAssetProducer[] producers, IocEnv env, ActorPools actorPools, |This|? in) {
+	new make(IocEnv env, ActorPools actorPools, |This|? in) {
 		this.cacheTimeout = env.isProd ? 2min : 2sec
-		
+		this.assetCache = SynchronizedMap(actorPools["afBedSheet.system"]) { it.keyType = Uri#; it.valType = ClientAsset?# }		
 		in?.call(this)
-		
-		this.producers 	= producers
-		this.assetCache = SynchronizedMap(actorPools["afBedSheet.system"]) { it.keyType = Uri#; it.valType = ClientAsset?# }
 	}
 	
 	override ClientAsset? get(Uri localUrl, Bool checked := true) {
@@ -51,11 +48,7 @@ internal const class ClientAssetCacheImpl : ClientAssetCache {
 	}
 
 	override ClientAsset? getOrAdd(Uri localUrl, Bool checked := true) {
-		get(localUrl, false) ?: (
-			producers.eachWhile { it.fromLocalUrl(localUrl, false) } ?: (
-				checked ? throw ArgErr("Could not find or create an ClientAsset for URL `${localUrl}`") : null
-			)
-		)
+		get(localUrl, false) ?: assetProducers.produceAsset(localUrl, checked)
 	}
 
 	override ClientAsset? getOrAddOrUpdate(Uri localUrl, |Uri->ClientAsset?| valFunc) {

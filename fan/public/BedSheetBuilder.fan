@@ -80,8 +80,12 @@ class BedSheetBuilder {
 		return this		
 	}
 	
-	** Build the IoC 'Registry'. Note the registry will still need to be started.
-	Registry buildRegistry() {
+	@NoDoc @Deprecated { msg="Use 'build()' instead" }
+	Registry buildRegistry() { build }
+
+	** Builds the IoC 'Registry'. 
+	** Note that this does **NOT** call 'startup()' on the registry.
+	Registry build() {
 		registryBuilder.removeModule(IocEnvModule#)
 		return registryBuilder.build
 	}
