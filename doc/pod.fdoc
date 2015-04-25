@@ -119,15 +119,10 @@ Route handlers are typically what we, the application developers, write. They pe
 
 Starting BedSheet [#startingBedSheet]
 *************************************
-Every Bed App (BedSheet Application) has an 'AppModule' class that defines and configures your
-[IoC]`pod:afIoc` services. It is an
-[IoC]`pod:afIoc` concept that allows you centralise your application's configuration in
-one place. It is the 'AppModule' that defines your Bed App and is central everything it does.
-
-To start BedSheet from the command line, you need to tell it where to find the 'AppModule' and which port to run on:
+To start BedSheet from the command line, you need to tell it where to find an 'AppModule' and the port to run on:
 
 pre>
-C:\> fan afBedSheet -env development <fully-qualified-app-module-name> <port-number>
+C:\> fan afBedSheet -env development <qualified-app-module-name> <port-number>
 <pre
 
 For example:
@@ -136,16 +131,19 @@ pre>
 C:\> fan afBedSheet -env development myWebApp::AppModule 8069
 <pre
 
-> TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the @SubModule facet.
+Every Bed App (BedSheet Application) has an 'AppModule' class that defines and configures your
+[IoC]`pod:afIoc` services. It is an
+[IoC]`pod:afIoc` concept that allows you centralise your application's configuration in
+one place. It is the 'AppModule' that defines your Bed App and is central everything it does.
 
-'<fully-qualified-app-module-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following
+'<qualified-app-module-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following
 meta:
 
 pre>
 meta = [
     ...
     ...
-    "afIoc.module" : "<fully-qualified-app-module-name>"
+    "afIoc.module" : "<qualified-app-module-name>"
 ]
 <pre
 
@@ -656,7 +654,7 @@ using afBedSheet
 class Example {
     Void main() {
         bob := BedSheetBuilder(AppModule#.qname)
-		reg := bob.build.startup
+        reg := bob.build.startup
         mod := RouteMod { it.routes = [
             "poo" : BedSheetWebMod(reg)
         ]}

@@ -112,7 +112,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(Configuration config) {
-		// TODO: @Deprecated delete
+		// TODO: @Deprecated delete placeholder
 		config.addPlaceholder("afBedSheet.fileHandler")
 	}
 	

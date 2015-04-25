@@ -5,14 +5,14 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "A fresh, crisp and clean platform to lay your web app on!"
-		version = Version("1.4.9")
+		version = Version("1.4.10")
 
 		meta = [	
 			"proj.name"			: "BedSheet",
 			"stackOverflow.tag"	: "afbedsheet",
 			"afIoc.module"		: "afBedSheet::BedSheetModule",
 			"tags"				: "web",
-			"repo.private"		: "true"
+			"repo.private"		: "false"
 		]
 
 		index = [
@@ -31,10 +31,10 @@ class Build : BuildPod {
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.4  - 1.0",
 			"afConcurrent 1.0.8  - 1.0",
-			"afPlastic    1.0.16 - 1.0",
+			"afPlastic    1.0.18 - 1.0",
 			"afIoc        2.0.6  - 2.0", 
 			"afIocConfig  1.0.16 - 1.0", 
-			"afIocEnv     1.0.16 - 1.0", 
+			"afIocEnv     1.0.18 - 1.0", 
 			
 			// ---- Test ------------------------
 			"xml 1.0"
