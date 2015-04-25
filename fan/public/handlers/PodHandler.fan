@@ -97,7 +97,7 @@ const mixin PodHandler : ClientAssetProducer {
 
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	** Throws 'ArgErr' if the URL is not mapped or does not exist.
-	abstract override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
+	abstract ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
 
 	** Given a pod resource file, this returns a corresponding (cached) 'FileAsset'. 
 	** The URI must adhere to the 'fan://<pod>/<file>' scheme notation.
@@ -129,7 +129,19 @@ internal const class PodHandlerImpl : PodHandler {
 			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pods/`))
 	}
 
+	override ClientAsset? produceAsset(Uri localUrl) {
+		_fromLocalUrl(localUrl, false, false)
+	}
+
 	override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true) {
+		_fromLocalUrl(localUrl, checked, true)
+	}
+	
+	override ClientAsset? fromPodResource(Uri podUrl, Bool checked := true) {
+		_fromPodResource(podUrl, checked, true)
+	}	
+
+	ClientAsset? _fromLocalUrl(Uri localUrl, Bool checked, Bool cache) {
 		if (baseUrl == null)
 			if (checked) throw Err(BsErrMsgs.podHandler_disabled)
 			else return null
@@ -144,11 +156,11 @@ internal const class PodHandlerImpl : PodHandler {
 		return fromPodResource(`fan://${remainingUrl}`, checked)
 	}
 	
-	override ClientAsset? fromPodResource(Uri podUrl, Bool checked := true) {
+	ClientAsset? _fromPodResource(Uri podUrl, Bool checked, Bool cache) {
 		if (baseUrl == null)
 			if (checked) throw Err(BsErrMsgs.podHandler_disabled)
 			else return null
-
+ 
 		if (podUrl.scheme != "fan")
 			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlNotFanScheme(podUrl))
 			else return null
@@ -173,13 +185,14 @@ internal const class PodHandlerImpl : PodHandler {
 		path		:= file.uri.pathOnly.relTo(`/`)
 		localUrl	:= baseUrl + host + path
 
-		// FIXME: needed?
-		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset?| {
+		makeFunc := |Uri key->ClientAsset?| {
 			if (!file.exists)
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 			
 			return registry.autobuild(FileAsset#, [localUrl, file])
 		}
+		
+		return cache ? assetCache.getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl) 
 	}	
 }

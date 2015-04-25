@@ -68,8 +68,8 @@ using afIoc
 ** 
 ** 
 ** 
-** Precedence with Other Routes [#RoutePrecedence] 
-** ===============================================
+** Precedence with Routes [#RoutePrecedence] 
+** =========================================
 ** 'FileHandler' is a 'ClientAssetProducer' so file assets are served by the Asset Middleware. 
 ** By default the Asset Middleware is processed before the Routes Middleware so should an asset and 
 ** Route serve the same URL, the asset takes precedence. (Meaning the asset is served and Route is not processed.)
@@ -85,7 +85,7 @@ const mixin FileHandler : ClientAssetProducer {
 	**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl.encode
 	** 
 	** Throws 'ArgErr' if the checked and file does not exist, 'null' otherwise.
-	abstract override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
+	abstract ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
 
 	** Given a file on the server, this returns a corresponding (cached) 'ClientAsset'.
 	**  
@@ -99,7 +99,6 @@ const mixin FileHandler : ClientAssetProducer {
 
 internal const class FileHandlerImpl : FileHandler {
 	
-	@Inject	private const HttpRequest? 		httpRequest	// nullable for unit tests
 	@Inject	private const ClientAssetCache	assetCache
 	@Inject	private const Registry			registry
 			override const Uri:File 		directoryMappings
@@ -122,7 +121,7 @@ internal const class FileHandlerImpl : FileHandler {
 			return file.normalize
 		}
 	}
-	
+		
 	override Uri? findMappingFromLocalUrl(Uri localUri) {
 		Utils.validateLocalUrl(localUri, `/css/myStyles.css`)
 		// TODO: what if 2 dirs map to the same url at the same level?
@@ -136,7 +135,19 @@ internal const class FileHandlerImpl : FileHandler {
 		return prefix
 	}
 
+	override ClientAsset? produceAsset(Uri localUrl) {
+		_fromLocalUrl(localUrl, false, false)
+	}
+
 	override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true) {
+		_fromLocalUrl(localUrl, checked, true)
+	}
+
+	override ClientAsset? fromServerFile(File file, Bool checked := true) {
+		_fromServerFile(file, checked, true)
+	}
+
+	ClientAsset? _fromLocalUrl(Uri localUrl, Bool checked, Bool cache) {
 		prefix	:= findMappingFromLocalUrl(localUrl)
 		
 		if (prefix == null)
@@ -148,10 +159,10 @@ internal const class FileHandlerImpl : FileHandler {
 		remaining := localUrl.getRange(prefix.path.size..-1).relTo(`/`)
 		file	  := directoryMappings[prefix].plus(remaining, false)
 
-		return fromServerFile(file, checked)
+		return _fromServerFile(file, checked, cache)
 	}
 
-	override ClientAsset? fromServerFile(File file, Bool checked := true) {
+	ClientAsset? _fromServerFile(File file, Bool checked, Bool cache) {
 		fileUri	:= file.normalize.uri.toStr
 		prefix  := (Uri?) directoryMappings.eachWhile |af, uri->Uri?| { fileUri.startsWith(af.uri.toStr) ? uri : null }
 		if (prefix == null)
@@ -162,10 +173,10 @@ internal const class FileHandlerImpl : FileHandler {
 		remaining	:= fileUri[matchedFile.uri.toStr.size..-1]
 		localUrl	:= prefix + remaining.toUri
 
-		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset?| {
+		makeFunc := |Uri key->ClientAsset?| {
 			// don't throw HttpStatusErrs 'cos this is an API call (for template generation), not a response. 
 			if (file.isDir)	// not allowed, until I implement it! 
-				if (checked) throw ArgErr(BsErrMsgs.directoryListingNotAllowed(localUrl))	// should be clientUrl - pfft.
+				if (checked) throw ArgErr(BsErrMsgs.directoryListingNotAllowed(localUrl))
 				else return null
 			if (!file.exists)
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
@@ -173,5 +184,7 @@ internal const class FileHandlerImpl : FileHandler {
 
 			return registry.autobuild(FileAsset#, [localUrl, file])
 		}
+		
+		return cache ? assetCache.getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl)
 	}
 }

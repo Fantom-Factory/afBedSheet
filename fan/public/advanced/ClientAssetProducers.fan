@@ -5,7 +5,7 @@ using afConcurrent
 @NoDoc	// Advanced use only
 const mixin ClientAssetProducers {
 	
-	abstract ClientAsset? produceAsset(Uri localUrl, Bool checked := true)
+	abstract ClientAsset? produceAsset(Uri localUrl)
 	
 }
 
@@ -19,9 +19,7 @@ internal const class ClientAssetProducersImpl : ClientAssetProducers {
 		in?.call(this)
 	}
 	
-	override ClientAsset? produceAsset(Uri localUrl, Bool checked := true) {
-		producers.eachWhile { it.fromLocalUrl(localUrl, false) } ?: (
-			checked ? throw ArgErr("Could not find or create an ClientAsset for URL `${localUrl}`") : null
-		)
+	override ClientAsset? produceAsset(Uri localUrl) {
+		producers.eachWhile { it.produceAsset(localUrl) }
 	}
 }

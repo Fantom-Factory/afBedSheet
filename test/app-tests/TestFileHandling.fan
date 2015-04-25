@@ -50,7 +50,7 @@ internal class TestFileHandling : AppTest {
 
 	Void testFolderNonSlash() {
 		// this directly returns a File object
-		verifyStatus(`fh/test-src/folder`, 403)
+		verifyStatus(`fh/test-src/folder`, 404)
 		
 		// this returns a FileAsset object via FileHandler
 		client = WebClient()
@@ -59,7 +59,7 @@ internal class TestFileHandling : AppTest {
 
 	Void testFolder() {
 		// this directly returns a File object
-		verifyStatus(`fh/test-src/folder/`, 403)
+		verifyStatus(`fh/test-src/folder/`, 404)
 		
 		// this returns a FileAsset object via FileHandler
 		client = WebClient()

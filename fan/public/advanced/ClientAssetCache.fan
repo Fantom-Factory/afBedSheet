@@ -5,11 +5,9 @@ using afConcurrent
 @NoDoc	// Advanced use only
 const mixin ClientAssetCache {
 	
-	abstract ClientAsset? get(Uri localUrl, Bool checked := true)
+	abstract ClientAsset? getAndUpdateOrProduce(Uri localUrl)
 
-	abstract ClientAsset? getOrAdd(Uri localUrl, Bool checked := true)
-	
-	abstract ClientAsset? getOrAddOrUpdate(Uri localUrl, |Uri->ClientAsset?| valFunc)
+	abstract ClientAsset? getAndUpdateOrMake(Uri localUrl, |Uri->ClientAsset?| makeFunc)
 	
 	** Removes the given asset from the internal cache.
 	abstract Void remove(Uri? localUrl)
@@ -41,33 +39,55 @@ internal const class ClientAssetCacheImpl : ClientAssetCache {
 		in?.call(this)
 	}
 	
-	override ClientAsset? get(Uri localUrl, Bool checked := true) {
-		assetCache.get(localUrl) ?: (
-			checked ? throw ArgErr("Could not find an ClientAsset for URL `${localUrl}`") : null
-		)
+	override ClientAsset? getAndUpdateOrProduce(Uri localUrl) {
+		getAndUpdateOrMake(localUrl) {
+			assetProducers.produceAsset(localUrl)
+		}
 	}
 
-	override ClientAsset? getOrAdd(Uri localUrl, Bool checked := true) {
-		get(localUrl, false) ?: assetProducers.produceAsset(localUrl, checked)
-	}
-
-	override ClientAsset? getOrAddOrUpdate(Uri localUrl, |Uri->ClientAsset?| valFunc) {
-		asset := (ClientAsset?) assetCache.getOrAdd(localUrl, valFunc)
-
+	override ClientAsset? getAndUpdateOrMake(Uri localUrl, |Uri->ClientAsset?| makeFunc) {
 		// I'm aware there could be race conditions here - but it's just a cache, so the losses are acceptable.
-
-		// null gets added - so remove it
-		if (asset == null)
-			return assetCache.remove(localUrl)
-
-		if (!asset.exists)
-			return assetCache.remove(localUrl)
+		asset := (ClientAsset?) assetCache.get(localUrl)
 		
-		if (asset.isModified(cacheTimeout))
-			assetCache[localUrl] = valFunc(localUrl)
+		if (asset != null) {
+			if (!asset.exists)
+				assetCache.remove(localUrl)
 
+			else if (asset.isModified(cacheTimeout)) {
+				// remove in preparation of creating a new one
+				assetCache.remove(localUrl)
+				asset = null
+			}
+		}
+		
+		// if either the asset was modified, or wasn't cached
+		if (asset == null) {
+			asset = makeFunc(localUrl)
+			
+			if (asset != null && asset.exists)
+				assetCache[localUrl] = asset
+		}
+		
 		return asset
 	}
+
+//	override ClientAsset? getOrAddOrUpdate(Uri localUrl, |Uri->ClientAsset?| valFunc) {
+//		asset := (ClientAsset?) assetCache.getOrAdd(localUrl, valFunc)
+//
+//		// I'm aware there could be race conditions here - but it's just a cache, so the losses are acceptable.
+//
+//		// null gets added - so remove it
+//		if (asset == null)
+//			return assetCache.remove(localUrl)
+//
+//		if (!asset.exists)
+//			return assetCache.remove(localUrl)
+//		
+//		if (asset.isModified(cacheTimeout))
+//			assetCache[localUrl] = valFunc(localUrl)
+//
+//		return asset
+//	}
 	
 	// accept null for convenience
 	override Void remove(Uri? localUrl) {
