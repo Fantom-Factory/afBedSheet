@@ -1,7 +1,7 @@
-#BedSheet v1.4.8
+#BedSheet v1.4.10
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.8](http://img.shields.io/badge/pod-v1.4.8-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.10](http://img.shields.io/badge/pod-v1.4.10-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -106,12 +106,10 @@ Route handlers are typically what we, the application developers, write. They pe
 
 ## Starting BedSheet
 
-Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://www.fantomfactory.org/pods/afIoc) services. It is an [IoC](http://www.fantomfactory.org/pods/afIoc) concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
-
-To start BedSheet from the command line, you need to tell it where to find the `AppModule` and which port to run on:
+To start BedSheet from the command line, you need to tell it where to find an `AppModule` and the port to run on:
 
 ```
-C:\> fan afBedSheet -env development <fully-qualified-app-module-name> <port-number>
+C:\> fan afBedSheet -env development <qualified-app-module-name> <port-number>
 ```
 
 For example:
@@ -120,15 +118,15 @@ For example:
 C:\> fan afBedSheet -env development myWebApp::AppModule 8069
 ```
 
-> TIP: Should your AppModule grow too big, break logical chunks out into their own classes using the @SubModule facet.
+Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://www.fantomfactory.org/pods/afIoc) services. It is an [IoC](http://www.fantomfactory.org/pods/afIoc) concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
 
-`<fully-qualified-app-module-name>` may be replaced with just `<pod-name>` as long as your pod's `build.fan` defines the following meta:
+`<qualified-app-module-name>` may be replaced with just `<pod-name>` as long as your pod's `build.fan` defines the following meta:
 
 ```
 meta = [
     ...
     ...
-    "afIoc.module" : "<fully-qualified-app-module-name>"
+    "afIoc.module" : "<qualified-app-module-name>"
 ]
 ```
 
@@ -170,7 +168,7 @@ Routing lesson over.
 
 *Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](#quickStart) `HelloPage` *route handler* returns a [Text](http://repo.status302.com/doc/afBedSheet/Text.html) *response object*.
 
-Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with BedSheet:
+Route handlers are written by the application developer, but a couple of common use-cases are bundled with BedSheet:
 
 - [FileHandler](http://repo.status302.com/doc/afBedSheet/FileHandler.html): Maps request URLs to files on the file system.
 - [PodHandler](http://repo.status302.com/doc/afBedSheet/PodHandler.html) : Maps request URLs to pod file resources.
@@ -178,6 +176,8 @@ Route handlers are usually written by the application developer, but a couple of
 See the [FileHandler](http://repo.status302.com/doc/afBedSheet/FileHandler.html) documentation for examples on how to serve up static files.
 
 See the [PodHandler](http://repo.status302.com/doc/afBedSheet/PodHandler.html) documentation for examples on how to serve up static pod files, including Fantom generated Javascript.
+
+(Note that, as of BedSheet 1.4.10, `FileHandler` and `PodHandler` are actually processed by Asset Middleware and not Routes.)
 
 ## Response Objects
 
@@ -548,7 +548,7 @@ using afBedSheet
 class Example {
     Void main() {
         bob := BedSheetBuilder(AppModule#.qname)
-		reg := bob.build.startup
+        reg := bob.build.startup
         mod := RouteMod { it.routes = [
             "poo" : BedSheetWebMod(reg)
         ]}
