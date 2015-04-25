@@ -3,7 +3,8 @@ using afIoc::Registry
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 
-** (Service) - A Route Handler that maps URLs to file resources inside pods. 
+** (Service) - 
+** A 'ClientAssetProducer' that maps URLs to file resources inside pods. 
 **
 ** To access a pod resource use URLs in the format:
 ** 
@@ -94,10 +95,6 @@ const mixin PodHandler : ClientAssetProducer {
 	** Set by `BedSheetConfigIds.podHandlerBaseUrl`, defaults to '/pods/'.
 	abstract Uri? baseUrl()
 
-	** The (boring) Route handler method. 
-	** Returns a 'FileAsset' as mapped from the HTTP request URL or null if not found.
-	abstract ClientAsset? serviceRoute(Uri remainingUrl)
-		
 	** Given a local URL (a simple URL relative to the WebMod), this returns a corresponding (cached) 'FileAsset'.
 	** Throws 'ArgErr' if the URL is not mapped or does not exist.
 	abstract override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
@@ -113,6 +110,7 @@ internal const class PodHandlerImpl : PodHandler {
 	@Config { id="afBedSheet.podHandler.baseUrl" }
 	@Inject override const Uri?				baseUrl
 	@Inject	private const ClientAssetCache	assetCache
+	@Inject	private const Registry			registry
 			private const Regex[] 			whitelistFilters
 	
 	new make(Regex[] filters, |This|? in) {
@@ -129,16 +127,6 @@ internal const class PodHandlerImpl : PodHandler {
 			throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(baseUrl, `/pods/`))
 		if (!baseUrl.isDir)
 			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pods/`))
-	}
-
-	override ClientAsset? serviceRoute(Uri remainingUrl) {
-		try {
-			// use pathStr to knockout any unwanted query str
-			return fromPodResource(`fan://${remainingUrl.pathStr}`)
-		} catch 
-			// don't bother making fromLocalUrl() checked, it's too much work for a 404!
-			// null means that 'Routes' didn't process the request, so it continues down the pipeline. 
-			return null
 	}
 
 	override ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true) {
@@ -185,12 +173,13 @@ internal const class PodHandlerImpl : PodHandler {
 		path		:= file.uri.pathOnly.relTo(`/`)
 		localUrl	:= baseUrl + host + path
 
+		// FIXME: needed?
 		return assetCache.getOrAddOrUpdate(localUrl) |Uri key->ClientAsset?| {
 			if (!file.exists)
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 			
-			return FileAsset.makeCachable(localUrl, file, assetCache)
+			return registry.autobuild(FileAsset#, [localUrl, file])
 		}
 	}	
 }

@@ -198,13 +198,15 @@ Route Handling [#routeHandling]
 anything to the HTTP response stream. Instead they return a *Response Object* for further processing.
 For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` *response object*.
 
-Route handlers are usually written by the application developer, but a couple of common use-cases are bundled with BedSheet:
+Route handlers are written by the application developer, but a couple of common use-cases are bundled with BedSheet:
  - `FileHandler`: Maps request URLs to files on the file system.
  - `PodHandler` : Maps request URLs to pod file resources.
 
 See the `FileHandler` documentation for examples on how to serve up static files.
 
 See the `PodHandler` documentation for examples on how to serve up static pod files, including Fantom generated Javascript.
+
+(Note that, as of BedSheet 1.4.10, 'FileHandler' and 'PodHandler' are actually processed by Asset Middleware and not Routes.)
 
 
 

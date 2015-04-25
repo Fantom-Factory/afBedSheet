@@ -55,8 +55,6 @@ internal const class T_AppModule {
 		conf.add(Route(`/saveFlashMsg/*`, 		T_PageHandler#saveFlashMsg))
 		conf.add(Route(`/showFlashMsg`, 		T_PageHandler#showFlashMsg))
 
-		conf.add(Route(`/pod/***`, 				PodHandler#serviceRoute))
-
 		conf.add(Route(`/slow`, 				T_PageHandler#slow))
 
 		conf.add(Route(`/postForm`, 			T_PageHandler#postForm, "POST"))
