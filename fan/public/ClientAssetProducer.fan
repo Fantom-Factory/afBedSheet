@@ -11,9 +11,9 @@
 ** This ensures your assets will adopt any asset caching strategy set by Cold Feet.
 mixin ClientAssetProducer {
 
-	** Creates a 'ClientAsset' from the given local URL. 
-	** Should throw an Err if the URL is not valid for this asset type, 
-	** or return null if 'checked' is 'false'. 
-	abstract ClientAsset? fromLocalUrl(Uri localUrl, Bool checked := true)
+	** Creates a 'ClientAsset' from the given local URL.
+	**  
+	** Returns 'null' if the URL can not be mapped. 
+	abstract ClientAsset? produceAsset(Uri localUrl)
 	
 }

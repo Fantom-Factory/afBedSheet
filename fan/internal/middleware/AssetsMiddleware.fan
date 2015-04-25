@@ -10,7 +10,7 @@ internal const class AssetsMiddleware : Middleware {
 
 	override Void service(MiddlewarePipeline pipeline) {
 		if (httpRequest.httpMethod == "GET" || httpRequest.httpMethod == "HEAD") {
-			asset := assetCache.getOrAdd(httpRequest.url, false)
+			asset := assetCache.getAndUpdateOrProduce(httpRequest.url)
 			if (asset != null)
 				if (processors.processResponse(asset))
 					return

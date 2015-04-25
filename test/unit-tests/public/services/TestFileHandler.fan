@@ -1,5 +1,8 @@
 using afIoc
+using afIocEnv
+using afIocConfig
 using afBeanUtils
+using concurrent
 
 internal class TestFileHandler : BsTest {
 	
@@ -119,19 +122,31 @@ internal class TestFileHandler : BsTest {
 
 		
 	private FileHandler makeFileHandler(Uri:File dirMappings) {
-		bob := BeanFactory(FileHandlerImpl#)
-		bob.add(dirMappings)
-		bob.setByName("assetCache", AssetCacheMock())
-		return bob.create
+		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
+		try {
+			return reg.autobuild(FileHandler#, [dirMappings])
+		} catch (IocErr err) {
+			throw err.cause ?: err
+		}
 	}
 }
 
-internal const class AssetCacheMock : ClientAssetCache {
-	override ClientAsset? get(Uri key, Bool checked := true) { null }
-	override ClientAsset? getOrAdd(Uri key, Bool checked := true) { null }
-	override ClientAsset? getOrAddOrUpdate(Uri key, |Uri->ClientAsset?| valFunc) { valFunc(key) }
-	override Void remove(Uri? asset) { }
-	override Void clear() { }
-	override Int size() { 0 }
-	override Uri toClientUrl(Uri localUrl, ClientAsset asset) { localUrl }
+internal const class AssetCacheModule {
+	static const AtomicRef	urlRef	:= AtomicRef()
+	static Void defineServices(ServiceDefinitions defs) {
+		defs.add(FileHandler#)
+		defs.add(ClientAssetCache#)
+		defs.add(ClientAssetProducers#)
+		defs.add(BedSheetServer#)
+	}
+
+	@Contribute { serviceType=ActorPools# }
+	static Void contributeActorPools(Configuration config) {
+		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
+	}
+
+	@Contribute { serviceType=ApplicationDefaults# }
+	static Void contributeAppDefaults(Configuration config) {
+		config["afBedSheet.podHandler.baseUrl"] = urlRef.val
+	}
 }

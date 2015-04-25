@@ -89,11 +89,19 @@ internal class TestPodHandler : BsTest {
 	}
 
 	private PodHandler podHandler(Uri url := `/pods/`, Str filter := ".*") {
-		bob := BeanFactory(PodHandlerImpl#)
-		bob.add([filter.toRegex])
-		bob.setByName("baseUrl", url)
-		bob.setByName("assetCache", AssetCacheMock())
-		return bob.create
+		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
+		try {
+			AssetCacheModule.urlRef.val = url
+			return reg.autobuild(PodHandler#, [[filter.toRegex]])
+		} catch (IocErr err) {
+			throw err.cause ?: err
+		}
+//		bob := BeanFactory(PodHandlerImpl#)
+//		bob.add([filter.toRegex])
+//		bob.setByName("baseUrl", url)
+//		bob.setByName("assetCache", AssetCacheMock())
+//		return bob.create
+//		(Obj)8
 	}
 }
 
