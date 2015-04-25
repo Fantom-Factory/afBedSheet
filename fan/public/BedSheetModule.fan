@@ -110,6 +110,12 @@ const class BedSheetModule {
 		config["afBedSheet.podHandler"]  = podHandler
 	}
 
+	@Contribute { serviceType=Routes# }
+	static Void contributeRoutes(Configuration config) {
+		// TODO: @Deprecated delete
+		config.addPlaceholder("afBedSheet.fileHandler")
+	}
+	
 	@Contribute { serviceId="afBedSheet::HttpOutStream" }
 	static Void contributeHttpOutStream(Configuration config) {
 		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
