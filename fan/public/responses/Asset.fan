@@ -48,7 +48,8 @@ abstract const class Asset {
 	** Creates an 'InStream' to read the contents of the asset.
 	** A new stream should be created each time 'in()' is called.
 	**  
-	** Returns 'null' if asset doesn't exist.
+	** Returns 'null' if asset doesn't exist, or can't be opened.
+	** (Example, if the asset is a file resource).
 	abstract InStream?	in()
 
 	** Returns the content type for the asset.

@@ -1,7 +1,9 @@
 using web::WebReq
 using afIoc
 
-** (Service) - A Route Handler that maps URLs to files on the file system.
+** (Service) - 
+** A 'ClientAssetProducer' that maps URLs to files on the file system.
+** Use to serve up file assets.
 ** 
 ** Suppose your project has this directory structure:
 ** 
@@ -18,7 +20,7 @@ using afIoc
 **            `-- scripts/
 ** <pre
 ** 
-** Then to map the 'css/' dir add the following to 'AppModule':
+** To serve up files from the 'css/' directory add the following to 'AppModule':
 ** 
 ** pre>
 ** @Contribute { serviceType=FileHandler# }
@@ -29,17 +31,17 @@ using afIoc
 ** 
 ** Browsers may then access 'app.css' with the URL '/stylesheets/app.css'.
 ** 
-** Rather than hardcoding '/stylesheets/app.css' in the HTML, it is better to generate a client URL from 'FileHandler'.
+** Rather than hardcoding '/stylesheets/app.css' in HTML, it is better to generate a client URL from 'FileHandler'.
 ** 
-**   url := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl
+**   urlStr := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl.encode
 ** 
-** Most of the time 'url' will be the same as the hardcoded URL but it has the added benefit of:
+** Most of the time 'urlStr' will be the same as the hardcoded URL but it has the added benefit of:
 **  - Failing fast if the file does not exist
 **  - generating correct URLs in non-root WebMods
-**  - using asset caching strategies
+**  - utilising an asset caching strategy
 **
 ** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
-** It also contains path segments as provided by any asset caching strategies, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
+** It is also transformed by asset caching strategies such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
 **  
 ** 
 ** 
@@ -56,7 +58,7 @@ using afIoc
 ** 
 ** Fail Fast [#failFast]
 ** =====================
-** An understated advantage of using 'FileHandler' to generate client URLs for your assets is that it fails fast.
+** An understated advantage of using 'FileHandler' to generate client URLs is that it fails fast.
 ** 
 ** Should an asset not exist on the file system (due to a bodged rename, a case sensitivity issue, or other) then 'FileHandler' will throw an Err on the server when the client URL is constructed.
 ** This allows your web tests to quickly pick up these tricky errors.
@@ -68,23 +70,9 @@ using afIoc
 ** 
 ** Precedence with Other Routes [#RoutePrecedence] 
 ** ===============================================
-** The 'FileHandler' directory mappings are automatically added to the `Routes` service on startup.
-** That means it is possible to specify a 'Route' URL with more than one handler; a custom handler *and* this 'FileHandler'.
-** With a bit of configuration it is possible to specify which takes precedence. 
-**   
-** The 'FileHandler' route contributions are set with the ID 'afBedSheet.fileHander', so when 'Route' precedence is important, use it in your config: 
-** 
-** pre>
-** @Contribute { serviceType=Routes# }
-** static Void contributeRoutes(Configuration config) {
-** 
-**   // this Route will be served in place of the file 'url1.txt'
-**   config.set("beforeExample", Route(`/url1.txt`, ...)).before("afBedSheet.fileHandler")
-** 
-**   // this Route will be served if there is no file called 'url2.txt'
-**   config.set("afterExample", Route(`/url2.txt`, ...)).after("afBedSheet.fileHandler")
-** }
-** <pre
+** 'FileHandler' is a 'ClientAssetProducer' so file assets are served by the Asset Middleware. 
+** By default the Asset Middleware is processed before the Routes Middleware so should an asset and 
+** Route serve the same URL, the asset takes precedence. (Meaning the asset is served and Route is not processed.)
 ** 
 ** @uses Configuration of 'Uri:File'
 const mixin FileHandler : ClientAssetProducer {
@@ -113,6 +101,7 @@ internal const class FileHandlerImpl : FileHandler {
 	
 	@Inject	private const HttpRequest? 		httpRequest	// nullable for unit tests
 	@Inject	private const ClientAssetCache	assetCache
+	@Inject	private const Registry			registry
 			override const Uri:File 		directoryMappings
 		
 	new make(Uri:File dirMappings, |This|? in) {
@@ -182,7 +171,7 @@ internal const class FileHandlerImpl : FileHandler {
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 
-			return FileAsset.makeCachable(localUrl, file, assetCache)
+			return registry.autobuild(FileAsset#, [localUrl, file])
 		}
 	}
 }
