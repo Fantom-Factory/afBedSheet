@@ -738,6 +738,10 @@ Even if your route handlers aren't services, if they're 'const' classes, they're
 
 Release Notes [#releaseNotes]
 *****************************
+v1.4.12 [#v1.4.12]
+==================
+ - New: Added 'HttpSession.flashExists()'.
+
 v1.4.10 [#v1.4.10]
 ==================
  - New: 'Asset' and 'ClientAsset' classes - re-worked 'FileHandler' and 'PodHandler' to use new API.

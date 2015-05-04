@@ -25,32 +25,32 @@ const mixin HttpSession {
 	
 	** Get the unique id used to identify this session.
 	** 
-	** Calling this **will** create a session if it doesn't already exist.
+	** Calling this method **will** create a session if it does not exist.
 	** 
 	** @see `web::WebSession`
 	abstract Str id()
 
 	** Returns 'true' if the session map is empty. 
 	** 
-	** Does not create a session if it does not already exist.
+	** Calling this method does not create a session if it does not exist.
 	virtual Bool isEmpty() {
 		exists ? map.isEmpty : true
 	}
 
 	** Returns 'true' if the session map contains the given key. 
 	** 
-	** Does not create a session if it does not already exist.
+	** Calling this method does not create a session if it does not exist.
 	virtual Bool containsKey(Str key) {
 		exists ? map.containsKey(key) : false		
 	}
 	
 	** Convenience for 'map.get(name, def)'.
 	** 
-	** Does not create a session if it does not already exist.
+	** Calling this method does not create a session if it does not exist.
 	** 
 	** @see `web::WebSession`
 	@Operator
-	Obj? get(Str name, Obj? def := null) {
+	virtual Obj? get(Str name, Obj? def := null) {
 		exists ? map.get(name, def) : def 
 	}
 
@@ -61,7 +61,7 @@ const mixin HttpSession {
 	
 	** Convenience for 'map.set(name, val)'.
 	** 
-	** Calling this **will** create a session if it doesn't already exist.
+	** Calling this method **will** create a session if it does not exist.
 	** 
 	** @see `web::WebSession`
 	@Operator 
@@ -69,13 +69,13 @@ const mixin HttpSession {
 	
 	** Convenience for 'map.remove(name)'.
 	** 
-	** Does not create a session if it does not already exist.
+	** Calling this method does not create a session if it does not exist.
 	abstract Void remove(Str name)
 
 	** Application name/value pairs which are persisted between HTTP requests. 
 	** The values stored in this map must be serializable.
 	** 
-	** Calling this **will** create a session if it doesn't already exist.
+	** Calling this method **will** create a session if it does not exist.
 	** 
 	** The returned map is *READ ONLY*. 
 	** Use the methods on this class to write to the session.
@@ -88,25 +88,33 @@ const mixin HttpSession {
 	** instance. This method must be called before the WebRes is committed otherwise the server side 
 	** instance is cleared, but the user agent cookie will remain uncleared.
 	** 
-	** Does not create a session if it does not already exist.
+	** Calling this method does not create a session if it does not exist.
 	** 
 	** @see `web::WebSession`
 	abstract Void delete()
 	
 	** Returns 'true' if a session exists. 
 	** 
-	** Does not create a session if it does not already exist.
+	** Calling this method does not create a session if it does not exist.
 	abstract Bool exists()
 	
-	** Application name/value pairs which are persisted *only* until the user's next HTTP request. 
+	** A map whose name/value pairs are persisted *only* until the end of the user's next HTTP request. 
 	** Values stored in this map must be serializable.
-	** 
-	** Calling this **will** create a session if it doesn't already exist.
 	** 
 	** The returned map is *MODIFIABLE*. 
 	** 
+	** Calling this method **will** create a session if it does not exist. 
+	** Use 'flashExists()' to check if a value exists without creating a session:
+	** 
+	**   if (httpSession.flashExists && httpSession.flash.contains("key")) { ... }
+	** 
 	** @see `web::WebSession`
 	abstract Str:Obj? flash()
+	
+	** Returns 'true' if the flash map exists.
+	** 
+	** Calling this method does not create a session if it does not exist.
+	abstract Bool flashExists()
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -157,6 +165,10 @@ internal const class HttpSessionImpl : HttpSession {
 	// - benefits are, we don't create a session on read and split map up into a req and res 
 	override Str:Obj? flash() {
 		getOrAdd("afBedSheet.flash") { Str:Obj?[:] }
+	}
+
+	override Bool flashExists() {
+		exists && containsKey("afBedSheet.flash")
 	}
 	
 	private Obj? testSerialisation(Obj? val) {
