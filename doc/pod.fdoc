@@ -502,15 +502,17 @@ class UploadService {
     @Inject HttpRequest? httpRequest
 
     Text uploadFile() {
-        httpRequest.parseMultiPartForm |Str formName, InStream in, Str:Str headers| {
-            // this closure is called for each file in the form
-            quoted   := headers["Content-Disposition"].split(';').find { it.startsWith("filename") }.split('=')[1]
-            filename := WebUtil.fromQuotedStr(quoted)
+        httpRequest.parseMultiPartForm |Str inputName, InStream in, Str:Str headers| {
+            // this closure is called for each input in the form
+            if (inputName == "theFile") {
+                quoted   := headers["Content-Disposition"].split(';').find { it.startsWith("filename") }.split('=')[1]
+                filename := WebUtil.fromQuotedStr(quoted)
 
-            // save file to temp dir
-            file := Env.cur.tempDir.createFile(filename)
-            in.pipe(file.out)
-            file.out.close
+                // save file to temp dir
+                file := Env.cur.tempDir.createFile(filename)
+                in.pipe(file.out)
+                file.out.close
+            }
         }
         return Text.fromPlain("OK")
     }
