@@ -11,8 +11,8 @@ class Build : BuildPod {
 			"proj.name"			: "BedSheet",
 			"stackOverflow.tag"	: "afbedsheet",
 			"afIoc.module"		: "afBedSheet::BedSheetModule",
-			"tags"				: "web",
-			"repo.private"		: "true"
+			"repo.tags"			: "web",
+			"repo.public"		: "false"
 		]
 
 		index = [
@@ -41,7 +41,7 @@ class Build : BuildPod {
 		]
 
 		srcDirs = [`test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/utils/`, `test/unit-tests/public/services/`, `test/unit-tests/internal/`, `test/unit-tests/internal/services/`, `test/app-tests/`, `test/app/`, `fan/`, `fan/public/`, `fan/public/utils/`, `fan/public/services/`, `fan/public/responses/`, `fan/public/middleware/`, `fan/public/handlers/`, `fan/public/advanced/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/services/`, `fan/internal/proxy/`, `fan/internal/processors/`, `fan/internal/middleware/`]
-		resDirs = [`res/web/`, `res/misc/`, `res/test/`]
+		resDirs = [`doc/`, `res/web/`, `res/misc/`, `res/test/`]
 	}
 	
 	override Void compile() {

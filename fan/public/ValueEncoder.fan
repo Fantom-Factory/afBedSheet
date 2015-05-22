@@ -19,6 +19,7 @@
 ** representation. Example:   
 ** 
 ** pre>
+** syntax: fantom
 ** const class MyValueEncoder : ValueEncoder {
 ** 
 **     override Str toClient(Obj? value) {
@@ -46,6 +47,7 @@
 ** For example, in your 'AppModule' class:
 ** 
 ** pre>
+**   syntax: fantom
 **   @Contribute { serviceType=ValueEncoders# }
 **   static Void contributeValueEncoders(Configuration conf) {
 **     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)

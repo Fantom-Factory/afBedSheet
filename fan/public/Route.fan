@@ -12,6 +12,7 @@
 ** Note that all URL matching is case-insensitive. If you really need case-sensitive matching (???)
 ** use the 'RegexRoute' explicitly, passing 'false' as the 'caseInsensitive' argument. Example:
 ** 
+**   syntax: fantom 
 **   RegexRoute(`/index`, MyPage#hello, "GET", false)
 ** 
 ** 
@@ -23,14 +24,17 @@
 ** 
 ** Example, this matches the URL '/greet' and returns the string 'Hello Mum!'
 ** 
+**   syntax: fantom 
 **   Route(`/greet`, Text.fromPlain("Hello Mum!")) 
 ** 
 ** And this redirects any request for '/home' to '/greet'
 ** 
+**   syntax: fantom 
 **   Route(`/home`, Redirect.movedTemporarily(`/greet`)) 
 ** 
 ** You can use glob expressions in your URL, so:
 ** 
+**   syntax: fantom 
 **   Route(`/greet.*`, ...) 
 ** 
 ** will match the URLs '/greet.html', '/greet.php' but not '/greet'. 
@@ -43,6 +47,7 @@
 ** To use, pass in the method as the response object. 
 ** On a successful match, the 'Route' will convert the method into a 'MethodCall' object.
 ** 
+**   syntax: fantom 
 **   Route(`/greet`, MyPage#hello)
 ** 
 ** Method matching can also map URL path segments to method parameters and is a 2 stage process:
@@ -60,8 +65,9 @@
 ** 
 ** Full examples follow:
 ** 
+**   table:
 **   URL              glob          captures
-**   --------------------------------------------
+**   ------------ --- ---------- -- -------------
 **   /user/       --> /user/*    => ""
 **   /user/42     --> /user/*    => "42"
 **   /user/42/    --> /user/*    => no match
@@ -86,8 +92,9 @@
 ** 
 ** The intention of the '?' character is to optionally match a trailing slash. Example:
 ** 
+**   table:
 **   URL              glob          captures
-**   --------------------------------------------
+**   ------------ --- ---------- -- -------------
 **   /index       --> /index/?   => match
 **   /index/      --> /index/?   => match
 **                vs      
@@ -118,8 +125,9 @@
 ** 
 ** Here are a couple of examples:
 ** 
+**   table:
 **   strings          method signature          args
-**   ----------------------------------------------------------
+**   ---------- --- ----------------------- -- ----------------
 **              -->  (Obj a, Obj b)         =>  no match
 **
 **   ""         -->  (Str? a)               =>  null
@@ -162,6 +170,7 @@ const mixin Route {
 	** Creates a Route that matches on the given URL glob pattern. 
 	** 'urlGlob' must start with a slash "/". Example: 
 	** 
+	**   syntax: fantom 
 	**   Route(`/index/**`)
 	** 
 	** Note that matching is made against URI patterns in [Fantom standard form]`sys::Uri`. 
@@ -184,6 +193,7 @@ const mixin Route {
 	** For hardcore users; make a Route from a regex. Capture groups are used to match arguments.
 	** Example:
 	** 
+	**   syntax: fantom 
 	**   Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo, "GET", true) ==> Route(`/index/**`)
 	** 
 	** Set 'matchAllSegs' to 'true' to have the last capture group mimic the glob '**' operator, 

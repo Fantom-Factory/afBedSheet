@@ -23,6 +23,7 @@ using afIoc
 ** To serve up files from the 'css/' directory add the following to 'AppModule':
 ** 
 ** pre>
+** syntax: fantom
 ** @Contribute { serviceType=FileHandler# }
 ** static Void contributeFileHandler(Configuration conf) {
 **   conf[`/stylesheets/`] = `etc/static-web/css/`.toFile
@@ -33,6 +34,7 @@ using afIoc
 ** 
 ** Rather than hardcoding '/stylesheets/app.css' in HTML, it is better to generate a client URL from 'FileHandler'.
 ** 
+**   syntax: fantom
 **   urlStr := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl.encode
 ** 
 ** Most of the time 'urlStr' will be the same as the hardcoded URL but it has the added benefit of:
@@ -50,6 +52,7 @@ using afIoc
 ** Using the above example, extra config would need to be added to serve the 'images/' and the 'scripts/' directories. 
 ** This is not ideal. So to serve all the files and directories under 'etc/static-web/' add config for the root URL:  
 ** 
+**   syntax: fantom
 **   conf[`/`] = `etc/static-web/`.toFile
 ** 
 ** This way everything under 'etc/static-web/' is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.

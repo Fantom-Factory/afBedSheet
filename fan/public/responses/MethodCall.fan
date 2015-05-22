@@ -2,6 +2,7 @@
 ** (Response Object) - 
 ** Use to explicitly invoke Fantom methods. 
 ** 
+**   syntax: fantom
 **   MethodCall(MyHandler#process, ["arg1", "arg2"]).toImmutableFunc
 ** 
 ** Note that:

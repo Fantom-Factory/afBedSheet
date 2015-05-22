@@ -8,6 +8,7 @@ const mixin HttpCookies {
 	** New cookies are sent via a 'Set-Cookie' HTTP response header.
 	**
 	** Example:
+	**   syntax: fantom
 	**   httpCookies.add(Cookie("foo", "123"))
 	**   httpCookies.add(Cookie("persistent", "some val") { maxAge = 3day })
 	** 
