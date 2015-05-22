@@ -61,6 +61,7 @@ abstract const class Asset {
 	** 
 	** To create a 'ClientAsset' use the 'FileHandler' or 'PodHandler' service:
 	** 
+	**   syntax: fantom
 	**   fileHandler.fromServerFile(file) 
 	static new makeFromFile(File file) {
 		FileAsset(file, null)

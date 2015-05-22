@@ -6,6 +6,7 @@
 ** 
 ** Example, to remove lines that start with 'afIoc::':
 ** 
+**   syntax: fantom 
 **   @Contribute { serviceType=StackFrameFilter# }
 **   static Void contributeStackFrameFilter(Configuration config) {
 **       config.add("^afIoc::.*\$")

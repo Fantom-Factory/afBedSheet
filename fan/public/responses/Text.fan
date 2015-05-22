@@ -3,6 +3,7 @@ using util::JsonOutStream
 ** (Response Object) - 
 ** Use to send a text response to the client. 
 ** 
+**   syntax: fantom
 **   Text.fromHtml("<html>Hello!<html>")
 ** 
 ** This is purposely a concrete final class so there is no ambiguity as to what it is. For example, 
@@ -13,6 +14,7 @@ using util::JsonOutStream
 ** the result of that.
 ** 
 ** pre>
+** syntax: fantom
 ** Text myHandler(MyEntity entity) {
 **   ...
 **   return entity.toJson

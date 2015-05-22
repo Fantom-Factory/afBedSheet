@@ -17,6 +17,7 @@ using afBeanUtils::ArgNotFoundErr
 ** Change the base url in the application defaults:
 ** 
 ** pre>
+** syntax: fantom
 ** @Contribute { serviceType=ApplicationDefaults# } 
 ** static Void contributeAppDefaults(Configuration conf) {
 **     conf[BedSheetConfigIds.podHandlerBaseUrl] = `/some/other/url/`
@@ -82,6 +83,7 @@ using afBeanUtils::ArgNotFoundErr
 ** To add or remove whitelist regexs, contribute to 'PodHandler':
 **  
 ** pre>
+** syntax: fantom
 ** @Contribute { serviceType=PodHandler# } 
 ** static Void contributePodHandler(Configuration conf) {
 **     conf.remove(".txt")                      // prevent .txt files from being served

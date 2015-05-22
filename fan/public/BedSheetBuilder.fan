@@ -2,7 +2,8 @@ using afIoc
 using afIocEnv
 
 ** Use to programmatically create and launch BedSheet server instances.
-** 
+**
+**   syntax: fantom 
 **   useDevProxy := true
 **   BedSheetBuilder(AppModule#).startWisp(8069, useDevProxy, "dev")
 ** 

@@ -9,7 +9,8 @@ const class BedSheetErr : Err {
 ** Throw to process / handle the wrapped BedSheet response object. 
 ** Use to change the processing flow. Often used to send a redirect to the client,
 ** example:
-** 
+**
+**   syntax: fantom 
 **   throw ReProcessErr(Redirect.movedTemporarily(`/admin/login`))
 const class ReProcessErr : Err {
 	

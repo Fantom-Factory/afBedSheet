@@ -3,6 +3,7 @@
 **  
 ** Instances should be contributed to the 'ClientAssetProducers' service:
 **
+**   syntax: fantom 
 **   @Contribute { serviceType=ClientAssetProducers# }
 **   static Void contributeAssetProducers(Configuration config, MyAssetProducer assetProducer) {
 **       config["acme.myAssetProducer"] = assetProducer

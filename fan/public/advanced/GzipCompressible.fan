@@ -4,6 +4,7 @@
 ** A standard set of types are configured by default. To add to the list:
 ** 
 ** pre>
+** syntax: fantom
 ** @Contribute { serviceType=GzipCompressible# }
 ** static Void configureGzipCompressible(Configuration config) {
 **     config[MimeType("text/funky")] = true
@@ -13,6 +14,7 @@
 ** Because IoC kindly coerces the contribution types for us, the above could be re-written as: 
 ** 
 ** pre>
+** syntax: fantom
 ** @Contribute { serviceType=GzipCompressible# }
 ** static Void configureGzipCompressible(Configuration config) {
 **     config["text/funky"] = true

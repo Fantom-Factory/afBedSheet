@@ -16,6 +16,7 @@
 ** For example, in your 'AppModule' class:
 ** 
 ** pre>
+** syntax: fantom 
 ** @Contribute { serviceType=ResponseProcessors# }
 ** static Void contributeResponseProcessors(Configuration config) {
 **     config[User#] = UserInfoPage()

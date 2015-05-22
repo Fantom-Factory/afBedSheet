@@ -10,10 +10,11 @@ using afIocConfig::Config
 ** [filename pattern]`BedSheetConfigIds.requestLogFilenamePattern` in your 'AppModule':
 ** 
 ** pre>
+**   syntax: fantom
 **   @Contribute { serviceType=ApplicationDefaults# } 
 **   static Void contributeAppDefaults(Configuration conf) {
-**     conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
-**     conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log" // (optional)
+**       conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
+**       conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log" // (optional)
 **   }
 ** <pre
 ** 

@@ -9,6 +9,10 @@ using util::Opt
 ** <pre
 ** 
 ** Where:
+**   table:
+** 
+**   Option        Description
+**   ------------- ----------------------------------------------------------------
 **   env:          (optional) The environment to start BedSheet in -> dev|test|prod
 **   proxy:        (optional) Starts a dev proxy on <port> and launches the real web app on (<port> + 1)
 **   noTransDeps:  (optional) Do not load transitive dependencies.

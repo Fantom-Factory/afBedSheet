@@ -22,6 +22,7 @@
 ** For example, in your 'AppModule' class:
 ** 
 ** pre>
+**   syntax: fantom 
 **   @Contribute { serviceType=MiddlewarePipeline# }
 **   static Void contributeMiddleware(Configuration conf) {
 **       conf.set("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
