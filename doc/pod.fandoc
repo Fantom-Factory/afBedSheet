@@ -1,6 +1,6 @@
 Overview
 ********
-'BedSheet' is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
+BedSheet is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
 
 Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
 BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
@@ -41,8 +41,6 @@ Quick Start [#quickStart]
     }
 
 2. Run 'Example.fan' as a Fantom script from the command line:
-
-    syntax: fantom
 
     C:\> fan Example.fan -env development
 
@@ -284,7 +282,7 @@ handle the Err. If no matching response object is found then the *default err re
 This default response object displays BedSheet's extremely verbose Error 500 page.
 It displays (a shed load of) debugging information and is highly customisable:
 
-![BedSheet's Verbose Err500 Page]`fandoc:/afBedsheet/doc/err500.png`
+![BedSheet's Verbose Err500 Page]`err500.png`
 
 The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public!
 So note that in a production environment (see [IocEnv]`pod:afIocEnv`) a simple HTTP status page is displayed instead.
@@ -328,7 +326,7 @@ HTTP Status Processing [#httpStatusProcessing]
 HTTP status code. If no specific response object is found then the *default http status response object* is used. This default
 response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a '404 Not Found' error.
 
-![BedSheet's 404 Status Page]`fandoc:/afBedsheet/doc/err404.png`
+![BedSheet's 404 Status Page]`err404.png`
 
 To set your own '404 Not Found' page contribute a response object to `HttpStatusResponses` service with the status code '404':
 

@@ -65,7 +65,6 @@
 ** 
 ** Full examples follow:
 ** 
-**   table:
 **   URL              glob          captures
 **   ------------ --- ---------- -- -------------
 **   /user/       --> /user/*    => ""
@@ -88,11 +87,35 @@
 **   /user/42/    --> /user/***  => "42/"
 **   /user/42/dee --> /user/***  => "42/dee"
 ** 
+** .
+** 
+**   table:
+**   URL            glob         captures
+**   -------------- ------------ -------------
+**   '/user/'       '/user/*'    '""'
+**   '/user/42'     '/user/*'    '"42"'
+**   '/user/42/'    '/user/*'    'no match'
+**   '/user/42/dee' '/user/*'    'no match'
+**                           
+**   '/user/'       '/user/*/*'  'no match'
+**   '/user/42'     '/user/*/*'  'no match'
+**   '/user/42/'    '/user/*/*'  '"42", ""'
+**   '/user/42/dee' '/user/*/*'  '"42", "dee"'
+**                           
+**   '/user/'       '/user/**'   '""'
+**   '/user/42'     '/user/**'   '"42"'
+**   '/user/42/'    '/user/**'   '"42", ""'
+**   '/user/42/dee' '/user/**'   '"42", "dee"'
+**                           
+**   '/user/'       '/user/***'  '""'
+**   '/user/42'     '/user/***'  '"42"'
+**   '/user/42/'    '/user/***'  '"42/"'
+**   '/user/42/dee' '/user/***'  '"42/dee"'
+** 
 ** Note that in stage 2 empty strings may be converted to 'nulls'. 
 ** 
 ** The intention of the '?' character is to optionally match a trailing slash. Example:
 ** 
-**   table:
 **   URL              glob          captures
 **   ------------ --- ---------- -- -------------
 **   /index       --> /index/?   => match
@@ -100,6 +123,17 @@
 **                vs      
 **   /index       --> /index/    => no match
 **   /index/      --> /index     => no match
+** 
+**  .
+** 
+**   table:
+**   URL            glob         captures
+**   -------------- ------------ -------------
+**   '/index'       '/index/?'   'match'
+**   '/index/'      '/index/?'   'match'
+**                  vs  
+**   '/index'       '/index/'    'no match'
+**   '/index/'      '/index'     'no match'
 **  
 ** Should a match be found, then the captured strings are further processed in stage 2.
 ** 
@@ -125,7 +159,6 @@
 ** 
 ** Here are a couple of examples:
 ** 
-**   table:
 **   strings          method signature          args
 **   ---------- --- ----------------------- -- ----------------
 **              -->  (Obj a, Obj b)         =>  no match
@@ -141,6 +174,25 @@
 ** 
 **   ""         -->  (Str? a, Int b := 68)  =>  null, (default)
 **   ""         -->  (Str a, Int b := 68)   =>  "", (default)
+**
+**  .
+**  
+**   table:
+**   strings      method signature          args
+**   ------------ ------------------------- ------------------
+**                '(Obj a, Obj b)'          'no match'
+**
+**   '""'         '(Str? a)'                'null'
+**   '""'         '(Str a)'                 '""'
+**   '"wotever"'  '(Str a)'                 '"wotever"'
+** 
+**   '""'         '(Int? a)'                'null'
+**   '""'         '(Int a)'                 '0'
+**   '"68"'       '(Int a)'                 '68'
+**   '"wotever"'  '(Int a)'                 'no match'
+** 
+**   '""'         '(Str? a, Int b := 68)'   'null, (default)'
+**   '""'         '(Str a, Int b := 68)'    '"", (default)'
 ** 
 ** Assuming you you have an entity object, such as 'User', with an ID field; you can contribute a 
 ** 'ValueEncoder' that inflates (or otherwise reads from a database) 'User' objects from a string 
