@@ -6,7 +6,7 @@
 
 ## Overview
 
-`BedSheet` is a platform for delivering web applications written in [Fantom](http://fantom.org/).
+BedSheet is a platform for delivering web applications written in [Fantom](http://fantom.org/).
 
 Built on top of [IoC](http://www.fantomfactory.org/pods/afIoc) and [Wisp](http://fantom.org/doc/wisp/index.html), BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
 
@@ -254,7 +254,7 @@ You can define your own middleware to address cross cutting concerns such as aut
 
 When BedSheet catches an Err it scans through a list of contributed response objects to find one that can handle the Err. If no matching response object is found then the *default err response object* is used. This default response object displays BedSheet's extremely verbose Error 500 page. It displays (a shed load of) debugging information and is highly customisable:
 
-![BedSheet's Verbose Err500 Page](http://static.alienfactory.co.uk/fantom-docs/Err500.png)
+![BedSheet's Verbose Err500 Page](err500.png)
 
 The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public! So note that in a production environment (see [IocEnv](http://www.fantomfactory.org/pods/afIocEnv)) a simple HTTP status page is displayed instead.
 
@@ -286,7 +286,7 @@ static Void contributeApplicationDefaults(Configuration config) {
 
 `HttpStatus` objects are handled by a [ResponseProcessor](http://repo.status302.com/doc/afBedSheet/ResponseProcessor.html) that selects a contributed response object that corresponds to the HTTP status code. If no specific response object is found then the *default http status response object* is used. This default response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a `404 Not Found` error.
 
-![BedSheet's 404 Status Page](http://static.alienfactory.co.uk/fantom-docs/Err404.png)
+![BedSheet's 404 Status Page](err404.png)
 
 To set your own `404 Not Found` page contribute a response object to [HttpStatusResponses](http://repo.status302.com/doc/afBedSheet/HttpStatusResponses.html) service with the status code `404`:
 
@@ -421,15 +421,17 @@ class UploadService {
     @Inject HttpRequest? httpRequest
 
     Text uploadFile() {
-        httpRequest.parseMultiPartForm |Str formName, InStream in, Str:Str headers| {
-            // this closure is called for each file in the form
-            quoted   := headers["Content-Disposition"].split(';').find { it.startsWith("filename") }.split('=')[1]
-            filename := WebUtil.fromQuotedStr(quoted)
+        httpRequest.parseMultiPartForm |Str inputName, InStream in, Str:Str headers| {
+            // this closure is called for each input in the form
+            if (inputName == "theFile") {
+                quoted   := headers["Content-Disposition"].split(';').find { it.startsWith("filename") }.split('=')[1]
+                filename := WebUtil.fromQuotedStr(quoted)
 
-            // save file to temp dir
-            file := Env.cur.tempDir.createFile(filename)
-            in.pipe(file.out)
-            file.out.close
+                // save file to temp dir
+                file := Env.cur.tempDir.createFile(filename)
+                in.pipe(file.out)
+                file.out.close
+            }
         }
         return Text.fromPlain("OK")
     }
