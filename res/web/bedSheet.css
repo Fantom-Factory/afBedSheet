@@ -78,11 +78,11 @@ b {
 
 td {
 	vertical-align:		top;
+	white-space:		pre;
 }
 
 td:first-child {
 	color:				#AAAAE5;
-	white-space:		nowrap;
 	padding-right:		1em;
 }
 
