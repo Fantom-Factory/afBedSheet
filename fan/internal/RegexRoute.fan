@@ -177,7 +177,7 @@ const class RegexRoute : Route {
 	}
 	
 	override Str matchHint() {
-		"${httpMethod} - ${routeRegex}"
+		httpMethod.justl(4) + " ${routeRegex}"
 	}
 	
 	override Str responseHint() {
