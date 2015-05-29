@@ -243,9 +243,9 @@ internal const class ErrPrinterHtmlSections {
 		Env.cur.indexKeys.rw.sort.each |k| {
 			vals := Env.cur.index(k)
 			out.tr.td.writeXml(k).tdEnd
-			out.td.ul
+			out.td.tag("ul")
 			vals.each |v| {	out.li.writeXml(v).liEnd }
-			out.ulEnd.tdEnd
+			out.tagEnd("ul").tdEnd
 			out.trEnd				
 		}
 		out.tableEnd		
@@ -259,9 +259,9 @@ internal const class ErrPrinterHtmlSections {
 			Env.cur.vars.keys.rw.sort.each |k| {
 				vals := Env.cur.vars[k].split(pathSeparator)
 				out.tr.td.writeXml(k).tdEnd
-				out.td.ul
+				out.td.tag("ul")
 				vals.each |v| {	out.li.writeXml(v).liEnd }
-				out.ulEnd.tdEnd
+				out.tagEnd("ul").tdEnd
 				out.trEnd
 			}
 			out.tableEnd
@@ -313,7 +313,7 @@ internal const class ErrPrinterHtmlSections {
 				m2 := (Map) v1
 				out.tr
 				out.td.writeXml(k1).tdEnd
-				out.td.ul
+				out.td.tag("ul")
 				m2.keys.sort.each |k2, i2|{
 					v2 := "$k2:${m2[k2]}"
 					if (i2 == 0)
@@ -324,7 +324,7 @@ internal const class ErrPrinterHtmlSections {
 						v2 = "${v2},"
 					out.li.writeXml(v2).liEnd
 				}
-				out.ulEnd.tdEnd
+				out.tagEnd("ul").tdEnd
 				out.trEnd
 
 			} else
