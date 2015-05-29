@@ -3,6 +3,7 @@ Versions
 v1.4.12
 =======
  - New: Added 'HttpSession.flashExists()'.
+ - Bug: 'ValueEncoders', when converting an empty 'Str' to a nullable 'Str', always returned 'null'. This had repercussions in 'FormBean'
 
 v1.4.10
 =======
