@@ -78,7 +78,7 @@ b {
 
 td {
 	vertical-align:		top;
-	white-space:		pre;
+	white-space:		pre-wrap;
 }
 
 td:first-child {
