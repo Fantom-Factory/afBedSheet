@@ -494,7 +494,7 @@ static Void configureGzipCompressible(Configuration config) {
 
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 - or some other client that can't handle gzipped content from the server. As such, and as per [RFC 2616 HTTP1.1 Sec14.3](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3), the response is only gzipped if the appropriate HTTP request header was set.
 
-Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger than the original - which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped. See [gzipThreshold](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds#gzipThreshold) for more details.
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger than the original - which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped. See [gzipThreshold](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.gzipThreshold) for more details.
 
 ## Buffered Response
 
@@ -506,7 +506,7 @@ Response buffering may be disabled on a per request / response basis by calling:
 HttpResponse.disableBuffering()
 ```
 
-A threshold can be set, whereby if the buffer size exeeds that value, all content is streamed directly to the client. See [responseBufferThreshold](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds#responseBufferThreshold) for more details.
+A threshold can be set, whereby if the buffer size exeeds that value, all content is streamed directly to the client. See [responseBufferThreshold](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.responseBufferThreshold) for more details.
 
 ## Development Proxy
 
@@ -532,7 +532,7 @@ Client <-->   ????????   <--> Web App (port+1)
 
 BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should the proxy not respond, the web app kills itself.
 
-See [proxyPingInterval](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds#proxyPingInterval) for more details.
+See [proxyPingInterval](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.proxyPingInterval) for more details.
 
 ## Wisp Integration
 
