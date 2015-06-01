@@ -25,7 +25,7 @@
 @NoDoc	// Don't overwhelm the masses!
 const mixin GzipCompressible {
 	
-	** Returns 'true' if the given `MimeType` may be compressed.
+	** Returns 'true' if the given [MimeType]`sys::MimeType` may be compressed.
 	** 
 	** Only the 'mediaType' and 'subType' are used for matching, case is ignored.
 	abstract Bool isCompressible(MimeType? mimeType)

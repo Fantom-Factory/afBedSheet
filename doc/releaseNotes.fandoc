@@ -1,9 +1,5 @@
 Versions
 ********
-v1.4.12
-=======
- - New: Added 'HttpSession.flashExists()'.
- - Bug: 'ValueEncoders', when converting an empty 'Str' to a nullable 'Str', always returned 'null'. This had repercussions in 'FormBean'
 
 v1.4.10
 =======
@@ -232,7 +228,7 @@ v1.0.14
 =======
  - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages.
  - New: Added 'ConfigSource.getCoerced()' method.
- - New: Added [Template Rendering]`#templateRendering` to fandoc.
+ - New: Added [Template Rendering]`pod#templateRendering` to fandoc.
 
 v1.0.12
 =======
