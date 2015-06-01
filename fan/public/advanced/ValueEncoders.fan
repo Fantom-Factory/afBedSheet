@@ -52,8 +52,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 
 	override Obj? toValue(Type valType, Str clientValue) {
 		// check the basics first!
-		if (valType == Str#)// FIXME:
-//		if (valType.toNonNullable == Str#)
+		if (valType.toNonNullable == Str#)
 			return clientValue
 
 		// give the val encs a chance to handle nulls
@@ -74,8 +73,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 		}
 
 		// empty string values WILL ALWAYS DIE in the coercer, so treat them as null and create a default value
-		if (clientValue.isEmpty)	// FIXME:
-//		if (clientValue.trim.isEmpty)
+		if (clientValue.trim.isEmpty)
 			try	return BeanFactory.defaultValue(valType)
 		catch (Err cause)
 			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)

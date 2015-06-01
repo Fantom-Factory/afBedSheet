@@ -1,5 +1,5 @@
 
-** [IocConfig]`http://repo.status302.com/doc/afIocConfig/#overview` values as provided by BedSheet. 
+** [IocConfig]`pod:afIocConfig` values as provided by BedSheet. 
 ** To change their value, override them in your 'AppModule'. 
 ** Example:
 ** 
