@@ -111,10 +111,10 @@ const mixin HttpSession {
 	** @see `web::WebSession`
 	abstract Str:Obj? flash()
 	
-	** Returns 'true' if the flash map exists.
-	** 
-	** Calling this method does not create a session if it does not exist.
-	abstract Bool flashExists()
+//	** Returns 'true' if the flash map exists.
+//	** 
+//	** Calling this method does not create a session if it does not exist.
+//	abstract Bool flashExists()
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -167,9 +167,9 @@ internal const class HttpSessionImpl : HttpSession {
 		getOrAdd("afBedSheet.flash") { Str:Obj?[:] }
 	}
 
-	override Bool flashExists() {
-		exists && containsKey("afBedSheet.flash")
-	}
+//	override Bool flashExists() {
+//		exists && containsKey("afBedSheet.flash")
+//	}
 	
 	private Obj? testSerialisation(Obj? val) {
 		Buf().out.writeObj(val, ["skipErrors":false])
