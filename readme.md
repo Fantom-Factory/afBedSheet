@@ -24,7 +24,7 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
 ## Documentation
 
-Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afBedSheet/).
+Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fantomfactory.org/pods/afBedSheet/).
 
 ## Quick Start
 
@@ -254,7 +254,7 @@ You can define your own middleware to address cross cutting concerns such as aut
 
 When BedSheet catches an Err it scans through a list of contributed response objects to find one that can handle the Err. If no matching response object is found then the *default err response object* is used. This default response object displays BedSheet's extremely verbose Error 500 page. It displays (a shed load of) debugging information and is highly customisable:
 
-![BedSheet's Verbose Err500 Page](err500.png)
+![BedSheet's Verbose Err500 Page](http://pods.fantomfactory.org/pods/afBedSheet/doc/err500.png)
 
 The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public! So note that in a production environment (see [IocEnv](http://pods.fantomfactory.org/pods/afIocEnv)) a simple HTTP status page is displayed instead.
 
@@ -286,7 +286,7 @@ static Void contributeApplicationDefaults(Configuration config) {
 
 `HttpStatus` objects are handled by a [ResponseProcessor](http://pods.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor) that selects a contributed response object that corresponds to the HTTP status code. If no specific response object is found then the *default http status response object* is used. This default response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a `404 Not Found` error.
 
-![BedSheet's 404 Status Page](err404.png)
+![BedSheet's 404 Status Page](http://pods.fantomfactory.org/pods/afBedSheet/doc/err404.png)
 
 To set your own `404 Not Found` page contribute a response object to [HttpStatusResponses](http://pods.fantomfactory.org/pods/afBedSheet/api/HttpStatusResponses) service with the status code `404`:
 

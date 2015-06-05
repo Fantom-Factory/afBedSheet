@@ -14,7 +14,7 @@ const mixin ValueEncoders {
 	abstract Str toClient(Type valType, Obj? value)
 	
 	** Converts the given 'clientValue' into the given 'valType' via a contributed `ValueEncoder`. 
-	** If no 'ValueEncoder' is found the value is [coerced]`afIoc::TypeCoercer`.
+	** If no 'ValueEncoder' is found the value is [coerced]`afBeanUtils::TypeCoercer`.
 	abstract Obj? toValue(Type valType, Str clientValue)
 
 	** Finds a 'ValueEncoder' for the given type. Returns 'null' if none found.
