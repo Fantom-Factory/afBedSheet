@@ -119,7 +119,7 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		match = RegexRoute(`/user/*`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
@@ -135,7 +135,7 @@ internal class TestRegexRoute : BsTest {
 		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
-		verifyEq(match[1],		"")
+		verifyEq(match[1],		null)
 		match = RegexRoute(`/user/*/*`, #handler3).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
@@ -143,14 +143,14 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
-		verifyEq(match[1],		"")
+		verifyEq(match[1],		null)
 		match = RegexRoute(`/user/**`, #handler2).matchUri(`/user/42/dee`)
 		verifyEq(match.size,	2)
 		verifyEq(match[0],		"42")
@@ -158,7 +158,7 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 		match = RegexRoute(`/user/***`, #handler2).matchUri(`/user/42`)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		"42")
@@ -203,7 +203,7 @@ internal class TestRegexRoute : BsTest {
 
 		match = RegexRoute(`/foo/*/`, #handler2).matchUri(`/foo//`)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		// case-insensitive
 		match = RegexRoute(`/foo`,	#handler1).matchUri(`/fOO`)
@@ -236,13 +236,13 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
-		verifyEq(match[3],		"")
+		verifyEq(match[3],		null)
 		
 		match = RegexRoute(`/foobar**`, #handler2).matchUri(`/foobarbitch/mf/`)
 		verifyEq(match.size,	3)
 		verifyEq(match[0],		"bitch")
 		verifyEq(match[1],		"mf")
-		verifyEq(match[2],		"")
+		verifyEq(match[2],		null)
 		
 		match = RegexRoute(`/index`, #handler1).matchUri(`/index?dude=3`)
 		verifyEq(match.size,	0)
@@ -265,9 +265,13 @@ internal class TestRegexRoute : BsTest {
 	Void testParamsFromDocs() {
 		Obj?[]? match
 		
-		match = matchParams([""], #doc2)
+		match = matchParams([null], #doc2)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
+		
+		match = matchParams([""], #doc2)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		"")
 
 		match = matchParams([""], #doc3)
 		verifyEq(match.size,	1)
@@ -281,6 +285,10 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
+		match = matchParams([null], #doc5)
+		verifyEq(match.size,	1)
+		verifyEq(match[0],		0)
+
 		match = matchParams([""], #doc5)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		0)
@@ -292,7 +300,7 @@ internal class TestRegexRoute : BsTest {
 		match = matchParams(["wotever"], #doc5)
 		verifyNull(match)
 
-		match = matchParams([""], #doc6)
+		match = matchParams([null], #doc6)
 		verifyEq(match.size,	1)
 		verifyEq(match[0],		null)
 
@@ -309,12 +317,24 @@ internal class TestRegexRoute : BsTest {
 	Void doc7(Str a, Int b := 68) {}
 	
 	ValueEncoders valueEncoders := ValueEncodersImpl([:])
-	Obj?[]? matchRoute(Uri regex, Method method, Uri req) {
+	Obj?[] matchRoute(Uri regex, Method method, Uri req) {
 		httpReq := T_HttpRequest { it.url = req }
 		mCall := (MethodCall?) RegexRoute(regex, method).match(httpReq)
-		return matchParams(mCall.args, method)
+		return mCall == null ? Obj#.emptyList : matchParams(mCall.args, method)
 	}
 	Obj?[]? matchParams(Obj?[] strs, Method method) {
+		
+		// copied from RouteResponseFactory
+		method.params.each |Param param, i| {
+			if (i >= strs.size)
+				return
+			if (strs[i] == null && !param.type.isNullable) {
+				// convert nulls to "" and let the valueEncoder convert
+				strs[i] = ""
+			}			
+		}
+
+		// copied from MethodCallProcessor
 		try {
 			args := strs.map |arg, i -> Obj?| {
 				paramType	:= method.params.getSafe(i)?.type
@@ -401,9 +421,9 @@ internal class TestRegexRoute : BsTest {
 		match = MethodCallFactory(#bar1).matchSegments(Str?[null])
 		verifyFalse(match)
 		match = MethodCallFactory(#bar1).matchSegments(Str?[null, null])
-		verifyFalse(match)
+		verifyTrue(match)
 		match = MethodCallFactory(#bar1).matchSegments(Str?["--", "--"])
-		verify(match)
+		verifyTrue(match)
 
 		// Void bar2(Str? a, Str? b) { }
 		match = MethodCallFactory(#bar2).matchSegments(Str?[,])
@@ -411,29 +431,29 @@ internal class TestRegexRoute : BsTest {
 		match = MethodCallFactory(#bar2).matchSegments(Str?[null])
 		verifyFalse(match)
 		match = MethodCallFactory(#bar2).matchSegments(Str?[null, null])
-		verify(match)
+		verifyTrue(match)
 		match = MethodCallFactory(#bar2).matchSegments(Str?["--", "--"])
-		verify(match)
+		verifyTrue(match)
 
 		// Void bar3(Str? a, Str? b := "") { }
 		match = MethodCallFactory(#bar3).matchSegments(Str?[,])
 		verifyFalse(match)
 		match = MethodCallFactory(#bar3).matchSegments(Str?[null])
-		verify(match)
+		verifyTrue(match)
 		match = MethodCallFactory(#bar3).matchSegments(Str?[null, null])
-		verify(match)
+		verifyTrue(match)
 		match = MethodCallFactory(#bar3).matchSegments(Str?["--", "--"])
-		verify(match)
+		verifyTrue(match)
 
 		// Void bar4(Str? a, Str b := "") { }
 		match = MethodCallFactory(#bar4).matchSegments(Str?[,])
 		verifyFalse(match)
 		match = MethodCallFactory(#bar4).matchSegments(Str?[null])
-		verify(match)
+		verifyTrue(match)
 		match = MethodCallFactory(#bar4).matchSegments(Str?[null, null])
-		verifyFalse(match)
+		verifyTrue(match)
 		match = MethodCallFactory(#bar4).matchSegments(Str?["--", "--"])
-		verify(match)
+		verifyTrue(match)
 	}
 	
 	Void testFromModule() {

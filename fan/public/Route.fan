@@ -67,27 +67,27 @@
 ** 
 **   URL              glob          captures
 **   ------------ --- ---------- -- -------------
-**   /user/       --> /user/*    => ""
+**   /user/       --> /user/*    => null
 **   /user/42     --> /user/*    => "42"
 **   /user/42/    --> /user/*    => no match
 **   /user/42/dee --> /user/*    => no match
 **                               
 **   /user/       --> /user/*/*  => no match
 **   /user/42     --> /user/*/*  => no match
-**   /user/42/    --> /user/*/*  => "42", ""
+**   /user/42/    --> /user/*/*  => "42", null
 **   /user/42/dee --> /user/*/*  => "42", "dee"
 **                               
-**   /user/       --> /user/**   => ""
+**   /user/       --> /user/**   => null
 **   /user/42     --> /user/**   => "42"
-**   /user/42/    --> /user/**   => "42", ""
+**   /user/42/    --> /user/**   => "42", null
 **   /user/42/dee --> /user/**   => "42", "dee"
 **                               
-**   /user/       --> /user/***  => ""
+**   /user/       --> /user/***  => null
 **   /user/42     --> /user/***  => "42"
 **   /user/42/    --> /user/***  => "42/"
 **   /user/42/dee --> /user/***  => "42/dee"
 ** 
-** Note that in stage 2 empty strings may be converted to 'nulls'. 
+** Note that in stage 2, 'nulls' may be converted to empty strings. 
 ** 
 ** The intention of the '?' character is to optionally match a trailing slash. Example:
 ** 
@@ -113,11 +113,10 @@
 ** First, the number of captured strings have to match the number of method parameters, taking into 
 ** account any optional / default values on the method.
 ** 
-** Next the captured strings are converted to method arguments using the [ValueEncoder]`ValueEncoder` 
-** service. If no value encoder is found then the following default behaviour is used:
-**  - Non-empty strings are converted using a [TypeCoercer]`afBeanUtils::TypeCoercer`
-**  - Empty strings are considered 'null' but
-**    - if the method parameter is not nullable, then [BeanFactory.defaultValue()]`afBeanUtils::BeanFactory.defaultValue` is used.
+** Then the captured strings are converted into method arguments using the [ValueEncoder]`ValueEncoder` 
+** service. If no value encoder is found then non-empty strings are converted using a [TypeCoercer]`afBeanUtils::TypeCoercer`.
+** 
+** 'null' values are passed through, or if the method parameter is not nullable, then [BeanFactory.defaultValue()]`afBeanUtils::BeanFactory.defaultValue` is used.
 ** 
 ** The above process may sound complicated but in practice it just works and does what you expect.
 ** 
@@ -125,20 +124,24 @@
 ** 
 **   strings          method signature          args
 **   ---------- --- ----------------------- -- ----------------
-**              -->  (Obj a, Obj b)         =>  no match
-**
-**   ""         -->  (Str? a)               =>  null
-**   ""         -->  (Str a)                =>  ""
+**   null       -->  (Str? a)               =>  null
+**   "wotever"  -->  (Str? a)               =>  "wotever"
+** 
+**   null       -->  (Str a)                =>  ""
 **   "wotever"  -->  (Str a)                =>  "wotever"
 ** 
-**   ""         -->  (Int? a)               =>  null
-**   ""         -->  (Int a)                =>  0
+**   null       -->  (Int? a)               =>  null
+**   "68"       -->  (Int? a)               =>  68
+** 
+**   null       -->  (Int a)                =>  0
 **   "68"       -->  (Int a)                =>  68
 **   "wotever"  -->  (Int a)                =>  no match
 ** 
 **   ""         -->  (Str? a, Int b := 68)  =>  null, (default)
 **   ""         -->  (Str a, Int b := 68)   =>  "", (default)
 ** 
+**              -->  (Obj a, Obj b)         =>  no match
+**
 ** Assuming you you have an entity object, such as 'User', with an ID field; you can contribute a 
 ** 'ValueEncoder' that inflates (or otherwise reads from a database) 'User' objects from a string 
 ** version of the ID. Then your methods can declare 'User' as a parameter and BedSheet will 

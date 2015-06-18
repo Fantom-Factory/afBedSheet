@@ -124,14 +124,16 @@ const class RegexRoute : Route {
 				return null
 		}
 
-		// Empty strings MUST be kept as empty strings so they get sent to value encoders, 
-		// so *they* may convert it to a default value or null as they see fit
+		// Convert empty strings to 'null', if the param type is NOT nullable, they'll get
+		// re-converted back to an empty string so the ValueEncoder can create a default
+		// value as it sees fit. It has to be this way, because the ValueEncoder won't
+		// convert empty strings to null.
 		// see http://fantom.org/sidewalk/topic/2178#c14077
-//		groups = groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
+		groups = groups.map |Str seg->Str?| { seg.isEmpty ? null : seg }
 		
 		// a bit of dirty hack for optional last params
 		// only `xxxx/` can be an empty str, `xxxx` doesn't have a param
-		if (!uri.toStr.endsWith("/") && !groups.isEmpty && (groups.last == null || groups.last.isEmpty))
+		if (!uri.isDir && !groups.isEmpty && (groups.last == null || groups.last.isEmpty))
 			groups.removeAt(-1)
 
 		return groups
@@ -206,7 +208,12 @@ const mixin RouteResponseFactory {
 		return method.params.all |Param param, i->Bool| {
 			if (i >= segments.size)
 				return param.hasDefault
-			return (segments[i] == null) ? param.type.isNullable : true
+			if (segments[i] == null && !param.type.isNullable) {
+				// convert nulls to "" and let the valueEncoder convert
+				segments[i] = ""
+				return true
+			}			
+			return true
 		}
 	}
 
