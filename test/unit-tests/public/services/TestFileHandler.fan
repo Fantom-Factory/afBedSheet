@@ -70,25 +70,25 @@ internal class TestFileHandler : BsTest {
 
 	Void testAssetUrl() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromLocalUrl(`/over-there/pod.fdoc`)
+		file := fh.fromLocalUrl(`/over-there/pod.fandoc`)
 		unNormalised := file->file->uri->relTo(`./`.toFile.normalize.uri)
-		verifyEq(unNormalised, `doc/pod.fdoc`)
+		verifyEq(unNormalised, `doc/pod.fandoc`)
 	}	
 
 	Void testAcceptsQueryParams() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromLocalUrl(`/over-there/pod.fdoc?v=4.01`)
+		file := fh.fromLocalUrl(`/over-there/pod.fandoc?v=4.01`)
 		unNormalised := file->file->uri->relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has query params - it can still be read!
-		verifyEq(unNormalised, `doc/pod.fdoc?v=4.01`)
+		verifyEq(unNormalised, `doc/pod.fandoc?v=4.01`)
 	}	
 
 	Void testAcceptsFragments() {
 		fh 	 := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		file := fh.fromLocalUrl(`/over-there/pod.fdoc#v4.01`)
+		file := fh.fromLocalUrl(`/over-there/pod.fandoc#v4.01`)
 		unNormalised := file->file->uri->relTo(`./`.toFile.normalize.uri)
 		// it doesn't seem to matter that the File has fragments - it can still be read!
-		verifyEq(unNormalised, `doc/pod.fdoc#v4.01`)
+		verifyEq(unNormalised, `doc/pod.fandoc#v4.01`)
 	}	
 
 	// ---- fromServerFile() ----
@@ -116,8 +116,8 @@ internal class TestFileHandler : BsTest {
 	
 	Void testAssetFile() {
 		fh  := makeFileHandler( [`/over-there/`:File(`doc/`)] )
-		ass := fh.fromServerFile(`doc/pod.fdoc`.toFile)
-		verifyEq(ass.clientUrl, `/over-there/pod.fdoc`)
+		ass := fh.fromServerFile(`doc/pod.fandoc`.toFile)
+		verifyEq(ass.clientUrl, `/over-there/pod.fandoc`)
 	}
 
 		

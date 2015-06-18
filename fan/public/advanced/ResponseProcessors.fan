@@ -29,6 +29,15 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 			} catch (ReProcessErr rpe) {
 				// re-process any, um, ReProcessErrs!
 				response = rpe.responseObj
+				
+			} catch (Err err) {
+				// unwrap looking for a ReProcessErr 'cos some frameworks, like efan, may have wrapped it
+				cause := (Err?) err
+				while (cause != null && cause isnot ReProcessErr)
+					cause = cause.cause			
+				if (cause isnot ReProcessErr)
+					throw err
+				return ((ReProcessErr) cause).responseObj
 			}
 		}
 		

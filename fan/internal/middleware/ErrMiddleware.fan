@@ -28,7 +28,7 @@ internal const class ErrMiddleware : Middleware {
 				return
 				
 			// nothing we can do here
-			} catch (IocShutdownErr err) {
+			} catch (IocShutdownErr shutdownErr) {
 				return
 
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 
@@ -37,18 +37,20 @@ internal const class ErrMiddleware : Middleware {
 				firstErr = reErr
 				response = reErr.responseObj
 				
-			} catch (Err otherErr) {
-				firstErr = otherErr
-				setStackTraceHeader(otherErr)
-				response = otherErr									
+			} catch (Err err) {
+				firstErr = err
+				setStackTraceHeader(err)
+
+				// unwrap looking for a ReProcessErr 'cos some frameworks, like efan, may have wrapped it
+				cause := (Err?) err
+				while (cause != null && cause isnot ReProcessErr)
+					cause = cause.cause			
+				
+				response = cause is ReProcessErr ? ((ReProcessErr) cause).responseObj : err
 			}
 
 			while (!response.typeof.fits(Bool#))
-				try {
-					response = responseProcessors.processResponse(response)
-				} catch (ReProcessErr rpe) {
-					response = rpe.responseObj
-				}	
+				response = responseProcessors.processResponse(response)
 			
 		} catch (Err doubleErr) {
 			// the backup plan for when the err handler errs!
