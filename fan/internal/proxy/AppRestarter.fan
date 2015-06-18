@@ -42,6 +42,15 @@ internal const class AppRestarter {
 		}.get(30sec)
 	}
 	
+	Void forceRestart() {
+		withState |state->Obj?| {
+			state.killWebApp(appName)
+			state.launchWebApp(appName, appPort, params)
+			state.updateTimeStamps
+			return null
+		}.get(30sec)		
+	}
+	
 	private Future withState(|AppRestarterState| state) {
 		conState.withState(state)
 	}
