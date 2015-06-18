@@ -30,11 +30,11 @@ internal const class BsLogMsgs {
 	}	
 
 	static Str appRestarter_podUpdatd(Str podName, Duration timeDiff) {
-		"Pod '$podName' pod was updated $timeDiff.abs.toLocale ago"
+		"Pod '$podName' pod was updated $timeDiff.toLocale ago"
 	}
 
-	static Str appRestarter_podFound(Str podName) {
-		"Found new pod '$podName'!"
+	static Str appRestarter_noMetaProps(File podFile) {
+		"Could not find `meta.props` in ${podFile.normalize}"
 	}
 
 	// ---- AppDestroyer --------------------------------------------------------------------------

@@ -3,27 +3,29 @@ using concurrent::ActorPool
 using concurrent::Future
 using util::PathEnv
 
-** Adapted from 'draft'
+** Originally adapted from 'draft'
 internal const class AppRestarter {
 	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
 	private const SynchronizedState	conState
 	
+	const Str?	appPod
 	const Str	appName
 	const Int 	appPort
 	const Str	params
 	
-	new make(BedSheetBuilder bob, Int appPort) {
-		this.appName 		= bob.appName
-		this.appPort 		= appPort
-		this.params			= bob.toStringy
+	new make(BedSheetBuilder bob, Int appPort, Bool watchAllPods) {
+		this.appName 	= bob.appName
+		this.appPort 	= appPort
+		this.appPod		= watchAllPods ? null : ((Pod) bob.options[BsConstants.meta_appPod]).name
+		this.params		= bob.toStringy
 		// as we're not run inside afIoc, we don't have ActorPools
-		this.conState		= SynchronizedState(ActorPool(), AppRestarterState#)
+		this.conState	= SynchronizedState(ActorPool(), AppRestarterState#)
 	}
 
 	Void initialise() {
 		withState |state| {
 			if (state.realWebApp == null) {
-				state.updateTimeStamps
+				state.loadTimeStamps(appPod)
 				state.launchWebApp(appName, appPort, params)
 			}
 		}
@@ -35,8 +37,8 @@ internal const class AppRestarter {
 			modified := state.podsModified 
 			if (modified) {
 				state.killWebApp(appName)
+				state.loadTimeStamps(appPod)
 				state.launchWebApp(appName, appPort, params)
-				state.updateTimeStamps
 			}
 			return modified
 		}.get(30sec)
@@ -45,8 +47,8 @@ internal const class AppRestarter {
 	Void forceRestart() {
 		withState |state->Obj?| {
 			state.killWebApp(appName)
+			state.loadTimeStamps(appPod)
 			state.launchWebApp(appName, appPort, params)
-			state.updateTimeStamps
 			return null
 		}.get(30sec)		
 	}
@@ -62,28 +64,29 @@ internal class AppRestarterState {
 	Str:DateTime?	podTimeStamps	:= [:]
 	Process?		realWebApp
 
-	Void updateTimeStamps() {
-		// BugFix: Pod.list throws an Err if any pod is invalid (wrong dependencies etc) 
-		// this way we don't even load the pod into memory!
-		Env.cur.findAllPodNames.each |podName| {
+	// BugFix: Pod.list throws an Err if any pod is invalid (wrong dependencies etc) 
+	// this way we don't even load the pod into memory!
+	Void loadTimeStamps(Str? appPod) {
+		podTimeStamps = Str:DateTime?[:]
+		pods := appPod == null ? Env.cur.findAllPodNames : findAllPodNames(appPod, Str[,])
+		pods.each |podName| {
 			podTimeStamps[podName] = podFile(podName).modified
 		}
 		
 		log.info(BsLogMsgs.appRestarter_cachedPodTimestamps(podTimeStamps.size))
 	}
-	
+
 	Bool podsModified()	{
-		true == Env.cur.findAllPodNames.eachWhile |podName| {
-			if (podTimeStamps.containsKey(podName)) {
-				if (podFile(podName).modified > podTimeStamps[podName]) {
-					log.info(BsLogMsgs.appRestarter_podUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
-					return true
-				}
-			} else {
-				podTimeStamps[podName] = podFile(podName).modified
-				log.info(BsLogMsgs.appRestarter_podFound(podName))
-				return true				
+		true == podTimeStamps.keys.eachWhile |podName| {
+			podFile := podFile(podName)
+			if (podFile == null)
+				return true	// who deleted my pod!?
+
+			if (podFile.modified > podTimeStamps[podName]) {
+				log.info(BsLogMsgs.appRestarter_podUpdatd(podName, DateTime.now - podFile.modified))
+				return true
 			}
+
 			return null
 		}
 	}
@@ -109,7 +112,38 @@ internal class AppRestarterState {
 		realWebApp.kill
 	}
 	
-	private File podFile(Str podName) {
+	private File? podFile(Str podName) {
 		Env.cur.findPodFile(podName)
+	}
+	
+	private Str[] findAllPodNames(Str podName, Str[] podNames) {
+		podNames.add(podName)
+		findPodDependencies(podName).each {
+			if (!podNames.contains(it))
+				findAllPodNames(it, podNames)
+		}
+		return podNames
+	}
+	
+	private Str[] findPodDependencies(Str podName) {
+		podFile   := podFile(podName)
+		zip		  := Zip.read(podFile.in(4096))
+		metaProps := ([Str:Str]?) null
+		try {
+			File? entry
+			while (metaProps == null && (entry = zip.readNext) != null) {
+				if (entry.uri == `/meta.props`)
+					metaProps = entry.readProps				
+			}
+		} finally {
+			zip.close
+		}
+		
+		if (metaProps == null) {
+			log.warn(BsLogMsgs.appRestarter_noMetaProps(podFile))
+			return Str#.emptyList
+		}
+		
+		return metaProps["pod.depends"].split(';').map { it.isEmpty ? null : Depend(it).name }.exclude { it == null }
 	}
 }
