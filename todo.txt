@@ -10,8 +10,6 @@ Doc customising the ErrPrinters! Make them public?
 Add IpAddr option to BedSheetBuilder / Wisp integration.
  - http://fantom.org/forum/topic/2399 
 
-Have AppRestarter only watch those pods used by the webapp
-
 
 
 Future

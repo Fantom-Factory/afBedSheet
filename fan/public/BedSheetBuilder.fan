@@ -24,7 +24,6 @@ class BedSheetBuilder {
 	}
 
 	** Returns the options from the IoC 'RegistryBuilder'.
-	** Read only.
 	Str:Obj? options {
 		get { registryBuilder.options }
 		private set { throw Err("Read only") }
@@ -52,6 +51,13 @@ class BedSheetBuilder {
 	** Creates a 'BedSheetBuilder' from an 'AppModule' type.
 	new makeFromType(Type appModule) : this.make(appModule.qname) { }
 
+	** Sets a value in the 'options' map. 
+	** Returns 'this' so it may be used as a builder method. 		
+	This setOption(Str name, Obj? value) {
+		registryBuilder.set(name, value)
+		return this
+	}
+	
 	** Adds a module to the registry. 
 	** Any modules defined with the '@SubModule' facet are also added.
 	** 
@@ -95,7 +101,8 @@ class BedSheetBuilder {
 	Int startWisp(Int port := 8069, Bool proxy := false, Str? env := null) {
 		this.port = port
 		options["afBedSheet.env"] = env
-		mod := proxy ? ProxyMod(this, port) : BedSheetBootMod(this)
+		watchAllPods := options[BsConstants.meta_watchAllPods]?.toStr?.toBool(false) ?: false
+		mod := proxy ? ProxyMod(this, port, watchAllPods) : BedSheetBootMod(this)
 		return WebModRunner().run(mod, port)
 	}
 

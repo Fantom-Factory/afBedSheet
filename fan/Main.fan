@@ -12,12 +12,13 @@ using util::Opt
 **   table:
 ** 
 **   Option        Description
-**   ------------- ----------------------------------------------------------------
-**   env:          (optional) The environment to start BedSheet in -> dev|test|prod
-**   proxy:        (optional) Starts a dev proxy on <port> and launches the real web app on (<port> + 1)
-**   noTransDeps:  (optional) Do not load transitive dependencies.
-**   appModule:    The qname of the AppModule or pod which configures the BedSheet web app
-**   port:         The HTTP port to run the Bed App on
+**   ------------  ----------------------------------------------------------------
+**   env           (optional) The environment to start BedSheet in -> dev|test|prod
+**   proxy         (optional) Starts a dev proxy on <port> and launches the real web app on (<port> + 1)
+**   watchAllPods  (optional) Have the proxy monitor the timestamps of all pods, not just the direct dependencies of the application
+**   noTransDeps   (optional) Do not load transitive dependencies of IoC modules
+**   appModule     The qname of the AppModule or pod which configures the BedSheet web app
+**   port          The HTTP port to run the Bed App on
 ** 
 ** Example:
 ** 
@@ -28,8 +29,11 @@ class Main : AbstractMain {
 	@Opt { help="Starts a dev proxy on <port> and launches the real web app on (<port> + 1)" }
 	private Bool proxy
 
-	@Opt { help="Do not load transitive dependencies." }
+	@Opt { help="Do not load transitive dependencies of IoC modules" }
 	private Bool noTransDeps
+
+	@Opt { help="Have the proxy monitor the timestamps of all pods, not just the direct dependencies of the application" }
+	private Bool watchAllPods
 
 	@Opt { help="The environment to start BedSheet in -> dev|test|prod" }
 	private Str? env
@@ -45,6 +49,6 @@ class Main : AbstractMain {
 	** Run baby, run!
 	@NoDoc
 	override Int run() {
-		BedSheetBuilder(appModule, !noTransDeps).startWisp(port, proxy, env)
+		BedSheetBuilder(appModule, !noTransDeps).setOption(BsConstants.meta_watchAllPods, watchAllPods).startWisp(port, proxy, env)
 	}
 }
