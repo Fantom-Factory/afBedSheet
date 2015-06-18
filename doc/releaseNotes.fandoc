@@ -1,6 +1,11 @@
 Versions
 ********
 
+v1.4.12
+=======
+ - New: 'HttpSession.flashExists()' tells you just that.
+ - Bug: 'AppRestarter' threw NPE if a new pod was introduced into the Fantom environment. 
+ 
 v1.4.10
 =======
  - New: 'Asset' and 'ClientAsset' classes - re-worked 'FileHandler' and 'PodHandler' to use new API.
