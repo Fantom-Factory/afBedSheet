@@ -311,7 +311,7 @@ internal class TestRegexRoute : BsTest {
 	ValueEncoders valueEncoders := ValueEncodersImpl([:])
 	Obj?[]? matchRoute(Uri regex, Method method, Uri req) {
 		httpReq := T_HttpRequest { it.url = req }
-		mCall := (MethodCall) RegexRoute(regex, method).match(httpReq)
+		mCall := (MethodCall?) RegexRoute(regex, method).match(httpReq)
 		return matchParams(mCall.args, method)
 	}
 	Obj?[]? matchParams(Obj?[] strs, Method method) {
@@ -439,6 +439,10 @@ internal class TestRegexRoute : BsTest {
 	Void testFromModule() {
 		Str?[]? match
 
+		match = matchRoute(`/route/optional/**`, #wotever, `/route/optional//`)
+		verifyEq(match.size, 2)
+		verifyEq(match[0],	null)
+
 		match = matchRoute(`/route/optional/*`, #defaultParams, `/route/optional/`)
 		verifyEq(match.size, 1)
 		verifyEq(match[0],	null)
@@ -478,6 +482,7 @@ internal class TestRegexRoute : BsTest {
 	}
 	
 	Void defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") { }
+	Void wotever(Str? p1, Str? p2) { }
 }
 
 internal const class T_HttpRequest : HttpRequestImpl {

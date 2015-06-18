@@ -92,7 +92,7 @@ internal class TestPodHandler : BsTest {
 		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
 		try {
 			AssetCacheModule.urlRef.val = url
-			return reg.autobuild(PodHandler#, [[filter.toRegex]])
+			return reg.autobuild(PodHandler#, [Regex[filter.toRegex]])
 		} catch (IocErr err) {
 			throw err.cause ?: err
 		}

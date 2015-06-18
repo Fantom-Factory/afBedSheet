@@ -98,7 +98,7 @@ const class RegexRoute : Route {
 		if (!find)
 			return null
 		
-		groups := Str[,]
+		groups := Str?[,]
 		
 		// use find as supplied Regex may not have ^...$
 		while (find) {
@@ -131,7 +131,7 @@ const class RegexRoute : Route {
 		
 		// a bit of dirty hack for optional last params
 		// only `xxxx/` can be an empty str, `xxxx` doesn't have a param
-		if (!uri.toStr.endsWith("/") && !groups.isEmpty && groups.last.isEmpty)
+		if (!uri.toStr.endsWith("/") && !groups.isEmpty && (groups.last == null || groups.last.isEmpty))
 			groups.removeAt(-1)
 
 		return groups
