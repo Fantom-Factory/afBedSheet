@@ -258,7 +258,7 @@ internal const class MethodCallFactory : RouteResponseFactory {
 		}
 	}
 
-	override Str toStr() { "-> $method.qname" }
+	override Str toStr() { "-> ${method.qname}()" }
 }
 
 internal const class NoOpFactory : RouteResponseFactory {

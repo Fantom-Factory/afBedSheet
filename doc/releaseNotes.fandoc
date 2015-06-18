@@ -4,6 +4,7 @@ Versions
 v1.4.12
 =======
  - New: 'HttpSession.flashExists()' tells you just that.
+ - Chg: WebProxy handles the case when the real web app didn't start up, and forces a restart.
  - Chg: Errs are unwrapped before being handled to look for a 'ReProcessErr' cause. (For when thrown during efan template processing.)
  - Chg: Tweaked the internals of 'Route' processing / parameter matching to be more correct. (Potential, but unlikely, breaking change.)
  - Bug: 'AppRestarter' threw NPE if a new pod was introduced into the Fantom environment. 

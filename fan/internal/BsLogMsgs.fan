@@ -7,6 +7,10 @@ internal const class BsLogMsgs {
 		"Starting BedSheet Proxy on port $proxyPort"
 	}	
 
+	static Str proxyMod_forceRestart() {
+		"Website is down -> forcing a restart..."
+	}	
+
 	// ---- AppRestarter --------------------------------------------------------------------------
 
 	static Str appRestarter_cachedPodTimestamps(Int noOfPods) {

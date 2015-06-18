@@ -44,16 +44,19 @@ internal const class ProxyMod : WebMod {
 		// with proxy server - create session here as a workaround
 		dummy := req.session
 
-		c := WebClient()
-		c.reqHeaders.clear
-		c.followRedirects = false
-		c.reqUri = "http://localhost:${appPort}${req.uri.relToAuth}".toUri
-		c.reqMethod = req.method
-		req.headers.each |v, k| {
-			if (k != "Host")	// don't mess with the Hoff! Err, I mean host.
-				c.reqHeaders[k] = v
+		
+		c := (WebClient?) null
+		try {
+			c = writeReq()
+			
+		} catch (IOErr ioe) {
+			// if we can't connect to the website, it may be down / not have started
+			// (e.g. if counldn't connect to MongoDB) so force a restart
+			log.info(BsLogMsgs.proxyMod_forceRestart)
+			restarter.forceRestart
+			Actor.sleep(1.5sec)
+			c = writeReq()
 		}
-		c.writeReq
 
 		if (req.headers.containsKey("Content-Type") || req.headers.containsKey("Content-Length"))
 			c.reqOut.writeBuf(req.in.readAllBuf).flush
@@ -90,5 +93,23 @@ internal const class ProxyMod : WebMod {
 		}
 
 		c.close
+	}
+	
+	private WebClient writeReq() {
+		c := WebClient()
+		c.reqHeaders.clear
+		c.followRedirects = false
+		c.reqUri = "http://localhost:${appPort}${req.uri.relToAuth}".toUri
+		c.reqMethod = req.method
+		req.headers.each |v, k| {
+			if (k != "Host")	// don't mess with the Hoff! Err, I mean host.
+				c.reqHeaders[k] = v
+		}
+		
+		
+		/// sys::IOErr: java.net.ConnectException: Connection refused: connect
+		c.writeReq
+		
+		return c
 	}
 }
