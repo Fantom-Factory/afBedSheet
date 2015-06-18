@@ -65,9 +65,15 @@ internal class AppRestarterState {
 	
 	Bool podsModified()	{
 		true == Env.cur.findAllPodNames.eachWhile |podName| {
-			if (podFile(podName).modified > podTimeStamps[podName]) {
-				log.info(BsLogMsgs.appRestarter_podUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
-				return true
+			if (podTimeStamps.containsKey(podName)) {
+				if (podFile(podName).modified > podTimeStamps[podName]) {
+					log.info(BsLogMsgs.appRestarter_podUpdatd(podName, podTimeStamps[podName] - podFile(podName).modified))
+					return true
+				}
+			} else {
+				podTimeStamps[podName] = podFile(podName).modified
+				log.info(BsLogMsgs.appRestarter_podFound(podName))
+				return true				
 			}
 			return null
 		}

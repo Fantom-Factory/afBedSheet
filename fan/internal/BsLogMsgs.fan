@@ -29,6 +29,10 @@ internal const class BsLogMsgs {
 		"Pod '$podName' pod was updated $timeDiff.abs.toLocale ago"
 	}
 
+	static Str appRestarter_podFound(Str podName) {
+		"Found new pod '$podName'!"
+	}
+
 	// ---- AppDestroyer --------------------------------------------------------------------------
 	
 	static Str appDestroyer_started(Duration pingInterval) {
