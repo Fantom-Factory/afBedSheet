@@ -4,7 +4,8 @@ Versions
 v1.4.12
 =======
  - New: 'HttpSession.flashExists()' tells you just that.
- - Chg: Errs are unwrapped looking for 'ReProcessErr'.
+ - Chg: Errs are unwrapped before being handled to look for a 'ReProcessErr' cause. (For when thrown during efan template processing.)
+ - Chg: Tweaked the internals of 'Route' processing / parameter matching to be more correct. (Potential, but unlikely, breaking change.)
  - Bug: 'AppRestarter' threw NPE if a new pod was introduced into the Fantom environment. 
  - Bug: 'ValueEncoders', when converting an empty 'Str' to a nullable 'Str', always returned 'null'. This had repercussions in 'FormBean'
   
