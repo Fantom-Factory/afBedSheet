@@ -1,3 +1,4 @@
+using inet::IpAddr
 using concurrent::Actor
 using web::WebMod
 using wisp::WispService
@@ -5,11 +6,11 @@ using wisp::WispService
 internal const class WebModRunner {
 
 	** Run baby, run!
-	Int run(WebMod webMod, Int port) {
+	Int run(WebMod webMod, Int port, IpAddr? ipAddr := null) {
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
 		// then check all your ENV vars are being passed to java.
 		// see http://forum.springsource.org/showthread.php?106504-Error-running-grails-project-on-alternative-port-with-STS2-6-0&highlight=Unrecognized%20Windows%20Sockets%20error
-		startWisp(WispService { it.root=webMod; it.port=port })
+		startWisp(WispService { it.root=webMod; it.port=port; it.addr = ipAddr })
 	}
 	
 	private Int startWisp(WispService wisp) {

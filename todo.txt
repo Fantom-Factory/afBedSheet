@@ -7,9 +7,6 @@ Add HttpRequest.isSecure()
 
 Doc customising the ErrPrinters! Make them public?
 
-Add IpAddr option to BedSheetBuilder / Wisp integration.
- - http://fantom.org/forum/topic/2399 
-
 
 
 Future
