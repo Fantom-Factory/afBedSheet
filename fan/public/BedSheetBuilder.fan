@@ -1,5 +1,6 @@
 using afIoc
 using afIocEnv
+using inet::IpAddr
 
 ** Use to programmatically create and launch BedSheet server instances.
 **
@@ -9,6 +10,7 @@ using afIocEnv
 ** 
 class BedSheetBuilder {
 	private const static Log log := Utils.getLog(BedSheetBuilder#)
+	private IpAddr? ipAddr
 
 	** The application name. Taken from the app pod's 'proj.name' meta, or the pod name if the meta doesn't exist.
 	** Read only.
@@ -58,6 +60,16 @@ class BedSheetBuilder {
 		return this
 	}
 	
+	** Sets the local IP address that Wisp should bind to, or set to 'null' for the default.
+	** 
+	** This is useful when deploying your application to [Open Shift]`https://developers.openshift.com/en/diy-overview.html` 
+	** or similar where the local IP address is mandated. 
+	** See the Fantom Forum topic: [IP address for afBedSheet]`http://fantom.org/forum/topic/2399`.
+	This setIpAddress(IpAddr? ipAddr) {
+		this.ipAddr = ipAddr
+		return this
+	}
+	
 	** Adds a module to the registry. 
 	** Any modules defined with the '@SubModule' facet are also added.
 	** 
@@ -103,7 +115,7 @@ class BedSheetBuilder {
 		options["afBedSheet.env"] = env
 		watchAllPods := options[BsConstants.meta_watchAllPods]?.toStr?.toBool(false) ?: false
 		mod := proxy ? ProxyMod(this, port, watchAllPods) : BedSheetBootMod(this)
-		return WebModRunner().run(mod, port)
+		return WebModRunner().run(mod, port, ipAddr)
 	}
 
 	@NoDoc // for serialisation

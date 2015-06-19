@@ -3,6 +3,8 @@ Versions
 
 v1.4.12
 =======
+ - New: BedSheet Proxy (by default) only monitors the pods that your app depends on.
+ - New: 'BedSheetBuilder.setIpAddress()' for deploying Bed Apps to [Open Shift]`https://developers.openshift.com/en/diy-overview.html` or similar. 
  - New: 'HttpSession.flashExists()' tells you just that.
  - Chg: WebProxy handles the case when the real web app didn't start up, and forces a restart.
  - Chg: Errs are unwrapped before being handled to look for a 'ReProcessErr' cause. (For when thrown during efan template processing.)
