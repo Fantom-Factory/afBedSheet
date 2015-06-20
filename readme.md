@@ -1,7 +1,7 @@
-#BedSheet v1.4.10
+#BedSheet v1.4.12
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.10](http://img.shields.io/badge/pod-v1.4.10-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.12](http://img.shields.io/badge/pod-v1.4.12-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
