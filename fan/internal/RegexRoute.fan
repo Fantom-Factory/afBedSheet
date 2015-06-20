@@ -191,7 +191,7 @@ const class RegexRoute : Route {
 	}
 }
 
-** Keep public 'cos it could prove useful!
+** Keep public cos it could prove useful!
 @NoDoc
 const mixin RouteResponseFactory {
 
