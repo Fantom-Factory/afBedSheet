@@ -86,7 +86,7 @@ Quick Start [#quickStart]
 Wow! That's awesome! But what just happened!?
 
 Every BedSheet application has an 'AppModule' that configures [IoC]`pod:afIoc` services.
-Here we told the `Routes` service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method
+Here we told the 'Routes' service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method
 for all requests that start with '/hello'.
 `Route` converts URL path segments into method arguments, or in our case, to 'Str name' and to an
 optional 'Int iq'.
@@ -328,7 +328,7 @@ response object displays BedSheet's HTTP Status Code page. This is what you see 
 
 ![BedSheet's 404 Status Page]`err404.png`
 
-To set your own '404 Not Found' page contribute a response object to `HttpStatusResponses` service with the status code '404':
+To set your own '404 Not Found' page contribute a response object to the 'HttpStatusResponses' service with the status code '404':
 
 pre>
 syntax: fantom
@@ -560,7 +560,7 @@ syntax: fantom
 HttpResponse.disableGzip()
 <pre
 
-Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types]`sys::MimeType` contributed to the `GzipCompressible` service will be gzipped.
+Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types]`sys::MimeType` contributed to the 'GzipCompressible' service will be gzipped.
 
 Most standard compressible types are already contributed to 'GzipCompressible' including html, css, javascript, json, xml and other text responses.
 You may contribute your own with:
