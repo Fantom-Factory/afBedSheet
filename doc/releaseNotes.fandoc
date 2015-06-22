@@ -1,17 +1,20 @@
 Versions
 ********
+v1.4.14
+=======
+ - Chg: 'HttpSession.exsits()' returns 'false' when calling thread is not in a web request (it used to throw Err). Handy for testing.
 
 v1.4.12
 =======
  - New: BedSheet Proxy (by default) only monitors the pods that your app depends on.
- - New: 'BedSheetBuilder.setIpAddress()' for deploying Bed Apps to [Open Shift]`https://developers.openshift.com/en/diy-overview.html` or similar. 
+ - New: 'BedSheetBuilder.setIpAddress()' for deploying Bed Apps to [Open Shift]`https://developers.openshift.com/en/diy-overview.html` or similar.
  - New: 'HttpSession.flashExists()' tells you just that.
  - Chg: WebProxy handles the case when the real web app didn't start up, and forces a restart.
  - Chg: Errs are unwrapped before being handled to look for a 'ReProcessErr' cause. (For when thrown during efan template processing.)
  - Chg: Tweaked the internals of 'Route' processing / parameter matching to be more correct. (Potential, but unlikely, breaking change.)
- - Bug: 'AppRestarter' threw NPE if a new pod was introduced into the Fantom environment. 
+ - Bug: 'AppRestarter' threw NPE if a new pod was introduced into the Fantom environment.
  - Bug: 'ValueEncoders', when converting an empty 'Str' to a nullable 'Str', always returned 'null'. This had repercussions in 'FormBean'
-  
+
 v1.4.10
 =======
  - New: 'Asset' and 'ClientAsset' classes - re-worked 'FileHandler' and 'PodHandler' to use new API.

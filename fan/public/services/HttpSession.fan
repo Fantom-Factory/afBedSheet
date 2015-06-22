@@ -1,6 +1,7 @@
 using afIoc::Inject
 using afIoc::Registry
 using web::WebReq
+using concurrent::Actor
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
 ** 
@@ -157,8 +158,8 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Bool exists() {
-		// session support only for WISP web server
-		httpCookies.get("fanws") != null
+		// TODO: session support only for WISP web server
+		Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
 	}
 	
 	// TODO: replace flash map with a pseudo map so we can capture the get and set operations.
