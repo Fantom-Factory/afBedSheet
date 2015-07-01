@@ -5,16 +5,20 @@ using web::WebUtil
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 const class HttpResponseHeaders {
 	
-	private const |->Str:Str| headFunc
+	private const |->Str:Str|	getHeaders
+	private const |->| 			checkUncommitted
 
-	internal new make(|->Str:Str| headFunc) { this.headFunc = headFunc }
+	internal new make(|->Str:Str| getHeaders, |->| checkUncommitted) {
+		this.getHeaders = getHeaders
+		this.checkUncommitted = checkUncommitted
+	}
 	
 	** Tells all caching mechanisms from server to client whether they may cache this object. It is 
 	** measured in seconds.
 	** 
 	** Example: 'Cache-Control: max-age=3600'
 	Str? cacheControl {
-		get { headers["Cache-Control"] }
+		get { get("Cache-Control") }
 		set { addOrRemove("Cache-Control", it) }
 	}
 
@@ -22,7 +26,7 @@ const class HttpResponseHeaders {
 	** 
 	** Example: 'Content-Encoding: gzip'
 	Str? contentEncoding {
-		get { headers["Content-Encoding"] }
+		get { get("Content-Encoding") }
 		set { addOrRemove("Content-Encoding", it) }
 	}
 
@@ -32,7 +36,7 @@ const class HttpResponseHeaders {
 	** 
 	** @see `http://tools.ietf.org/html/rfc6266`
 	Str? contentDisposition {
-		get { headers["Content-Disposition"] }
+		get { get("Content-Disposition") }
 		set { addOrRemove("Content-Disposition", it) }
 	}
 
@@ -88,7 +92,7 @@ const class HttpResponseHeaders {
 	** 
 	** Example: 'Pragma: no-cache'
 	Str? pragma {
-		get { headers["Pragma"] }
+		get { get("Pragma") }
 		set { addOrRemove("Pragma", it) }
 	}
 
@@ -99,7 +103,7 @@ const class HttpResponseHeaders {
 	** 
 	** @see [Accept-Encoding, It’s Vary important]`http://blog.maxcdn.com/accept-encoding-its-vary-important/`
 	Str? vary {
-		get { headers["Vary"] }
+		get { get("Vary") }
 		set { addOrRemove("Vary", it) }
 	}
 
@@ -109,7 +113,7 @@ const class HttpResponseHeaders {
 	** 
 	** Example: 'X-Frame-Options: deny'
 	Str? xFrameOptions {
-		get { headers["X-Frame-Options"] }
+		get { get("X-Frame-Options") }
 		set { addOrRemove("X-Frame-Options", it) }
 	}
 
@@ -117,45 +121,59 @@ const class HttpResponseHeaders {
 	** 
 	** Example: 'X-XSS-Protection: 1; mode=block'
 	Str? xXssProtection {
-		get { headers["X-XSS-Protection"] }
+		get { get("X-XSS-Protection") }
 		set { addOrRemove("X-XSS-Protection", it) }
 	}
 
+	** Returns the named response header.
 	@Operator
 	Str? get(Str name) {
-		headers[name]
+		getHeaders()[name]
 	}
 
+	** Sets a response head to the given value.
 	@Operator
 	Void set(Str name, Str value) {
-		headers[name] = value
+		checkUncommitted()
+
+		// multiple lines in the header need to be prefixed with whitespace
+		// see http://fantom.org/forum/topic/2427
+		value = value.splitLines.join("\n ")
+		
+		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
+		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
+		value = value[0..<(4096-2).min(value.size)]
+		
+		getHeaders()[name] = value
 	}
 	
+	** Removes a response header.
 	Str? remove(Str name) {
-		headers.remove(name)
-	}
-	
-	Str:Str map() {
-		headers
+		checkUncommitted()
+		return getHeaders().remove(name)
 	}
 
+	** Returns a read-only map of the response headers. 
+	** Use 'set' / 'remove' / or one of the setters on this 'HttpResponseHeaders' to change response values.
+	** This allows us to check if the response has already been committed before updating header values. 
+	Str:Str map() {
+		getHeaders().ro
+	}
+
+	@NoDoc
 	override Str toStr() {
-		headers.toStr
+		getHeaders().toStr
 	}
 	
 	private Obj? makeIfNotNull(Str name, |Obj->Obj| func) {
-		val := headers[name]
+		val := get(name)
 		return (val == null) ? null : func(val)
 	}
 
 	private Void addOrRemove(Str name, Str? value) {
 		if (value == null)
-			headers.remove(name)
+			remove(name)
 		else
-			headers[name] = value
-	}
-	
-	private Str:Str headers() {
-		headFunc.call()
+			set(name, value)
 	}
 }

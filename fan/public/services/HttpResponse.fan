@@ -18,7 +18,7 @@ const mixin HttpResponse {
 	abstract Int statusCode
 	
 	** Map of HTTP response headers.  You must set all headers before you access out() for the 
-	** first time, which commits the response. Throws Err if response is already committed. 
+	** first time, which commits the response.  
 	** 
 	** @see 
 	**  - `web::WebRes.headers`
@@ -83,13 +83,23 @@ internal const class HttpResponseImpl : HttpResponse {
 	
 	@Inject	private const Registry	registry
 	@Inject	private const LocalRef	localGzip
-	@Inject	private const LocalRef	localBuffering
+	@Inject	private const LocalRef	bufferingRef
+	@Inject	private const LocalRef	resHeadersRef
 
 	override const HttpResponseHeaders	headers
 
 	new make(|This|in) { 
 		in(this)
-		this.headers = HttpResponseHeaders() |->Str:Str| { webRes.headers }
+		this.headers = HttpResponseHeaders(|->Str:Str| {
+			// cache the headers so we can access / read it after the response has been committed - handy for logging
+			// note this only works while 'webRes.headers' returns the actual map used, and not a copy
+			if (!resHeadersRef.isMapped)
+				resHeadersRef.val = webRes.headers 
+			return resHeadersRef.val
+		}, |->| {
+			if (webRes.isCommitted)
+				throw Err("HTTP Response has already been committed")
+		})
 	} 
 
 	override Bool disableGzip {
@@ -97,8 +107,8 @@ internal const class HttpResponseImpl : HttpResponse {
 		set { localGzip.val = it}
 	}
 	override Bool disableBuffering {
-		get { localBuffering.val ?: false }
-		set { localBuffering.val = it}
+		get { bufferingRef.val ?: false }
+		set { bufferingRef.val = it}
 	}
 	override Int statusCode {
 		get { webRes.statusCode }

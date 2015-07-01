@@ -25,17 +25,21 @@ using afIocConfig::Config
 ** The [fields]`BedSheetConfigIds.requestLogFields` property configures the format of the log records. It is a string of field names 
 ** separated by a space. The following field names are supported:
 ** 
-**   - **date**: UTC date as DD-MM-YYYY
-**   - **time**: UTC time as hh:mm:ss
-**   - **c-ip**: the numeric IP address of the remote client socket
-**   - **c-port**: the IP port of the remote client socket
-**   - **cs-method**: the request method such as GET
-**   - **cs-uri**: the encoded request uri (path and query)
-**   - **cs-uri-stem**: the encoded path of the request uri
-**   - **cs-uri-query**: the encoded query of the request uri
-**   - **sc-status**: the return status code
-**   - **time-taken**: the time taken to process request in milliseconds
-**   - **cs(HeaderName)**: request header value such 'User-Agent'
+**   syntax: table
+** 
+**   Field Name         Description
+**   ----------------   ----------------------------------------------
+**   'date'             UTC date as DD-MM-YYYY
+**   'time'             UTC time as hh:mm:ss
+**   'c-ip'             Numeric IP address of the remote client socket
+**   'c-port'           IP port of the remote client socket
+**   'cs-method'        Request method such as GET
+**   'cs-uri'           Encoded request uri (path and query)
+**   'cs-uri-stem'      Encoded path of the request URL
+**   'cs-uri-query'     Encoded query of the request URL
+**   'sc-status'        Return status code
+**   'time-taken'       Time taken to process request in milliseconds
+**   'cs(HeaderName)'   Request header value such 'User-Agent'
 ** 
 ** If any unknown fields are specified or not available then "-" is logged. Example log record:
 ** 
@@ -43,6 +47,7 @@ using afIocConfig::Config
 ** 2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
 ** 
 ** <pre
+@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
 const mixin RequestLogMiddleware : Middleware {
 
 	** Directory where the request log files are written.
@@ -65,7 +70,7 @@ const mixin RequestLogMiddleware : Middleware {
 }
 
 internal const class RequestLogMiddlewareImpl : RequestLogMiddleware {
-	private static const Log log	:= Utils.getLog(RequestLogMiddleware#)
+	private static const Log log	:= Utils.getLog(RequestLogMiddlewareImpl#)
 	
 	override const File? dir
 

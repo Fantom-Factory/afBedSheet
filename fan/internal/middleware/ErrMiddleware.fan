@@ -75,15 +75,7 @@ internal const class ErrMiddleware : Middleware {
 		}
 	}
 	
-	private Void addHeader(Str name, Str value) {
-		// TODO: report as Fantom web / wisp issue
-		// multiple lines in the header need to be prefixed with whitespace
-		value = value.splitLines.join("\n ")
-		
-		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
-		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
-		value = value[0..<(4096-2).min(value.size)].trim
-		
-		httpResponse.headers[name] = value
+	private Void addHeader(Str name, Str value) {		
+		httpResponse.headers[name] = value.trim
 	}
 }
