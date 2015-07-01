@@ -5,7 +5,9 @@ BedSheet is a platform for delivering web applications written in [Fantom]`http:
 Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
 BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
 
-BedSheet is inspired by Java's [Tapestry5]`http://tapestry.apache.org/`, Ruby's [Sinatra]`http://www.sinatrarb.com/` and
+BedSheet is inspired by
+Java's [Tapestry5]`http://tapestry.apache.org/`,
+Ruby's [Sinatra]`http://www.sinatrarb.com/` and
 Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
 
 
@@ -510,28 +512,64 @@ class UploadService {
 
 Request Logging
 ***************
-BedSheet can generate standard HTTP request logs in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+BedSheet has a hook for logging HTTP requests. Just implement `RequestLogger` and contribute it to the 'RequestLoggers' service. This service ensures the loggers are able to log what gets sent to the browser, without interruption from the error handling framework.
 
-To enable, just configure the directory where the logs should be written and (optionally) set the log filename, or filename
-pattern for log rotation:
+This simple logger generates standard HTTP request log files in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 pre>
 syntax: fantom
+using webmod
 
-@Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(Configuration conf) {
+const class W3CLogger : RequestLogger {
+    private const LogMod logMod
 
-    conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
-    conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log"
+    new make() {
+        logMod = LogMod {
+            it.dir      = File.os("C:\\temp\\logs\\")    // note the trailing slash!
+            it.filename = "afBedSheet-{YYYY-MM}.log"
+            it.fields   = "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+        }
+        logMod.onStart
+    }
+
+    override Void logOutgoing() {
+        logMod.onService
+    }
 }
 <pre
 
-Ensure the log dir ends in a trailing /slash/.
+To enable, add the 'W3CLogger' to the 'RequestLoggers' service
 
-The fields writen to the logs may be set by configuring 'BedSheetConfigIds.requestLogFields', but default to looking like:
 pre>
-2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
+syntax: fantom
+@Contribute { serviceType=RequestLoggers# }
+static Void contributeRequestLoggers(Configuration config) {
+    config.add(MyRequestLogger())
+}
+<pre
 
+The log files will then look something like the following, see `webmod::LogMod` for more details.
+pre>
+2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0" "http://localhost/index"
+
+<pre
+
+BedSheet ships with a basic default logger that times each request. To enable, turn on BedSheet debug logging. You can do this in code with:
+
+  syntax: fantom
+  Log.get("afBedSheet").level = LogLevel.debug
+
+Or you can enable it for the environment by adding the following to '%FAN_HOME%\etc\sys\log.props'
+
+  afBedSheet = debug
+
+Then you should see output like this in your console:
+
+pre>
+[debug] [afBedSheet] GET  /about --------------------------------------------------> 200 (in 21ms)
+[debug] [afBedSheet] GET  /coldFeet/nx6lXQ==/css/website.min.css ------------------> 200 (in  6ms)
+[debug] [afBedSheet] GET  /pods ---------------------------------------------------> 200 (in 52ms)
+[debug] [afBedSheet] GET  /pods/whoops --------------------------------------------> 404 (in 28ms)
 <pre
 
 

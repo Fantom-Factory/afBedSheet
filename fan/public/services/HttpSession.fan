@@ -158,7 +158,7 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Bool exists() {
-		// TODO: session support only for WISP web server
+		// TODO: this session support only for WISP web server
 		Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
 	}
 	

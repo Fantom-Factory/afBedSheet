@@ -34,6 +34,7 @@ const class BedSheetModule {
 		defs.add(HttpSession#)
 		defs.add(HttpCookies#)
 		defs.add(BedSheetPages#).withProxy	// prevent recursion
+		defs.add(RequestLoggers#)
 		defs.add(RequestLogMiddleware#)
 		
 		// Other services
@@ -50,16 +51,17 @@ const class BedSheetModule {
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
 	@Build
-	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg) {
+	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg, RequestLogMiddleware oldLogger, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
-		middleware := Middleware[
+		middleware := Middleware?[
 			reg.autobuild(CleanupMiddleware#),
-			// this wraps ErrMiddleware so it can report 500 errors
-			// FIXME: How may others insert their own middleware here?
-			reg.serviceById(RequestLogMiddleware#.qname),
+			// loggers wrap ErrMiddleware so they can report 500 errors
+			// remove unused middleware so they don'y clog up stack traces
+			oldLogger.dir == null			 ? null : oldLogger,
+			reqLogger.requestLoggers.isEmpty ? null : reqLogger,
 			reg.autobuild(ErrMiddleware#),
 			reg.autobuild(FlashMiddleware#)
-		].addAll(userMiddleware)
+		].addAll(userMiddleware).exclude { it == null }
 		terminator := reg.autobuild(MiddlewareTerminator#)
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
 	}
@@ -102,6 +104,11 @@ const class BedSheetModule {
 	static Void contributeMiddlewarePipeline(Configuration config) {
 		config["afBedSheet.assets"] = config.autobuild(AssetsMiddleware#)
 		config["afBedSheet.routes"] = config.autobuild(RoutesMiddleware#)
+	}
+
+	@Contribute { serviceType=RequestLoggers# }
+	static Void contributeRequestLoggers(Configuration config) {
+		config["afBedSheet.requestLogger"] = config.autobuild(BasicRequestLogger#)
 	}
 
 	@Contribute { serviceType=ClientAssetProducers# }

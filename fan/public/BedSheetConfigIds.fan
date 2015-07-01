@@ -103,6 +103,7 @@ const mixin BedSheetConfigIds {
 	** Must end in a trailing /slash/.
 	** 
 	** @see `RequestLogMiddleware`
+	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
 	static const Str requestLogDir					:= "afBedSheet.requestLog.dir"
 
 	** Log filename pattern.
@@ -112,6 +113,7 @@ const mixin BedSheetConfigIds {
 	** Defaults to 'afBedSheet-{YYYY-MM}.log'
 	** 
 	** @see `RequestLogMiddleware`
+	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
 	static const Str requestLogFilenamePattern		:= "afBedSheet.requestLog.filenamePattern" 
 
 	** Format of the web log records as a string of names.
@@ -119,6 +121,7 @@ const mixin BedSheetConfigIds {
 	** Defaults to 'date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)'
 	** 
 	** @see `RequestLogMiddleware`
+	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
 	static const Str requestLogFields				:= "afBedSheet.requestLog.fields"
 
 }
