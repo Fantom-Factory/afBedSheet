@@ -1,7 +1,7 @@
-#BedSheet v1.4.12
+#BedSheet v1.4.14
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.12](http://img.shields.io/badge/pod-v1.4.12-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.14](http://img.shields.io/badge/pod-v1.4.14-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -100,7 +100,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
 
 Wow! That's awesome! But what just happened!?
 
-Every BedSheet application has an `AppModule` that configures [IoC](http://pods.fantomfactory.org/pods/afIoc) services. Here we told the [Routes](http://pods.fantomfactory.org/pods/afBedSheet/api/Routes) service to return some plain text in response to `/index` and to call the `HelloPage#hello` method for all requests that start with `/hello`. [Route](http://pods.fantomfactory.org/pods/afBedSheet/api/Route) converts URL path segments into method arguments, or in our case, to `Str name` and to an optional `Int iq`.
+Every BedSheet application has an `AppModule` that configures [IoC](http://pods.fantomfactory.org/pods/afIoc) services. Here we told the `Routes` service to return some plain text in response to `/index` and to call the `HelloPage#hello` method for all requests that start with `/hello`. [Route](http://pods.fantomfactory.org/pods/afBedSheet/api/Route) converts URL path segments into method arguments, or in our case, to `Str name` and to an optional `Int iq`.
 
 Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our `HelloPage` route handler simply returns a plain [Text](http://pods.fantomfactory.org/pods/afBedSheet/api/Text) response, which BedSheet sends to the client via an appropriate [ResponseProcessor](http://pods.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor).
 
@@ -245,7 +245,7 @@ When a HTTP request is received, it is passed through a pipeline of BedSheet [Mi
 
 Middleware bundled with BedSheet include:
 
-- `RequestLog`: Generates request logs in the standard [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
+- `RequestLoggers`: For logging HTTP request / responses.
 - `Routes` : Performs the standard [request routing](#requestRouting)
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation. See the FantomFactory article [Basic HTTP Authentication With BedSheet](http://www.fantomfactory.org/articles/basic-http-authentication-with-bedSheet) for working examples.
@@ -288,7 +288,7 @@ static Void contributeApplicationDefaults(Configuration config) {
 
 ![BedSheet's 404 Status Page](http://pods.fantomfactory.org/pods/afBedSheet/doc/err404.png)
 
-To set your own `404 Not Found` page contribute a response object to [HttpStatusResponses](http://pods.fantomfactory.org/pods/afBedSheet/api/HttpStatusResponses) service with the status code `404`:
+To set your own `404 Not Found` page contribute a response object to the `HttpStatusResponses` service with the status code `404`:
 
 ```
 @Contribute { serviceType=HttpStatusResponses# }
@@ -440,26 +440,62 @@ class UploadService {
 
 ## Request Logging
 
-BedSheet can generate standard HTTP request logs in the [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
+BedSheet has a hook for logging HTTP requests. Just implement [RequestLogger](http://pods.fantomfactory.org/pods/afBedSheet/api/RequestLogger) and contribute it to the `RequestLoggers` service. This service ensures the loggers are able to log what gets sent to the browser, without interruption from the error handling framework.
 
-To enable, just configure the directory where the logs should be written and (optionally) set the log filename, or filename pattern for log rotation:
+Example, this simple logger generates standard HTTP request log files in the [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
 
 ```
-@Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(Configuration conf) {
+using webmod
 
-    conf[BedSheetConfigIds.requestLogDir]             = `/my/log/dir/`
-    conf[BedSheetConfigIds.requestLogFilenamePattern] = "bedSheet-{YYYY-MM}.log"
+const class W3CLogger : RequestLogger {
+    private const LogMod logMod
+
+    new make() {
+        logMod = LogMod {
+            it.dir      = File.os("C:\\temp\\logs\\")    // note the trailing slash!
+            it.filename = "afBedSheet-{YYYY-MM}.log"
+            it.fields   = "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
+        }
+        logMod.onStart
+    }
+
+    override Void logOutgoing() {
+        logMod.onService
+    }
 }
 ```
 
-Ensure the log dir ends in a trailing /slash/.
-
-The fields writen to the logs may be set by configuring `BedSheetConfigIds.requestLogFields`, but default to looking like:
+To enable, add the `W3CLogger` to the `RequestLoggers` service
 
 ```
-2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) etc" "http://localhost/index"
+@Contribute { serviceType=RequestLoggers# }
+static Void contributeRequestLoggers(Configuration config) {
+    config.add(MyRequestLogger())
+}
+```
 
+The log files will then look something like the following, see [webmod::LogMod](http://fantom.org/doc/webmod/LogMod.html) for more details.
+
+```
+2013-02-22 13:13:13 127.0.0.1 - GET /doc - 200 222 "Mozilla/5.0" "http://localhost/index"
+
+```
+
+BedSheet ships with a basic default logger that times each request. To enable, turn on BedSheet debug logging. You can do this in code with:
+
+    Log.get("afBedSheet").level = LogLevel.debug
+
+Or you can enable it for the environment by adding the following to `%FAN_HOME%\etc\sys\log.props`
+
+    afBedSheet = debug
+
+Then you should see output like this in your console:
+
+```
+[debug] [afBedSheet] GET  /about --------------------------------------------------> 200 (in 21ms)
+[debug] [afBedSheet] GET  /coldFeet/nx6lXQ==/css/website.min.css ------------------> 200 (in  6ms)
+[debug] [afBedSheet] GET  /pods ---------------------------------------------------> 200 (in 52ms)
+[debug] [afBedSheet] GET  /pods/whoops --------------------------------------------> 404 (in 28ms)
 ```
 
 ## Gzip
@@ -481,7 +517,7 @@ Or Gzip can be disabled on a per request / response basis by calling:
 HttpResponse.disableGzip()
 ```
 
-Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types](http://fantom.org/doc/sys/MimeType.html) contributed to the [GzipCompressible](http://pods.fantomfactory.org/pods/afBedSheet/api/GzipCompressible) service will be gzipped.
+Text files gzip very well and yield high compression rates, but not everything should be gzipped. For example, JPG images are already compressed when gzip'ed often end up larger than the original! For this reason only [Mime Types](http://fantom.org/doc/sys/MimeType.html) contributed to the `GzipCompressible` service will be gzipped.
 
 Most standard compressible types are already contributed to `GzipCompressible` including html, css, javascript, json, xml and other text responses. You may contribute your own with:
 
