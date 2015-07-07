@@ -269,7 +269,7 @@ If the request reaches the end of the pipeline without being processed, a 404 is
 
 Middleware bundled with BedSheet include:
 
- - 'RequestLog': Generates request logs in the standard [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+ - 'RequestLoggers': For logging HTTP request / responses.
  - 'Routes' : Performs the standard [request routing]`#requestRouting`
 
 You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
@@ -514,7 +514,7 @@ Request Logging
 ***************
 BedSheet has a hook for logging HTTP requests. Just implement `RequestLogger` and contribute it to the 'RequestLoggers' service. This service ensures the loggers are able to log what gets sent to the browser, without interruption from the error handling framework.
 
-This simple logger generates standard HTTP request log files in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
+Example, this simple logger generates standard HTTP request log files in the [W3C Extended Log File Format]`http://www.w3.org/TR/WD-logfile.html`.
 
 pre>
 syntax: fantom

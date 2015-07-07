@@ -138,11 +138,13 @@ const class HttpResponseHeaders {
 
 		// multiple lines in the header need to be prefixed with whitespace
 		// see http://fantom.org/forum/topic/2427
-		value = value.splitLines.join("\n ")
+		if (value.containsChar('\n'))
+			value = value.splitLines.join("\n ")
 		
 		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
 		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
-		value = value[0..<(4096-2).min(value.size)]
+		if (value.size > (4096-2))
+			value = value[0..<(4096-2)]
 		
 		getHeaders()[name] = value
 	}
