@@ -7,6 +7,7 @@ const class HttpResponseHeaders {
 	
 	private const |->Str:Str|	getHeaders
 	private const |->| 			checkUncommitted
+	private const Bool 			oldWispVer		:= Pod.find("wisp").version <= Version("1.0.67")
 
 	internal new make(|->Str:Str| getHeaders, |->| checkUncommitted) {
 		this.getHeaders = getHeaders
@@ -136,15 +137,18 @@ const class HttpResponseHeaders {
 	Void set(Str name, Str value) {
 		checkUncommitted()
 
-		// multiple lines in the header need to be prefixed with whitespace
-		// see http://fantom.org/forum/topic/2427
-		if (value.containsChar('\n'))
-			value = value.splitLines.join("\n ")
-		
+		if (oldWispVer) {
+			// multiple lines in the header need to be prefixed with whitespace
+			// see http://fantom.org/forum/topic/2427
+			if (value.containsChar('\n'))
+				value = value.splitLines.join("\n ")
+		}
+
 		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
 		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
-		if (value.size > (4096-2))
-			value = value[0..<(4096-2)]
+		if (value.size > (4096-2)) {
+			value = value[0..<(4096-2)].trim
+		}
 		
 		getHeaders()[name] = value
 	}
