@@ -47,7 +47,7 @@ const class BasicRequestLogger : RequestLogger {
 		if (log.isDebug) {
 			// attempt to keep the standard debug line at 120 chars (120 isn't special, it just seems to be a manageable width)
 			timeTaken := Duration.now.minus(startTime.val)
-			url := "${httpRequest.url.encode} ".padr(56, '-') + "->"
+			url := "${httpRequest.url.encode} ".padr(56 - (httpRequest.httpMethod.size.min(4) - 4), '-') + "->"
 			msg := "${httpRequest.httpMethod.justl(4)} ${url} ${httpResponse.statusCode} (in ${timeTaken.toLocale.justr(4)})"
 			log.debug(msg)
 		}
