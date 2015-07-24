@@ -133,8 +133,15 @@ const class HttpResponseHeaders {
 	}
 
 	** Sets a response head to the given value.
+	** 
+	** If the given value is 'null' then it is removed.
 	@Operator
-	Void set(Str name, Str value) {
+	Void set(Str name, Str? value) {
+		if (value == null) {
+			remove(name)
+			return
+		}
+			
 		checkUncommitted()
 
 		if (oldWispVer) {
