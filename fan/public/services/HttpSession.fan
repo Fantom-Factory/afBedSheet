@@ -142,12 +142,12 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) { 
-		mapRw[name] = testSerialisation(val)
+		webReq.session.set(name, testSerialisation(val))
 	}
 	
 	override Void remove(Str name) {
 		if (exists)
-			mapRw.remove(name) 		
+			webReq.session.remove(name)
 	}
 	
 	override Void delete() {
@@ -172,13 +172,16 @@ internal const class HttpSessionImpl : HttpSession {
 		exists && containsKey("afBedSheet.flash")
 	}
 	
+	@Deprecated { msg="No need anymore with fantom-1.0.68" }
 	private Obj? testSerialisation(Obj? val) {
 		Buf().out.writeObj(val, ["skipErrors":false])
 		return val
 	}
 	
 	private Str:Obj? mapRw() {
-		webReq.session.map
+		webReq.session["_afBedSheet.wotver"] = "wotever"
+		webReq.session.remove("_afBedSheet.wotver")
+		return webReq.session.map
 	}
 	
 	private WebReq webReq() {
