@@ -1,0 +1,87 @@
+
+# Max Length = 52 chars
+#           Alien-Factory BedSheet v1.0, IoC v1.3.11
+
+# Misc
+# --------------------------------------------------
+Any fool can use a computer. Many do.
+Never trust a computer you can't throw out a window.
+If at first you don't succeed; call it version 1.0.
+Programmers convert caffeine into code.
+Hey, it compiles!? Ship it!
+An idiot with a computer is a faster, better idiot.
+First, solve the problem. Then, write the code.
+Good web applications should look like trifle.
+Booleans: they're only ever wrong by a bit!
+A computer lets you make more mistakes faster than  any other invention, with the possible exceptions ofhandguns and Tequila.
+Computers are like Old Testament gods;              lots of rules and no mercy.
+To err is human - and to blame it on a computer is  even more so.
+No one ever said on their deathbed, "Gee, I wish I  had spent more time alone with my computer".
+Programming is like sex. One mistake and you have   to support it for the rest of your life.
+I can't uninstall it, there seems to be some kind   of "Uninstall Shield"!?
+The Internet: where men are men, women are men, and children are FBI agents.
+"A computer once beat me at chess, but it was no    match for me at kick boxing."
+Never trust an atom; they make up everything.
+I would love to change the world,                   but they won't give me the source code. 
+A Life? Cool! Where can I download one of those?
+Artificial Intelligence is no match for             Natural Stupidity.
+Never make fun of geeks, one day we'll be your boss. 
+Girls are like internet domain names, the ones I    like are already taken.
+Software is like sex; it's better when it's free.
+Enter any 11-digit prime number to continue... 
+Alcohol & calculus don't mix. Never drink & derive.
+A thousand words are worth a picture, and they load a heck of a lot faster.
+Ethernet (n): something used to catch the Etherbunny
+I reject your reality and substitute my own.
+Who is General Failure and why's he reading my disk?
+I reject your reality and substitute my own.
+How do I set a laser pointer to stun?
+I'm not nerdy. I'm intellectually endowed.
+"You're jealous because the voices only talk to me."
+Hacking is like sex. You get in, you get out, and   hope that you didn't leave something that can be    traced back to you.
+Computer Science is no more about computers than    astronomy is about telescopes.
+There is only one satisfying way to boot a computer.
+The truth is out there... anybody got the URL?
+Roses are #FF0000, Violets are #0000FF,             And all my base, Are belong to you.  
+
+# Wargames (1983)
+# --------------------------------------------------
+"Good morning Professor Falken."            - Joshua
+Do you want to play a game of "Thermo Nuclear War"?                                             - Joshua
+"Wouldn't you prefer a nice game of chess?" - Joshua
+"Colonel Conley, take us to DEFCON five."                                             - General Beringer
+"After very careful consideration, sir, I’ve come tothe conclusion that your new defense system sucks."                                  - General Beringer
+
+# 2001: A Space Odyssey (1968)
+# --------------------------------------------------
+I'm sorry, Dave, I don't have enough information.                                             - HAL 9000
+I know you and Frank were planning to disconnect me.                                          - HAL 9000
+"I'm completely operational and all my circuits are  functioning perfectly."                  - HAL 9000
+
+# Star Wars (1977)
+# --------------------------------------------------
+"R2D2, you know better than to trust a strange       computer!"                                  - C-3PO
+
+# Colossus: The Forbin Project (1970)
+# --------------------------------------------------
+"This concludes the broadcast from World Control."
+"I am a machine vastly superior to humans."                                                   - Colossus
+End of message.
+"You have consumed enough alcohol for one evening."                                           - Colossus
+"I will now detonate the nuclear warheads."                                                   - Colossus
+"You are being irrational. Go back to bed."                                                   - Colossus
+"This is the voice of Colossus, the voice of        Guardian. We are one. This is the voice of unity."
+
+# Sneakers (1992)
+"Hi, my name is Werner Brandes. My voice is my      passport. Verify Me."
+
+# Bill & Ted’s Excellent Adventure
+# --------------------------------------------------
+"Bill, strange things are afoot at the Circle K."                                                  - Ted
+
+# Star Wars
+# --------------------------------------------------
+"I find your lack of faith disturbing."
+
+
+
