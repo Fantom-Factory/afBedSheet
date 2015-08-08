@@ -1,5 +1,10 @@
 Versions
 ********
+v1.4.16
+=======
+ - Chg: 'HttpResponseHeaders.set()' takes 'null'.
+ - Chg: Tweaked the default 'RequestLogger' output.
+
 v1.4.14
 =======
  - New: 'RequestLogger' service / framework.  
