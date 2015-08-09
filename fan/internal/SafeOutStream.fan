@@ -41,4 +41,30 @@ internal class SafeOutStream : OutStream {
 			}
 		return this
 	}
+	
+	override This flush() {
+		if (!socketErr)
+			try realOut.flush
+			catch (Err err) {
+				if (!err.msg.contains("java.net.SocketException"))
+					throw err
+				// means the client closed the socket before we've finished writing data
+				socketErr = true
+				log.warn(BsLogMsgs.safeOutStream_socketErr(err))
+			}
+		return this		
+	}
+	
+	override Bool close() {
+		if (!socketErr)
+			try return realOut.close
+			catch (Err err) {
+				if (!err.msg.contains("java.net.SocketException"))
+					throw err
+				// means the client closed the socket before we've finished writing data
+				socketErr = true
+				log.warn(BsLogMsgs.safeOutStream_socketErr(err))
+			}
+		return false
+	}
 }
