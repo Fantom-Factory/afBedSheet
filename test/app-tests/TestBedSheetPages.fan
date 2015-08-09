@@ -59,4 +59,11 @@ internal class T_WebSession : WebSession {
 	override const Str id := "69"
 	override Str:Obj? map := Str:Obj[:]
 	override Void delete() { }
+	
+	override Void each(|Obj?,Str| f) { map.each(f) }
+	@Operator
+	override Obj? get(Str name, Obj? def := null) {map.get(name, def)}
+	@Operator
+	override Void set(Str name, Obj? val) {map.set(name, val) }
+	override Void remove(Str name) {map.remove(name) }
 }
