@@ -4,6 +4,7 @@ v1.4.16
 =======
  - Chg: 'HttpResponseHeaders.set()' takes 'null'.
  - Chg: Tweaked the default 'RequestLogger' output.
+ - Bug: Flushing the Response stream was not propagated down to the socket. 
 
 v1.4.14
 =======
