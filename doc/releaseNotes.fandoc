@@ -2,10 +2,12 @@ Versions
 ********
 v1.4.16
 =======
+ - New: Added 'HttpRequest.socketOptions()'.
  - Chg: Lots of internal tweaks to support Fantom-1.0.68.
  - Chg: Values stored in 'HttpSession' must now be immutable, serializable optional.
  - Chg: 'HttpResponseHeaders.set()' takes 'null'.
  - Chg: Tweaked the default 'RequestLogger' output.
+ - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
  - Bug: Flushing the Response stream was not propagated down to the socket.
 
 v1.4.14

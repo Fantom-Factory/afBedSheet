@@ -166,11 +166,14 @@ const class HttpResponseHeaders {
 		return getHeaders().remove(name)
 	}
 
-	** Returns a read-only map of the response headers. 
-	** Use 'set' / 'remove' / or one of the setters on this 'HttpResponseHeaders' to change response values.
-	** This allows us to check if the response has already been committed before updating header values. 
+	** Returns a read / write map of the response headers.
+	**  
+	** It is better to use 'set()' / 'remove()' / or one of the setters on this 'HttpResponseHeaders' instance to change response values.
+	** This allows us to check if the response has already been committed before updating header values.
+	** 
+	** Think of this 'map' as a *get-out-jail* card.
 	Str:Str map() {
-		getHeaders().ro
+		getHeaders()
 	}
 
 	@NoDoc
