@@ -3,6 +3,7 @@ using afIoc::Registry
 using afConcurrent::LocalRef
 using web::WebReq
 using inet::IpAddr
+using inet::SocketOptions
 using concurrent
 
 ** (Service) - An injectable 'const' version of [WebReq]`web::WebReq`.
@@ -93,6 +94,8 @@ const mixin HttpRequest {
 	** 
 	** @see `web::WebReq.parseMultiPartForm`
 	abstract Void parseMultiPartForm(|Str formName, InStream in, Str:Str headers| callback)
+
+	abstract SocketOptions socketOptions()
 	
 	@NoDoc @Deprecated { msg="Use 'body.in()' instead." }
 	InStream in() { body.in }
@@ -118,6 +121,7 @@ const class HttpRequestWrapper : HttpRequest {
 	override Locale[] locales() 			{ req.locales			}
 	override Str:Obj? stash()				{ req.stash				}
 	override HttpRequestBody body()			{ req.body				}
+	override SocketOptions socketOptions()	{ req.socketOptions		}
 	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb)	{ req.parseMultiPartForm(cb) }
 }
 
@@ -166,6 +170,9 @@ internal const class HttpRequestImpl : HttpRequest {
 		if (bodyRef.val == null)
 			bodyRef.val = HttpRequestBody(webReq)
 		return bodyRef.val
+	}
+	override SocketOptions socketOptions()	{
+		webReq.socketOptions
 	}
 	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb) {
 		webReq.parseMultiPartForm(cb)
