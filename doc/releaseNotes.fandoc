@@ -2,6 +2,7 @@ Versions
 ********
 v1.4.16
 =======
+ - New: Added 'HttpRequest.socketOptions()'.
  - Chg: 'HttpResponseHeaders.set()' takes 'null'.
  - Chg: Tweaked the default 'RequestLogger' output.
  - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
