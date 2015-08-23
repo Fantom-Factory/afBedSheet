@@ -1,6 +1,7 @@
 using afIoc
 using afIocEnv
 using inet::IpAddr
+using web::WebMod
 
 ** Use to programmatically create and launch BedSheet server instances.
 **
@@ -115,7 +116,13 @@ class BedSheetBuilder {
 		options["afBedSheet.env"] = env
 		watchAllPods := options[BsConstants.meta_watchAllPods]?.toStr?.toBool(false) ?: false
 		mod := proxy ? ProxyMod(this, port, watchAllPods) : BedSheetBootMod(this)
-		return WebModRunner().run(mod, port, ipAddr)
+		return runWebMod(mod, port, ipAddr)
+	}
+	
+	** Hook to run a fully configured BedSheet 'WebMod'.
+	@NoDoc
+	virtual Int runWebMod(WebMod webMod, Int port, IpAddr? ipAddr) {
+		WebModRunner().run(webMod, port, ipAddr)
 	}
 
 	@NoDoc // for serialisation
