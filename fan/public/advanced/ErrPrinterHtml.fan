@@ -29,7 +29,7 @@ const class ErrPrinterHtml {
 			try {
 				print.call(out, err)
 			} catch (Err e) {
-				log.warn("Err when printing Err...", e)
+				log.warn("Err when printing Err - $e.msg")
 				out.p.w("ERROR!").pEnd
 			}
 		}
