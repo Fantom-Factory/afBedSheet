@@ -6,6 +6,7 @@ v1.4.16
  - Chg: 'HttpResponseHeaders.set()' takes 'null'.
  - Chg: Tweaked the default 'RequestLogger' output.
  - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
+ - Chg: Errs encountered when error handling are less verbose.
  - Bug: Flushing the Response stream was not propagated down to the socket. 
 
 v1.4.14
