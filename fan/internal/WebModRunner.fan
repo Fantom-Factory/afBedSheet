@@ -10,7 +10,7 @@ internal const class WebModRunner {
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
 		// then check all your ENV vars are being passed to java.
 		// see http://forum.springsource.org/showthread.php?106504-Error-running-grails-project-on-alternative-port-with-STS2-6-0&highlight=Unrecognized%20Windows%20Sockets%20error
-		startWisp(WispService { it.root=webMod; it.port=port; it.addr = ipAddr })
+		startWisp(WispService { it.root=webMod; it.httpPort=port; it.addr = ipAddr })
 	}
 	
 	private Int startWisp(WispService wisp) {
