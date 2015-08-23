@@ -26,7 +26,7 @@ const class ErrPrinterStr {
 			try {
 				print.call(buf, err)
 			} catch (Err e) {
-				log.warn("Err when printing Err...", e)
+				log.warn("Err when printing Err - $e.msg")
 			}
 		}
 		
