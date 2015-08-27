@@ -13,7 +13,7 @@ class MainPoo {
 			"poo" : BedSheetWebMod(reg)
 		]}
 		
-		WispService { it.port=8069; it.root=mod }.install.start
+		WispService { it.httpPort=8069; it.root=mod }.install.start
 
 		Actor.sleep(Duration.maxVal)	
 	}
