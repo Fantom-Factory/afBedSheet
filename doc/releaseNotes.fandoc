@@ -1,0 +1,298 @@
+Versions
+********
+v1.4.16
+=======
+ - New: Added 'HttpRequest.socketOptions()'.
+ - New: Added 'BedSheetBuilder.runWebMod()' - a hook to run a fully configured BedSheet 'WebMod'.
+ - Chg: Lots of internal tweaks to support Fantom-1.0.68.
+ - Chg: Values stored in 'HttpSession' must now be immutable, serializable optional.
+ - Chg: 'HttpResponseHeaders.set()' takes 'null'.
+ - Chg: Tweaked the default 'RequestLogger' output.
+ - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
+ - Chg: Errs encountered when error handling are less verbose.
+ - Bug: Flushing the Response stream was not propagated down to the socket.
+
+v1.4.14
+=======
+ - New: 'RequestLogger' service / framework.
+ - New: Deprecated 'RequestLogMiddleware' in favour of new 'RequestLogger' service.
+ - Chg: 'HttpResponse.headers' are now available to read even if the response has been committed. Handy for logging responses.
+ - Chg: 'HttpSession.exsits()' returns 'false' when calling thread is not in a web request (it used to throw Err). Handy for testing.
+
+v1.4.12
+=======
+ - New: BedSheet Proxy (by default) only monitors the pods that your app depends on.
+ - New: 'BedSheetBuilder.setIpAddress()' for deploying Bed Apps to [Open Shift]`https://developers.openshift.com/en/diy-overview.html` or similar.
+ - New: 'HttpSession.flashExists()' tells you just that.
+ - Chg: WebProxy handles the case when the real web app didn't start up, and forces a restart.
+ - Chg: Errs are unwrapped before being handled to look for a 'ReProcessErr' cause. (For when thrown during efan template processing.)
+ - Chg: Tweaked the internals of 'Route' processing / parameter matching to be more correct. (Potential, but unlikely, breaking change.)
+ - Bug: 'AppRestarter' threw NPE if a new pod was introduced into the Fantom environment.
+ - Bug: 'ValueEncoders', when converting an empty 'Str' to a nullable 'Str', always returned 'null'. This had repercussions in 'FormBean'
+
+v1.4.10
+=======
+ - New: 'Asset' and 'ClientAsset' classes - re-worked 'FileHandler' and 'PodHandler' to use new API.
+ - New: 'HttpRequest.urlAbs' gives the absolute request URL.
+ - New: 'FieldProcessor' lets fields be returned for further processing.
+ - Chg: 'ClientAssets' are now served up via middleware, not Routes.
+ - Chg: 'TextProcessor' now handles HEAD requests.
+ - Chg: Response buffering is disabled if a 'Content-Length' header is present.
+ - Bug: 'RequestLogMiddleware' logged all requests with a status code of 200 - See [RequestLogMiddleware - wrong HTTP Status for errors]`https://bitbucket.org/AlienFactory/afbedsheet/issue/4/requestlogmiddleware-wrong-http-status-for` for details.
+ - Bug: HEAD requests had their 'Content-Length' header reset to '0'.
+
+v1.4.8.4
+========
+ - Bug: New Proxy code didn't work on MacOS - thanks go to [Shturman]`https://bitbucket.org/AlienFactory/afbedsheet/issue/3/proxy-mode-error`.
+
+v1.4.8.2
+========
+ - New: 'BedSheetBuilder.makeFromType()' ctor to pass in 'AppModule'.
+ - Chg: Documentation tweaks and fixes.
+
+v1.4.8
+======
+ - New: Use 'BedSheetBuilder' to create BedSheet IoC Registries and start Wisp servers.
+ - New: 'HttpRequestBody' for convenience methods to access the request body. (Similar to [Butter]`pod:afButter`.)
+ - Chg: New Proxy code ensures all build parameters are passed to the real app.
+ - Chg: Renamed 'Text.json()' -> 'Text.jsonObj()'. 'Text.json()' now takes a Str. (Potential breaking change.)
+ - Chg: 'FileHandler.fromLocalUrl()' and 'FileHandler.fromServerFile()' now take a 'checked' parameter.
+ - Chg: 'FileAssetProcessor' now copes with duff 'If-None-Match' Etag requests headers.
+
+v1.4.6
+======
+ - Chg: BedSheet now compatible with [Fantom v1.0.67]`http://fantom.org/forum/topic/2387` - issues with gzip and the dev proxy.
+ - Bug: BedSheet sometimes reported a 'NullErr' when starting up in dev mode.
+
+v1.4.4
+======
+ - Bug: Startup Errs thrown by FileHandler (and middleware in general) ended up in limbo and weren't reported.
+
+v1.4.2
+======
+ - Chg: HTTP requests received when BedSheet is starting up are given a 500 status code and a starting up message.
+   Previous behaviour was to queue up the requests, but that can cause issues under heavy load.
+ - Chg: 'HttpRequest.form' throws a 'HttpStatusErr' (400 - Bad Request) should the form data be invalid - see `sys::Uri.decodeQuery`. SpamBots send you all sorts of crap!
+ - Bug: BedSheet welcome page had the 404 page appended to it - Firefox reported the page as *junk*!
+
+v1.4.0
+======
+ - New: 'Errs' and 'Funcs' may be used as response objects - new 'ResponseProcessors' added.
+ - New: Added 'HttpRequest.parseMultiPartForm()'.
+ - New: Added *Wisp Integration* section to the docs.
+ - Chg: Err processing updated; gone are bespoke 'ErrProcessors', contribute generic repsonse objects instead. (Breaking change.)
+ - Chg: HTTP Status processing updated; gone are bespoke 'HTTPStatusProcessors', contribute generic repsonse objects instead. (Breaking change.)
+ - Chg: Replaced the 'HttpFlash' class with 'HttpSession.flash()'. (Breaking change.)
+ - Chg: Converted 'Route' to a mixin so users can contribute their own implementations.
+ - Chg: 'Route' matches against the entire 'HttpRequest', not just the URL and HTTP Method.
+ - Chg: Deprecated 'Route' methods: 'routeRegex', 'httpMethod', 'response'.
+ - Chg: Overhauled the 'Route' matching, argument conversion and documentation. (Possible breaking change.)
+ - Chg: Nullability within 'ValueEncoders' has now been property addressed. (Breaking change in 'ValueEncoder' mixin.)
+ - Chg: 'Middleware' now returns 'Void' not 'Bool'. (Breaking change.)
+ - Chg: Removed deprecated methods. (Breaking change.)
+ - Chg: 'BedSheetServer.toAbsoluteUrl()' now takes a client URL, not a local URL.
+ - Chg: 'HttpResponse.saveAsAttachment()' also sets the 'Content-Type' HTTP response header.
+ - Chg: Gave 'FileAsset' a public ctor.
+ - Chg: All BedSheet services have qualified names.
+ - Chg: '.csv' files are gzip compressible.
+ - Bug: Route method params are now correctly URL decoded - see [URI Encoding / Decoding]`http://fantom.org/sidewalk/topic/2357`.
+ - Bug: Logs were overly spammed with repeated warning msgs should the client close its socket connection early.
+ - Bug: 'MethodCall' responses could not call static methods.
+ - Bug: Route HTTP methods were not case-insenstive.
+ - Bug: 'FileAsset.toStr()' sometimes threw an Err.
+ - Bug: HTTP Flash objects no longer need to be immutable, just serialisable.
+
+v1.3.16
+=======
+ - Chg: Updated to use [IoC 2.0.0]`pod:afIoc` and [IoC Config 1.0.16]`pod:afIocConfig`.
+ - Chg: Default cache HTTP headers for 'FileAssets' are only set in prod.
+
+v1.3.14
+=======
+ - New: 'SafeOutStream' doesn't throw an 'IOErr' should the client close the connection early.
+ - New: 'PodHandler' has a whitelist of files allowed to be served.
+ - Chg: Revamped 'PodHandler', now contains 'fromLocalUrl()' and 'fromPodResource()' to parallel 'FileHandler'.
+ - Chg: Deleted 'BedSheetMetaData'; not that you should have been using it anyway!
+ - Chg: 'BedSheetWebMod' no longer takes a BedSheet options map, all values have been merged with Registry options.
+ - Bug: Development Proxy process did not work on Mac OS-X - Thanks to [LightDye for Reporting]`http://stackoverflow.com/questions/25100460/error-cannot-init-sys-homedir-running-a-fantom-app-based-on-afbedsheet-on-mac-o`.
+
+v1.3.12
+=======
+ - New: Static files are served with a default 'Cache-Control' HTTP response header, change via Ioc Config.
+ - New: Added 'BedSheetServer' to replace 'BedSheetMetaData', contains methods for generating absolute URLs.
+ - New: Added 'toClientUrl()' and 'toAbsoluteUrl()' to 'BedSheetServer'.
+ - New: Added 'HttpResponseHeaders.vary' to responses that *could* be gzipped.
+ - Chg: Updated to use [IoC 1.7.2]`pod:afIoc`.
+ - Chg: Renamed 'HttpRequest.modRel' -> 'HttpRequest.url'.], deprecated 'absUri', 'modBase', 'modRel' and 'uri'.
+ - Chg: 'HttpSession' *fails fast* on attempts to store non-serialisable values.
+ - Chg: Gzip responses also set a HTTP header of 'Vary: Accept-Encoding'.
+ - Chg: Added the 'Cache-Control' HTTP response header to error pages to ensure they're never cached.
+ - Chg: Renamed 'Text.fromMimeType()' -> 'Text.fromContentType()'.
+ - Chg: 'HttpRequestHeaders.host' is now a 'Str'.
+
+v1.3.10
+=======
+ - New: 'FileAsset' objects are generated by the 'FileHandler' service and contain 'clientUrls' for your web page.
+ - Chg: 'ValueEncoders' service now lets 'ReProcessErrs' pass through un-hindered.
+ - Chg: Overhauled 'FileHandler' API. (Breaking change)
+ - Chg: Renamed 'Text.mimeType' -> 'Text.contentType'.
+
+v1.3.8
+======
+ - New: Set response headers 'X-BedSheet-errMsg', 'X-BedSheet-errType' and 'X-BedSheet-errStackTrace' when processing an Err. (Dev mode only)
+ - New: Boring stack frames on the Err500 page are muted (greyed) and may be toggled on and off completely via a checkbox.
+ - New: 'FileHandler' now responds to 'HEAD' requests.
+ - New: Introduced a 'FileMetaCache' to prevent excessive hits on the file system.
+ - Chg: Updated to use [IoC 1.6.2]`pod:afIoc` and [Bean Utils]`pod:afBeanUtils`.
+ - Chg: BedSheet pages (404, 500 & Welcome) are served up as XHTML.
+ - Chg: 'ReProcessErr' may now re-process non-const response objects.
+ - Bug: 'FlashMiddleware' needlessly created http sessions.
+
+v1.3.6
+======
+ - New: Added 'ActorPools' section to Err500 page.
+ - Chg: Updated to use [IoC 1.6.0]`pod:afIoc` and [Concurrent]`pod:afConcurrent`.
+ - Chg: 'Routes' now perform some basic validation to catch cases where the Uri would never match the method handler.
+ - Chg: Atom (RSS) feeds 'application/atom+xml' are now GZip compressible.
+ - Chg: Not found requests for HTTP methods other than GET or POST return a 501, not 404.
+ - Chg: All BedSheet pages render as valid XML.
+ - Bug: If 2 'Routes' had the same Regex, only 1 was shown on the 404 page.
+ - Bug: 'HttpFlash' data could leak into concurrent web requests.
+
+v1.3.4
+======
+ - New: Added 'fromClientUri()' and 'fromServerFile()' to 'FileHandler'.
+ - New: 'IocConfig' values, BedSheet Routes and Fantom Pods are now printed on the standard Err page.
+ - Chg: Added some handy 'toStr' methods to 'Route' and response objects.
+ - Chg: Pretty printed the Str maps that get logged on Err.
+
+v1.3.2
+======
+ - New: Added 'appName' to 'BedSheetMetaData' that returns the 'proj.name' from the application's pod meta.
+ - Chg: Added 'matchesMethod()' and 'matchesParams()' helper methods to 'RouteResponseFactory'.
+ - Chg: Made 'ErrPrinterStr' and 'ErrPrinterHtml' public, but '@NoDoc', as they're useful for emails et al.
+ - Chg: Made 'HttpRequestHeaders' and 'HttpResponsetHeaders' const classes, backed by 'WebReq' and 'WebRes'.
+ - Bug: Ensured 'HttpRequest.modRel' always returns a path absolute uri - see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
+ - Bug: Application could NPE on startup if an 'AppModule' could not be found.
+
+v1.3.0
+======
+ - New: Added 'HttpCookies' service, removed corresponding cookie methods from 'HttpRequest' and 'HttpResponse'. (Breaking change)
+ - New: Added 'stash()' to 'HttpRequest'
+ - New: Added 'fromXhtml(...)' to 'Text'
+ - New: Added 'contentLength()' and 'cookie()' to 'HttpRequestHeaders'
+ - New: 'MethodCallResponseProcessor' uses [IoC]`pod:afIoc` to call methods so that it may inject any dependencies / services as method arguments.
+ - New: Added 'StackFrameFilter' to filter out lines in stack traces.
+ - New: Added 'host' to 'BedSheetConfigIds', mainly for use by 3rd party libraries.
+ - Chg: Upgraded to [IoC 1.5.2]`pod:afIoc`.
+ - Chg: Removed 'BedServer' and 'BedClient', they have been moved to [Bounce]`pod:afBounce`. (Breaking change)
+ - Chg: Removed '@Config', use '@afIocConfig::Config' instead. (Breaking change)
+ - Chg: Renamed 'HttpPipelineFilter' -> 'Middleware' and updated the corresponding services. Hardcoded the default BedSheet filters / middleware to the start of the pipeline. (Breaking change)
+ - Chg: Renamed 'HttpRequestLogFilter' -> 'RequestLogMiddleware' and updated the '@Config' values. (Breaking change)
+ - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoders'.
+ - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
+
+v1.2.4
+======
+ - Chg: Upgraded to [IoC 1.5.0]`pod:afIoc`.
+ - Chg: Upgraded to [IoC Config 1.0.0]`pod:afIocConfig`.
+
+v1.2.2
+======
+ - New: Added 'gzip' compression for web fonts.
+ - New: BedSheet connection details printed on startup.
+ - Chg: 'FileHandler' now lets non-existant files fall through.
+ - Chg: 'FileHandler' auto adds 'Route' mappings to the 'Routes' service.
+ - Chg: Added more info to the BedSheet 404 page in dev.
+ - Chg: Gave more control over the verbose rendering of the standard BedSheet pages.
+ - Bug: 'BedServer' generated the wrong info for 'BedSheetMetaData' - required when testing [Pillow]`pod:afPillow` web apps.
+
+v1.2.0
+======
+ - New: Route objects may take any response result - not just 'Methods'!
+ - New: BedSheet now has a dependency on [IoC Env]`pod:afIocEnv`
+ - Chg: 'HttpRequestLogFilter' is now in the Http Pipeline by default - it just needs enabling.
+ - Chg: The detailed BedSheet Err500 page is disabled in 'production' environments.
+ - Chg: Rejigged how the default 'ErrProcessor' is used, making it easier to plug in your own. (Breaking change.)
+ - Chg: 'BedSheetConfigIds' renamed from 'ConfigIds'. (Breaking change.)
+ - Chg: Removed Route Matching - 'Routes' now only take 'Route' objects. (Breaking change.)
+ - Chg: Removed 'IeAjaxCacheBustingFilter' with no replacement. (Breaking change.)
+ - Chg: Removed 'CorsHandler' with no replacement. (Breaking change.)
+ - Chg: Massaged a lot of the documentation.
+
+v1.1.4
+======
+ - New: The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.
+ - Chg: Better Err msg if 'AppModule' type not found on startup.
+ - Chg: Disabled afIoc service list on startup.
+ - Bug: 'BedServer' would crash if the app required 'BedSheetMetaData'.
+
+v1.1.2
+======
+ - New: Added 'Causes' section to Err500 page.
+ - Chg: Faster startup times when using a proxy
+ - Chg: Better Err handling on app startup
+ - Bug: Transitive dependencies have been re-instated.
+ - Bug: The '-noTransDeps' startup option now propogates through the proxy.
+
+v1.1.0
+======
+ - New: Added 'BedSheetMetaData' with information on which 'AppModule' afbedSheet was started with.
+ - Chg: Renamed 'RouteHandler' -> 'MethodInvoker'. (Breaking change.)
+ - Chg: Injectable services are now documented with '(Service)'.
+ - Chg: Moved internal proxy options in 'Main' to their own class.
+ - Chg: Enabled multi-line quotes.
+ - Bug: 'IoC Config' was not always added as a
+ [transitive dependency]`http://stackoverflow.com/questions/19736876/running-afbedsheet-sample-produces-service-does-not-exist-for-type-afiocconfig`.
+ (Thanks to 'LightDye' for reporting.)
+
+v1.0.16
+=======
+ - New: Added 'Available Values' section to Err500 page, from 'afIoc::NotFoundErr'.
+ - Chg: Broke '@Config' code out into its own module: [IoC Config]`pod:afIocConfig`.
+ - Chg: Added a skull logo to the 'Err500' page.
+ - Chg: Rejigged the 'Err500' section layout and tweaked the source code styling.
+
+v1.0.14
+=======
+ - New: 'SrcCodeErrs' from afPlastic / efan are printed in the default Err500 pages.
+ - New: Added 'ConfigSource.getCoerced()' method.
+ - New: Added [Template Rendering]`pod#templateRendering` to fandoc.
+
+v1.0.12
+=======
+ - New: Added 'IoC Operation Trace' section to Err500 page.
+ - New: Added 'Moustache Compilation Err' section to Err500 page.
+ - Chg: Moved Moustache out into it's own project.
+ - Chg: Anyone may now contribute sections to the default verbose Err500 page.
+ - Bug: Module name was not always found correctly on startup.
+
+v1.0.10
+=======
+ - Bug: This documentation page didn't render.
+
+v1.0.8
+======
+ - Chg: Updated to use 'afIoc-1.4.x'
+ - Chg: Overhauled `Route` to match 'null' values. Thanks go to [LightDye]`http://fantom.org/sidewalk/topic/2178#c14076`.
+ - Chg: Warnings on startup if an AppModule could not be found - see
+ [Issue #1]`https://bitbucket.org/AlienFactory/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed`.
+ Thanks go to Jorge Ortiz.
+ - Chg: Better Err handling when a dir is not mapped to 'FileHandler'
+ - Chg: Transferred VCS ownership to [AlienFactory]`https://bitbucket.org/AlienFactory`
+ - Chg: Test code is no longer distributed with the afBedSheet.pod.
+
+v1.0.6
+======
+ - Chg: 'HttpResponse.statusCode' is now a field.
+ - Chg: 'HttpResponse.disableGzip' is now a field.
+ - Chg: 'HttpResponse.disableBuffering' is now a field.
+
+v1.0.4
+======
+ - New: Added 'BedServer' and 'BedClient' to test BedSheet apps without using a real web server.
+
+v1.0.2
+======
+ - New: Initial release
+
