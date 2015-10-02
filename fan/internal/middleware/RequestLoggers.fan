@@ -1,4 +1,4 @@
-using afIoc
+using afIoc3
 using afConcurrent
 
 @NoDoc	// Don't overwhelm the masses

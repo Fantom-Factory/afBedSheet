@@ -1,7 +1,8 @@
 using web::WebClient
 using wisp::WispService
 using afIocConfig::ConfigModule
-using afIoc::Registry
+using afIoc3::Registry
+using afPlastic::PlasticModule
 
 internal class AppTest : Test {
 	
@@ -18,8 +19,10 @@ internal class AppTest : Test {
 		
 		client.reqHeaders.clear
 
-		bob := BedSheetBuilder(iocModules[0].qname).addModule(ConfigModule#)
-		iocModules.each { bob.addModule(it) }
+		bob := BedSheetBuilder(iocModules[0].qname)
+			.addModules(iocModules)
+			.addModule(ConfigModule#)
+			.addModule(PlasticModule#)	// FIXME: delete plastic referneces
 		mod := BedSheetBootMod(bob)
 		willow 	= WispService { it.httpPort=this.port; it.root=mod }
 		willow.start

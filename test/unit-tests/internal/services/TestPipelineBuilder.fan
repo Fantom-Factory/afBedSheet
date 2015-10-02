@@ -1,9 +1,5 @@
-using afIoc::ActorPools
-using afIoc::Contribute
-using afIoc::Configuration
-using afIoc::Registry
-using afIoc::RegistryBuilder
-using afIoc::ServiceDefinitions
+using afIoc3
+using afPlastic
 using concurrent
 
 internal class TestPipelineBuilder : BsTest {
@@ -14,7 +10,7 @@ internal class TestPipelineBuilder : BsTest {
 	private Type?			 t76
 
 	override Void setup() {
-		reg 	= RegistryBuilder().addModule(T_PipeMod#).build.startup
+		reg 	= RegistryBuilder().addModule(T_PipeMod#).build
 		bob 	= (PipelineBuilder) reg.dependencyByType(PipelineBuilder#)
 		term	= T_MyService75Term("T")
 		t75		= T_MyService75#
@@ -122,9 +118,11 @@ const class T_MyService76Num : T_MyService76 {
 	}
 }
 
-internal class T_PipeMod {
+@SubModule { modules=[PlasticModule#] }
+internal const class T_PipeMod {
 	static Void defineServices(ServiceDefinitions defs) {
 		defs.add(PipelineBuilder#)
+		defs.add(ActorPools#)
 	}
 	
 	@Contribute { serviceType=ActorPools# }

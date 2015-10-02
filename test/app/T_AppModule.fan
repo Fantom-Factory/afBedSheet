@@ -1,10 +1,10 @@
-using afIoc
+using afIoc3
 using afIocConfig::ApplicationDefaults
 
 internal const class T_AppModule {
 	
-	static Void defineServices(ServiceDefinitions defs) {
-//		defs.add(Router#)
+	static Void defineServices(RegistryBuilder defs) {
+//		defs.adderviceType(...)
 	}
 
 	@Contribute { serviceType=Routes# }
@@ -83,8 +83,8 @@ internal const class T_AppModule {
 		conf[`/test-src/`] = `test/app-web/`.toFile
 	}
 
-	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegStartup(Configuration conf) {
-		conf.remove("afIoc.logBanner")
-	}
+//	@Contribute { serviceType=RegistryStartup# }
+//	static Void contributeRegStartup(Configuration conf) {
+//		conf.remove("afIoc.logBanner")
+//	}
 }

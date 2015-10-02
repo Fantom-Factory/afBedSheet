@@ -1,4 +1,4 @@
-using afIoc::Inject
+using afIoc3::Inject
 
 internal const class AssetsMiddleware : Middleware {
 

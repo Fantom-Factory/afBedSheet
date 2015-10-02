@@ -1,5 +1,5 @@
 using web
-using afIoc
+using afIoc3
 using afIocEnv
 using afIocConfig
 using concurrent::Actor
@@ -15,84 +15,97 @@ const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
 	
-	static Void defineServices(ServiceDefinitions defs) {
+	static Void defineServices(RegistryBuilder defs) {
 
 		// Route handlers
-		defs.add(FileHandler#).withProxy
-		defs.add(PodHandler#).withProxy
+		defs.addServiceType(FileHandler#)			.withRootScope
+		defs.addServiceType(PodHandler#)			.withRootScope
 
 		// Collections (services with contributions)
-		defs.add(ResponseProcessors#)
-		defs.add(ErrResponses#)
-		defs.add(HttpStatusResponses#) 
-		defs.add(Routes#)
-		defs.add(ValueEncoders#)
+		defs.addServiceType(ResponseProcessors#)	.withRootScope
+		defs.addServiceType(ErrResponses#)			.withRootScope
+		defs.addServiceType(HttpStatusResponses#)	.withRootScope
+		defs.addServiceType(Routes#)				.withRootScope
+		defs.addServiceType(ValueEncoders#)			.withRootScope
 		
-		// Public services
-		defs.add(BedSheetServer#)
-		defs.add(GzipCompressible#)
-		defs.add(HttpSession#)
-		defs.add(HttpCookies#)
-		defs.add(BedSheetPages#).withProxy	// prevent recursion
-		defs.add(RequestLoggers#)
-		defs.add(RequestLogMiddleware#)
+		// Public services - root
+		defs.addServiceType(BedSheetServer#)		.withRootScope
+		defs.addServiceType(GzipCompressible#)		.withRootScope
+		defs.addServiceType(BedSheetPages#)			.withRootScope
 		
-		// Other services
-		defs.add(NotFoundPrinterHtml#)
-		defs.add(ErrPrinterHtml#)
-		defs.add(ErrPrinterStr#)
-		defs.add(ClientAssetProducers#)
-		defs.add(ClientAssetCache#)
-		defs.add(PipelineBuilder#)
-		defs.add(StackFrameFilter#)
-		defs.add(ObjCache#)
+		// Public services - request
+		defs.addServiceType(RequestLogMiddleware#)	.withRootScope
+		defs.addServiceType(RequestLoggers#)		.withRootScope
+		defs.addServiceType(HttpSession#)			.withRootScope
+		defs.addServiceType(HttpCookies#)			.withRootScope
+
+		// Other services - root
+		defs.addServiceType(StackFrameFilter#)		.withRootScope
+		
+		// Other services - request
+		defs.addServiceType(NotFoundPrinterHtml#)	.withRootScope
+		defs.addServiceType(ErrPrinterHtml#)		.withRootScope
+		defs.addServiceType(ErrPrinterStr#)			.withRootScope
+		defs.addServiceType(ClientAssetProducers#)	.withRootScope
+		defs.addServiceType(ClientAssetCache#)		.withRootScope
+		defs.addServiceType(PipelineBuilder#)		.withRootScope
+		defs.addServiceType(ObjCache#)				.withRootScope
+
+		defs.addServiceType(ActorPools#)			.withRootScope
+		defs.addServiceType(ThreadLocalManager#)	.withRootScope
 	}
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
 	@Build
-	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg, RequestLogMiddleware oldLogger, RequestLoggers reqLogger) {
+	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Scope reg, RequestLogMiddleware oldLogger, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware?[
-			reg.autobuild(CleanupMiddleware#),
+			// FIXME: merge these into ONE to reduce stacktrace
+			reg.build(CleanupMiddleware#),
 			// loggers wrap ErrMiddleware so they can report 500 errors
 			// remove unused middleware so they don'y clog up stack traces
 			oldLogger.dir == null			 ? null : oldLogger,
 			reqLogger.requestLoggers.isEmpty ? null : reqLogger,
-			reg.autobuild(ErrMiddleware#),
-			reg.autobuild(FlashMiddleware#)
+			reg.build(ErrMiddleware#),
+			reg.build(FlashMiddleware#)
 		].addAll(userMiddleware).exclude { it == null }
-		terminator := reg.autobuild(MiddlewareTerminator#)
+		terminator := reg.build(MiddlewareTerminator#)
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
 	}
 
 	@Build
-	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Registry reg) {
-		makeDelegateChain(builders, reg.autobuild(HttpRequestImpl#))
+	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope reg) {
+		makeDelegateChain(builders, reg.build(HttpRequestImpl#))
 	}
 
 	@Build
-	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Registry reg) {
-		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))
+	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope reg) {
+		makeDelegateChain(builders, reg.build(HttpResponseImpl#))
 	}
  
-	@Build { serviceId="afBedSheet::HttpOutStream"; scope=ServiceScope.perThread }
-	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
-		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
+	@Build { serviceId="afBedSheet::HttpOutStream"; scopes=["request"] }
+	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Scope reg) {
+		makeDelegateChain(builders, reg.build(WebResOutProxy#))
 	}
 
-	@Build { scope=ServiceScope.perThread }	
+	@Build { scopes=["request"] }	
 	private static WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
-	@Build { scope=ServiceScope.perThread } 
+	@Build { scopes=["request"] } 
 	private static WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")
+	}
+
+	@Contribute { serviceType=DependencyProviders# }
+	static Void contributeDependencyProviders(Configuration config) {
+		config["afBedSheet.localProvider"] = config.build(LocalProvider#)
 	}
 
 	@Contribute { serviceType=ActorPools# }
@@ -102,13 +115,13 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=MiddlewarePipeline# }
 	static Void contributeMiddlewarePipeline(Configuration config) {
-		config["afBedSheet.assets"] = config.autobuild(AssetsMiddleware#)
-		config["afBedSheet.routes"] = config.autobuild(RoutesMiddleware#)
+		config["afBedSheet.assets"] = config.build(AssetsMiddleware#)
+		config["afBedSheet.routes"] = config.build(RoutesMiddleware#)
 	}
 
 	@Contribute { serviceType=RequestLoggers# }
 	static Void contributeRequestLoggers(Configuration config) {
-		config["afBedSheet.requestLogger"] = config.autobuild(BasicRequestLogger#)
+		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#)
 	}
 
 	@Contribute { serviceType=ClientAssetProducers# }
@@ -125,23 +138,23 @@ const class BedSheetModule {
 	
 	@Contribute { serviceId="afBedSheet::HttpOutStream" }
 	static Void contributeHttpOutStream(Configuration config) {
-		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
-		config["afBedSheet.buffBuilder"] = config.autobuild(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
-		config["afBedSheet.gzipBuilder"] = config.autobuild(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
+		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()				// inner
+		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
+		config["afBedSheet.gzipBuilder"] = config.build(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration config) {
-		config[Asset#]		= config.autobuild(AssetProcessor#)
-		config[Err#]		= config.autobuild(ErrProcessor#)
-		config[Field#]		= config.autobuild(FieldProcessor#)
-		config[File#]		= config.autobuild(FileProcessor#)
-		config[Func#]		= config.autobuild(FuncProcessor#)
-		config[HttpStatus#]	= config.autobuild(HttpStatusProcessor#)
-		config[InStream#]	= config.autobuild(InStreamProcessor#)
-		config[MethodCall#]	= config.autobuild(MethodCallProcessor#)
-		config[Redirect#]	= config.autobuild(RedirectProcessor#)
-		config[Text#]		= config.autobuild(TextProcessor#)
+		config[Asset#]		= config.build(AssetProcessor#)
+		config[Err#]		= config.build(ErrProcessor#)
+		config[Field#]		= config.build(FieldProcessor#)
+		config[File#]		= config.build(FileProcessor#)
+		config[Func#]		= config.build(FuncProcessor#)
+		config[HttpStatus#]	= config.build(HttpStatusProcessor#)
+		config[InStream#]	= config.build(InStreamProcessor#)
+		config[MethodCall#]	= config.build(MethodCallProcessor#)
+		config[Redirect#]	= config.build(RedirectProcessor#)
+		config[Text#]		= config.build(TextProcessor#)
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
@@ -206,7 +219,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=NotFoundPrinterHtml# }
 	static Void contributeNotFoundPrinterHtml(Configuration config) {
-		printer := (NotFoundPrinterHtmlSections) config.autobuild(NotFoundPrinterHtmlSections#)
+		printer := (NotFoundPrinterHtmlSections) config.build(NotFoundPrinterHtmlSections#)
 
 		// these are all the sections you see on the 404 page
 		config["afBedSheet.routeCode"]	= |WebOutStream out| { printer.printRouteCode		(out) }
@@ -215,7 +228,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ErrPrinterHtml# }
 	static Void contributeErrPrinterHtml(Configuration config) {
-		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
+		printer := (ErrPrinterHtmlSections) config.build(ErrPrinterHtmlSections#)
 
 		// these are all the sections you see on the Err500 page
 		config["afBedSheet.causes"]					= |WebOutStream out, Err? err| { printer.printCauses				(out, err) }
@@ -242,7 +255,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ErrPrinterStr# }
 	static Void contributeErrPrinterStr(Configuration config) {
-		printer := (ErrPrinterStrSections) config.autobuild(ErrPrinterStrSections#)
+		printer := (ErrPrinterStrSections) config.build(ErrPrinterStrSections#)
 		
 		// these are all the sections you see in the Err log
 		config["afBedSheet.causes"]				=  |StrBuf out, Err? err| { printer.printCauses				(out, err) }
@@ -311,46 +324,32 @@ const class BedSheetModule {
 		config.add("^java.lang.reflect..*\$")
 	}
 	
-	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(Configuration config, Registry registry, PlasticCompiler plasticCompiler, ConfigSource configSrc, Log log) {
-		config["afBedSheet.srcCodePadding"] = |->| {
-			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
-		}
-
-		config["afBedSheet.validateHost"] = |->| {
-			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
-			validateHost(host)
-		}
-
-		config.overrideValue("afIoc.logServices", |->| {
-			stats := registry.serviceDefinitions.vals
-			srvcs := "\n\n${stats.size} IoC Services:\n"
-			types := ServiceLifecycle:Int[:] { ordered=true }.add(ServiceLifecycle.builtin, 0)
-			ServiceLifecycle.vals.each { types[it] = 0 }
-			stats.each {
-				types[it.lifecycle] = types[it.lifecycle] + 1
-			}
-			unreal := 0
-			types.each |v, k| {
-				srvcs += "${v.toStr.padl(4)} ${k.name.toDisplayName}\n"
-				if (k == ServiceLifecycle.defined || k == ServiceLifecycle.proxied)
-					unreal += v
-			}
-
-			perce := (100d * unreal / stats.size).toLocale("0.00")
-			srvcs += "\n${perce}% of services are unrealised (${unreal}/${stats.size})\n"
+	static Void defineRegistryStartupShutdown(RegistryBuilder bob) {
+		
+		bob.addScope("request", true)
+		
+		bob.onRegistryStartup |config| {
+			plasticCompiler := (PlasticCompiler) config.scope.serviceById(PlasticCompiler#.qname)
+			configSrc 		:= (ConfigSource) config.scope.serviceById(ConfigSource#.qname)
 			
-			log.info(srvcs)
-		}, "afBedSheet.logServices")
-	}
-
-	@Contribute { serviceType=RegistryShutdown# }
-	static Void contributeRegistryShutdown(Configuration config, RequestLogMiddleware logMiddleware) {
-		config["afBedSheet.requestLogFilter"] = |->| {
-			logMiddleware.shutdown
+			config["afBedSheet.srcCodePadding"] = |->| {
+				plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
+			}
+	
+			config["afBedSheet.validateHost"] = |->| {
+				host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
+				validateHost(host)
+			}
+		}
+		
+		bob.onRegistryShutdown |config| {
+			logMiddleware	:= (RequestLogMiddleware) config.scope.serviceById(RequestLogMiddleware#.qname)
+			config["afBedSheet.requestLogFilter"] = |->| {
+				logMiddleware.shutdown
+			}
 		}
 	}
-	
+
 	internal static Void validateHost(Uri host) {
 		if (host.scheme == null || host.host == null)
 			throw BedSheetErr(BsErrMsgs.startup_hostMustHaveSchemeAndHost(BedSheetConfigIds.host, host))

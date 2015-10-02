@@ -3,7 +3,7 @@ Overview
 BedSheet is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
 
 Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
-BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
+BedSheet provides a rich middleware mechanism for routing and delivering content over HTTP.
 
 BedSheet is inspired by
 Java's [Tapestry5]`http://tapestry.apache.org/`,

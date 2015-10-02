@@ -1,14 +1,13 @@
-using afIoc::Inject
-using afIoc::Registry
+using afIoc3
 
 internal const class HttpOutStreamBuffBuilder : DelegateChainBuilder {
-	@Inject	private const Registry 			registry
-	@Inject	private const HttpResponse 		response
+	@Inject	private const Scope 		scope
+	@Inject	private const HttpResponse 	response
 
 	new make(|This|in) { in(this) } 
 	
 	override OutStream build(Obj delegate) {
 		doBuff	:= !response.disableBuffering
-		return	doBuff ? registry.autobuild(BufferedOutStream#, [delegate]) : delegate 
+		return	doBuff ? scope.build(BufferedOutStream#, [delegate]) : delegate 
 	}
 }

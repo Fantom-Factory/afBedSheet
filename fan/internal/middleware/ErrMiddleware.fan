@@ -1,6 +1,4 @@
-using afIoc::IocShutdownErr
-using afIoc::Inject
-using afIoc::Registry
+using afIoc3
 using afIocConfig::Config
 
 ** Catches and processes Errs. This usually involves generating and sending a error page to the client. 
@@ -28,7 +26,11 @@ internal const class ErrMiddleware : Middleware {
 				return
 				
 			// nothing we can do here
-			} catch (IocShutdownErr shutdownErr) {
+			} catch (ScopeDestroyedErr err) {
+				return
+
+				// nothing we can do here
+			} catch (RegistryShutdownErr err) {
 				return
 
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 

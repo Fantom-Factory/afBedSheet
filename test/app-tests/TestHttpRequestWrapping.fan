@@ -1,5 +1,5 @@
 using web::WebClient
-using afIoc
+using afIoc3
 
 internal class TestHttpRequestWrapping : AppTest {
 
@@ -15,16 +15,16 @@ internal class TestHttpRequestWrapping : AppTest {
 	}
 }
 
-internal class T_HttpReqWrapMod1 {
+internal const class T_HttpReqWrapMod1 {
 	@Contribute { serviceType=Routes# }
 	static Void contributeRoutes(Configuration conf) {
 		conf.add(Route(`/httpReq1`,	T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,	T_PageHandler#httpReq2))
 	}
 	
-	@Contribute { serviceId="HttpRequest" }
+	@Contribute { serviceType=HttpRequest# }
 	static Void contributeHttpRequest(Configuration conf) {
-		conf["HttpRequestWrapperBuilder"] = conf.autobuild(T_HttpRequestWrapperBuilder#)
+		conf["HttpRequestWrapperBuilder"] = conf.build(T_HttpRequestWrapperBuilder#)
 	}
 }
 

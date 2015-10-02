@@ -1,5 +1,5 @@
-using afIoc::Inject
-using afIoc::RegistryMeta
+using afIoc3::Inject
+using afIoc3::RegistryMeta
 using afIocConfig::ConfigSource
 using web::WebReq
 using concurrent
