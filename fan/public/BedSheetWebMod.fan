@@ -6,10 +6,7 @@ using afConcurrent::LocalRef
 using web::WebMod
 using web::WebReq
 using web::WebRes
-using afIoc::IocErr
-using afIoc::IocShutdownErr
-using afIoc::Registry
-using afIoc::RegistryMeta
+using afIoc3
 using afIocEnv::IocEnv
 using afIocConfig::ConfigSource
 
@@ -49,7 +46,14 @@ const class BedSheetWebMod : WebMod {
 			// the rest of this class is just startup and error handling fluff! 
 			pipeline.service
 			
-		} catch (IocShutdownErr err) {
+		} catch (ScopeDestroyedErr err) {
+			// nothing we can do here
+			if (!webRes.isCommitted)
+				webRes.sendErr(500, "BedSheet shutting down...")
+			return
+
+			
+		} catch (RegistryShutdownErr err) {
 			// nothing we can do here
 			if (!webRes.isCommitted)
 				webRes.sendErr(500, "BedSheet shutting down...")

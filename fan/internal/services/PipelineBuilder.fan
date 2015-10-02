@@ -1,4 +1,4 @@
-using afIoc
+using afIoc3
 using afPlastic::PlasticCompiler
 using afPlastic::IocClassModel
 using afConcurrent
@@ -17,6 +17,7 @@ const mixin PipelineBuilder {
 	abstract Obj build(Type pipelineType, Type middlewareType, Obj[] filters, Obj terminator)
 }
 
+// FIXME: ioc3 don't use plastic
 internal const class PipelineBuilderImpl : PipelineBuilder {
 	
 	static	private const Method[]			objMethods	:= Obj#.methods

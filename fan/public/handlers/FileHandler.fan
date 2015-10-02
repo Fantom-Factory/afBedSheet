@@ -1,5 +1,5 @@
 using web::WebReq
-using afIoc
+using afIoc3
 
 ** (Service) - 
 ** A 'ClientAssetProducer' that maps URLs to files on the file system.
@@ -102,9 +102,9 @@ const mixin FileHandler : ClientAssetProducer {
 
 internal const class FileHandlerImpl : FileHandler {
 	
-	@Inject	private const ClientAssetCache	assetCache
-	@Inject	private const Registry			registry
-			override const Uri:File 		directoryMappings
+	@Inject	private const |->ClientAssetCache|	assetCache
+	@Inject	private const Registry				registry
+			override const Uri:File 			directoryMappings
 		
 	new make(Uri:File dirMappings, |This|? in) {
 		in?.call(this)
@@ -188,6 +188,6 @@ internal const class FileHandlerImpl : FileHandler {
 			return registry.autobuild(FileAsset#, [localUrl, file])
 		}
 		
-		return cache ? assetCache.getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl)
+		return cache ? assetCache().getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl)
 	}
 }

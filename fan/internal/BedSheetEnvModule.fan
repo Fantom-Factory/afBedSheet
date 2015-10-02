@@ -1,10 +1,10 @@
-using afIoc
+using afIoc3
 using afIocConfig
 using afIocEnv
 
 ** We want to make IocEnv ourselves, but we don't want to incur the overhead of an override Id 
 ** This is 'cos most people will want to override our override in tests - it makes it all, um, icky!
-internal class BedSheetEnvModule {
+internal const class BedSheetEnvModule {
 	@Build
 	private static IocEnv buildIocEnv(RegistryMeta meta) {
 		IocEnv(meta["afBedSheet.env"])
@@ -18,10 +18,12 @@ internal class BedSheetEnvModule {
 		config[IocEnvConfigIds.isDev]	= iocEnv.isDev
 	}
 
-	@Contribute { serviceType=RegistryStartup# }
-	internal static Void contributeRegistryStartup(Configuration conf, IocEnv iocEnv) {
-		conf["afIocEnv.logEnv"] = |->| {
-			iocEnv.logToInfo
+	internal Void registryHooks(RegistryBuilder bob) {
+		bob.onRegistryStartup |config| {
+			config["afIocEnv.logEnv"] = |Scope scope| {
+				iocEnv := (IocEnv) scope.serviceById(IocEnv#.qname)
+				iocEnv.logToInfo
+			}
 		}
 	}
 }

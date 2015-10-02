@@ -1,4 +1,4 @@
-using afIoc
+using afIoc3
 using afConcurrent
 
 @NoDoc	// Advanced use only
@@ -11,7 +11,7 @@ const class ObjCache {
 
 	new make(|This|in) {
 		in(this) 
-		this.serviceTypeCache = registry.serviceDefinitions.vals.map { it.serviceType }
+		this.serviceTypeCache = registry.serviceDefs.vals.map { it.type }
 	}
 
 	@Operator

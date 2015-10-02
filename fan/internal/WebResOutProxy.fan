@@ -1,4 +1,4 @@
-using afIoc::Inject
+using afIoc3::Inject
 using web::WebRes
 
 ** Wraps the 'WebRes.out' stream so we can pass references of it around without committing the 

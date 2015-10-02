@@ -1,5 +1,5 @@
-using afIoc::Inject
-using afIoc::Registry
+using afIoc3::Inject
+using afIoc3::Registry
 using web::WebReq
 using concurrent::Actor
 using afConcurrent::LocalRef
@@ -121,7 +121,7 @@ const mixin HttpSession {
 internal const class HttpSessionImpl : HttpSession {
 
 	private static  const Str:Obj?		emptyRoMap	:= Str:Obj?[:].toImmutable
-	@Inject	private const Registry 		registry
+	@Inject	private const |->WebReq|	webReq
 	@Inject	private const HttpCookies	httpCookies
 	
 	@Inject private const LocalRef		flashMapOldRef
@@ -130,7 +130,7 @@ internal const class HttpSessionImpl : HttpSession {
 	new make(|This|in) { in(this) } 
 
 	override Str id() {
-		webReq.session.id
+		webReq().session.id
 	}
 
 	override Str:Obj? map() {
@@ -138,7 +138,7 @@ internal const class HttpSessionImpl : HttpSession {
 			return emptyRoMap
 		
 		map := Str:Obj?[:]
-		webReq.session.each |val, key| {
+		webReq().session.each |val, key| {
 			map[key] = val
 		} 
 		return map
@@ -155,19 +155,19 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) { 
-		webReq.session.set(name, testImmutable(val))
+		webReq().session.set(name, testImmutable(val))
 	}
 	
 	override Void remove(Str name) {
 		if (exists)
-			webReq.session.remove(name)
+			webReq().session.remove(name)
 	}
 	
 	override Void delete() {
 		if (exists) {
 			map := map
-			map.keys.each { webReq.session.remove(it) }
-			webReq.session.delete
+			map.keys.each { webReq().session.remove(it) }
+			webReq().session.delete
 		}
 	}
 
@@ -180,7 +180,7 @@ internal const class HttpSessionImpl : HttpSession {
 		// need to preempt setting values
 		// FlashMiddleware happens too late 'cos the response has already been committed (usually) 
 		// when we try to create the cookie  
-		webReq.session.id
+		webReq().session.id
 		return flashMapNewRef.val
 	}
 
@@ -221,9 +221,5 @@ internal const class HttpSessionImpl : HttpSession {
 	
 	private Obj? testImmutable(Obj? val) {
 		val?.toImmutable
-	}
-	
-	private WebReq webReq() {
-		registry.dependencyByType(WebReq#)
 	}
 }

@@ -1,5 +1,5 @@
-using afIoc::Inject
-using afIoc::Registry
+using afIoc3::Inject
+using afIoc3::Registry
 using afIocConfig::Config
 using web::WebRes
 

@@ -1,4 +1,4 @@
-using afIoc
+using afIoc3
 using concurrent
 
 // TODO: make FileAsset internal and remove @Deprecated

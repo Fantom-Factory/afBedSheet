@@ -1,4 +1,4 @@
-using afIoc::Inject
+using afIoc3::Inject
 using webmod::LogMod
 using afIocConfig::ConfigSource
 using afIocConfig::Config

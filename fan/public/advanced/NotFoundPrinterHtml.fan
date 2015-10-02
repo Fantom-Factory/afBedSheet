@@ -1,4 +1,4 @@
-using afIoc::Inject
+using afIoc3::Inject
 using web::WebOutStream
 
 @NoDoc	// Advanced use only

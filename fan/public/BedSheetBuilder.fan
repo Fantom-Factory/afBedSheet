@@ -1,4 +1,4 @@
-using afIoc
+using afIoc3
 using afIocEnv
 using inet::IpAddr
 using web::WebMod
@@ -57,7 +57,7 @@ class BedSheetBuilder {
 	** Sets a value in the 'options' map. 
 	** Returns 'this' so it may be used as a builder method. 		
 	This setOption(Str name, Obj? value) {
-		registryBuilder.set(name, value)
+		registryBuilder.options.set(name, value)
 		return this
 	}
 	
@@ -106,7 +106,8 @@ class BedSheetBuilder {
 	** Builds the IoC 'Registry'. 
 	** Note that this does **NOT** call 'startup()' on the registry.
 	Registry build() {
-		registryBuilder.removeModule(IocEnvModule#)
+		// FIXME:
+//		registryBuilder.removeModule(IocEnvModule#)
 		return registryBuilder.build
 	}
 
@@ -127,7 +128,7 @@ class BedSheetBuilder {
 
 	@NoDoc // for serialisation
 	Str toStringy() {
-		bob := registryBuilder.dup
+		bob := registryBuilder
 		bob.options.remove("afIoc.bannerText")
 		
 		// Pod's aren't serializable
@@ -193,16 +194,13 @@ class BedSheetBuilder {
 				log.info("Suppressing transitive dependencies...")
 			bob.addModulesFromPod(pod.name, transDeps)
 		}
-		if (mod != null) {
-			if (!bob.moduleTypes.contains(mod))
-				bob.addModule(mod)
-		}
+		if (mod != null)
+			bob.addModule(mod)
 		bob.addModules(mods)
 		
 		// A simple thing - ensure the BedSheet module is added! 
 		// (transitive dependencies are added explicitly via @SubModule)
-		if (!bob.moduleTypes.contains(BedSheetModule#))
-			 bob.addModule(BedSheetModule#)
+		bob.addModule(BedSheetModule#)
 
 		regOpts := bob.options
 		regOpts[BsConstants.meta_appName]	= (pod?.meta?.get("proj.name") ?: pod?.name) ?: "Unknown"

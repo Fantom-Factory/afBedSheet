@@ -1,4 +1,4 @@
-using afIoc::Inject
+using afIoc3::Inject
 using afIocConfig::Config
 
 ** (Service) - Contribute your Err responses to this. 

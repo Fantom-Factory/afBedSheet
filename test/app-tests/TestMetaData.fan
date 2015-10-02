@@ -1,4 +1,4 @@
-using afIoc::RegistryMeta
+using afIoc3::RegistryMeta
 using web::WebClient
 
 internal class TestMetaData : AppTest {
@@ -16,4 +16,4 @@ internal class TestMetaData : AppTest {
 	}
 }
 
-internal class T_WelcomeMod2 { }
+internal const class T_WelcomeMod2 { }

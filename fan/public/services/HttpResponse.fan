@@ -1,6 +1,5 @@
-using afIoc::Inject
-using afIoc::Registry
-using afIoc::ThreadLocalManager
+using afIoc3::Inject
+using afIoc3::Registry
 using afConcurrent::LocalRef
 using web::Cookie
 using web::WebReq
@@ -81,10 +80,12 @@ const class HttpResponseWrapper : HttpResponse {
 
 internal const class HttpResponseImpl : HttpResponse {
 	
-	@Inject	private const Registry	registry
-	@Inject	private const LocalRef	localGzip
-	@Inject	private const LocalRef	bufferingRef
-	@Inject	private const LocalRef	resHeadersRef
+	@Inject	{ id="afBedSheet::HttpOutStream" }
+			private const |->OutStream|	outStream
+	@Inject	private const |->WebRes|	webRes
+	@Inject	private const LocalRef		localGzip
+	@Inject	private const LocalRef		bufferingRef
+	@Inject	private const LocalRef		resHeadersRef
 
 	override const HttpResponseHeaders	headers
 
@@ -94,10 +95,10 @@ internal const class HttpResponseImpl : HttpResponse {
 			// cache the headers so we can access / read it after the response has been committed - handy for logging
 			// note this only works while 'webRes.headers' returns the actual map used, and not a copy
 			if (!resHeadersRef.isMapped)
-				resHeadersRef.val = webRes.headers 
+				resHeadersRef.val = webRes().headers 
 			return resHeadersRef.val
 		}, |->| {
-			if (webRes.isCommitted)
+			if (webRes().isCommitted)
 				throw Err("HTTP Response has already been committed")
 		})
 	} 
@@ -111,21 +112,18 @@ internal const class HttpResponseImpl : HttpResponse {
 		set { bufferingRef.val = it}
 	}
 	override Int statusCode {
-		get { webRes.statusCode }
-		set { webRes.statusCode = it }
+		get { webRes().statusCode }
+		set { webRes().statusCode = it }
 	}	
 	override Bool isCommitted() {
-		webRes.isCommitted
+		webRes().isCommitted
 	}
 	override OutStream out() {
-		registry.serviceById("afBedSheet::HttpOutStream")
+		outStream()
 	}
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "Attachment; filename=${fileName}"
 		headers.contentType = fileName.toUri.mimeType
 	}
-	private WebRes webRes() {
-		registry.dependencyByType(WebRes#)
-	}	
 }
 
