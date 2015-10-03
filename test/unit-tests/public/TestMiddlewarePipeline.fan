@@ -1,6 +1,5 @@
-using afIoc3
-using afPlastic
 using concurrent
+using afIoc3
 
 internal class TestMiddlewarePipeline : BsTest {
 	

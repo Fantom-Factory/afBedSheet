@@ -3,7 +3,6 @@ using afIoc3
 using afIocConfig::Config
 using afIocConfig::ConfigSource
 using web::WebOutStream
-using afPlastic::SrcCodeErr
 
 ** (Service) - public, 'cos it's useful for emails. 
 @NoDoc	// Advanced use only
@@ -92,29 +91,6 @@ internal const class ErrPrinterHtmlSections {
 				out.olEnd
 			}
 			return iocErr.operationTrace != null
-		}
-	}
-
-	Void printSrcCodeErrs(WebOutStream out, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr->Bool| {
-			srcCode 	:= srcCodeErr.srcCode
-			title		:= srcCodeErr.typeof.name.toDisplayName
-			
-			this.title(out, title)
-			
-			out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
-			out.w("&#160;&#160;-&#160;").writeXml(srcCodeErr.msg).pEnd
-			
-			out.div("class=\"srcLoc\"")
-			out.table
-			srcCode.srcCodeSnippetMap(srcCodeErr.errLineNo, srcCodePadding).each |src, line| {
-				if (line == srcCodeErr.errLineNo) { out.tr("class=\"errLine\"") } else { out.tr }
-				out.td.w(line).tdEnd.td.w(src.toXml).tdEnd
-				out.trEnd
-			}
-			out.tableEnd
-			out.divEnd
-			return false
 		}
 	}
 

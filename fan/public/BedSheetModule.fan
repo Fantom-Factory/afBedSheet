@@ -4,7 +4,6 @@ using afIocEnv
 using afIocConfig
 using concurrent::Actor
 using concurrent::ActorPool
-using afPlastic::PlasticCompiler
 
 ** The [Ioc]`http://www.fantomfactory.org/pods/afIoc` module class.
 ** 
@@ -228,7 +227,6 @@ const class BedSheetModule {
 		config["afBedSheet.causes"]					= |WebOutStream out, Err? err| { printer.printCauses				(out, err) }
 		config["afBedSheet.availableValues"]		= |WebOutStream out, Err? err| { printer.printAvailableValues		(out, err) }
 		config["afBedSheet.iocOperationTrace"]		= |WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) }
-		config["afBedSheet.srcCodeErrs"]			= |WebOutStream out, Err? err| { printer.printSrcCodeErrs			(out, err) }
 		config["afBedSheet.stackTrace"]				= |WebOutStream out, Err? err| { printer.printStackTrace			(out, err) }
 		config["afBedSheet.requestDetails"]			= |WebOutStream out, Err? err| { printer.printRequestDetails		(out, err) }
 		config["afBedSheet.requestHeaders"]			= |WebOutStream out, Err? err| { printer.printRequestHeaders		(out, err) }
@@ -255,7 +253,6 @@ const class BedSheetModule {
 		config["afBedSheet.causes"]				=  |StrBuf out, Err? err| { printer.printCauses				(out, err) }
 		config["afBedSheet.availableValues"]	=  |StrBuf out, Err? err| { printer.printAvailableValues	(out, err) }
 		config["afBedSheet.iocOperationTrace"]	=  |StrBuf out, Err? err| { printer.printIocOperationTrace	(out, err) }
-		config["afBedSheet.srcCodeErrs"]		=  |StrBuf out, Err? err| { printer.printSrcCodeErrs		(out, err) }		
 		config["afBedSheet.stackTrace"]			=  |StrBuf out, Err? err| { printer.printStackTrace			(out, err) }
 		config["afBedSheet.requestDetails"]		=  |StrBuf out, Err? err| { printer.printRequestDetails		(out, err) }
 		config["afBedSheet.requestHeaders"]		=  |StrBuf out, Err? err| { printer.printRequestHeaders		(out, err) }
@@ -319,12 +316,7 @@ const class BedSheetModule {
 		bob.addScope("request", true)
 		
 		bob.onRegistryStartup |config| {
-			plasticCompiler := (PlasticCompiler) config.scope.serviceById(PlasticCompiler#.qname)
 			configSrc 		:= (ConfigSource) config.scope.serviceById(ConfigSource#.qname)
-			
-			config["afBedSheet.srcCodePadding"] = |->| {
-				plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
-			}
 	
 			config["afBedSheet.validateHost"] = |->| {
 				host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)

@@ -31,7 +31,7 @@ internal class TestBedSheetPages : AppTest {
 }
 
 internal class T_WebReq : WebReq {
-	override WebMod mod 					:= webmod::LogMod()
+	override WebMod 	mod 				{ get {(Obj)5} set {} }
 	override IpAddr remoteAddr()			{ IpAddr("127.0.0.1") }
 	override Int remotePort() 				{ 80 }
 	override SocketOptions socketOptions()	{ TcpSocket().options }

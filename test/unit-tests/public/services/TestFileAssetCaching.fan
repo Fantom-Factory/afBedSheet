@@ -1,11 +1,10 @@
 using afIoc3
 using afBeanUtils
-using afPlastic
 
 internal class TestFileAssetCaching : BsTest {
 	
 	Void testFileHandlerCaching() {
-		reg := BedSheetBuilder(T_AppModule#.qname).addModule(PlasticModule#).build
+		reg := BedSheetBuilder(T_AppModule#.qname).build
 		fileHandler	:= (FileHandler) 		reg.rootScope.serviceById(FileHandler#.qname)
 		assetCache	:= (ClientAssetCache)	reg.rootScope.serviceById(ClientAssetCache#.qname)
 		
@@ -24,7 +23,7 @@ internal class TestFileAssetCaching : BsTest {
 	}
 
 	Void testPodHandlerCaching() {
-		reg := BedSheetBuilder(T_AppModule#.qname).addModule(PlasticModule#).build
+		reg := BedSheetBuilder(T_AppModule#.qname).build
 		podHandler	:= (PodHandler) 		reg.rootScope.serviceById(PodHandler#.qname)
 		assetCache	:= (ClientAssetCache)	reg.rootScope.serviceById(ClientAssetCache#.qname)
 		
