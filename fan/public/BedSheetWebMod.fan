@@ -20,7 +20,7 @@ const class BedSheetWebMod : WebMod {
 	** The port number this Bed App will be listening on. 
 	const Int 		port
 
-	** The IoC registry. Can be 'null' if BedSheet has not yet started.
+	** The IoC registry.
 	const Registry	registry
 
 	private const MiddlewarePipeline pipeline
@@ -42,9 +42,11 @@ const class BedSheetWebMod : WebMod {
 		req.mod = this
 		
 		try {
-			// this is actual call to BedSheet! 
-			// the rest of this class is just startup and error handling fluff! 
-			pipeline.service
+			registry.rootScope.createChildScope("request") {
+				// this is actual call to BedSheet! 
+				// the rest of this class is just startup and error handling fluff! 
+				pipeline.service
+			}
 			
 		} catch (ScopeDestroyedErr err) {
 			// nothing we can do here

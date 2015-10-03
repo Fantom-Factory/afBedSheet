@@ -1,0 +1,6 @@
+
+class RequestState {
+	
+	Int middlewareDepth
+	
+}
