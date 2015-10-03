@@ -1,4 +1,4 @@
-using concurrent
+using concurrent::Actor
 
 internal const class Utils {
 	

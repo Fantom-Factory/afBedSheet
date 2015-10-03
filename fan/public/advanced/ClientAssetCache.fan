@@ -1,6 +1,6 @@
 using afIoc3
 using afIocEnv
-using afConcurrent
+using afConcurrent::SynchronizedMap
 
 @NoDoc	// Advanced use only
 const mixin ClientAssetCache {

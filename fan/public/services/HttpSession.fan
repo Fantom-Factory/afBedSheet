@@ -1,8 +1,6 @@
 using afIoc3::Inject
 using afIoc3::Registry
-using web::WebReq
 using concurrent::Actor
-using afConcurrent::LocalRef
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
 ** 
@@ -119,18 +117,14 @@ const mixin HttpSession {
 }
 
 internal const class HttpSessionImpl : HttpSession {
-
-	private static  const Str:Obj?		emptyRoMap	:= Str:Obj?[:].toImmutable
-	@Inject	private const |->WebReq|	webReq
-	@Inject	private const HttpCookies	httpCookies
+	private static  const Str:Obj?			emptyRoMap	:= Str:Obj?[:].toImmutable
+	@Inject private const |->RequestState|	reqState
+	@Inject	private const HttpCookies		httpCookies
 	
-	@Inject private const LocalRef		flashMapOldRef
-	@Inject private const LocalRef		flashMapNewRef
-
 	new make(|This|in) { in(this) } 
 
 	override Str id() {
-		webReq().session.id
+		reqState().webReq.session.id
 	}
 
 	override Str:Obj? map() {
@@ -138,7 +132,7 @@ internal const class HttpSessionImpl : HttpSession {
 			return emptyRoMap
 		
 		map := Str:Obj?[:]
-		webReq().session.each |val, key| {
+		reqState().webReq.session.each |val, key| {
 			map[key] = val
 		} 
 		return map
@@ -155,19 +149,19 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) { 
-		webReq().session.set(name, testImmutable(val))
+		reqState().webReq.session.set(name, testImmutable(val))
 	}
 	
 	override Void remove(Str name) {
 		if (exists)
-			webReq().session.remove(name)
+			reqState().webReq.session.remove(name)
 	}
 	
 	override Void delete() {
 		if (exists) {
 			map := map
-			map.keys.each { webReq().session.remove(it) }
-			webReq().session.delete
+			map.keys.each { reqState().webReq.session.remove(it) }
+			reqState().webReq.session.delete
 		}
 	}
 
@@ -180,8 +174,8 @@ internal const class HttpSessionImpl : HttpSession {
 		// need to preempt setting values
 		// FlashMiddleware happens too late 'cos the response has already been committed (usually) 
 		// when we try to create the cookie  
-		webReq().session.id
-		return flashMapNewRef.val
+		reqState().webReq.session.id
+		return reqState().flashMapNew
 	}
 
 	override Bool flashExists() {
@@ -189,14 +183,16 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void _initFlash() {
+		reqState	:= (RequestState) reqState()
 		carriedOver := get("afBedSheet.flash")
-		flashMapOldRef.val = carriedOver ?: emptyRoMap
-		flashMapNewRef.val = ((Str:Obj?) flashMapOldRef.val).rw
+		reqState.flashMapOld = carriedOver ?: emptyRoMap
+		reqState.flashMapNew = reqState.flashMapOld.rw
 	}
 
 	override Void _finalFlash() {
-		flashMapOld := (Str:Obj?) flashMapOldRef.val
-		flashMapNew := (Str:Obj?) flashMapNewRef.val
+		reqState	:= reqState()
+		flashMapOld := reqState.flashMapOld
+		flashMapNew := reqState.flashMapNew
 
 		// TODO: replace flash map with a pseudo map so we can capture the get and set operations.
 		// - benefits are, we can capture the set() method to make note of re-setting keys 

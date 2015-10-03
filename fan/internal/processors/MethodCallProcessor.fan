@@ -1,5 +1,4 @@
 using afIoc3
-using afConcurrent
 
 ** Public in case someone wants to switch on method calling via IoC.
 ** pre>
