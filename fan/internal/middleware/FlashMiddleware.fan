@@ -1,5 +1,4 @@
 using afIoc3::Inject
-using afConcurrent::LocalRef
 
 internal const class FlashMiddleware : Middleware {
 	

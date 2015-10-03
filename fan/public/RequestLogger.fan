@@ -7,7 +7,7 @@
 ** pre>
 ** syntax: fantom
 ** 
-** using afIoc3
+** using afIoc
 ** using afConcurrent
 **
 ** const class BasicRequestLogger : RequestLogger {

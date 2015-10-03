@@ -1,5 +1,4 @@
 using afIoc3
-using afConcurrent
 
 internal const class FieldProcessor : ResponseProcessor {
 	@Inject private const ObjCache		objCache

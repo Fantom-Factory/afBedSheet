@@ -3,6 +3,7 @@ abstract internal class BsTest : Test {
 	
 	override Void setup() {
 		Log.get("afIoc").level 		= LogLevel.warn
+		Log.get("afIoc3").level 	= LogLevel.warn
 		Log.get("afBedSheet").level = LogLevel.warn
 	}
 	

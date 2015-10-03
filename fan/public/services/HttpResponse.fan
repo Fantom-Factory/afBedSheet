@@ -1,9 +1,5 @@
 using afIoc3::Inject
-using afIoc3::Registry
-using afConcurrent::LocalRef
 using web::Cookie
-using web::WebReq
-using web::WebRes
 
 ** (Service) - An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
@@ -81,12 +77,9 @@ const class HttpResponseWrapper : HttpResponse {
 internal const class HttpResponseImpl : HttpResponse {
 	
 	@Inject	{ id="afBedSheet::HttpOutStream" }
-			private const |->OutStream|	outStream
-	@Inject	private const |->WebRes|	webRes
-	@Inject	private const LocalRef		localGzip
-	@Inject	private const LocalRef		bufferingRef
-	@Inject	private const LocalRef		resHeadersRef
-
+			private const |->OutStream|		outStream
+	@Inject private const |->RequestState|	reqState
+	
 	override const HttpResponseHeaders	headers
 
 	new make(|This|in) { 
@@ -94,29 +87,27 @@ internal const class HttpResponseImpl : HttpResponse {
 		this.headers = HttpResponseHeaders(|->Str:Str| {
 			// cache the headers so we can access / read it after the response has been committed - handy for logging
 			// note this only works while 'webRes.headers' returns the actual map used, and not a copy
-			if (!resHeadersRef.isMapped)
-				resHeadersRef.val = webRes().headers 
-			return resHeadersRef.val
+			reqState().responseHeaders
 		}, |->| {
-			if (webRes().isCommitted)
+			if (reqState().webRes.isCommitted)
 				throw Err("HTTP Response has already been committed")
 		})
 	} 
 
 	override Bool disableGzip {
-		get { localGzip.val ?: false }
-		set { localGzip.val = it}
+		get { reqState().disableGzip ?: false }
+		set { reqState().disableGzip = it}
 	}
 	override Bool disableBuffering {
-		get { bufferingRef.val ?: false }
-		set { bufferingRef.val = it}
+		get { reqState().disableBuffering ?: false }
+		set { reqState().disableBuffering = it}
 	}
 	override Int statusCode {
-		get { webRes().statusCode }
-		set { webRes().statusCode = it }
+		get { reqState().webRes.statusCode }
+		set { reqState().webRes.statusCode = it }
 	}	
 	override Bool isCommitted() {
-		webRes().isCommitted
+		reqState().webRes.isCommitted
 	}
 	override OutStream out() {
 		outStream()

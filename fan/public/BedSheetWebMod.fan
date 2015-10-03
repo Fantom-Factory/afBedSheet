@@ -2,7 +2,6 @@ using concurrent::Actor
 using concurrent::ActorPool
 using concurrent::AtomicRef
 using concurrent::AtomicBool
-using afConcurrent::LocalRef
 using web::WebMod
 using web::WebReq
 using web::WebRes

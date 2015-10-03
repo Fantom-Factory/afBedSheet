@@ -1,6 +1,5 @@
 using afIoc3::Inject
 using afIoc3::Registry
-using afConcurrent::LocalRef
 using web::WebReq
 using inet::IpAddr
 using inet::SocketOptions
@@ -126,16 +125,13 @@ const class HttpRequestWrapper : HttpRequest {
 }
 
 internal const class HttpRequestImpl : HttpRequest {	
-	override const HttpRequestHeaders headers
-	@Inject private const LocalRef bodyRef
+	override const HttpRequestHeaders	headers
+	@Inject  const |->RequestState|?	reqState	// nullable for testing
 	
 	new make(|This|? in := null) { 
 		in?.call(this) 
 		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
-		if (bodyRef == null)
-			bodyRef = LocalRef("body")
 	}
-
 	override Bool isXmlHttpRequest() {
 		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false
 	}
@@ -167,9 +163,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.stash
 	}
 	override HttpRequestBody body() {
-		if (bodyRef.val == null)
-			bodyRef.val = HttpRequestBody(webReq)
-		return bodyRef.val
+		reqState().requestBody
 	}
 	override SocketOptions socketOptions()	{
 		webReq.socketOptions
