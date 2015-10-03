@@ -54,8 +54,6 @@ const class BedSheetModule {
 		defs.addServiceType(RequestState#)			.withScope("request")
 	}
 
-	// No need for a proxy, you don't advice the pipeline, you contribute to it!
-	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
 	@Build { scopes=["root"] }
 	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
@@ -221,49 +219,49 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ErrPrinterHtml# }
 	static Void contributeErrPrinterHtml(Configuration config) {
-		printer := (ErrPrinterHtmlSections) config.build(ErrPrinterHtmlSections#)
+		funcArgs := [config.build(ErrPrinterHtmlSections#)]
 
 		// these are all the sections you see on the Err500 page
-		config["afBedSheet.causes"]					= |WebOutStream out, Err? err| { printer.printCauses				(out, err) }
-		config["afBedSheet.availableValues"]		= |WebOutStream out, Err? err| { printer.printAvailableValues		(out, err) }
-		config["afBedSheet.iocOperationTrace"]		= |WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) }
-		config["afBedSheet.stackTrace"]				= |WebOutStream out, Err? err| { printer.printStackTrace			(out, err) }
-		config["afBedSheet.requestDetails"]			= |WebOutStream out, Err? err| { printer.printRequestDetails		(out, err) }
-		config["afBedSheet.requestHeaders"]			= |WebOutStream out, Err? err| { printer.printRequestHeaders		(out, err) }
-		config["afBedSheet.formParameters"]			= |WebOutStream out, Err? err| { printer.printFormParameters		(out, err) }
-		config["afBedSheet.session"]				= |WebOutStream out, Err? err| { printer.printSession				(out, err) }
-		config["afBedSheet.cookies"]				= |WebOutStream out, Err? err| { printer.printCookies				(out, err) }
-		config["afBedSheet.locales"]				= |WebOutStream out, Err? err| { printer.printLocales				(out, err) }
-		config["afBedSheet.iocConfig"]				= |WebOutStream out, Err? err| { printer.printIocConfig				(out, err) }
-		config["afBedSheet.routes"]					= |WebOutStream out, Err? err| { printer.printBedSheetRoutes		(out, err) }
-		config["afBedSheet.locals"]					= |WebOutStream out, Err? err| { printer.printLocals				(out, err) }
-		config["afBedSheet.actorPools"]				= |WebOutStream out, Err? err| { printer.printActorPools			(out, err) }
-		config["afBedSheet.fantomEnvironment"]		= |WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) }
-		config["afBedSheet.fantomIndexedProps"]		= |WebOutStream out, Err? err| { printer.printFantomIndexedProps	(out, err) }
-		config["afBedSheet.fantomPods"]				= |WebOutStream out, Err? err| { printer.printFantomPods			(out, err) }
-		config["afBedSheet.environmentVariables"]	= |WebOutStream out, Err? err| { printer.printEnvironmentVariables	(out, err) }
-		config["afBedSheet.fantomDiagnostics"]		= |WebOutStream out, Err? err| { printer.printFantomDiagnostics		(out, err) }
+		config["afBedSheet.causes"]					= ErrPrinterHtmlSections#printCauses				.func.bind(funcArgs)
+		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs)
+		config["afBedSheet.iocOperationTrace"]		= ErrPrinterHtmlSections#printIocOperationTrace		.func.bind(funcArgs)
+		config["afBedSheet.stackTrace"]				= ErrPrinterHtmlSections#printStackTrace			.func.bind(funcArgs)
+		config["afBedSheet.requestDetails"]			= ErrPrinterHtmlSections#printRequestDetails		.func.bind(funcArgs)
+		config["afBedSheet.requestHeaders"]			= ErrPrinterHtmlSections#printRequestHeaders		.func.bind(funcArgs)
+		config["afBedSheet.formParameters"]			= ErrPrinterHtmlSections#printFormParameters		.func.bind(funcArgs)
+		config["afBedSheet.session"]				= ErrPrinterHtmlSections#printSession				.func.bind(funcArgs)
+		config["afBedSheet.cookies"]				= ErrPrinterHtmlSections#printCookies				.func.bind(funcArgs)
+		config["afBedSheet.locales"]				= ErrPrinterHtmlSections#printLocales				.func.bind(funcArgs)
+		config["afBedSheet.iocConfig"]				= ErrPrinterHtmlSections#printIocConfig				.func.bind(funcArgs)
+		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printBedSheetRoutes		.func.bind(funcArgs)
+		config["afBedSheet.locals"]					= ErrPrinterHtmlSections#printLocals				.func.bind(funcArgs)
+		config["afBedSheet.actorPools"]				= ErrPrinterHtmlSections#printActorPools			.func.bind(funcArgs)
+		config["afBedSheet.fantomEnvironment"]		= ErrPrinterHtmlSections#printFantomEnvironment		.func.bind(funcArgs)
+		config["afBedSheet.fantomIndexedProps"]		= ErrPrinterHtmlSections#printFantomIndexedProps	.func.bind(funcArgs)
+		config["afBedSheet.fantomPods"]				= ErrPrinterHtmlSections#printFantomPods			.func.bind(funcArgs)
+		config["afBedSheet.environmentVariables"]	= ErrPrinterHtmlSections#printEnvironmentVariables	.func.bind(funcArgs)
+		config["afBedSheet.fantomDiagnostics"]		= ErrPrinterHtmlSections#printFantomDiagnostics		.func.bind(funcArgs)
 	}
 
 	@Contribute { serviceType=ErrPrinterStr# }
 	static Void contributeErrPrinterStr(Configuration config) {
-		printer := (ErrPrinterStrSections) config.build(ErrPrinterStrSections#)
+		funcArgs := [config.build(ErrPrinterStrSections#)]
 		
 		// these are all the sections you see in the Err log
-		config["afBedSheet.causes"]				=  |StrBuf out, Err? err| { printer.printCauses				(out, err) }
-		config["afBedSheet.availableValues"]	=  |StrBuf out, Err? err| { printer.printAvailableValues	(out, err) }
-		config["afBedSheet.iocOperationTrace"]	=  |StrBuf out, Err? err| { printer.printIocOperationTrace	(out, err) }
-		config["afBedSheet.stackTrace"]			=  |StrBuf out, Err? err| { printer.printStackTrace			(out, err) }
-		config["afBedSheet.requestDetails"]		=  |StrBuf out, Err? err| { printer.printRequestDetails		(out, err) }
-		config["afBedSheet.requestHeaders"]		=  |StrBuf out, Err? err| { printer.printRequestHeaders		(out, err) }
-		config["afBedSheet.formParameters"]		=  |StrBuf out, Err? err| { printer.printFormParameters		(out, err) }
-		config["afBedSheet.session"]			=  |StrBuf out, Err? err| { printer.printSession			(out, err) }
-		config["afBedSheet.cookies"]			=  |StrBuf out, Err? err| { printer.printCookies			(out, err) }
-		config["afBedSheet.locales"]			=  |StrBuf out, Err? err| { printer.printLocales			(out, err) }
-		config["afBedSheet.iocConfig"]			=  |StrBuf out, Err? err| { printer.printIocConfig			(out, err) }
-		config["afBedSheet.routes"]				=  |StrBuf out, Err? err| { printer.printRoutes				(out, err) }
-		config["afBedSheet.locals"]				=  |StrBuf out, Err? err| { printer.printLocals				(out, err) }
-		config["afBedSheet.actorPools"]			=  |StrBuf out, Err? err| { printer.printActorPools			(out, err) }
+		config["afBedSheet.causes"]				=  ErrPrinterStrSections#printCauses			.func.bind(funcArgs)
+		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs)
+		config["afBedSheet.iocOperationTrace"]	=  ErrPrinterStrSections#printIocOperationTrace	.func.bind(funcArgs)
+		config["afBedSheet.stackTrace"]			=  ErrPrinterStrSections#printStackTrace		.func.bind(funcArgs)
+		config["afBedSheet.requestDetails"]		=  ErrPrinterStrSections#printRequestDetails	.func.bind(funcArgs)
+		config["afBedSheet.requestHeaders"]		=  ErrPrinterStrSections#printRequestHeaders	.func.bind(funcArgs)
+		config["afBedSheet.formParameters"]		=  ErrPrinterStrSections#printFormParameters	.func.bind(funcArgs)
+		config["afBedSheet.session"]			=  ErrPrinterStrSections#printSession			.func.bind(funcArgs)
+		config["afBedSheet.cookies"]			=  ErrPrinterStrSections#printCookies			.func.bind(funcArgs)
+		config["afBedSheet.locales"]			=  ErrPrinterStrSections#printLocales			.func.bind(funcArgs)
+		config["afBedSheet.iocConfig"]			=  ErrPrinterStrSections#printIocConfig			.func.bind(funcArgs)
+		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs)
+		config["afBedSheet.locals"]				=  ErrPrinterStrSections#printLocals			.func.bind(funcArgs)
+		config["afBedSheet.actorPools"]			=  ErrPrinterStrSections#printActorPools		.func.bind(funcArgs)
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
