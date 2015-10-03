@@ -103,7 +103,7 @@ const mixin FileHandler : ClientAssetProducer {
 internal const class FileHandlerImpl : FileHandler {
 	
 	@Inject	private const |->ClientAssetCache|	assetCache
-	@Inject	private const Registry				registry
+	@Inject	private const Scope					scope
 			override const Uri:File 			directoryMappings
 		
 	new make(Uri:File dirMappings, |This|? in) {
@@ -185,7 +185,7 @@ internal const class FileHandlerImpl : FileHandler {
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 
-			return registry.autobuild(FileAsset#, [localUrl, file])
+			return scope.build(FileAsset#, [localUrl, file])
 		}
 		
 		return cache ? assetCache().getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl)

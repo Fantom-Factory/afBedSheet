@@ -34,7 +34,6 @@ const class BedSheetModule {
 		defs.addServiceType(BedSheetPages#)			.withRootScope
 		
 		// Public services - request
-		defs.addServiceType(RequestLogMiddleware#)	.withRootScope
 		defs.addServiceType(RequestLoggers#)		.withRootScope
 		defs.addServiceType(HttpSession#)			.withRootScope
 		defs.addServiceType(HttpCookies#)			.withRootScope
@@ -58,19 +57,18 @@ const class BedSheetModule {
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
 	@Build
-	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Scope reg, RequestLogMiddleware oldLogger, RequestLoggers reqLogger) {
+	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, PipelineBuilder bob, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware?[
 			// FIXME: merge these into ONE to reduce stacktrace
-			reg.build(CleanupMiddleware#),
+			scope.build(CleanupMiddleware#),
 			// loggers wrap ErrMiddleware so they can report 500 errors
 			// remove unused middleware so they don'y clog up stack traces
-			oldLogger.dir == null			 ? null : oldLogger,
 			reqLogger.requestLoggers.isEmpty ? null : reqLogger,
-			reg.build(ErrMiddleware#),
-			reg.build(FlashMiddleware#)
+			scope.build(ErrMiddleware#),
+			scope.build(FlashMiddleware#)
 		].addAll(userMiddleware).exclude { it == null }
-		terminator := reg.build(MiddlewareTerminator#)
+		terminator := scope.build(MiddlewareTerminator#)
 		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
 	}
 
@@ -84,7 +82,7 @@ const class BedSheetModule {
 		makeDelegateChain(builders, reg.build(HttpResponseImpl#))
 	}
  
-	@Build { serviceId="afBedSheet::HttpOutStream"; scopes=["request"] }
+	@Build { serviceId="afBedSheet::HttpOutStream" }
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Scope reg) {
 		makeDelegateChain(builders, reg.build(WebResOutProxy#))
 	}
@@ -294,10 +292,6 @@ const class BedSheetModule {
 		
 		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).toImmutableFunc
 		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).toImmutableFunc
-
-		config[BedSheetConfigIds.requestLogDir]				= null
-		config[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
-		config[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 	
 	@Contribute { serviceType=StackFrameFilter# }
@@ -339,13 +333,6 @@ const class BedSheetModule {
 			config["afBedSheet.validateHost"] = |->| {
 				host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
 				validateHost(host)
-			}
-		}
-		
-		bob.onRegistryShutdown |config| {
-			logMiddleware	:= (RequestLogMiddleware) config.scope.serviceById(RequestLogMiddleware#.qname)
-			config["afBedSheet.requestLogFilter"] = |->| {
-				logMiddleware.shutdown
 			}
 		}
 	}

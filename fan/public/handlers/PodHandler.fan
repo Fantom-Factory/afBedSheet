@@ -1,5 +1,5 @@
 using afIoc3::Inject
-using afIoc3::Registry
+using afIoc3::Scope
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 
@@ -112,7 +112,7 @@ internal const class PodHandlerImpl : PodHandler {
 	@Config { id="afBedSheet.podHandler.baseUrl" }
 	@Inject override const Uri?					baseUrl
 	@Inject	private const |->ClientAssetCache|	assetCache
-	@Inject	private const Registry				registry
+	@Inject	private const Scope					scope
 			private const Regex[] 				whitelistFilters
 	
 	new make(Regex[] filters, |This|? in) {
@@ -192,7 +192,7 @@ internal const class PodHandlerImpl : PodHandler {
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 			
-			return registry.autobuild(FileAsset#, [localUrl, file])
+			return scope.build(FileAsset#, [localUrl, file])
 		}
 		
 		return cache ? assetCache().getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl) 

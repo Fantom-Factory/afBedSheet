@@ -1,9 +1,7 @@
 using afIoc3
 using concurrent
 
-// TODO: make FileAsset internal and remove @Deprecated
-@NoDoc @Deprecated { msg="Use Asset or ClientAsset instead" }
-const class FileAsset : ClientAsset {
+internal const class FileAsset : ClientAsset {
 
 			 const 	File			file
 	override const 	Bool			exists
@@ -13,7 +11,7 @@ const class FileAsset : ClientAsset {
 	override const 	Uri?			localUrl
 			const 	Uri?			legacyClientUrl
 
-	@NoDoc	// used by Asset.makeFromFile()
+	// used by Asset.makeFromFile()
 	internal new makeStatic(File file, |This|? in) : super.make(in) {
 		this.file 		= file
 		this.exists		= file.exists
@@ -22,13 +20,12 @@ const class FileAsset : ClientAsset {
 		this.contentType= exists ? file.mimeType : null
 	}
 
-	@NoDoc @Deprecated { msg="Use Asset.makeFromFile() instead" }
 	new makeLegacy(File file, Uri? localUrl, Uri? clientUrl) : this.makeStatic(file, null) {
 		this.localUrl			= localUrl
 		this.legacyClientUrl	= clientUrl
 	}
 
-	@NoDoc @Inject	// the autobuild ctor you should use
+	@Inject	// the autobuild ctor you should use
 	new makeCachable(Uri localUrl, File file, |This|in) : this.makeStatic(file, in) {
 		this.localUrl		= localUrl
 	}

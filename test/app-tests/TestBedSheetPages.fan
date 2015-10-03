@@ -9,7 +9,7 @@ internal class TestBedSheetPages : AppTest {
 	@Inject BedSheetPages? pages
 	
 	Void testPagesAreValidXml() {
-		registry.injectIntoFields(this)
+		registry.rootScope.inject(this)
 		Actor.locals["web.req"] = T_WebReq()
 		Actor.locals["web.res"] = T_WebRes()
 

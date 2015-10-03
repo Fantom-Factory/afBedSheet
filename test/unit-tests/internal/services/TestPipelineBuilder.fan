@@ -11,7 +11,7 @@ internal class TestPipelineBuilder : BsTest {
 
 	override Void setup() {
 		reg 	= RegistryBuilder().addModule(T_PipeMod#).build
-		bob 	= (PipelineBuilder) reg.dependencyByType(PipelineBuilder#)
+		bob 	= (PipelineBuilder) reg.rootScope.serviceByType(PipelineBuilder#)
 		term	= T_MyService75Term("T")
 		t75		= T_MyService75#
 		t76		= T_MyService76#		
@@ -120,9 +120,9 @@ const class T_MyService76Num : T_MyService76 {
 
 @SubModule { modules=[PlasticModule#] }
 internal const class T_PipeMod {
-	static Void defineServices(ServiceDefinitions defs) {
-		defs.add(PipelineBuilder#)
-		defs.add(ActorPools#)
+	static Void defineServices(RegistryBuilder defs) {
+		defs.addServiceType(PipelineBuilder#)
+		defs.addServiceType(ActorPools#)
 	}
 	
 	@Contribute { serviceType=ActorPools# }
