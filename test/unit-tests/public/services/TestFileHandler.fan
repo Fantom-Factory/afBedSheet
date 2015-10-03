@@ -2,7 +2,6 @@ using afIoc3
 using afIocEnv
 using afIocConfig
 using afBeanUtils
-using afPlastic
 using concurrent
 
 internal class TestFileHandler : BsTest {
@@ -132,7 +131,7 @@ internal class TestFileHandler : BsTest {
 	}
 }
 
-@SubModule { modules=[PlasticModule#, ConfigModule#, IocEnvModule#]}
+@SubModule { modules=[ConfigModule#, IocEnvModule#]}
 internal const class AssetCacheModule {
 	static const AtomicRef	urlRef	:= AtomicRef()
 	static Void defineServices(RegistryBuilder defs) {
