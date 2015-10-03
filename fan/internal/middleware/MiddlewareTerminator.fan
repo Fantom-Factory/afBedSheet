@@ -2,7 +2,7 @@ using afIoc3::Inject
 using afIoc3::Registry
 using afIocConfig::Config
 
-const internal class MiddlewareTerminator : MiddlewarePipeline {
+const internal class MiddlewareTerminator : Middleware {
 
 	@Inject	private const Routes				routes
 	@Inject	private const ResponseProcessors	responseProcessors 	
@@ -16,7 +16,7 @@ const internal class MiddlewareTerminator : MiddlewarePipeline {
 	
 	new make(|This|in) { in(this) }
 
-	override Void service() {
+	override Void service(MiddlewarePipeline pipeline) {
 		// distinguish between Not Found and Not Implemented depending on the requested HTTP method.
 		statusCode := status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
 		

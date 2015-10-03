@@ -47,43 +47,45 @@ const class BedSheetModule {
 		defs.addServiceType(ErrPrinterStr#)			.withRootScope
 		defs.addServiceType(ClientAssetProducers#)	.withRootScope
 		defs.addServiceType(ClientAssetCache#)		.withRootScope
-		defs.addServiceType(PipelineBuilder#)		.withRootScope
 		defs.addServiceType(ObjCache#)				.withRootScope
 
 		defs.addServiceType(ActorPools#)			.withRootScope
 		defs.addServiceType(ThreadLocalManager#)	.withRootScope
+
+		defs.addServiceType(RequestState#)			.withScope("request")
 	}
 
 	// No need for a proxy, you don't advice the pipeline, you contribute to it!
 	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
-	@Build
-	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, PipelineBuilder bob, RequestLoggers reqLogger) {
+	@Build { scopes=["root"] }
+	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware?[
 			// FIXME: merge these into ONE to reduce stacktrace
 			scope.build(CleanupMiddleware#),
 			// loggers wrap ErrMiddleware so they can report 500 errors
-			// remove unused middleware so they don'y clog up stack traces
-			reqLogger.requestLoggers.isEmpty ? null : reqLogger,
+			reqLogger,
 			scope.build(ErrMiddleware#),
 			scope.build(FlashMiddleware#)
-		].addAll(userMiddleware).exclude { it == null }
-		terminator := scope.build(MiddlewareTerminator#)
-		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
+		].addAll(userMiddleware).add(scope.build(MiddlewareTerminator#))
+		return scope.build(MiddlewarePipelineImpl#, [middleware])
 	}
 
-	@Build
+	@Build { scopes=["root"] }
 	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope reg) {
-		makeDelegateChain(builders, reg.build(HttpRequestImpl#))
+		httpReq := reg.build(HttpRequestImpl#)
+		return builders.isEmpty ? httpReq : makeDelegateChain(builders, httpReq)
 	}
 
-	@Build
+	@Build { scopes=["root"] }
 	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope reg) {
-		makeDelegateChain(builders, reg.build(HttpResponseImpl#))
+		httpRes := reg.build(HttpResponseImpl#)
+		return builders.isEmpty ? httpRes : makeDelegateChain(builders, httpRes)
 	}
  
-	@Build { serviceId="afBedSheet::HttpOutStream" }
+	@Build { serviceId="afBedSheet::HttpOutStream"; scopes=["request"] }
 	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Scope reg) {
+		// FIXME: don't build OutStream builders every request
 		makeDelegateChain(builders, reg.build(WebResOutProxy#))
 	}
 
@@ -126,12 +128,6 @@ const class BedSheetModule {
 	static Void contributeAssetProducers(Configuration config, FileHandler fileHandler, PodHandler podHandler) {
 		config["afBedSheet.fileHandler"] = fileHandler
 		config["afBedSheet.podHandler"]  = podHandler
-	}
-
-	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(Configuration config) {
-		// TODO: @Deprecated delete placeholder
-		config.addPlaceholder("afBedSheet.fileHandler")
 	}
 	
 	@Contribute { serviceId="afBedSheet::HttpOutStream" }

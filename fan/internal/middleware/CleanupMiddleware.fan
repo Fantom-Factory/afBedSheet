@@ -10,19 +10,16 @@ internal const class CleanupMiddleware : Middleware {
 
 	new make(|This|in) { in(this) }
 	
-	override Void service(MiddlewarePipeline pipeline) {
-		
-		scope.createChildScope("request") {
-			try {
-				pipeline.service
-	
-			} finally {
-				// this commits the response (by calling res.out) if it hasn't already
-				// e.g. 304's and redirects have no body, so need to be committed here
-				httpResponse.out.close
-				
-				localManager.cleanUpThread
-			}
+	override Void service(MiddlewarePipeline pipeline) {		
+		try {
+			pipeline.service
+
+		} finally {
+			// this commits the response (by calling res.out) if it hasn't already
+			// e.g. 304's and redirects have no body, so need to be committed here
+			httpResponse.out.close
+			
+			localManager.cleanUpThread
 		}
 	}
 }
