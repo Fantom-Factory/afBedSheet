@@ -10,7 +10,7 @@ internal class TestMetaData : AppTest {
 		iocModules = [T_WelcomeMod2#]
 		super.setup
 		
-		meta := (RegistryMeta) registry.serviceById(RegistryMeta#.qname)
+		meta := (RegistryMeta) registry.rootScope.serviceById(RegistryMeta#.qname)
 		verifyEq(meta[BsConstants.meta_appModule], T_WelcomeMod2#)
 		verifyEq(meta[BsConstants.meta_appPod], this.typeof.pod)
 	}

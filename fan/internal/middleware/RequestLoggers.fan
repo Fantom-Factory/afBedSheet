@@ -43,6 +43,7 @@ const class BasicRequestLogger : RequestLogger {
 		startTime.val = Duration.now
 	}
 
+	// FIXME: configure loggin to be INFO by default
 	override Void logOutgoing() {
 		if (log.isDebug) {
 			// attempt to keep the standard debug line at 120 chars (120 isn't special, it just seems to be a manageable width)

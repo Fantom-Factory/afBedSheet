@@ -1,9 +1,8 @@
-using afIoc3::Inject
-using afIoc3::Registry
+using afIoc3
 
 internal const class T_PageHandler {
 	
-	@Inject	private const Registry 			registry
+	@Inject	private const Scope 			scope
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
@@ -24,7 +23,7 @@ internal const class T_PageHandler {
 	}
 	
 	Obj iocErr() {
-		registry.autobuild(AutoBoom#)
+		scope.build(AutoBoom#)
 	}
 	
 	// ---- Buff Pages ----

@@ -12,8 +12,9 @@ internal class TestBuff : AppTest {
 		// WISP only sets the transfer-Encoding for persistent connections
 		client.reqHeaders["Connection"] = "keep-alive"
 		client.writeReq
-		client.readRes		
-			
+		client.readRes
+
+		echo(client.resHeaders)
 		verifyEq(client.resHeaders["Transfer-Encoding"], "chunked")
 		verifyFalse(client.resHeaders.containsKey("Content-Length"), "chunked")
 		verifyEq(client.resCode, 200)
