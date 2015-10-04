@@ -135,11 +135,11 @@ internal class TestFileHandler : BsTest {
 internal const class AssetCacheModule {
 	static const AtomicRef	urlRef	:= AtomicRef()
 	static Void defineServices(RegistryBuilder defs) {
-		defs.addServiceType(FileHandler#)
-		defs.addServiceType(ClientAssetCache#)
-		defs.addServiceType(ClientAssetProducers#)
-		defs.addServiceType(BedSheetServer#)
-		defs.addServiceType(ActorPools#)
+		defs.addService(FileHandler#)
+		defs.addService(ClientAssetCache#)
+		defs.addService(ClientAssetProducers#)
+		defs.addService(BedSheetServer#)
+		defs.addService(ActorPools#)
 	}
 
 	@Contribute { serviceType=ActorPools# }

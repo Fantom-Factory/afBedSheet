@@ -76,10 +76,7 @@ const class HttpResponseWrapper : HttpResponse {
 
 internal const class HttpResponseImpl : HttpResponse {
 	
-	@Inject	{ id="afBedSheet::HttpOutStream" }
-			private const |->OutStream|		outStream
-	@Inject private const |->RequestState|	reqState
-	
+	@Inject  const |->RequestState|		reqState
 	override const HttpResponseHeaders	headers
 
 	new make(|This|in) { 
@@ -110,7 +107,7 @@ internal const class HttpResponseImpl : HttpResponse {
 		reqState().webRes.isCommitted
 	}
 	override OutStream out() {
-		outStream()
+		reqState().out
 	}
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "Attachment; filename=${fileName}"

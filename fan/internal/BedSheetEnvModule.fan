@@ -5,7 +5,7 @@ using afIocEnv
 ** We want to make IocEnv ourselves, but we don't want to incur the overhead of an override Id 
 ** This is 'cos most people will want to override our override in tests - it makes it all, um, icky!
 internal const class BedSheetEnvModule {
-	@Build
+	@Build	// define our own env from meta - so we can pass it through from BedSheetBuilder
 	private static IocEnv buildIocEnv(RegistryMeta meta) {
 		IocEnv(meta["afBedSheet.env"])
 	}
