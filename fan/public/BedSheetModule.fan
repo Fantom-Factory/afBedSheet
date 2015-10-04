@@ -17,50 +17,50 @@ const class BedSheetModule {
 	static Void defineServices(RegistryBuilder defs) {
 
 		// Route handlers
-		defs.addServiceType(FileHandler#)			.withRootScope
-		defs.addServiceType(PodHandler#)			.withRootScope
+		defs.addService(FileHandler#)			.withRootScope
+		defs.addService(PodHandler#)			.withRootScope
 
 		// Collections (services with contributions)
-		defs.addServiceType(ResponseProcessors#)	.withRootScope
-		defs.addServiceType(ErrResponses#)			.withRootScope
-		defs.addServiceType(HttpStatusResponses#)	.withRootScope
-		defs.addServiceType(Routes#)				.withRootScope
-		defs.addServiceType(ValueEncoders#)			.withRootScope
+		defs.addService(ResponseProcessors#)	.withRootScope
+		defs.addService(ErrResponses#)			.withRootScope
+		defs.addService(HttpStatusResponses#)	.withRootScope
+		defs.addService(Routes#)				.withRootScope
+		defs.addService(ValueEncoders#)			.withRootScope
 		
 		// Public services - root
-		defs.addServiceType(BedSheetServer#)		.withRootScope
-		defs.addServiceType(GzipCompressible#)		.withRootScope
-		defs.addServiceType(BedSheetPages#)			.withRootScope
+		defs.addService(BedSheetServer#)		.withRootScope
+		defs.addService(GzipCompressible#)		.withRootScope
+		defs.addService(BedSheetPages#)			.withRootScope
 		
 		// Public services - request
-		defs.addServiceType(RequestLoggers#)		.withRootScope
-		defs.addServiceType(HttpSession#)			.withRootScope
-		defs.addServiceType(HttpCookies#)			.withRootScope
+		defs.addService(RequestLoggers#)		.withRootScope
+		defs.addService(HttpSession#)			.withRootScope
+		defs.addService(HttpCookies#)			.withRootScope
 
 		// Other services - root
-		defs.addServiceType(StackFrameFilter#)		.withRootScope
+		defs.addService(StackFrameFilter#)		.withRootScope
 		
 		// Other services - request
-		defs.addServiceType(NotFoundPrinterHtml#)	.withRootScope
-		defs.addServiceType(ErrPrinterHtml#)		.withRootScope
-		defs.addServiceType(ErrPrinterStr#)			.withRootScope
-		defs.addServiceType(ClientAssetProducers#)	.withRootScope
-		defs.addServiceType(ClientAssetCache#)		.withRootScope
-		defs.addServiceType(ObjCache#)				.withRootScope
+		defs.addService(NotFoundPrinterHtml#)	.withRootScope
+		defs.addService(ErrPrinterHtml#)		.withRootScope
+		defs.addService(ErrPrinterStr#)			.withRootScope
+		defs.addService(ClientAssetProducers#)	.withRootScope
+		defs.addService(ClientAssetCache#)		.withRootScope
+		defs.addService(ObjCache#)				.withRootScope
 
-		defs.addServiceType(ActorPools#)			.withRootScope
-		defs.addServiceType(ThreadLocalManager#)	.withRootScope
+		defs.addService(ActorPools#)			.withRootScope
+		defs.addService(ThreadLocalManager#)	.withRootScope
 
-		defs.addServiceType(RequestState#)			.withScope("request")
+		defs.addService(HttpOutStreamBuilder#)	.withRootScope
+
+		defs.addService(RequestState#)			.withScope("request")
 	}
 
 	@Build { scopes=["root"] }
 	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware?[
-			// FIXME: merge these into ONE to reduce stacktrace
-			scope.build(CleanupMiddleware#),
-			// loggers wrap ErrMiddleware so they can report 500 errors
+			// loggers wrap SystemMiddleware so they can report 500 errors
 			reqLogger,
 			scope.build(ErrMiddleware#),
 			scope.build(FlashMiddleware#)
@@ -69,21 +69,15 @@ const class BedSheetModule {
 	}
 
 	@Build { scopes=["root"] }
-	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope reg) {
-		httpReq := reg.build(HttpRequestImpl#)
+	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope scope) {
+		httpReq := scope.build(HttpRequestImpl#)
 		return builders.isEmpty ? httpReq : makeDelegateChain(builders, httpReq)
 	}
 
 	@Build { scopes=["root"] }
-	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope reg) {
-		httpRes := reg.build(HttpResponseImpl#)
+	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope scope) {
+		httpRes := scope.build(HttpResponseImpl#)
 		return builders.isEmpty ? httpRes : makeDelegateChain(builders, httpRes)
-	}
- 
-	@Build { serviceId="afBedSheet::HttpOutStream"; scopes=["request"] }
-	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Scope reg) {
-		// FIXME: don't build OutStream builders every request
-		makeDelegateChain(builders, reg.build(WebResOutProxy#))
 	}
 
 	@Build { scopes=["request"] }	
@@ -118,7 +112,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=RequestLoggers# }
 	static Void contributeRequestLoggers(Configuration config) {
-		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#)
+		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#, [true, 120])
 	}
 
 	@Contribute { serviceType=ClientAssetProducers# }
@@ -127,7 +121,7 @@ const class BedSheetModule {
 		config["afBedSheet.podHandler"]  = podHandler
 	}
 	
-	@Contribute { serviceId="afBedSheet::HttpOutStream" }
+	@Contribute { serviceType=HttpOutStreamBuilder# }
 	static Void contributeHttpOutStream(Configuration config) {
 		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()				// inner
 		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe

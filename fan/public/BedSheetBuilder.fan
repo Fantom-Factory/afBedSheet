@@ -106,8 +106,7 @@ class BedSheetBuilder {
 	** Builds the IoC 'Registry'. 
 	** Note that this does **NOT** call 'startup()' on the registry.
 	Registry build() {
-		// FIXME:
-//		registryBuilder.removeModule(IocEnvModule#)
+		registryBuilder.removeModule(IocEnvModule#)
 		return registryBuilder.build
 	}
 

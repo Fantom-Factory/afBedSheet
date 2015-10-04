@@ -27,10 +27,10 @@ internal class TestRoutes : BsTest {
 
 internal const class T_MyModule02 {
 	static Void defineServices(RegistryBuilder defs) {
-		defs.addServiceType(Routes#)
-		defs.addServiceType(ResponseProcessors#)
-		defs.addServiceType(ValueEncoders#)
-		defs.addServiceType(ObjCache#)
+		defs.addService(Routes#)
+		defs.addService(ResponseProcessors#)
+		defs.addService(ValueEncoders#)
+		defs.addService(ObjCache#)
 	}	
 
 	@Contribute { serviceType=Routes# }
