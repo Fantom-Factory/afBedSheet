@@ -43,7 +43,7 @@ const class BasicRequestLogger : RequestLogger {
 			log.level = LogLevel.debug
 		this.minLogWidth = minLogWidth
 	}
-	
+
 	// FIXME: configure loggin to be INFO by default? Pod.fandoc
 	override Void logOutgoing() {
 		if (log.isDebug) {

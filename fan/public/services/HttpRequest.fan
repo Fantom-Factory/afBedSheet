@@ -96,11 +96,6 @@ const mixin HttpRequest {
 
 	abstract SocketOptions socketOptions()
 	
-	@NoDoc @Deprecated { msg="Use 'body.in()' instead." }
-	InStream in() { body.in }
-
-	@NoDoc @Deprecated { msg="Use 'body.form()' instead." }
-	[Str:Str]? form() { body.form }
 }
 
 ** Wraps a given `HttpRequest`, delegating all its methods. 

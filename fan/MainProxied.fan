@@ -13,5 +13,6 @@ class MainProxied : AbstractMain {
 		prt := bob.options[BsConstants.meta_appPort]
 		mod := BedSheetBootMod(bob)
 		return WebModRunner().run(mod, prt)
+		return 4
 	}
 }

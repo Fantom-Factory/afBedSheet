@@ -110,6 +110,10 @@ internal const class T_PageHandler {
 		session["oops"] = #statusCode.params[0]
 		return Text.fromPlain("Wot no fail fast Err?")
 	}
+
+	Obj sessionBad2() {
+		return Text.fromPlain(session["oops"].toStr)
+	}
 	
 	// ---- Status Code Page ----
 	
