@@ -1,4 +1,4 @@
-using afIoc3::Inject
+using afIoc::Inject
 using afIocConfig::Config
 using concurrent::Actor
 using concurrent::ActorPool

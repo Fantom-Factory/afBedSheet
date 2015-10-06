@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using afConcurrent
 
 @NoDoc	// Advanced use only

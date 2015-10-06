@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using concurrent::Actor
 
 internal class TestRoutes : BsTest {

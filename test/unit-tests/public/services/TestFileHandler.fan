@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using afIocEnv
 using afIocConfig
 using afBeanUtils
@@ -131,7 +131,7 @@ internal class TestFileHandler : BsTest {
 	}
 }
 
-@SubModule { modules=[ConfigModule#, IocEnvModule#]}
+@SubModule { modules=[IocConfigModule#, IocEnvModule#]}
 internal const class AssetCacheModule {
 	static const AtomicRef	urlRef	:= AtomicRef()
 	static Void defineServices(RegistryBuilder defs) {

@@ -1,5 +1,5 @@
-using afIoc3::Inject
-using afIoc3::Scope
+using afIoc::Inject
+using afIoc::Scope
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 

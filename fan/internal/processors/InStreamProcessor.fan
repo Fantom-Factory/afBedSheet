@@ -1,4 +1,4 @@
-using afIoc3::Inject
+using afIoc::Inject
 using web::WebUtil
 
 ** Pipes the 'InStream' to res.out, closing the 'InStream'.

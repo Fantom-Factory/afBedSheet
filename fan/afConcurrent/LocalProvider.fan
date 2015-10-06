@@ -1,5 +1,5 @@
 using afConcurrent
-using afIoc3
+using afIoc
 
 internal const class LocalProvider : DependencyProvider {
 

@@ -1,6 +1,6 @@
 using web
-using afIoc3::Inject
-using afIoc3::Registry
+using afIoc::Inject
+using afIoc::Registry
 
 ** (Service) - Contribute your `Route` objects to this.
 ** 

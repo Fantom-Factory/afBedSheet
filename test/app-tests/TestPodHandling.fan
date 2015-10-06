@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using afIocConfig
 
 internal class TestPodHandling : AppTest {

@@ -1,4 +1,4 @@
-using afIoc3::RegistryMeta
+using afIoc::RegistryMeta
 using web::WebClient
 
 internal class TestMetaData : AppTest {

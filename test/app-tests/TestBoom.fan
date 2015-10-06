@@ -1,5 +1,5 @@
 using web
-using afIoc3
+using afIoc
 using afIocEnv::IocEnv
 using afIocConfig::ApplicationDefaults
 
