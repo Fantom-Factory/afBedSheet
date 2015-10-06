@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 
 ** Public in case someone wants to switch on method calling via IoC.
 ** pre>

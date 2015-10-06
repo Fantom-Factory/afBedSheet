@@ -1,5 +1,5 @@
 using afBeanUtils::NotFoundErr
-using afIoc3
+using afIoc
 using afIocConfig::Config
 using afIocConfig::ConfigSource
 using web::WebOutStream

@@ -1,4 +1,4 @@
-using afIoc3::Inject
+using afIoc::Inject
 using web::Cookie
 
 ** (Service) - An injectable 'const' version of [WebRes]`web::WebRes`.

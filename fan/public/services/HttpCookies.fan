@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using web
 
 ** (Service) - Use to manage your Cookies.

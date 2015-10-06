@@ -1,4 +1,4 @@
-using afIoc3::Inject
+using afIoc::Inject
 
 internal const class ErrProcessor : ResponseProcessor {
 	@Inject private const HttpRequest	httpRequest

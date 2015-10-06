@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 
 @NoDoc	// Don't overwhelm the masses
 const class RequestLoggers : Middleware {

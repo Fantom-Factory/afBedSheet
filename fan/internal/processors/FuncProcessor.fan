@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 
 internal const class FuncProcessor : ResponseProcessor {
 	@Inject	private const ObjCache	objCache

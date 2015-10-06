@@ -1,4 +1,4 @@
-using afIoc3::Inject
+using afIoc::Inject
 
 ** Create instances of RoutesMiddleware manually so you can pass in multiple 'Routes' objects.
 @NoDoc

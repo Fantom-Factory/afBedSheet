@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using xml
 using web
 using inet

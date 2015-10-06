@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using afIocConfig::Config
 
 ** Catches and processes Errs. This usually involves generating and sending a error page to the client. 

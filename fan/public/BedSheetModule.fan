@@ -1,5 +1,5 @@
 using web
-using afIoc3
+using afIoc
 using afIocEnv
 using afIocConfig
 using concurrent::Actor
@@ -9,7 +9,7 @@ using concurrent::ActorPool
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc
-@SubModule { modules=[ConfigModule#, BedSheetEnvModule#] }
+@SubModule { modules=[IocConfigModule#, BedSheetEnvModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup

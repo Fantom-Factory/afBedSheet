@@ -5,7 +5,7 @@ using concurrent::AtomicBool
 using web::WebMod
 using web::WebReq
 using web::WebRes
-using afIoc3
+using afIoc
 using afIocEnv::IocEnv
 using afIocConfig::ConfigSource
 

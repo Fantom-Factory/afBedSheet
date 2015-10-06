@@ -1,5 +1,5 @@
 using web::WebReq
-using afIoc3
+using afIoc
 
 ** (Service) - 
 ** A 'ClientAssetProducer' that maps URLs to files on the file system.

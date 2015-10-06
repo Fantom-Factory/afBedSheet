@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 using web
 
 internal class RequestState {	

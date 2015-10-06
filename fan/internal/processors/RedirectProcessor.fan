@@ -1,4 +1,4 @@
-using afIoc3::Inject
+using afIoc::Inject
 
 ** @see
 **  - http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection

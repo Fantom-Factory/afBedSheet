@@ -1,7 +1,7 @@
 using web::WebClient
-using afIoc3::Contribute
-using afIoc3::Inject
-using afIoc3::Configuration
+using afIoc::Contribute
+using afIoc::Inject
+using afIoc::Configuration
 using afIocConfig::ApplicationDefaults
 
 ** FileResponseProcessor sets the Content_Length, need to make sure it gets overwritten properly

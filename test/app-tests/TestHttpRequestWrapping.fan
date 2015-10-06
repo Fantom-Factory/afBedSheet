@@ -1,5 +1,5 @@
 using web::WebClient
-using afIoc3
+using afIoc
 
 internal class TestHttpRequestWrapping : AppTest {
 

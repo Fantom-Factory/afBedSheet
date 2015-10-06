@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 
 ** (Service) - Contribute your 'Middleware' classes to this.
 @NoDoc	// Don't overwhelm the masses!

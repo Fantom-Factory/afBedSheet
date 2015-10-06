@@ -1,5 +1,5 @@
-using afIoc3::Inject
-using afIoc3::Registry
+using afIoc::Inject
+using afIoc::Registry
 using web::WebReq
 using inet::IpAddr
 using inet::SocketOptions

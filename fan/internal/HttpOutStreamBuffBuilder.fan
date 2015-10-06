@@ -1,4 +1,4 @@
-using afIoc3
+using afIoc
 
 internal const class HttpOutStreamBuffBuilder : DelegateChainBuilder {
 	@Inject	private const Scope 		scope
