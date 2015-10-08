@@ -1,4 +1,5 @@
 using afIoc
+using afConcurrent::LocalRefManager
 
 ** (Service) - Contribute your 'Middleware' classes to this.
 @NoDoc	// Don't overwhelm the masses!
@@ -10,10 +11,10 @@ const mixin MiddlewarePipeline {
 
 internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 
-	@Inject const |->RequestState|		reqState
-	@Inject	const ThreadLocalManager?	localManager
-	@Inject	const HttpResponse?			httpResponse
-			const Middleware[]			middleware
+	@Inject const |->RequestState|	reqState
+	@Inject	const LocalRefManager?	localManager
+	@Inject	const HttpResponse?		httpResponse
+			const Middleware[]		middleware
 	
 	new make(Middleware[] middleware, |This| in) {
 		in(this)

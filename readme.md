@@ -1,14 +1,14 @@
-#BedSheet v1.4.14
+#BedSheet v1.5.0
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.14](http://img.shields.io/badge/pod-v1.4.14-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.5.0](http://img.shields.io/badge/pod-v1.5.0-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
 
 BedSheet is a platform for delivering web applications written in [Fantom](http://fantom.org/).
 
-Built on top of [IoC](http://pods.fantomfactory.org/pods/afIoc) and [Wisp](http://fantom.org/doc/wisp/index.html), BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
+Built on top of [IoC](http://pods.fantomfactory.org/pods/afIoc) and [Wisp](http://fantom.org/doc/wisp/index.html), BedSheet provides a rich middleware mechanism for routing and delivering content over HTTP.
 
 BedSheet is inspired by Java's [Tapestry5](http://tapestry.apache.org/), Ruby's [Sinatra](http://www.sinatrarb.com/) and Fantom's [Draft](https://bitbucket.org/afrankvt/draft).
 
@@ -20,7 +20,7 @@ Install `BedSheet` with the Fantom Repository Manager ( [fanr](http://fantom.org
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afBedSheet 1.4"]
+    depends = ["sys 1.0", ..., "afBedSheet 1.5"]
 
 ## Documentation
 
@@ -39,7 +39,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
             }
         }
         
-        class AppModule {
+        const class AppModule {
             @Contribute { serviceType=Routes# }
             static Void contributeRoutes(Configuration conf) {
                 conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
@@ -57,35 +57,40 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
 2. Run `Example.fan` as a Fantom script from the command line:
 
         C:\> fan Example.fan -env development
-        
-        [info] [afBedSheet] Found mod 'Example_0::AppModule'
-        [info] [afIoc] Adding module definitions from pod 'Example_0'
-        [info] [afIoc] Adding module definition for Example_0::AppModule
-        [info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
-        [info] [afIoc] Adding module definition for afIocConfig::ConfigModule
-        [info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
-        [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
-        [info] [web] WispService started on port 8080
-        
-        40 IoC Services:
-          10 Builtin
-          26 Defined
-           0 Proxied
-           4 Created
-        
-        65.00% of services are unrealised (26/40)
-           ___    __                 _____        _
-          / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
-         / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
-        /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                   Alien-Factory BedSheet v1.4.8, IoC v2.0.6 /___/
-        
-        IoC Registry built in 210ms and started up in 20ms
-        
-        Bed App 'Example_0' listening on http://localhost:8080/
 
 
-3. Visit `localhost` to hit the web application:
+
+[21:19:29 06-Oct-15] [info] [afBedSheet] Found mod 'Example_0::AppModule' [21:19:29 06-Oct-15] [info] [afBedSheet] Starting Bed App 'Example_0' on port 8080 [21:19:29 06-Oct-15] [info] [web] http started on port 8080 [21:19:29 06-Oct-15] [info] [afIoc] Adding module afIoc::IocModule [21:19:29 06-Oct-15] [info] [afIoc] Adding module Example_0::AppModule [21:19:29 06-Oct-15] [info] [afIoc] Adding module afBedSheet::BedSheetModule
+
+    [info] [afIoc] Adding module afIocConfig::IocConfigModule
+      [info] [afIoc] Adding module afBedSheet::BedSheetEnvModule
+      [info] [afBedSheet] Found mod 'Example_0::AppModule'
+      [info] [afIoc] Adding module definitions from pod 'Example_0'
+      [info] [afIoc] Adding module definition for Example_0::AppModule
+      [info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
+      [info] [afIoc] Adding module definition for afIocConfig::ConfigModule
+      [info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
+      [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
+      [info] [web] WispService started on port 8080
+    
+      40 IoC Services:
+        10 Builtin
+        26 Defined
+         0 Proxied
+         4 Created
+    
+      65.00% of services are unrealised (26/40)
+         ___    __                 _____        _
+        / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
+       / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
+      /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
+                 Alien-Factory BedSheet v1.4.8, IoC v2.0.6 /___/
+    
+      IoC Registry built in 210ms and started up in 20ms
+    
+      Bed App 'Example_0' listening on http://localhost:8080/
+
+1. Visit `localhost` to hit the web application:
 
         C:\> curl http://localhost:8080/index
         <html><body>Welcome to BedSheet!</body></html>
@@ -106,7 +111,7 @@ Route handlers are typically what we, the application developers, write. They pe
 
 ## Starting BedSheet
 
-To start BedSheet from the command line, you need to tell it where to find an `AppModule` and the port to run on:
+You can start BedSheet manually, as we did in the Quick Start example, or you can start BedSheet from the command line. Just tell it where to find an `AppModule` and the port to run on:
 
 ```
 C:\> fan afBedSheet -env development <qualified-app-module-name> <port-number>
@@ -118,7 +123,7 @@ For example:
 C:\> fan afBedSheet -env development myWebApp::AppModule 8069
 ```
 
-Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://pods.fantomfactory.org/pods/afIoc) services. It is an [IoC](http://pods.fantomfactory.org/pods/afIoc) concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
+Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://pods.fantomfactory.org/pods/afIoc) services. It is an IoC concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
 
 `<qualified-app-module-name>` may be replaced with just `<pod-name>` as long as your pod's `build.fan` defines the following meta:
 

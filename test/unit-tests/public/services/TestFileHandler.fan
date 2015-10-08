@@ -2,6 +2,7 @@ using afIoc
 using afIocEnv
 using afIocConfig
 using afBeanUtils
+using afConcurrent::ActorPools
 using concurrent
 
 internal class TestFileHandler : BsTest {
