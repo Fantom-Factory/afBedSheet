@@ -2,6 +2,7 @@ using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
 using afIocConfig::ConfigSource
+using afConcurrent::ActorPools
 using web::WebOutStream
 
 ** (Service) - public, 'cos it's useful for emails. 

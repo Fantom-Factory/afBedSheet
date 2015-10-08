@@ -2,6 +2,7 @@ using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
 using afIocConfig::ConfigSource
+using afConcurrent::ActorPools
 using web::WebOutStream
 
 ** (Service) - public, 'cos it's useful for emails. 
@@ -258,7 +259,7 @@ internal const class ErrPrinterHtmlSections {
 		prettyPrintMap(out, map, true)
 	}
 
-	private Str readPodVersion(Str podName) {
+	private static Str readPodVersion(Str podName) {
 		try {
 			podFile := Env.cur.findPodFile(podName)
 			zip 	:= Zip.open(podFile)
@@ -272,11 +273,11 @@ internal const class ErrPrinterHtmlSections {
 	
 	** If you're thinking of generating a ToC, think about those contributions not in BedSheet...
 	** ...and if we add a HTML Helper - do we want add a dependency to BedSheet?
-	private Void title(WebOutStream out, Str title) {
+	private static Void title(WebOutStream out, Str title) {
 		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
 	}
 	
-	private Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
+	private static Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
 		if (sort) {
 			newMap := Str:Obj?[:] { ordered = true } 
 			map.keys.sort.each |k| { newMap[k] = map[k] }
@@ -309,11 +310,11 @@ internal const class ErrPrinterHtmlSections {
 		out.tableEnd
 	}
 
-	private Void w(WebOutStream out, Str key, Obj? val) {
+	private static Void w(WebOutStream out, Str key, Obj? val) {
 		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}
 	
-	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
+	private static Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
 		done := false
 		while (err != null && !done) {
 			if (err.typeof.fits(causeType))

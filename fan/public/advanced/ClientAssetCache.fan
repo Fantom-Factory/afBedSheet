@@ -1,5 +1,6 @@
 using afIoc
 using afIocEnv
+using afConcurrent::ActorPools
 using afConcurrent::SynchronizedMap
 
 @NoDoc	// Advanced use only

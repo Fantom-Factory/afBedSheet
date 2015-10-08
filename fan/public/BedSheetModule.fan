@@ -2,6 +2,8 @@ using web
 using afIoc
 using afIocEnv
 using afIocConfig
+using afConcurrent::ActorPools
+using afConcurrent::ConcurrentModule
 using concurrent::Actor
 using concurrent::ActorPool
 
@@ -9,7 +11,7 @@ using concurrent::ActorPool
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc
-@SubModule { modules=[IocConfigModule#, BedSheetEnvModule#] }
+@SubModule { modules=[IocConfigModule#, BedSheetEnvModule#, ConcurrentModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
@@ -47,9 +49,6 @@ const class BedSheetModule {
 		defs.addService(ClientAssetProducers#)	.withRootScope
 		defs.addService(ClientAssetCache#)		.withRootScope
 		defs.addService(ObjCache#)				.withRootScope
-
-		defs.addService(ActorPools#)			.withRootScope
-		defs.addService(ThreadLocalManager#)	.withRootScope
 
 		defs.addService(HttpOutStreamBuilder#)	.withRootScope
 
@@ -94,13 +93,9 @@ const class BedSheetModule {
 			throw Err("No web request active in thread")
 	}
 
-	@Contribute { serviceType=DependencyProviders# }
-	static Void contributeDependencyProviders(Configuration config) {
-		config["afBedSheet.localProvider"] = config.build(LocalProvider#)
-	}
-
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(Configuration config) {
+		// used for ClientAssetCache only
 		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
 	}
 
@@ -269,7 +264,6 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.gzipThreshold]				= 376
 		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024	// todo: why not kB?
 		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
-		config[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		config[BedSheetConfigIds.disableWelcomePage]		= false
 		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
