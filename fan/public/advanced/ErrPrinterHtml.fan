@@ -39,9 +39,6 @@ const class ErrPrinterHtml {
 }
 
 internal const class ErrPrinterHtmlSections {
-	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
-	@Inject	private const Int			srcCodePadding	
-	
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	

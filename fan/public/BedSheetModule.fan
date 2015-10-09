@@ -16,7 +16,8 @@ const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
 	
-	static Void defineServices(RegistryBuilder defs) {
+	static Void defineModule(RegistryBuilder defs) {
+		defs.addScope("request", true)		
 
 		// Route handlers
 		defs.addService(FileHandler#)			.withRootScope
@@ -53,6 +54,13 @@ const class BedSheetModule {
 		defs.addService(HttpOutStreamBuilder#)	.withRootScope
 
 		defs.addService(RequestState#)			.withScope("request")
+	}
+
+	static Void onRegistryStartup(Configuration config, ConfigSource configSrc) {
+		config["afBedSheet.validateHost"] = |->| {
+			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
+			validateHost(host)
+		}
 	}
 
 	@Build { scopes=["root"] }
@@ -211,25 +219,25 @@ const class BedSheetModule {
 		funcArgs := [config.build(ErrPrinterHtmlSections#)]
 
 		// these are all the sections you see on the Err500 page
-		config["afBedSheet.causes"]					= ErrPrinterHtmlSections#printCauses				.func.bind(funcArgs)
-		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs)
-		config["afBedSheet.iocOperationTrace"]		= ErrPrinterHtmlSections#printIocOperationTrace		.func.bind(funcArgs)
-		config["afBedSheet.stackTrace"]				= ErrPrinterHtmlSections#printStackTrace			.func.bind(funcArgs)
-		config["afBedSheet.requestDetails"]			= ErrPrinterHtmlSections#printRequestDetails		.func.bind(funcArgs)
-		config["afBedSheet.requestHeaders"]			= ErrPrinterHtmlSections#printRequestHeaders		.func.bind(funcArgs)
-		config["afBedSheet.formParameters"]			= ErrPrinterHtmlSections#printFormParameters		.func.bind(funcArgs)
-		config["afBedSheet.session"]				= ErrPrinterHtmlSections#printSession				.func.bind(funcArgs)
-		config["afBedSheet.cookies"]				= ErrPrinterHtmlSections#printCookies				.func.bind(funcArgs)
-		config["afBedSheet.locales"]				= ErrPrinterHtmlSections#printLocales				.func.bind(funcArgs)
-		config["afBedSheet.iocConfig"]				= ErrPrinterHtmlSections#printIocConfig				.func.bind(funcArgs)
-		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printBedSheetRoutes		.func.bind(funcArgs)
-		config["afBedSheet.locals"]					= ErrPrinterHtmlSections#printLocals				.func.bind(funcArgs)
-		config["afBedSheet.actorPools"]				= ErrPrinterHtmlSections#printActorPools			.func.bind(funcArgs)
-		config["afBedSheet.fantomEnvironment"]		= ErrPrinterHtmlSections#printFantomEnvironment		.func.bind(funcArgs)
-		config["afBedSheet.fantomIndexedProps"]		= ErrPrinterHtmlSections#printFantomIndexedProps	.func.bind(funcArgs)
-		config["afBedSheet.fantomPods"]				= ErrPrinterHtmlSections#printFantomPods			.func.bind(funcArgs)
-		config["afBedSheet.environmentVariables"]	= ErrPrinterHtmlSections#printEnvironmentVariables	.func.bind(funcArgs)
-		config["afBedSheet.fantomDiagnostics"]		= ErrPrinterHtmlSections#printFantomDiagnostics		.func.bind(funcArgs)
+		config["afBedSheet.causes"]					= ErrPrinterHtmlSections#printCauses				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.iocOperationTrace"]		= ErrPrinterHtmlSections#printIocOperationTrace		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.stackTrace"]				= ErrPrinterHtmlSections#printStackTrace			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.requestDetails"]			= ErrPrinterHtmlSections#printRequestDetails		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.requestHeaders"]			= ErrPrinterHtmlSections#printRequestHeaders		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.formParameters"]			= ErrPrinterHtmlSections#printFormParameters		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.session"]				= ErrPrinterHtmlSections#printSession				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.cookies"]				= ErrPrinterHtmlSections#printCookies				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.locales"]				= ErrPrinterHtmlSections#printLocales				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.iocConfig"]				= ErrPrinterHtmlSections#printIocConfig				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printBedSheetRoutes		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.locals"]					= ErrPrinterHtmlSections#printLocals				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.actorPools"]				= ErrPrinterHtmlSections#printActorPools			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomEnvironment"]		= ErrPrinterHtmlSections#printFantomEnvironment		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomIndexedProps"]		= ErrPrinterHtmlSections#printFantomIndexedProps	.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomPods"]				= ErrPrinterHtmlSections#printFantomPods			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.environmentVariables"]	= ErrPrinterHtmlSections#printEnvironmentVariables	.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomDiagnostics"]		= ErrPrinterHtmlSections#printFantomDiagnostics		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 	}
 
 	@Contribute { serviceType=ErrPrinterStr# }
@@ -237,20 +245,20 @@ const class BedSheetModule {
 		funcArgs := [config.build(ErrPrinterStrSections#)]
 		
 		// these are all the sections you see in the Err log
-		config["afBedSheet.causes"]				=  ErrPrinterStrSections#printCauses			.func.bind(funcArgs)
-		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs)
-		config["afBedSheet.iocOperationTrace"]	=  ErrPrinterStrSections#printIocOperationTrace	.func.bind(funcArgs)
-		config["afBedSheet.stackTrace"]			=  ErrPrinterStrSections#printStackTrace		.func.bind(funcArgs)
-		config["afBedSheet.requestDetails"]		=  ErrPrinterStrSections#printRequestDetails	.func.bind(funcArgs)
-		config["afBedSheet.requestHeaders"]		=  ErrPrinterStrSections#printRequestHeaders	.func.bind(funcArgs)
-		config["afBedSheet.formParameters"]		=  ErrPrinterStrSections#printFormParameters	.func.bind(funcArgs)
-		config["afBedSheet.session"]			=  ErrPrinterStrSections#printSession			.func.bind(funcArgs)
-		config["afBedSheet.cookies"]			=  ErrPrinterStrSections#printCookies			.func.bind(funcArgs)
-		config["afBedSheet.locales"]			=  ErrPrinterStrSections#printLocales			.func.bind(funcArgs)
-		config["afBedSheet.iocConfig"]			=  ErrPrinterStrSections#printIocConfig			.func.bind(funcArgs)
-		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs)
-		config["afBedSheet.locals"]				=  ErrPrinterStrSections#printLocals			.func.bind(funcArgs)
-		config["afBedSheet.actorPools"]			=  ErrPrinterStrSections#printActorPools		.func.bind(funcArgs)
+		config["afBedSheet.causes"]				=  ErrPrinterStrSections#printCauses			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.iocOperationTrace"]	=  ErrPrinterStrSections#printIocOperationTrace	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.stackTrace"]			=  ErrPrinterStrSections#printStackTrace		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.requestDetails"]		=  ErrPrinterStrSections#printRequestDetails	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.requestHeaders"]		=  ErrPrinterStrSections#printRequestHeaders	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.formParameters"]		=  ErrPrinterStrSections#printFormParameters	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.session"]			=  ErrPrinterStrSections#printSession			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.cookies"]			=  ErrPrinterStrSections#printCookies			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.locales"]			=  ErrPrinterStrSections#printLocales			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.iocConfig"]			=  ErrPrinterStrSections#printIocConfig			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.locals"]				=  ErrPrinterStrSections#printLocals			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.actorPools"]			=  ErrPrinterStrSections#printActorPools		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
@@ -295,20 +303,6 @@ const class BedSheetModule {
 		config.add("^fan.sys.FanObj.trap.*\$")
 		config.add("^fan.sys.Func\\\$Indirect0.call.*\$")
 		config.add("^java.lang.reflect..*\$")
-	}
-	
-	static Void defineRegistryStartupShutdown(RegistryBuilder bob) {
-		
-		bob.addScope("request", true)
-		
-		bob.onRegistryStartup |config| {
-			configSrc 		:= (ConfigSource) config.scope.serviceById(ConfigSource#.qname)
-	
-			config["afBedSheet.validateHost"] = |->| {
-				host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
-				validateHost(host)
-			}
-		}
 	}
 
 	internal static Void validateHost(Uri host) {
