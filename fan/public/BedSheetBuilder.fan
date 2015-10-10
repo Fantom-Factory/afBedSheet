@@ -107,6 +107,11 @@ class BedSheetBuilder {
 		return runWebMod(mod, port, _ipAddr)
 	}
 
+	This enableRequestLogs() {
+		this.typeof.pod.log.level = LogLevel.debug
+		return this
+	}
+	
 	** Hook to run a fully configured BedSheet 'WebMod'.
 	@NoDoc
 	virtual Int runWebMod(WebMod webMod, Int port, IpAddr? ipAddr) {
