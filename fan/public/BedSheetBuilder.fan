@@ -1,5 +1,4 @@
 using afIoc
-using afIocEnv
 using inet::IpAddr
 using web::WebMod
 
@@ -117,7 +116,7 @@ class BedSheetBuilder {
 	@NoDoc // for serialisation
 	Str toStringy() {
 		mods := _moduleTypes
-		pods := _pods.map { [it[0].toStr, it[1]] }
+		pods := _pods.map { [it[0], it[1]] }
 		opts := options.dup
 		opts.remove("afIoc.bannerText")
 		
@@ -146,7 +145,7 @@ class BedSheetBuilder {
 		// reinstate appPod
 		bob := BedSheetBuilder()
 		bob._moduleTypes	= mods
-		bob._pods			= pods.map { [Pod.find(it[0]), it[1]] }
+		bob._pods			= pods.map { [it[0], it[1]] }
 		bob.options			= opts
 		bob._initBanner
 		

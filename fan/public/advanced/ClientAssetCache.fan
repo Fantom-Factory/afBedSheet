@@ -11,6 +11,7 @@ const mixin ClientAssetCache {
 	abstract ClientAsset? getAndUpdateOrMake(Uri localUrl, |Uri->ClientAsset?| makeFunc)
 	
 	** Removes the given asset from the internal cache.
+	** Does nothing if 'localUrl' is 'null'.
 	abstract Void remove(Uri? localUrl)
 	
 	** Clears the internal cache.
@@ -26,7 +27,8 @@ const mixin ClientAssetCache {
 }
 
 
-internal const class ClientAssetCacheImpl : ClientAssetCache {
+@NoDoc // so ColdFeet may override it
+const class ClientAssetCacheImpl : ClientAssetCache {
 	
 					** The duration between individual file checks.
 					const Duration 				cacheTimeout
@@ -71,24 +73,6 @@ internal const class ClientAssetCacheImpl : ClientAssetCache {
 		
 		return asset
 	}
-
-//	override ClientAsset? getOrAddOrUpdate(Uri localUrl, |Uri->ClientAsset?| valFunc) {
-//		asset := (ClientAsset?) assetCache.getOrAdd(localUrl, valFunc)
-//
-//		// I'm aware there could be race conditions here - but it's just a cache, so the losses are acceptable.
-//
-//		// null gets added - so remove it
-//		if (asset == null)
-//			return assetCache.remove(localUrl)
-//
-//		if (!asset.exists)
-//			return assetCache.remove(localUrl)
-//		
-//		if (asset.isModified(cacheTimeout))
-//			assetCache[localUrl] = valFunc(localUrl)
-//
-//		return asset
-//	}
 	
 	// accept null for convenience
 	override Void remove(Uri? localUrl) {
