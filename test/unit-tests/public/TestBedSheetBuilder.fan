@@ -3,7 +3,7 @@ using afIoc
 internal class TestBedSheetBuilder : BsTest {
 	
 	Void testSerialisable() {
-		bob := BedSheetBuilder(BedSheetModule#.qname)
+		bob := BedSheetBuilder(BedSheetModule#)
 		bob.options.set("wot", "ever")
 		buf := bob.toStringy
 		bob2 := BedSheetBuilder.fromStringy(buf)

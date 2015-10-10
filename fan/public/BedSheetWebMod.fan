@@ -6,7 +6,6 @@ using web::WebMod
 using web::WebReq
 using web::WebRes
 using afIoc
-using afIocEnv::IocEnv
 using afIocConfig::ConfigSource
 
 ** The `web::WebMod` that runs in [Wisp]`http://fantom.org/doc/wisp/index.html`. 
