@@ -140,7 +140,6 @@ internal const class AssetCacheModule {
 		defs.addService(ClientAssetCache#)
 		defs.addService(ClientAssetProducers#)
 		defs.addService(BedSheetServer#)
-		defs.addService(ActorPools#)
 	}
 
 	@Contribute { serviceType=ActorPools# }

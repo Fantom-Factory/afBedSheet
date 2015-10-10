@@ -37,14 +37,11 @@ const class BasicRequestLogger : RequestLogger {
 	@Inject private const Log				log
 			private const Int				minLogWidth
 	
-	new make(Bool enable, Int minLogWidth, |This|in) {
+	new make(Int minLogWidth, |This|in) {
 		in(this)
-		if (enable)
-			log.level = LogLevel.debug
 		this.minLogWidth = minLogWidth
 	}
 
-	// FIXME: configure loggin to be INFO by default? Pod.fandoc
 	override Void logOutgoing() {
 		if (log.isDebug) {
 			// attempt to keep the standard debug line at 120 chars (120 isn't special, it just seems to be a manageable width)

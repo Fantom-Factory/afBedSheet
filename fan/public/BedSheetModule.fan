@@ -1,12 +1,13 @@
 using web
 using afIoc
+using afIocEnv
 using afIocConfig
 using afConcurrent::ActorPools
 using afConcurrent::ConcurrentModule
 using concurrent::Actor
 using concurrent::ActorPool
 
-** The [Ioc]`http://www.fantomfactory.org/pods/afIoc` module class.
+** The [IoC]`pod:afIoc` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc
@@ -113,8 +114,8 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=RequestLoggers# }
-	static Void contributeRequestLoggers(Configuration config) {
-		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#, [true, 120])
+	static Void contributeRequestLoggers(Configuration config, IocEnv iocEnv) {
+		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#, [120])
 	}
 
 	@Contribute { serviceType=ClientAssetProducers# }
