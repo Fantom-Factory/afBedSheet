@@ -3,7 +3,7 @@ Overview
 BedSheet is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
 
 Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
-BedSheet provides a rich middleware mechanism for the routing and delivery of content over HTTP.
+BedSheet provides a rich middleware mechanism for routing and delivering content over HTTP.
 
 BedSheet is inspired by
 Java's [Tapestry5]`http://tapestry.apache.org/`,
@@ -28,7 +28,7 @@ Quick Start [#quickStart]
         }
     }
 
-    class AppModule {
+    const class AppModule {
         @Contribute { serviceType=Routes# }
         static Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
@@ -46,6 +46,15 @@ Quick Start [#quickStart]
 
     C:\> fan Example.fan -env development
 
+
+[21:19:29 06-Oct-15] [info] [afBedSheet] Found mod 'Example_0::AppModule'
+[21:19:29 06-Oct-15] [info] [afBedSheet] Starting Bed App 'Example_0' on port 8080
+[21:19:29 06-Oct-15] [info] [web] http started on port 8080
+[21:19:29 06-Oct-15] [info] [afIoc] Adding module afIoc::IocModule
+[21:19:29 06-Oct-15] [info] [afIoc] Adding module Example_0::AppModule
+[21:19:29 06-Oct-15] [info] [afIoc] Adding module afBedSheet::BedSheetModule
+  [info] [afIoc] Adding module afIocConfig::IocConfigModule
+    [info] [afIoc] Adding module afBedSheet::BedSheetEnvModule
     [info] [afBedSheet] Found mod 'Example_0::AppModule'
     [info] [afIoc] Adding module definitions from pod 'Example_0'
     [info] [afIoc] Adding module definition for Example_0::AppModule
@@ -88,20 +97,16 @@ Quick Start [#quickStart]
 Wow! That's awesome! But what just happened!?
 
 Every BedSheet application has an 'AppModule' that configures [IoC]`pod:afIoc` services.
-Here we told the 'Routes' service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method
-for all requests that start with '/hello'.
-`Route` converts URL path segments into method arguments, or in our case, to 'Str name' and to an
+Here we told the 'Routes' service to return some plain text in response to '/index' and to call the 'HelloPage#hello' method for all requests that start with '/hello'. `Route` converts URL path segments into method arguments, or in our case, to 'Str name' and to an
 optional 'Int iq'.
 
-Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our
-'HelloPage' route handler simply returns a plain `Text` response, which BedSheet sends to the client via an appropriate
-`ResponseProcessor`.
+Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our 'HelloPage' route handler simply returns a plain `Text` response, which BedSheet sends to the client via an appropriate `ResponseProcessor`.
 
 
 
 Starting BedSheet
 *****************
-To start BedSheet from the command line, you need to tell it where to find an 'AppModule' and the port to run on:
+You can start BedSheet manually, as we did in the Quick Start example, or you can start BedSheet from the command line. Just tell it where to find an 'AppModule' and the port to run on:
 
 pre>
 C:\> fan afBedSheet -env development <qualified-app-module-name> <port-number>
@@ -114,12 +119,10 @@ C:\> fan afBedSheet -env development myWebApp::AppModule 8069
 <pre
 
 Every Bed App (BedSheet Application) has an 'AppModule' class that defines and configures your
-[IoC]`pod:afIoc` services. It is an
-[IoC]`pod:afIoc` concept that allows you centralise your application's configuration in
+[IoC]`pod:afIoc` services. It is an IoC concept that allows you centralise your application's configuration in
 one place. It is the 'AppModule' that defines your Bed App and is central everything it does.
 
-'<qualified-app-module-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following
-meta:
+'<qualified-app-module-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following meta:
 
 pre>
 syntax: fantom

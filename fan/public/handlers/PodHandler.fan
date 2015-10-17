@@ -1,5 +1,5 @@
 using afIoc::Inject
-using afIoc::Registry
+using afIoc::Scope
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 
@@ -110,10 +110,10 @@ const mixin PodHandler : ClientAssetProducer {
 internal const class PodHandlerImpl : PodHandler {
 
 	@Config { id="afBedSheet.podHandler.baseUrl" }
-	@Inject override const Uri?				baseUrl
-	@Inject	private const ClientAssetCache	assetCache
-	@Inject	private const Registry			registry
-			private const Regex[] 			whitelistFilters
+	@Inject override const Uri?					baseUrl
+	@Inject	private const |->ClientAssetCache|	assetCache
+	@Inject	private const Scope					scope
+			private const Regex[] 				whitelistFilters
 	
 	new make(Regex[] filters, |This|? in) {
 		this.whitelistFilters = filters
@@ -192,9 +192,9 @@ internal const class PodHandlerImpl : PodHandler {
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 			
-			return registry.autobuild(FileAsset#, [localUrl, file])
+			return scope.build(FileAsset#, [localUrl, file])
 		}
 		
-		return cache ? assetCache.getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl) 
+		return cache ? assetCache().getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl) 
 	}	
 }

@@ -44,7 +44,7 @@ const class BedSheetBootMod : WebMod {
 			appName := bob.options[BsConstants.meta_appName]
 			port 	:= bob.options[BsConstants.meta_appPort]
 			log.info(BsLogMsgs.bedSheetWebMod_starting(appName, port))
-			return BedSheetWebMod(bob.build.startup)
+			return BedSheetWebMod(bob.build)
 		}
 		f?.call(this)
 	}

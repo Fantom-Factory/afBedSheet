@@ -3,8 +3,8 @@ using afIocConfig::ApplicationDefaults
 
 internal const class T_AppModule {
 	
-	static Void defineServices(ServiceDefinitions defs) {
-//		defs.add(Router#)
+	static Void defineServices(RegistryBuilder defs) {
+//		defs.adderviceType(...)
 	}
 
 	@Contribute { serviceType=Routes# }
@@ -40,6 +40,7 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
 		conf.add(Route(`/sessionBad`,			T_PageHandler#sessionBad))
+		conf.add(Route(`/sessionBad2`,			T_PageHandler#sessionBad2))
 
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
@@ -83,8 +84,8 @@ internal const class T_AppModule {
 		conf[`/test-src/`] = `test/app-web/`.toFile
 	}
 
-	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegStartup(Configuration conf) {
-		conf.remove("afIoc.logBanner")
-	}
+//	@Contribute { serviceType=RegistryStartup# }
+//	static Void contributeRegStartup(Configuration conf) {
+//		conf.remove("afIoc.logBanner")
+//	}
 }

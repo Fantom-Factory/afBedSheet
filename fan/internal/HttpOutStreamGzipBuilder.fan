@@ -1,9 +1,9 @@
 using afIoc::Inject
-using afIoc::Registry
+using afIoc::Scope
 using afIocConfig::Config
 
 internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
-	@Inject	private const Registry 			registry
+	@Inject	private const Scope 			scope
 	@Inject	private const HttpRequest 		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const GzipCompressible 	gzipCompressible
@@ -24,6 +24,6 @@ internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
 		contentType := response.isCommitted ? null : response.headers.contentType
 		acceptGzip	:= request.headers.acceptEncoding?.accepts("gzip") ?: false
 		doGzip 		:= !gzipDisabled && !response.disableGzip && acceptGzip && gzipCompressible.isCompressible(contentType)		
-		return		doGzip ? registry.autobuild(GzipOutStream#, [delegate]) : delegate
+		return		doGzip ? scope.build(GzipOutStream#, [delegate]) : delegate
 	}
 }

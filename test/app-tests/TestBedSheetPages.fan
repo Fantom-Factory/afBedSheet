@@ -9,7 +9,7 @@ internal class TestBedSheetPages : AppTest {
 	@Inject BedSheetPages? pages
 	
 	Void testPagesAreValidXml() {
-		registry.injectIntoFields(this)
+		registry.rootScope.inject(this)
 		Actor.locals["web.req"] = T_WebReq()
 		Actor.locals["web.res"] = T_WebRes()
 
@@ -31,7 +31,7 @@ internal class TestBedSheetPages : AppTest {
 }
 
 internal class T_WebReq : WebReq {
-	override WebMod mod 					:= webmod::LogMod()
+	override WebMod 	mod 				{ get {(Obj)5} set {} }
 	override IpAddr remoteAddr()			{ IpAddr("127.0.0.1") }
 	override Int remotePort() 				{ 80 }
 	override SocketOptions socketOptions()	{ TcpSocket().options }
@@ -41,6 +41,7 @@ internal class T_WebReq : WebReq {
 	override Str:Str 	headers				:= [:]
 	override WebSession	session				:= T_WebSession()
 	override InStream 	in					:= "in".toBuf.in
+	override TcpSocket	socket()			{ throw Err() }
 }
 
 internal class T_WebRes : WebRes {

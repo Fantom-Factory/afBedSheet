@@ -2,93 +2,99 @@ using web
 using afIoc
 using afIocEnv
 using afIocConfig
+using afConcurrent::ActorPools
+using afConcurrent::ConcurrentModule
 using concurrent::Actor
 using concurrent::ActorPool
-using afPlastic::PlasticCompiler
 
-** The [Ioc]`http://www.fantomfactory.org/pods/afIoc` module class.
+** The [IoC]`pod:afIoc` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc
-@SubModule { modules=[ConfigModule#, BedSheetEnvModule#] }
+@SubModule { modules=[IocConfigModule#, BedSheetEnvModule#, ConcurrentModule#] }
 const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
 	
-	static Void defineServices(ServiceDefinitions defs) {
+	static Void defineModule(RegistryBuilder defs) {
+		defs.addScope("request", true)		
 
 		// Route handlers
-		defs.add(FileHandler#).withProxy
-		defs.add(PodHandler#).withProxy
+		defs.addService(FileHandler#)			.withRootScope
+		defs.addService(PodHandler#)			.withRootScope
 
 		// Collections (services with contributions)
-		defs.add(ResponseProcessors#)
-		defs.add(ErrResponses#)
-		defs.add(HttpStatusResponses#) 
-		defs.add(Routes#)
-		defs.add(ValueEncoders#)
+		defs.addService(ResponseProcessors#)	.withRootScope
+		defs.addService(ErrResponses#)			.withRootScope
+		defs.addService(HttpStatusResponses#)	.withRootScope
+		defs.addService(Routes#)				.withRootScope
+		defs.addService(ValueEncoders#)			.withRootScope
 		
-		// Public services
-		defs.add(BedSheetServer#)
-		defs.add(GzipCompressible#)
-		defs.add(HttpSession#)
-		defs.add(HttpCookies#)
-		defs.add(BedSheetPages#).withProxy	// prevent recursion
-		defs.add(RequestLoggers#)
-		defs.add(RequestLogMiddleware#)
+		// Public services - root
+		defs.addService(BedSheetServer#)		.withRootScope
+		defs.addService(GzipCompressible#)		.withRootScope
+		defs.addService(BedSheetPages#)			.withRootScope
 		
-		// Other services
-		defs.add(NotFoundPrinterHtml#)
-		defs.add(ErrPrinterHtml#)
-		defs.add(ErrPrinterStr#)
-		defs.add(ClientAssetProducers#)
-		defs.add(ClientAssetCache#)
-		defs.add(PipelineBuilder#)
-		defs.add(StackFrameFilter#)
-		defs.add(ObjCache#)
+		// Public services - request
+		defs.addService(RequestLoggers#)		.withRootScope
+		defs.addService(HttpSession#)			.withRootScope
+		defs.addService(HttpCookies#)			.withRootScope
+
+		// Other services - root
+		defs.addService(StackFrameFilter#)		.withRootScope
+		
+		// Other services - request
+		defs.addService(NotFoundPrinterHtml#)	.withRootScope
+		defs.addService(ErrPrinterHtml#)		.withRootScope
+		defs.addService(ErrPrinterStr#)			.withRootScope
+		defs.addService(ClientAssetProducers#)	.withRootScope
+		defs.addService(ClientAssetCache#)		.withRootScope
+		defs.addService(ObjCache#)				.withRootScope
+
+		defs.addService(HttpOutStreamBuilder#)	.withRootScope
+
+		defs.addService(RequestState#)			.withScope("request")
 	}
 
-	// No need for a proxy, you don't advice the pipeline, you contribute to it!
-	// App scope 'cos the pipeline has no state - the pipeline is welded / hardcoded together!
-	@Build
-	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, PipelineBuilder bob, Registry reg, RequestLogMiddleware oldLogger, RequestLoggers reqLogger) {
+	static Void onRegistryStartup(Configuration config, ConfigSource configSrc) {
+		config["afBedSheet.validateHost"] = |->| {
+			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
+			validateHost(host)
+		}
+	}
+
+	@Build { scopes=["root"] }
+	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware?[
-			reg.autobuild(CleanupMiddleware#),
-			// loggers wrap ErrMiddleware so they can report 500 errors
-			// remove unused middleware so they don'y clog up stack traces
-			oldLogger.dir == null			 ? null : oldLogger,
-			reqLogger.requestLoggers.isEmpty ? null : reqLogger,
-			reg.autobuild(ErrMiddleware#),
-			reg.autobuild(FlashMiddleware#)
-		].addAll(userMiddleware).exclude { it == null }
-		terminator := reg.autobuild(MiddlewareTerminator#)
-		return bob.build(MiddlewarePipeline#, Middleware#, middleware, terminator)
+			// loggers wrap SystemMiddleware so they can report 500 errors
+			reqLogger,
+			scope.build(ErrMiddleware#),
+			scope.build(FlashMiddleware#)
+		].addAll(userMiddleware).add(scope.build(MiddlewareTerminator#))
+		return scope.build(MiddlewarePipelineImpl#, [middleware])
 	}
 
-	@Build
-	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Registry reg) {
-		makeDelegateChain(builders, reg.autobuild(HttpRequestImpl#))
+	@Build { scopes=["root"] }
+	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope scope) {
+		httpReq := scope.build(HttpRequestImpl#)
+		return builders.isEmpty ? httpReq : makeDelegateChain(builders, httpReq)
 	}
 
-	@Build
-	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Registry reg) {
-		makeDelegateChain(builders, reg.autobuild(HttpResponseImpl#))
-	}
- 
-	@Build { serviceId="afBedSheet::HttpOutStream"; scope=ServiceScope.perThread }
-	static OutStream buildHttpOutStream(DelegateChainBuilder[] builders, Registry reg) {
-		makeDelegateChain(builders, reg.autobuild(WebResOutProxy#))
+	@Build { scopes=["root"] }
+	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope scope) {
+		httpRes := scope.build(HttpResponseImpl#)
+		return builders.isEmpty ? httpRes : makeDelegateChain(builders, httpRes)
 	}
 
-	@Build { scope=ServiceScope.perThread }	
+	@Build { scopes=["request"] }	
 	private static WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
-	@Build { scope=ServiceScope.perThread } 
+	@Build { scopes=["request"] } 
 	private static WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
@@ -97,18 +103,19 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(Configuration config) {
+		// used for ClientAssetCache only
 		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
 	}
 
 	@Contribute { serviceType=MiddlewarePipeline# }
 	static Void contributeMiddlewarePipeline(Configuration config) {
-		config["afBedSheet.assets"] = config.autobuild(AssetsMiddleware#)
-		config["afBedSheet.routes"] = config.autobuild(RoutesMiddleware#)
+		config["afBedSheet.assets"] = config.build(AssetsMiddleware#)
+		config["afBedSheet.routes"] = config.build(RoutesMiddleware#)
 	}
 
 	@Contribute { serviceType=RequestLoggers# }
-	static Void contributeRequestLoggers(Configuration config) {
-		config["afBedSheet.requestLogger"] = config.autobuild(BasicRequestLogger#)
+	static Void contributeRequestLoggers(Configuration config, IocEnv iocEnv) {
+		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#, [120])
 	}
 
 	@Contribute { serviceType=ClientAssetProducers# }
@@ -116,32 +123,26 @@ const class BedSheetModule {
 		config["afBedSheet.fileHandler"] = fileHandler
 		config["afBedSheet.podHandler"]  = podHandler
 	}
-
-	@Contribute { serviceType=Routes# }
-	static Void contributeRoutes(Configuration config) {
-		// TODO: @Deprecated delete placeholder
-		config.addPlaceholder("afBedSheet.fileHandler")
-	}
 	
-	@Contribute { serviceId="afBedSheet::HttpOutStream" }
+	@Contribute { serviceType=HttpOutStreamBuilder# }
 	static Void contributeHttpOutStream(Configuration config) {
-		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
-		config["afBedSheet.buffBuilder"] = config.autobuild(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
-		config["afBedSheet.gzipBuilder"] = config.autobuild(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
+		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()				// inner
+		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
+		config["afBedSheet.gzipBuilder"] = config.build(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration config) {
-		config[Asset#]		= config.autobuild(AssetProcessor#)
-		config[Err#]		= config.autobuild(ErrProcessor#)
-		config[Field#]		= config.autobuild(FieldProcessor#)
-		config[File#]		= config.autobuild(FileProcessor#)
-		config[Func#]		= config.autobuild(FuncProcessor#)
-		config[HttpStatus#]	= config.autobuild(HttpStatusProcessor#)
-		config[InStream#]	= config.autobuild(InStreamProcessor#)
-		config[MethodCall#]	= config.autobuild(MethodCallProcessor#)
-		config[Redirect#]	= config.autobuild(RedirectProcessor#)
-		config[Text#]		= config.autobuild(TextProcessor#)
+		config[Asset#]		= config.build(AssetProcessor#)
+		config[Err#]		= config.build(ErrProcessor#)
+		config[Field#]		= config.build(FieldProcessor#)
+		config[File#]		= config.build(FileProcessor#)
+		config[Func#]		= config.build(FuncProcessor#)
+		config[HttpStatus#]	= config.build(HttpStatusProcessor#)
+		config[InStream#]	= config.build(InStreamProcessor#)
+		config[MethodCall#]	= config.build(MethodCallProcessor#)
+		config[Redirect#]	= config.build(RedirectProcessor#)
+		config[Text#]		= config.build(TextProcessor#)
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
@@ -206,7 +207,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=NotFoundPrinterHtml# }
 	static Void contributeNotFoundPrinterHtml(Configuration config) {
-		printer := (NotFoundPrinterHtmlSections) config.autobuild(NotFoundPrinterHtmlSections#)
+		printer := (NotFoundPrinterHtmlSections) config.build(NotFoundPrinterHtmlSections#)
 
 		// these are all the sections you see on the 404 page
 		config["afBedSheet.routeCode"]	= |WebOutStream out| { printer.printRouteCode		(out) }
@@ -215,51 +216,49 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ErrPrinterHtml# }
 	static Void contributeErrPrinterHtml(Configuration config) {
-		printer := (ErrPrinterHtmlSections) config.autobuild(ErrPrinterHtmlSections#)
+		funcArgs := [config.build(ErrPrinterHtmlSections#)]
 
 		// these are all the sections you see on the Err500 page
-		config["afBedSheet.causes"]					= |WebOutStream out, Err? err| { printer.printCauses				(out, err) }
-		config["afBedSheet.availableValues"]		= |WebOutStream out, Err? err| { printer.printAvailableValues		(out, err) }
-		config["afBedSheet.iocOperationTrace"]		= |WebOutStream out, Err? err| { printer.printIocOperationTrace		(out, err) }
-		config["afBedSheet.srcCodeErrs"]			= |WebOutStream out, Err? err| { printer.printSrcCodeErrs			(out, err) }
-		config["afBedSheet.stackTrace"]				= |WebOutStream out, Err? err| { printer.printStackTrace			(out, err) }
-		config["afBedSheet.requestDetails"]			= |WebOutStream out, Err? err| { printer.printRequestDetails		(out, err) }
-		config["afBedSheet.requestHeaders"]			= |WebOutStream out, Err? err| { printer.printRequestHeaders		(out, err) }
-		config["afBedSheet.formParameters"]			= |WebOutStream out, Err? err| { printer.printFormParameters		(out, err) }
-		config["afBedSheet.session"]				= |WebOutStream out, Err? err| { printer.printSession				(out, err) }
-		config["afBedSheet.cookies"]				= |WebOutStream out, Err? err| { printer.printCookies				(out, err) }
-		config["afBedSheet.locales"]				= |WebOutStream out, Err? err| { printer.printLocales				(out, err) }
-		config["afBedSheet.iocConfig"]				= |WebOutStream out, Err? err| { printer.printIocConfig				(out, err) }
-		config["afBedSheet.routes"]					= |WebOutStream out, Err? err| { printer.printBedSheetRoutes		(out, err) }
-		config["afBedSheet.locals"]					= |WebOutStream out, Err? err| { printer.printLocals				(out, err) }
-		config["afBedSheet.actorPools"]				= |WebOutStream out, Err? err| { printer.printActorPools			(out, err) }
-		config["afBedSheet.fantomEnvironment"]		= |WebOutStream out, Err? err| { printer.printFantomEnvironment		(out, err) }
-		config["afBedSheet.fantomIndexedProps"]		= |WebOutStream out, Err? err| { printer.printFantomIndexedProps	(out, err) }
-		config["afBedSheet.fantomPods"]				= |WebOutStream out, Err? err| { printer.printFantomPods			(out, err) }
-		config["afBedSheet.environmentVariables"]	= |WebOutStream out, Err? err| { printer.printEnvironmentVariables	(out, err) }
-		config["afBedSheet.fantomDiagnostics"]		= |WebOutStream out, Err? err| { printer.printFantomDiagnostics		(out, err) }
+		config["afBedSheet.causes"]					= ErrPrinterHtmlSections#printCauses				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.iocOperationTrace"]		= ErrPrinterHtmlSections#printIocOperationTrace		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.stackTrace"]				= ErrPrinterHtmlSections#printStackTrace			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.requestDetails"]			= ErrPrinterHtmlSections#printRequestDetails		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.requestHeaders"]			= ErrPrinterHtmlSections#printRequestHeaders		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.formParameters"]			= ErrPrinterHtmlSections#printFormParameters		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.session"]				= ErrPrinterHtmlSections#printSession				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.cookies"]				= ErrPrinterHtmlSections#printCookies				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.locales"]				= ErrPrinterHtmlSections#printLocales				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.iocConfig"]				= ErrPrinterHtmlSections#printIocConfig				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printBedSheetRoutes		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.locals"]					= ErrPrinterHtmlSections#printLocals				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.actorPools"]				= ErrPrinterHtmlSections#printActorPools			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomEnvironment"]		= ErrPrinterHtmlSections#printFantomEnvironment		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomIndexedProps"]		= ErrPrinterHtmlSections#printFantomIndexedProps	.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomPods"]				= ErrPrinterHtmlSections#printFantomPods			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.environmentVariables"]	= ErrPrinterHtmlSections#printEnvironmentVariables	.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fantomDiagnostics"]		= ErrPrinterHtmlSections#printFantomDiagnostics		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 	}
 
 	@Contribute { serviceType=ErrPrinterStr# }
 	static Void contributeErrPrinterStr(Configuration config) {
-		printer := (ErrPrinterStrSections) config.autobuild(ErrPrinterStrSections#)
+		funcArgs := [config.build(ErrPrinterStrSections#)]
 		
 		// these are all the sections you see in the Err log
-		config["afBedSheet.causes"]				=  |StrBuf out, Err? err| { printer.printCauses				(out, err) }
-		config["afBedSheet.availableValues"]	=  |StrBuf out, Err? err| { printer.printAvailableValues	(out, err) }
-		config["afBedSheet.iocOperationTrace"]	=  |StrBuf out, Err? err| { printer.printIocOperationTrace	(out, err) }
-		config["afBedSheet.srcCodeErrs"]		=  |StrBuf out, Err? err| { printer.printSrcCodeErrs		(out, err) }		
-		config["afBedSheet.stackTrace"]			=  |StrBuf out, Err? err| { printer.printStackTrace			(out, err) }
-		config["afBedSheet.requestDetails"]		=  |StrBuf out, Err? err| { printer.printRequestDetails		(out, err) }
-		config["afBedSheet.requestHeaders"]		=  |StrBuf out, Err? err| { printer.printRequestHeaders		(out, err) }
-		config["afBedSheet.formParameters"]		=  |StrBuf out, Err? err| { printer.printFormParameters		(out, err) }
-		config["afBedSheet.session"]			=  |StrBuf out, Err? err| { printer.printSession			(out, err) }
-		config["afBedSheet.cookies"]			=  |StrBuf out, Err? err| { printer.printCookies			(out, err) }
-		config["afBedSheet.locales"]			=  |StrBuf out, Err? err| { printer.printLocales			(out, err) }
-		config["afBedSheet.iocConfig"]			=  |StrBuf out, Err? err| { printer.printIocConfig			(out, err) }
-		config["afBedSheet.routes"]				=  |StrBuf out, Err? err| { printer.printRoutes				(out, err) }
-		config["afBedSheet.locals"]				=  |StrBuf out, Err? err| { printer.printLocals				(out, err) }
-		config["afBedSheet.actorPools"]			=  |StrBuf out, Err? err| { printer.printActorPools			(out, err) }
+		config["afBedSheet.causes"]				=  ErrPrinterStrSections#printCauses			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.iocOperationTrace"]	=  ErrPrinterStrSections#printIocOperationTrace	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.stackTrace"]			=  ErrPrinterStrSections#printStackTrace		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.requestDetails"]		=  ErrPrinterStrSections#printRequestDetails	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.requestHeaders"]		=  ErrPrinterStrSections#printRequestHeaders	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.formParameters"]		=  ErrPrinterStrSections#printFormParameters	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.session"]			=  ErrPrinterStrSections#printSession			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.cookies"]			=  ErrPrinterStrSections#printCookies			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.locales"]			=  ErrPrinterStrSections#printLocales			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.iocConfig"]			=  ErrPrinterStrSections#printIocConfig			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.locals"]				=  ErrPrinterStrSections#printLocals			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.actorPools"]			=  ErrPrinterStrSections#printActorPools		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
@@ -273,7 +272,6 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.gzipThreshold]				= 376
 		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024	// todo: why not kB?
 		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
-		config[BedSheetConfigIds.srcCodeErrPadding]			= 5
 		config[BedSheetConfigIds.disableWelcomePage]		= false
 		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
@@ -281,10 +279,6 @@ const class BedSheetModule {
 		
 		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).toImmutableFunc
 		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).toImmutableFunc
-
-		config[BedSheetConfigIds.requestLogDir]				= null
-		config[BedSheetConfigIds.requestLogFilenamePattern]	= "bedSheet-{YYYY-MM}.log"
-		config[BedSheetConfigIds.requestLogFields]			= "date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)"
 	}
 	
 	@Contribute { serviceType=StackFrameFilter# }
@@ -310,47 +304,7 @@ const class BedSheetModule {
 		config.add("^fan.sys.Func\\\$Indirect0.call.*\$")
 		config.add("^java.lang.reflect..*\$")
 	}
-	
-	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeRegistryStartup(Configuration config, Registry registry, PlasticCompiler plasticCompiler, ConfigSource configSrc, Log log) {
-		config["afBedSheet.srcCodePadding"] = |->| {
-			plasticCompiler.srcCodePadding = configSrc.get(BedSheetConfigIds.srcCodeErrPadding, Int#)
-		}
 
-		config["afBedSheet.validateHost"] = |->| {
-			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
-			validateHost(host)
-		}
-
-		config.overrideValue("afIoc.logServices", |->| {
-			stats := registry.serviceDefinitions.vals
-			srvcs := "\n\n${stats.size} IoC Services:\n"
-			types := ServiceLifecycle:Int[:] { ordered=true }.add(ServiceLifecycle.builtin, 0)
-			ServiceLifecycle.vals.each { types[it] = 0 }
-			stats.each {
-				types[it.lifecycle] = types[it.lifecycle] + 1
-			}
-			unreal := 0
-			types.each |v, k| {
-				srvcs += "${v.toStr.padl(4)} ${k.name.toDisplayName}\n"
-				if (k == ServiceLifecycle.defined || k == ServiceLifecycle.proxied)
-					unreal += v
-			}
-
-			perce := (100d * unreal / stats.size).toLocale("0.00")
-			srvcs += "\n${perce}% of services are unrealised (${unreal}/${stats.size})\n"
-			
-			log.info(srvcs)
-		}, "afBedSheet.logServices")
-	}
-
-	@Contribute { serviceType=RegistryShutdown# }
-	static Void contributeRegistryShutdown(Configuration config, RequestLogMiddleware logMiddleware) {
-		config["afBedSheet.requestLogFilter"] = |->| {
-			logMiddleware.shutdown
-		}
-	}
-	
 	internal static Void validateHost(Uri host) {
 		if (host.scheme == null || host.host == null)
 			throw BedSheetErr(BsErrMsgs.startup_hostMustHaveSchemeAndHost(BedSheetConfigIds.host, host))

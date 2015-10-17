@@ -43,7 +43,7 @@ internal class TestPodHandling : AppTest {
 	}
 }
 
-internal class T_WelcomeMod3 { 
+internal const class T_WelcomeMod3 { 
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(Configuration conf) {
 		conf[BedSheetConfigIds.podHandlerBaseUrl] = null

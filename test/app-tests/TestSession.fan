@@ -23,7 +23,14 @@ internal class TestSession : AppTest {
 		client.writeReq
 		client.readRes
 
-		// ensure dodgy session values are caught *before* the response is sent to the client.
-		verifyEq(client.resCode, 500)
+		// this test was to ensure dodgy session values are caught *before* the response is sent to the client.
+		// but despite the docs, it seems session values only need to be immutable, not serialisable
+//		verifyEq(client.resCode, 500)
+
+		cookie := client.resHeaders["Set-Cookie"].replace(";Path=/", "")
+		client = WebClient()
+		client.reqHeaders["Cookie"] = cookie
+		verifyEq(getAsStr(`/sessionBad2`), "sys::Int httpStatusCode")
+
 	}
 }

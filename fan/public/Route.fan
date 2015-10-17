@@ -157,15 +157,6 @@
 ** If the class is 'const', the instance is cached for future use.
 ** 
 const mixin Route {
-	
-	@NoDoc @Deprecated { msg="Deprecated with no replacement. As Route is now a mixin, implementations matches may not be based on a regex." }
-	virtual Regex routeRegex() { Str.defVal.toRegex }
-	
-	@NoDoc @Deprecated { msg="Deprecated with no replacement. As Route is now a mixin, implementations matches may not be based on HTTP methods." }
-	virtual Str httpMethod() { Str.defVal }
-
-	@NoDoc @Deprecated { msg="Deprecated with no replacement. As Route is now a mixin, implementations may generate dynamic responses." }
-	virtual Obj response() { Str.defVal }
 
 	** Creates a Route that matches on the given URL glob pattern. 
 	** 'urlGlob' must start with a slash "/". Example: 
