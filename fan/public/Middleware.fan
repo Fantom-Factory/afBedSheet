@@ -1,8 +1,8 @@
 
 ** Implement to define BedSheet middleware. 
 ** 
-** HTTP requests are funnelled through a stack of middleware instances until either one of them 
-** returns 'true', or they reach a terminator. The default BedSheet terminator returns a 404 error.
+** HTTP requests are funnelled through a stack of middleware instances until they reach a terminator. 
+** The default BedSheet terminator returns a 404 error.
 **  
 ** Middleware may perform processing before and / or after passing the request down the pipeline to 
 ** other middleware instances. Use middleware to address cross cutting concerns such as 
@@ -25,14 +25,27 @@
 **   syntax: fantom 
 **   @Contribute { serviceType=MiddlewarePipeline# }
 **   static Void contributeMiddleware(Configuration conf) {
-**       conf.set("AuthMiddleware", conf.autobuild(AuthMiddleware#), ["before: Routes"])
+**       conf.set("MyMiddleware", conf.autobuild(MyMiddleware#)).before("afBedSheet::Routes")
 **   }
 ** <pre
 // Used by Duvet
 const mixin Middleware {
 
-	** Return 'true' if you handled the request and no further request processing should be performed. 
-	** Otherwise the request should be sent down the pipeline.
+	** Call 'pipeline.service' to allow other Middleware to further process the request:
+	** 
+	** pre>
+	** syntax: fantom
+	** const class MyMiddleware : Middleware {
+	**     override Void service(MiddlewarePipeline pipeline) {
+	**         ...
+	**         ...
+	**         // pass the request to other middleware for processing
+	**         pipeline.service 
+	**         ...
+	**         ...
+	**     }
+	** }
+	** <pre 
 	abstract Void service(MiddlewarePipeline pipeline) 
 
 }

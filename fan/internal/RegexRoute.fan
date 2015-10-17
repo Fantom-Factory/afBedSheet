@@ -4,13 +4,13 @@ const class RegexRoute : Route {
 	private static const Str star	:= "(.*?)"
 
 	** The uri regex this route matches.
-	override const Regex routeRegex
+	const Regex routeRegex
 
 	** The response to be returned from this route. 
-	override const Obj response
+	const Obj response
 
 	** HTTP method used for this route
-	override const Str httpMethod
+	const Str httpMethod
 
 	private  const Regex[] 	httpMethodGlob
 	private  const Bool		matchAllSegs

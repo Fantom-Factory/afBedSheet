@@ -2,6 +2,7 @@ using afIoc
 using afIocEnv
 using afIocConfig
 using afBeanUtils
+using afConcurrent::ActorPools
 using concurrent
 
 internal class TestFileHandler : BsTest {
@@ -124,20 +125,21 @@ internal class TestFileHandler : BsTest {
 	private FileHandler makeFileHandler(Uri:File dirMappings) {
 		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
 		try {
-			return reg.autobuild(FileHandler#, [dirMappings])
+			return reg.rootScope.build(FileHandler#, [dirMappings])
 		} catch (IocErr err) {
 			throw err.cause ?: err
 		}
 	}
 }
 
+@SubModule { modules=[IocConfigModule#, IocEnvModule#]}
 internal const class AssetCacheModule {
 	static const AtomicRef	urlRef	:= AtomicRef()
-	static Void defineServices(ServiceDefinitions defs) {
-		defs.add(FileHandler#)
-		defs.add(ClientAssetCache#)
-		defs.add(ClientAssetProducers#)
-		defs.add(BedSheetServer#)
+	static Void defineServices(RegistryBuilder defs) {
+		defs.addService(FileHandler#)
+		defs.addService(ClientAssetCache#)
+		defs.addService(ClientAssetProducers#)
+		defs.addService(BedSheetServer#)
 	}
 
 	@Contribute { serviceType=ActorPools# }

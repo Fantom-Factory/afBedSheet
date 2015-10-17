@@ -2,8 +2,8 @@ using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
 using afIocConfig::ConfigSource
+using afConcurrent::ActorPools
 using web::WebOutStream
-using afPlastic::SrcCodeErr
 
 ** (Service) - public, 'cos it's useful for emails. 
 @NoDoc	// Advanced use only
@@ -39,9 +39,6 @@ const class ErrPrinterHtml {
 }
 
 internal const class ErrPrinterHtmlSections {
-	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
-	@Inject	private const Int			srcCodePadding	
-	
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	
@@ -92,29 +89,6 @@ internal const class ErrPrinterHtmlSections {
 				out.olEnd
 			}
 			return iocErr.operationTrace != null
-		}
-	}
-
-	Void printSrcCodeErrs(WebOutStream out, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr->Bool| {
-			srcCode 	:= srcCodeErr.srcCode
-			title		:= srcCodeErr.typeof.name.toDisplayName
-			
-			this.title(out, title)
-			
-			out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
-			out.w("&#160;&#160;-&#160;").writeXml(srcCodeErr.msg).pEnd
-			
-			out.div("class=\"srcLoc\"")
-			out.table
-			srcCode.srcCodeSnippetMap(srcCodeErr.errLineNo, srcCodePadding).each |src, line| {
-				if (line == srcCodeErr.errLineNo) { out.tr("class=\"errLine\"") } else { out.tr }
-				out.td.w(line).tdEnd.td.w(src.toXml).tdEnd
-				out.trEnd
-			}
-			out.tableEnd
-			out.divEnd
-			return false
 		}
 	}
 
@@ -282,7 +256,7 @@ internal const class ErrPrinterHtmlSections {
 		prettyPrintMap(out, map, true)
 	}
 
-	private Str readPodVersion(Str podName) {
+	private static Str readPodVersion(Str podName) {
 		try {
 			podFile := Env.cur.findPodFile(podName)
 			zip 	:= Zip.open(podFile)
@@ -296,11 +270,11 @@ internal const class ErrPrinterHtmlSections {
 	
 	** If you're thinking of generating a ToC, think about those contributions not in BedSheet...
 	** ...and if we add a HTML Helper - do we want add a dependency to BedSheet?
-	private Void title(WebOutStream out, Str title) {
+	private static Void title(WebOutStream out, Str title) {
 		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
 	}
 	
-	private Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
+	private static Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
 		if (sort) {
 			newMap := Str:Obj?[:] { ordered = true } 
 			map.keys.sort.each |k| { newMap[k] = map[k] }
@@ -333,11 +307,11 @@ internal const class ErrPrinterHtmlSections {
 		out.tableEnd
 	}
 
-	private Void w(WebOutStream out, Str key, Obj? val) {
+	private static Void w(WebOutStream out, Str key, Obj? val) {
 		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}
 	
-	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
+	private static Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
 		done := false
 		while (err != null && !done) {
 			if (err.typeof.fits(causeType))

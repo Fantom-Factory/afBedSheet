@@ -1,9 +1,8 @@
-using afIoc::Inject
-using afIoc::Registry
+using afIoc
 
 internal const class T_PageHandler {
 	
-	@Inject	private const Registry 			registry
+	@Inject	private const Scope 			scope
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
@@ -24,7 +23,7 @@ internal const class T_PageHandler {
 	}
 	
 	Obj iocErr() {
-		registry.autobuild(AutoBoom#)
+		scope.build(AutoBoom#)
 	}
 	
 	// ---- Buff Pages ----
@@ -110,6 +109,10 @@ internal const class T_PageHandler {
 		// Params are const but not serialisable
 		session["oops"] = #statusCode.params[0]
 		return Text.fromPlain("Wot no fail fast Err?")
+	}
+
+	Obj sessionBad2() {
+		return Text.fromPlain(session["oops"].toStr)
 	}
 	
 	// ---- Status Code Page ----

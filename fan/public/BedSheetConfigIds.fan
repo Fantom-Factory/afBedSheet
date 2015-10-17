@@ -53,12 +53,6 @@ const mixin BedSheetConfigIds {
 	** Defaults to '75'
 	static const Str noOfStackFrames				:= "afBedSheet.errPrinter.noOfStackFrames"
 	
-	** When printing 'SrcCodeErrs', this is the number of lines of code to print before and 
-	** after the line in error.
-	**  
-	** Defaults to '5'
-	static const Str srcCodeErrPadding				:= "afBedSheet.plastic.srcCodeErrPadding"
-	
 	** Set to 'true' to ensure the welcome page is never displayed. 
 	** 
 	** The welcome page is displayed in place of a 404 when no routes have been defined. So this config is useful if 
@@ -93,35 +87,5 @@ const mixin BedSheetConfigIds {
 	** 
 	** Defaults to 'null'
 	static const Str fileAssetCacheControl			:= "afBedSheet.fileAsset.cacheControl"
-
-
-
-	// --- LoggingMiddleware ----
-	
-	** Directory where request log files are to be written. 
-	** Set to enable request logging. 
-	** Must end in a trailing /slash/.
-	** 
-	** @see `RequestLogMiddleware`
-	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
-	static const Str requestLogDir					:= "afBedSheet.requestLog.dir"
-
-	** Log filename pattern.
-	** The name may contain a pattern between '{}' using the pattern format of 'DateTime.toLocale'. 
-	** For example to maintain a log file per month, use a filename such as 'mylog-{YYYY-MM}.log'.
-	** 
-	** Defaults to 'afBedSheet-{YYYY-MM}.log'
-	** 
-	** @see `RequestLogMiddleware`
-	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
-	static const Str requestLogFilenamePattern		:= "afBedSheet.requestLog.filenamePattern" 
-
-	** Format of the web log records as a string of names.
-	** 
-	** Defaults to 'date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)'
-	** 
-	** @see `RequestLogMiddleware`
-	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
-	static const Str requestLogFields				:= "afBedSheet.requestLog.fields"
 
 }

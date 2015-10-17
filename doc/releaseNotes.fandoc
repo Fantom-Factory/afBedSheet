@@ -1,20 +1,27 @@
 Versions
 ********
+
+v1.5.0
+======
+ - Chg: Updated to work with [IoC v3]`pod:afIoc`. (Breaking change.)
+
 v1.4.16
 =======
  - New: Added 'HttpRequest.socketOptions()'.
  - New: Added 'BedSheetBuilder.runWebMod()' - a hook to run a fully configured BedSheet 'WebMod'.
+ - Chg: Lots of internal tweaks to support Fantom-1.0.68.
+ - Chg: Values stored in 'HttpSession' must now be immutable, serializable optional.
  - Chg: 'HttpResponseHeaders.set()' takes 'null'.
  - Chg: Tweaked the default 'RequestLogger' output.
  - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
  - Chg: Errs encountered when error handling are less verbose.
- - Bug: Flushing the Response stream was not propagated down to the socket. 
+ - Bug: Flushing the Response stream was not propagated down to the socket.
 
 v1.4.14
 =======
- - New: 'RequestLogger' service / framework.  
- - New: Deprecated 'RequestLogMiddleware' in favour of new 'RequestLogger' service.  
- - Chg: 'HttpResponse.headers' are now available to read even if the response has been committed. Handy for logging responses. 
+ - New: 'RequestLogger' service / framework.
+ - New: Deprecated 'RequestLogMiddleware' in favour of new 'RequestLogger' service.
+ - Chg: 'HttpResponse.headers' are now available to read even if the response has been committed. Handy for logging responses.
  - Chg: 'HttpSession.exsits()' returns 'false' when calling thread is not in a web request (it used to throw Err). Handy for testing.
 
 v1.4.12

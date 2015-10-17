@@ -508,5 +508,7 @@ internal class TestRegexRoute : BsTest {
 internal const class T_HttpRequest : HttpRequestImpl {
 	override const Str httpMethod := "GET"
 	override const Uri url
-	new make(|This|in) : super() { in(this) }
+	new make(|This|in) : super(in) {
+		in(this)
+	}
 }

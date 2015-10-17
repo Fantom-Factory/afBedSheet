@@ -38,4 +38,4 @@ internal class TestWelcomePage : AppTest {
 	
 }
 
-internal class T_WelcomeMod1 { }
+internal const class T_WelcomeMod1 { }

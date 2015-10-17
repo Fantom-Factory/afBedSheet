@@ -2,8 +2,8 @@ using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
 using afIocConfig::ConfigSource
+using afConcurrent::ActorPools
 using web::WebOutStream
-using afPlastic::SrcCodeErr
 
 ** (Service) - public, 'cos it's useful for emails. 
 @NoDoc	// Advanced use only
@@ -36,9 +36,6 @@ const class ErrPrinterStr {
 
 internal const class ErrPrinterStrSections {
 
-	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
-	@Inject	private const Int			srcCodePadding	
-	
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	
@@ -83,16 +80,6 @@ internal const class ErrPrinterStrSections {
 			return iocErr.operationTrace != null
 		}
 	}
-
-	Void printSrcCodeErrs(StrBuf buf, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr->Bool| {
-			srcCode 	:= srcCodeErr.srcCode
-			title		:= srcCodeErr.typeof.name.toDisplayName	
-			buf.add("\n${title}:\n")
-			buf.add(srcCode.srcCodeSnippet(srcCodeErr.errLineNo, srcCodeErr.msg, srcCodePadding))
-			return false
-		}
-	}	
 
 	Void printStackTrace(StrBuf buf, Err? err) {
 		if (err != null) {
