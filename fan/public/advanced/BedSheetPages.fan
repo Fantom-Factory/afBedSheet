@@ -67,7 +67,7 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 }
 
 internal enum class BedSheetLogo {
-	alienHead(`/res/web/alienHead.svg`),
+	alienHead(`/res/web/bedSheetLogo.html`),
 	skull(`/res/web/skull.svg`);
 	
 	const Uri svgUri
