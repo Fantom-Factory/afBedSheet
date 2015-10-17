@@ -1,0 +1,69 @@
+ 
+For BedSheet 1.4.x
+--------------------
+Run BedSheet under https...?
+Add HttpRequest.isSecure()
+ - find out how to tell
+
+Doc customising the ErrPrinters! Make them public?
+
+
+
+Future
+------
+Logging filter with reqId, SessId and configurable userId
+
+Create an afBedSheetProtection pod, based on Rubys Rack::Protection
+
+Move code to BedSheetCore and remove all dependencies on Wisp / Web
+ - create a BedSheetWisp default impl
+ - that way BedSheet could be run on different servers (afWillow?)
+ 
+
+
+Meh - Can't be arsed!
+=====================
+Have BeforeRoutes and AfterRoutes, put in RoutesMiddleware so other Middleware still do "Before: Routes"
+ - Use case??
+ - I only want it 'cos Sinatra has it!
+
+Create a Units class:
+	static Void main(Str[] args) {
+		kB := Unit.fromStr("kB")
+		b := Unit.fromStr("byte")
+	
+		size := kB.convertTo(3f, b)
+		Env.cur.err.printLine(size)
+	}
+
+Contribute ranges to HttpStatusProcessor?? - Naa, can't be arsed. Use case?
+
+Inspect the 'accept' headers to ensure the client likes what we're about to send back, send 406 otherwise
+ - HTTP 1.1 says we MAY, as the client can make the final decision themselves
+ - Also, if the 406 spec says we need to encode the alternatives in the response, but in an entity in the body...!?
+
+Move the app-restarting into separate thread which checks every X secs
+ - Naa, the startup is too processor intensive - it just slows the computer down
+
+
+
+Doc Comments
+------------
+Play on words from Tapestry, and Fantom ghosty wears a BedSheet! Wot Fantom wears!
+
+"A web app framework that gets you horizontal. What's your favourite position?"
+
+horizonal not vertical - other frameworks make you extend their classes, not BedSheet.
+
+
+Powerful.
+Built in a modular way with [afIoc]`http://repo.status302.com/doc/afIoc/#overview` meaning every service maybe wrapped,
+decorated, replaced or deleted! It makes hard tasks, easy.
+
+Flexible.
+Show a developer a really cool feature and the first response is usually, "Wow, that's awewome! ... But how do I turn it off?"
+With that in mind, BedSheet is reluctant
+
+Simple.
+Developers are lazy. If it's complicated or difficult, they won't use it.
+

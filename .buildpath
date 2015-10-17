@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="src" path="fan"/>
+	<buildpathentry kind="src" path="test/app"/>
+	<buildpathentry kind="src" path="test/app-tests"/>
+	<buildpathentry kind="src" path="test/unit-tests"/>
+	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
+</buildpath>

@@ -1,0 +1,186 @@
+
+body, h1, h2, p, td {
+    font-family:		"Lucida Console", Monaco, monospace;
+	color:				#FFFFFF;
+	font-size:			14px;
+}
+
+a {
+	color:				#33B5E5;
+	text-decoration:	none;
+}
+
+a:hover {
+	text-decoration:	underline;
+}
+
+p {
+	color:				#999999;
+}
+
+body {
+	background-color:	#000000;
+	padding:			0;
+	margin:				0;
+}
+
+header {
+	padding:			8px 5% 0 5%;
+	border-bottom: 		2px solid #33B5E5;
+	position:			relative;
+	height:				45px;
+	line-height:		55px;
+}
+
+footer {
+	margin-top:			3em;
+	padding:			0.5em 5%;
+	/* small pages, like 404, look better without the bottom border */
+	/*border-top: 		2px solid #33B5E5;*/
+	text-align:			right;
+}
+
+footer a {
+	font-size:			12px;
+	color:				#999999;
+}
+
+main {
+	padding:			0 10%;
+	display:			block;
+}
+
+h1 {
+	font-size:			32px;
+	color:				#FFFFFF;
+}
+
+h2 {
+	font-size:			24px;
+	color:				#FFFFFF;
+	border-bottom:		1px solid #33B5E5;
+	padding-top:		1em;
+}
+
+ul, li {
+	margin:				0;
+	padding:			0;
+}
+
+ul, ul li  {
+	list-style-type:	none;
+}
+
+b {
+	font-weight:		normal;
+	color:				#FFFFFF;
+}
+
+td {
+	vertical-align:		top;
+	white-space:		pre-wrap;
+}
+
+td:first-child {
+	color:				#AAAAE5;
+	padding-right:		1em;
+}
+
+.bedSheetLogo {
+	position:			absolute;
+	height:				75px;
+	width:				75px;
+}
+.bedSheetLogo .ghost {
+	position:			relative;
+	top:				-5px;
+	left:				-15px;
+}
+.bedSheetLogo.skull {
+	height:				60px;
+	width:				60px;
+	top:				2px;
+}
+
+.brand {
+	display:			inline;
+ 	color:				#999999;
+    font-size:			32px;
+    font-weight:		bold;
+    padding-left:		60px;
+}
+
+code {
+	display:			block;
+	white-space:		pre;
+	padding:			8px 12px;
+	margin:				0;
+	color:				#f8f8f2;
+	background:			#272822;
+	border:				solid gray;
+	border-width:		1px 0;
+	border-radius:		4px;
+	line-height:		125%;
+	font-family:		Monaco, Menlo, Consolas, "Courier New", monospace;
+	font-size:			13px;
+	overflow:			auto;
+}
+
+/* ---- Err 500 Page --------------------------------------------------------------------------- */
+
+.cookies td:first-child,
+.threadLocals td:first-child {
+	white-space:		normal;
+}
+
+#stackFrames.hideBoring .dull {
+	display:			none;
+}
+
+#stackFrames .dull {
+	color:				#888888;
+}
+
+/* ---- Source Location ------------------------------------------------------------------------ */
+
+.srcLoc {
+	overflow-x:			auto;
+	
+	white-space:		pre;
+	color:				#333333;
+	background-color: 	#EEEEFF;
+	border: 			1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 		4px;
+
+	-moz-tab-size:		4;
+	-o-tab-size:		4;
+	-webkit-tab-size:	4;
+	-ms-tab-size:		4;
+	tab-size:			4;
+}
+
+.srcLoc table {
+	width:				100%;
+}
+
+.srcLoc td:first-child {
+	border-right:	1px solid #333333;
+	width:			2em;
+	text-align:		right;
+}
+
+.srcLoc td {
+	color:				#333333;
+	padding:			0 0.5em;
+}
+
+.srcLoc .errLine {
+	background-color: 	#EEEEFF;
+	background-color: 	rgba(255, 255, 255, 0.99);
+}
+.srcLoc .errLine td {
+	padding-top:		2px;
+	padding-bottom:		2px;
+	border-top: 		1px solid rgba(0, 0, 0, 0.15);
+	border-bottom:		1px solid rgba(0, 0, 0, 0.15);
+}
