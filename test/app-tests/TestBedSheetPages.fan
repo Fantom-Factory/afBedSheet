@@ -41,6 +41,7 @@ internal class T_WebReq : WebReq {
 	override Str:Str 	headers				:= [:]
 	override WebSession	session				:= T_WebSession()
 	override InStream 	in					:= "in".toBuf.in
+	override TcpSocket	socket()			{ throw Err() }
 }
 
 internal class T_WebRes : WebRes {
