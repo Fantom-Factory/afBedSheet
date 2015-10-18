@@ -1,7 +1,7 @@
-#BedSheet v1.4.14
+#BedSheet v1.4.16
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.4.14](http://img.shields.io/badge/pod-v1.4.14-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.4.16](http://img.shields.io/badge/pod-v1.4.16-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -16,7 +16,7 @@ BedSheet is inspired by Java's [Tapestry5](http://tapestry.apache.org/), Ruby's 
 
 Install `BedSheet` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
-    C:\> fanr install -r http://pods.fantomfactory.org/fanr/ afBedSheet
+    C:\> fanr install -r http://repo.status302.com/fanr/ afBedSheet
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
