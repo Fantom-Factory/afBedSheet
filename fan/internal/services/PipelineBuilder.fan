@@ -1,7 +1,7 @@
 using afIoc
 using afPlastic::PlasticCompiler
 using afPlastic::IocClassModel
-using afConcurrent
+using afConcurrent::SynchronizedMap
 using afBeanUtils
 
 ** (Service) -
