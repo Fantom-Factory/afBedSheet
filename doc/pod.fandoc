@@ -128,9 +128,41 @@ pre>
 C:\> fan afBedSheet -port 8069 myWebApp
 <pre
 
-Note that 'AppModule' class is named so out of convention but may be called anything you like.
+Note that the 'AppModule' class is named so out of convention but may be called anything you like.
 
-See [Development Proxy]`#developmentProxy` for more on the '-proxy' option.
+See [Development Proxy]`#developmentProxy` for info on the '-proxy' option.
+
+
+
+IoC Services
+************
+BedSheet is an IoC container. That is, it creates and looks after a 'Registry' instance, using it to create classes and provide access to services.
+
+[BedSheet]`pod:afBedSheet` Web applications are multi-threaded; each web request is served on a different thread. For that reason BedSheet defines a threaded scope called 'request'.
+
+By default const services are matched to the root scope and non-const services are matched the to request scope. But it it better to be explicit and set which scopes a service is available on when it is defined.
+
+pre>
+class AppModule {
+    Void defineServices(RegistryBuilder bob) {
+        bob.addService(MyService1#).withScope("root")
+
+        bob.addService(MyService2#).withScope("request")
+    }
+}
+<pre
+
+Root Scope
+==========
+In IoC's default 'root' scope, only one instance of the service is created for the entire application. It is how you share data and services between requests and threads. *Root scoped* services need to be 'const' classes.
+
+Request Scope
+=============
+In BedSheet's 'request' scope a new instance of the service will be created for each thread / web request. BedSheet's 'WebReq' and 'WebRes' are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
+
+Writing 'const' services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. The article [From One Thread to Another...]`article:from-one-thread-to-another` shows you how.
+
+The smart ones may be thinking that 'root' scoped services can only hold other 'root' scoped services. Well, they would be wrong too! Using IoC's active scope and the magic of IoC's *Lazy Funcs*, 'request' scoped services may be injected into 'root' scoped services. See IoC's Lazy Funcs for more info.
 
 
 
@@ -148,11 +180,11 @@ using afBedSheet
 class AppModule {
 
     @Contribute { serviceType=Routes# }
-    static Void contributeRoutes(Configuration conf) {
+    Void contributeRoutes(Configuration config) {
 
-        conf.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
-        conf.add(Route(`/index`, IndexPage#service))
-        conf.add(Route(`/work`,  WorkPage#service, "POST"))
+        config.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
+        config.add(Route(`/index`, IndexPage#service))
+        config.add(Route(`/work`,  WorkPage#service, "POST"))
     }
 }
 <pre
@@ -160,6 +192,8 @@ class AppModule {
 [Route]`Route` objects take a matching 'glob' and a response object. A response object is any object that BedSheet knows how to
 [process]`#responseObjects` or a 'Method' to be called. If a method is given, then request URL path segments are matched to the
 method parameters. See `Route` for more details.
+
+Note that 'Route' is actually a mixin, so you can create custom instances that match on anything, not just URLs.
 
 Routing lesson over.
 
@@ -292,7 +326,7 @@ To handle a specific Err, contribute a response object to 'ErrResponses':
 pre>
 syntax: fantom
 @Contribute { serviceType=ErrResponses# }
-static Void contributeErrResponses(Configuration config) {
+Void contributeErrResponses(Configuration config) {
     config[ArgErr#] = MethodCall(MyErrHandler#process).toImmutableFunc
 }
 <pre
@@ -304,7 +338,7 @@ You could also replace the default err response object:
 pre>
 syntax: fantom
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(Configuration config) {
+Void contributeApplicationDefaults(Configuration config) {
     config[BedSheetConfigIds.defaultErrResponse] = Text.fromHtml("<html><b>Oops!</b></html>")
 }
 <pre
@@ -329,7 +363,7 @@ To set your own '404 Not Found' page contribute a response object to the 'HttpSt
 pre>
 syntax: fantom
 @Contribute { serviceType=HttpStatusResponses# }
-static Void contribute404Response(Configuration config) {
+Void contribute404Response(Configuration config) {
     config[404] = MethodCall(Error404Page#process).toImmutableFunc
 }
 <pre
@@ -341,7 +375,7 @@ To replace *all* status code responses, replace the default HTTP status response
 pre>
 syntax: fantom
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(Configuration config) {
+Void contributeApplicationDefaults(Configuration config) {
     config[BedSheetConfigIds.defaultHttpStatusResponse] = Text.fromHtml("<html>Error</html>")
 }
 <pre
@@ -366,7 +400,7 @@ pre>
 syntax: fantom
 
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(Configuration conf) {
+Void contributeApplicationDefaults(Configuration conf) {
     ...
     conf["afBedSheet.errPrinter.noOfStackFrames"] = 100
     ...
@@ -405,7 +439,7 @@ syntax: fantom
 
 class RestAppModule {
     @Contribute { serviceType=Routes# }
-    static Void contributeRoutes(Configuration conf) {
+    Void contributeRoutes(Configuration conf) {
         conf.add(Route(`/restAPI/*`, RestService#post, "POST"))
     }
 }
@@ -449,7 +483,7 @@ File Uploading
 **************
 File uploading can be pretty horrendous in other languages, but here in Fantom land it's pretty easy.
 
-First create your HTML. Here's a form snippet:
+First create your HTML, here's a form snippet:
 
 pre>
 syntax: html
@@ -467,7 +501,7 @@ syntax: fantom
 
 class RestAppModule {
     @Contribute { serviceType=Routes# }
-    static Void contributeRoutes(Configuration conf) {
+    Void contributeRoutes(Configuration conf) {
         conf.add(Route(`/uploadFile`, UploadService#uploadFile, "POST"))
     }
 }
@@ -537,7 +571,7 @@ To enable, add the 'W3CLogger' to the 'RequestLoggers' service
 pre>
 syntax: fantom
 @Contribute { serviceType=RequestLoggers# }
-static Void contributeRequestLoggers(Configuration config) {
+Void contributeRequestLoggers(Configuration config) {
     config.add(MyRequestLogger())
 }
 <pre
@@ -548,6 +582,8 @@ pre>
 
 <pre
 
+Default Logger
+==============
 BedSheet ships with a basic default logger that times each request. To enable, turn on BedSheet debug logging. You can do this in code with:
 
   syntax: fantom
@@ -579,7 +615,7 @@ pre>
 syntax: fantom
 
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeApplicationDefaults(Configuration config) {
+Void contributeApplicationDefaults(Configuration config) {
     config[BedSheetConfigIds.gzipDisabled] = true
 }
 <pre
@@ -600,7 +636,7 @@ You may contribute your own with:
 pre>
 syntax: fantom
 @Contribute { serviceType=GzipCompressible# }
-static Void configureGzipCompressible(Configuration config) {
+Void configureGzipCompressible(Configuration config) {
     config[MimeType("text/funky")] = true
 }
 <pre
@@ -691,9 +727,8 @@ using afBedSheet
 class Example {
     Void main() {
         bob := BedSheetBuilder(AppModule#.qname)
-        reg := bob.build.startup
         mod := RouteMod { it.routes = [
-            "poo" : BedSheetWebMod(reg)
+            "poo" : BedSheetWebMod(bob.build)
         ]}
 
         WispService { it.port=8069; it.root=mod }.install.start
@@ -703,7 +738,7 @@ class Example {
 }
 
 ** A tiny BedSheet app that returns 'Hello Mum!' for every request.
-class TinyBedAppModule {
+const class TinyBedAppModule {
     @Contribute { serviceType=Routes# }
     static Void contributeRoutes(Configuration conf) {
         conf.add(Route(`/***`, Text.fromPlain("Hello Mum!")))
@@ -716,12 +751,14 @@ When run, a request to 'http://localhost:8069/' will return a Wisp 404 and any r
 When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()]`afBedSheet::BedSheetServer.toClientUrl` to ensure the extra path info is added.
 Similarly, ensure asset URLs are retrieved from the `FileHandler` service.
 
-Note that each mulitple BedSheet instances may be run side by side in the same Wisp application.
+Note that mulitple BedSheet instances may be run side by side in the same Wisp application.
 
 
 
-Go Live with Heroku
-*******************
+Go Live!
+********
+...with Heroku
+==============
 In a hurry to go live? Use [Heroku]`http://www.heroku.com/`!
 
 [Heroku]`http://www.heroku.com/` and the [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpack-fantom`
@@ -732,11 +769,11 @@ To have Heroku run your BedSheet web app you have 2 options:
 
 1. Create a Heroku text file called 'Procfile' at the same level as your 'build.fan' with the following line:
 
-     web: fan afBedSheet <app-name> $PORT
+     web: fan afBedSheet -port $PORT <app-name>
 
   substituting '<app-name>' with your fully qualified app module name. Type '$PORT' verbatim, as it is. Example:
 
-    web: fan afBedSheet acme::AppModule $PORT
+    web: fan afBedSheet -port $PORT acme::AppModule
 
   Now Heroku will start BedSheet, passing in your app name.
 
@@ -760,6 +797,14 @@ To have Heroku run your BedSheet web app you have 2 options:
   Main classes have the advantage of being easy to run from an IDE or cmd line.
 
   See [heroku-fantom-buildpack]`https://bitbucket.org/AlienFactory/heroku-buildpack-fantom` for more details.
+
+
+
+...with OpenShift
+=================
+In a hurry to go live? Use [OpenShift]`https://www.openshift.com/`!
+
+RedHat's OpenShift [Origin]`https://www.openshift.org/` is a cloud PaaS with free plans. See Alien-Factory's [Fantom Quickstart for OpenShift]`https://bitbucket.org/AlienFactory/openshift-fantom-quickstart` for details on how to deploy your BedSheet app.
 
 
 
