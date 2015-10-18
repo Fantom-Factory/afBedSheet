@@ -39,7 +39,7 @@
 ** 
 ** 
 ** 
-** IOC Configuration
+** IoC Configuration
 ** =================
 ** Instances of 'ValueEncoder' should be contributed to the 'ValueEncoders' service and mapped to a 
 ** 'Type' representing the object it converts. 
@@ -49,8 +49,8 @@
 ** pre>
 **   syntax: fantom
 **   @Contribute { serviceType=ValueEncoders# }
-**   static Void contributeValueEncoders(Configuration conf) {
-**     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)
+**   Void contributeValueEncoders(Configuration config) {
+**     config[MyEntity#] = config.build(MyEntityEncoder#)
 **   }
 ** <pre
 ** 

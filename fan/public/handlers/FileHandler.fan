@@ -9,15 +9,15 @@ using afIoc
 ** 
 ** pre>
 ** myProj/
-**  |-- fan/
-**  |-- test/
-**  `-- etc
-**       `-- static-web/
-**            |-- css/
-**            |    `-- app.css
-**            |-- images/
-**            |    `-- logo.png
-**            `-- scripts/
+**  |- fan/
+**  |- test/
+**  `- etc
+**      `- static-web/
+**          |- css/
+**          |   `- app.css
+**          |- images/
+**          |   `- logo.png
+**          `- scripts/
 ** <pre
 ** 
 ** To serve up files from the 'css/' directory add the following to 'AppModule':
@@ -25,8 +25,8 @@ using afIoc
 ** pre>
 ** syntax: fantom
 ** @Contribute { serviceType=FileHandler# }
-** static Void contributeFileHandler(Configuration conf) {
-**   conf[`/stylesheets/`] = `etc/static-web/css/`.toFile
+** Void contributeFileHandler(Configuration config) {
+**   config[`/stylesheets/`] = `etc/static-web/css/`.toFile
 ** }
 ** <pre
 ** 

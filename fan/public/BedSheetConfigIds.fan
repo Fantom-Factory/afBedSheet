@@ -6,7 +6,7 @@
 ** pre>
 ** syntax: fantom 
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void configureApplicationDefaults(Configuration conf) {
+** Void configureApplicationDefaults(Configuration conf) {
 **   conf[BedSheetConfigIds.gzipThreshold] = 500
 ** }
 ** <pre

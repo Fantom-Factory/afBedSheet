@@ -8,7 +8,7 @@ using web::WebRes
 using afIoc
 using afIocConfig::ConfigSource
 
-** The `web::WebMod` that runs in [Wisp]`http://fantom.org/doc/wisp/index.html`. 
+** The `web::WebMod` that runs in [Wisp]`pod:wisp`. 
 const class BedSheetWebMod : WebMod {
 	private const static Log log := Utils.getLog(BedSheetWebMod#)
 

@@ -3,8 +3,8 @@ using afIoc
 ** Public in case someone wants to switch on method calling via IoC.
 ** pre>
 ** @Contribute { serviceType=ResponseProcessors# }
-** static Void contributeResponseProcessors(Configuration config) {
-**     processor = config.autobuild(MethodCallProcessor#, null, [MethodCallProcessor#callWithIoc:true])
+** Void contributeResponseProcessors(Configuration config) {
+**     processor = config.auto(MethodCallProcessor#, null, [MethodCallProcessor#callWithIoc:true])
 **     config.overrideValue(MethodCall#, processor)
 ** }
 ** <pre

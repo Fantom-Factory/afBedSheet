@@ -103,7 +103,7 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(Configuration config) {
-		// used for ClientAssetCache only
+		// used by ClientAssetCache only
 		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
 	}
 
