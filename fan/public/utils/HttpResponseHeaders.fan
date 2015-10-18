@@ -5,9 +5,11 @@ using web::WebUtil
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 const class HttpResponseHeaders {
 	
+	private const static Log	log				:= HttpResponseHeaders#.pod.log
+	private const static Int 	maxTokenSize	:= 4096 - 10	// taken from web::WebUtil.maxTokenSize. -10 for good measure!
 	private const |->Str:Str|	getHeaders
 	private const |->| 			checkUncommitted
-	private const Bool 			oldWispVer		:= Pod.find("wisp").version <= Version("1.0.67")
+	private const Bool 			oldWispVer		:= Pod.find("wisp").version <= Version("1.0.66")
 
 	internal new make(|->Str:Str| getHeaders, |->| checkUncommitted) {
 		this.getHeaders = getHeaders
@@ -144,17 +146,23 @@ const class HttpResponseHeaders {
 			
 		checkUncommitted()
 
+		maxTokenSize := maxTokenSize
+		valueSize	 := value.size
 		if (oldWispVer) {
 			// multiple lines in the header need to be prefixed with whitespace
 			// see http://fantom.org/forum/topic/2427
 			if (value.containsChar('\n'))
 				value = value.splitLines.join("\n ")
-		}
+
+		} else
+			// newer Wisps will append whitespace for us, we just need to adjust our calculations
+			maxTokenSize -= value.numNewlines * 2
 
 		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
 		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
-		if (value.size > (4096-2)) {
-			value = value[0..<(4096-2)].trim
+		if (value.size > maxTokenSize) {
+			log.warn("HTTP Response Header '${name}' is too large at $value.size chars, trimming to ${maxTokenSize}...")
+			value = value[0..<maxTokenSize].trimEnd
 		}
 		
 		getHeaders()[name] = value

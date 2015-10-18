@@ -98,15 +98,16 @@ internal class AppRestarterState {
 	Void launchWebApp(Str appName, Int appPort, Str params) {
 		log.info(BsLogMsgs.appRestarter_lauchingApp(appName, appPort))
 		try {
-//			home	:= Env.cur.homeDir.normalize
-//			sysjar	:= home + `lib/java/sys.jar`
-//			args	:= ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
+			home	:= Env.cur.homeDir.normalize
+			sysjar	:= home + `lib/java/sys.jar`
+			args	:= ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
 			
-			// use the new windows fan launcher mechanism
-			cmd  := Env.cur.homeDir.normalize.plus(`bin/fan`).osPath
-			if (Env.cur.os.startsWith("win"))
-				cmd += ".bat"
-			args := [cmd, MainProxied#.qname, params]
+			// can't use the new windows fan launcher mechanism - 'cos the batch file process finishes straight away
+			// can onlu manage a proper .exe process
+//			cmd  := Env.cur.homeDir.normalize.plus(`bin/fan`).osPath
+//			if (Env.cur.os.startsWith("win"))
+//				cmd += ".bat"
+//			args := [cmd, MainProxied#.qname, params]
 			
 			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
 			realWebApp = Process(args).run
