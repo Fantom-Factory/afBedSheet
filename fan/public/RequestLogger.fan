@@ -45,7 +45,7 @@
 ** 
 **   syntax: fantom 
 **   @Contribute { serviceType=RequestLoggers# }
-**   static Void contributeRequestLoggers(Configuration config) {
+**   Void contributeRequestLoggers(Configuration config) {
 **       config.add(MyRequestLogger())
 **   }
 ** 
@@ -54,8 +54,8 @@
 ** 
 **   syntax: fantom 
 **   @Contribute { serviceType=RequestLoggers# }
-**   static Void contributeRequestLoggers(Configuration config) {
-**       config["myLogger"] = config.autobuild(MyRequestLogger#)
+**   Void contributeRequestLoggers(Configuration config) {
+**       config["myLogger"] = config.build(MyRequestLogger#)
 **   }
 **  
 const mixin RequestLogger {

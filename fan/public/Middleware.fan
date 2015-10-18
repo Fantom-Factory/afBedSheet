@@ -7,7 +7,7 @@
 ** Middleware may perform processing before and / or after passing the request down the pipeline to 
 ** other middleware instances. Use middleware to address cross cutting concerns such as 
 ** authentication and authorisation. See the FantomFactory article 
-** [Basic HTTP Authentication With BedSheet]`http://www.fantomfactory.org/articles/basic-http-authentication-with-bedSheet#.U2I2MyhfyJA` for examples.
+** [Basic HTTP Authentication With BedSheet]`article:basic-http-authentication-with-bedSheet` for examples.
 ** 
 ** Because middleware effectively wrap other middleware instances and each can terminate the 
 ** pipeline prematurely, the ordering of middleware is extremely important. 
@@ -15,7 +15,7 @@
 ** 'Route' instances are processed in the 'Routes' middleware. So generally you would explicitly 
 ** contribute your own middleware to be *before* or *after* this.
 ** 
-** IOC Configuration
+** IoC Configuration
 ** =================
 ** Instances of 'Middleware' should be contributed to the 'MiddlewarePipeline' service.
 ** 
@@ -24,8 +24,8 @@
 ** pre>
 **   syntax: fantom 
 **   @Contribute { serviceType=MiddlewarePipeline# }
-**   static Void contributeMiddleware(Configuration conf) {
-**       conf.set("MyMiddleware", conf.autobuild(MyMiddleware#)).before("afBedSheet::Routes")
+**   Void contributeMiddleware(Configuration config) {
+**       config.set("MyMiddleware", config.build(MyMiddleware#)).before("afBedSheet::Routes")
 **   }
 ** <pre
 // Used by Duvet

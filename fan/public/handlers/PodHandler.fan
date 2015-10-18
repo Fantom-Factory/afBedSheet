@@ -19,8 +19,8 @@ using afBeanUtils::ArgNotFoundErr
 ** pre>
 ** syntax: fantom
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void contributeAppDefaults(Configuration conf) {
-**     conf[BedSheetConfigIds.podHandlerBaseUrl] = `/some/other/url/`
+** Void contributeAppDefaults(Configuration config) {
+**     config[BedSheetConfigIds.podHandlerBaseUrl] = `/some/other/url/`
 ** }
 ** <pre
 ** 
