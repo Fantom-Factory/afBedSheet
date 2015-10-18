@@ -24,12 +24,10 @@ internal const class BedSheetEnvModule {
 		config[IocEnvConfigIds.isDev]	= iocEnv.isDev
 	}
 
-	static Void registryHooks(RegistryBuilder bob) {
-		bob.onRegistryStartup |config| {
-			config["afIocEnv.logEnv"] = |Scope scope| {
-				iocEnv := (IocEnv) scope.serviceById(IocEnv#.qname)
-				iocEnv.logToInfo
-			}
+	static Void onRegistryStartup(Configuration config) {
+		config["afIocEnv.logEnv"] = |Scope scope| {
+			iocEnv := (IocEnv) scope.serviceById(IocEnv#.qname)
+			iocEnv.logToInfo
 		}
 	}
 }

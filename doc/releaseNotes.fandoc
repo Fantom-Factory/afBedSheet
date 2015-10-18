@@ -4,7 +4,10 @@ Versions
 v1.5.0
 ======
  - Chg: Updated to work with [IoC v3]`pod:afIoc`. (Breaking change.)
- - Chg: BedSheet ghost logo now appears on default status pages.
+ - Chg: Converted <port> arg in 'Main' to an option. (Breaking change.)
+ - Chg: Created an IoC threaded 'request' scope.
+ - Chg: Tweaked the mechanics of 'BedSheetBuilder'.
+ - Chg: Dev Proxy now uses the 'fanlaunch' scripts. 
 
 v1.4.16
 =======
@@ -16,6 +19,7 @@ v1.4.16
  - Chg: Tweaked the default 'RequestLogger' output.
  - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
  - Chg: Errs encountered when error handling are less verbose.
+ - Chg: BedSheet ghost logo now appears on default status pages.
  - Bug: Flushing the Response stream was not propagated down to the socket.
 
 v1.4.14

@@ -44,7 +44,6 @@ internal const class ProxyMod : WebMod {
 		// with proxy server - create session here as a workaround
 		dummy := req.session
 
-		
 		c := (WebClient?) null
 		try {
 			c = writeReq()

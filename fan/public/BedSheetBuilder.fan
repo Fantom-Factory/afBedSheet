@@ -121,7 +121,7 @@ class BedSheetBuilder {
 	@NoDoc // for serialisation
 	Str toStringy() {
 		mods := _moduleTypes
-		pods := _pods.map { [it[0], it[1]] }
+		pods := _pods
 		opts := options.dup
 		opts.remove("afIoc.bannerText")
 		

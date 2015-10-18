@@ -6,9 +6,8 @@ Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
 BedSheet provides a rich middleware mechanism for routing and delivering content over HTTP.
 
 BedSheet is inspired by
-Java's [Tapestry5]`http://tapestry.apache.org/`,
-Ruby's [Sinatra]`http://www.sinatrarb.com/` and
-Fantom's [Draft]`https://bitbucket.org/afrankvt/draft`.
+Java's [Tapestry5]`http://tapestry.apache.org/` and
+Ruby's [Sinatra]`http://www.sinatrarb.com/`.
 
 
 
@@ -30,7 +29,7 @@ Quick Start [#quickStart]
 
     const class AppModule {
         @Contribute { serviceType=Routes# }
-        static Void contributeRoutes(Configuration conf) {
+        Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
             conf.add(Route(`/hello/**`, HelloPage#hello))
         }
@@ -46,38 +45,28 @@ Quick Start [#quickStart]
 
     C:\> fan Example.fan -env development
 
-
-[21:19:29 06-Oct-15] [info] [afBedSheet] Found mod 'Example_0::AppModule'
-[21:19:29 06-Oct-15] [info] [afBedSheet] Starting Bed App 'Example_0' on port 8080
-[21:19:29 06-Oct-15] [info] [web] http started on port 8080
-[21:19:29 06-Oct-15] [info] [afIoc] Adding module afIoc::IocModule
-[21:19:29 06-Oct-15] [info] [afIoc] Adding module Example_0::AppModule
-[21:19:29 06-Oct-15] [info] [afIoc] Adding module afBedSheet::BedSheetModule
-  [info] [afIoc] Adding module afIocConfig::IocConfigModule
-    [info] [afIoc] Adding module afBedSheet::BedSheetEnvModule
     [info] [afBedSheet] Found mod 'Example_0::AppModule'
-    [info] [afIoc] Adding module definitions from pod 'Example_0'
-    [info] [afIoc] Adding module definition for Example_0::AppModule
-    [info] [afIoc] Adding module definition for afBedSheet::BedSheetModule
-    [info] [afIoc] Adding module definition for afIocConfig::ConfigModule
-    [info] [afIoc] Adding module definition for afIocEnv::IocEnvModule
-    [info] [afBedSheet] Starting Bed App 'Example_0::AppModule' on port 8080
-    [info] [web] WispService started on port 8080
+    [info] [afBedSheet] Starting Bed App 'Example_0' on port 8080
+    [info] [web] http started on port 8080
+    [info] [afIoc] Adding module afIoc::IocModule
+    [info] [afIoc] Adding module Example_0::AppModule
+    [info] [afIoc] Adding module afBedSheet::BedSheetModule
+    [info] [afIoc] Adding module afIocConfig::IocConfigModule
+    [info] [afIoc] Adding module afBedSheet::BedSheetEnvModule
+    [info] [afIoc] Adding module afConcurrent::ConcurrentModule
+    [info] [afIocEnv] Setting from cmd line argument '-env' : development
+    ...
 
-    40 IoC Services:
-      10 Builtin
-      26 Defined
-       0 Proxied
-       4 Created
+    24.32% of services were built on startup (9/37)
 
-    65.00% of services are unrealised (26/40)
        ___    __                 _____        _
       / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
      / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
     /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-               Alien-Factory BedSheet v1.4.8, IoC v2.0.6 /___/
+               Alien-Factory BedSheet v1.5.0, IoC v3.0.0 /___/
 
-    IoC Registry built in 210ms and started up in 20ms
+
+    [info] [afIoc] IoC Registry built in 91ms and started up in 96ms
 
     Bed App 'Example_0' listening on http://localhost:8080/
 
@@ -106,40 +95,42 @@ Route handlers are typically what we, the application developers, write. They pe
 
 Starting BedSheet
 *****************
-You can start BedSheet manually, as we did in the Quick Start example, or you can start BedSheet from the command line. Just tell it where to find an 'AppModule' and the port to run on:
+You can start BedSheet manually, as we did in the Quick Start example, or you can [start BedSheet from the command line]`Main`. Just tell it where to find an 'AppModule' and the port to run on:
 
 pre>
-C:\> fan afBedSheet -env development <qualified-app-module-name> <port-number>
+C:\> fan afBedSheet [-port <port>] [-env <env>] [-proxy] <qualified-appModule-name>
 <pre
 
 For example:
 
 pre>
-C:\> fan afBedSheet -env development myWebApp::AppModule 8069
+C:\> fan afBedSheet -port 8069 myWebApp::AppModule
 <pre
 
 Every Bed App (BedSheet Application) has an 'AppModule' class that defines and configures your
 [IoC]`pod:afIoc` services. It is an IoC concept that allows you centralise your application's configuration in
 one place. It is the 'AppModule' that defines your Bed App and is central everything it does.
 
-'<qualified-app-module-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following meta:
+'<qualified-appModule-name>' may be replaced with just '<pod-name>' as long as your pod's 'build.fan' defines the following meta:
 
 pre>
 syntax: fantom
 meta = [
     ...
     ...
-    "afIoc.module" : "<qualified-app-module-name>"
+    "afIoc.module" : "<qualified-appModule-name>"
 ]
 <pre
 
 This allows BedSheet to look up your 'AppModule' from the pod. Example:
 
 pre>
-C:\> fan afBedSheet -env development myWebApp 8069
+C:\> fan afBedSheet -port 8069 myWebApp
 <pre
 
-Note that 'AppModule' is named so out of convention but the class may be called anything you like.
+Note that 'AppModule' class is named so out of convention but may be called anything you like.
+
+See [Development Proxy]`#developmentProxy` for more on the '-proxy' option.
 
 
 
@@ -637,31 +628,45 @@ A threshold can be set, whereby if the buffer size exeeds that value, all conten
 
 
 
-Development Proxy
+Development Proxy [#developmentProxy]
 *****************
 Never (manually) restart your app again!
 
-Use the '-proxy' option when starting BedSheet to create a development Proxy and your app will auto re-start when a pod is updated:
+Use the '-proxy' option when starting BedSheet to create a development Proxy and your app will auto re-start whenever a pod is updated:
 
 pre>
-C:\> fan afBedSheet -proxy <mypod> <port>
+C:\> fan afBedSheet -port <port> -proxy <appModule>
 <pre
 
-The proxy sits on '<port>' and starts your real app on '<port>+1', forwarding all requests to it.
+The proxy sits on '(port)' and starts the real app on '(port+1)', forwarding all requests to it.
 
 pre>
-  Client <--> Proxy (port) <--> Web App (port+1)
+.                |<--> Web App (port+1)
+Proxy (port) <-->|
+                 |<--> Web Browser
 <pre
 
-A problem other (Fantom) web development proxies suffer from is that, when the proxy dies, your real web app is left hanging
-around; requiring you to manually kill it.
+Each time the web browser makes a request, it connects to the proxy which forwards it to the real web app.
+
+On each request, the proxy scans the pod files in the Fantom environment, and should any of them be updated, it restarts the web application.
 
 pre>
-  Client <-->   ????????   <--> Web App (port+1)
+.                |<--> RESTART
+Proxy (port) <-->|
+                 |<--> Web Browser
 <pre
 
-BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should
-the proxy not respond, the web app kills itself.
+Note that the proxy is intelligent enough to only scan those pods used by the web application. If need be, use the [-watchAllPods]`Main` option to watch *all* pods.
+
+A problem other web frameworks (*cough* *draft*) suffer from is that, when the proxy dies, your real web app is left hanging around; requiring you to manually kill it. Which can be both confusing and annoying.
+
+pre>
+.                |<--> Web App (port+1)
+             ??? |
+                 |<--> Web Browser
+<pre
+
+BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should the proxy not respond, the web app kills itself.
 
 See [proxyPingInterval]`BedSheetConfigIds.proxyPingInterval` for more details.
 
