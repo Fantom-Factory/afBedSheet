@@ -219,6 +219,7 @@ const class BedSheetModule {
 		funcArgs := [config.build(ErrPrinterHtmlSections#)]
 
 		// these are all the sections you see on the Err500 page
+		// stoopid retype - see http://fantom.org/forum/topic/2483
 		config["afBedSheet.causes"]					= ErrPrinterHtmlSections#printCauses				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.iocOperationTrace"]		= ErrPrinterHtmlSections#printIocOperationTrace		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
@@ -245,6 +246,7 @@ const class BedSheetModule {
 		funcArgs := [config.build(ErrPrinterStrSections#)]
 		
 		// these are all the sections you see in the Err log
+		// stoopid retype - see http://fantom.org/forum/topic/2483
 		config["afBedSheet.causes"]				=  ErrPrinterStrSections#printCauses			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.iocOperationTrace"]	=  ErrPrinterStrSections#printIocOperationTrace	.func.bind(funcArgs).retype(|StrBuf, Err?|#)

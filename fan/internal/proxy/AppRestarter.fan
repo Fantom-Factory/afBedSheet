@@ -14,9 +14,13 @@ internal const class AppRestarter {
 	const Str	params
 	
 	new make(BedSheetBuilder bob, Int appPort, Bool watchAllPods) {
+		appPod := (Pod) bob.options[BsConstants.meta_appPod]
+		if (appPod.meta["pod.isScript"] == "true")
+			throw Err(BsLogMsgs.appRestarter_canNotProxyScripts(appPod.name))
+		
+		this.appPod		= watchAllPods ? null : appPod.name
 		this.appName 	= bob.appName
 		this.appPort 	= appPort
-		this.appPod		= watchAllPods ? null : ((Pod) bob.options[BsConstants.meta_appPod]).name
 		this.params		= bob.toStringy
 		// as we're not run inside afIoc, we don't have ActorPools
 		this.conState	= SynchronizedState(ActorPool(), AppRestarterState#)
@@ -70,7 +74,7 @@ internal class AppRestarterState {
 		podTimeStamps = Str:DateTime?[:]
 		pods := appPod == null ? Env.cur.findAllPodNames : findAllPodNames(appPod, Str[,])
 		pods.each |podName| {
-			podTimeStamps[podName] = podFile(podName).modified
+			podTimeStamps[podName] = podFile(podName)?.modified
 		}
 		
 		log.info(BsLogMsgs.appRestarter_cachedPodTimestamps(podTimeStamps.size))
@@ -83,7 +87,7 @@ internal class AppRestarterState {
 				return true	// who deleted my pod!?
 
 			if (podFile.modified > podTimeStamps[podName]) {
-				log.info(BsLogMsgs.appRestarter_podUpdatd(podName, DateTime.now - podFile.modified))
+				log.info(BsLogMsgs.appRestarter_podUpdated(podName, DateTime.now - podFile.modified))
 				return true
 			}
 
@@ -94,10 +98,15 @@ internal class AppRestarterState {
 	Void launchWebApp(Str appName, Int appPort, Str params) {
 		log.info(BsLogMsgs.appRestarter_lauchingApp(appName, appPort))
 		try {
-			home	:= Env.cur.homeDir.normalize
-			sysjar	:= home + `lib/java/sys.jar`
+//			home	:= Env.cur.homeDir.normalize
+//			sysjar	:= home + `lib/java/sys.jar`
+//			args	:= ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
 			
-			args := ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
+			// use the new windows fan launcher mechanism
+			cmd  := Env.cur.homeDir.normalize.plus(`bin/fan`).osPath
+			if (Env.cur.os.startsWith("win"))
+				cmd += ".bat"
+			args := [cmd, MainProxied#.qname, params]
 			
 			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
 			realWebApp = Process(args).run
@@ -105,7 +114,7 @@ internal class AppRestarterState {
 			throw BedSheetErr(BsErrMsgs.appRestarter_couldNotLaunch(appName), err)
 	}
 
-	Void killWebApp(Str appName)	{
+	Void killWebApp(Str appName) {
 		if (realWebApp == null)
 			return
 		log.info(BsLogMsgs.appRestarter_killingApp(appName))
@@ -127,6 +136,12 @@ internal class AppRestarterState {
 	
 	private Str[] findPodDependencies(Str podName) {
 		podFile   := podFile(podName)
+		
+		if (podFile == null) {
+			log.warn(BsLogMsgs.appRestarter_noPodFile(podName))
+			return Str#.emptyList
+		}
+		
 		zip		  := Zip.read(podFile.in(4096))
 		metaProps := ([Str:Str]?) null
 		try {

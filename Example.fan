@@ -9,7 +9,7 @@
     
     const class AppModule {
         @Contribute { serviceType=Routes# }
-        static Void contributeRoutes(Configuration conf) {
+        Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
             conf.add(Route(`/hello/**`, HelloPage#hello))
         }
