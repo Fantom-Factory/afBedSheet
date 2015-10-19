@@ -9,7 +9,7 @@ const class HttpResponseHeaders {
 	private const static Int 	maxTokenSize	:= 4096 - 10	// taken from web::WebUtil.maxTokenSize. -10 for good measure!
 	private const |->Str:Str|	getHeaders
 	private const |->| 			checkUncommitted
-	private const Bool 			oldWispVer		:= Pod.find("wisp").version <= Version("1.0.66")
+	private const Bool 			oldWispVer		:= Pod.find("wisp").version <= Version("1.0.67")
 
 	internal new make(|->Str:Str| getHeaders, |->| checkUncommitted) {
 		this.getHeaders = getHeaders

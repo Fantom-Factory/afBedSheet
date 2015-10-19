@@ -12,6 +12,7 @@ class BedSheetBuilder {
 	private static const Log log 	:= Utils.getLog(BedSheetBuilder#)
 	private IpAddr? _ipAddr
 	private Type[]	_moduleTypes	:= Type[,]
+	private Type[]	_modsToRemove	:= Type[,]
 	private Obj[][]	_pods			:= Obj[][,]
 
 	
@@ -43,13 +44,14 @@ class BedSheetBuilder {
 	
 	** Adds an IoC module to the registry. 
 	This addModule(Type moduleType) {
-		_moduleTypes.add(moduleType)
+		if (_modsToRemove.contains(moduleType).not)
+			_moduleTypes.add(moduleType)
 		return this
 	}
 	
 	** Adds many IoC modules to the registry. 
 	This addModules(Type[] modules) {
-		_moduleTypes.addAll(modules)
+		_moduleTypes.addAll(modules.exclude { _modsToRemove.contains(it) })
 		return this
 	}
 	
@@ -89,9 +91,19 @@ class BedSheetBuilder {
 		return this
 	}
 
+	** Removes modules of the given type. If a module of the given type is subsequently added, it is silently ignored.
+	This removeModule(Type moduleType) {
+		_moduleTypes.remove(moduleType)
+		
+		// prevent it from being added later
+		_modsToRemove.add(moduleType)
+		return this
+	}
+	
 	** Builds the IoC 'Registry'. 
 	Registry build() {
 		bob := RegistryBuilder()
+		_modsToRemove.each { bob.removeModule(it) }
 		_pods.each { bob.addModulesFromPod(it[0], it[1]) }
 		_moduleTypes.each { bob.addModule(it) }
 		options.each |v, k| { bob.options[k] = v }
@@ -123,6 +135,7 @@ class BedSheetBuilder {
 		mods := _moduleTypes
 		pods := _pods
 		opts := options.dup
+		rems := _modsToRemove
 		opts.remove("afIoc.bannerText")
 		
 		appPod := (Pod) opts[BsConstants.meta_appPod]
@@ -130,7 +143,7 @@ class BedSheetBuilder {
 		opts.remove(BsConstants.meta_appPod)
 		
 		buf := Buf()
-		Zip.gzipOutStream(buf.out).writeObj([mods, pods, opts]).close
+		Zip.gzipOutStream(buf.out).writeObj([mods, pods, opts, rems]).close
 		return buf.flip.toBase64.replace("/", "_").replace("+", "-")
 	}
 
@@ -142,6 +155,7 @@ class BedSheetBuilder {
 		mods := (Type[])	data[0]
 		pods := (Obj[][])	data[1]
 		opts := (Str:Obj?)	data[2]
+		rems := (Type[])	data[3]
 		
 		appPodName	:= (Str) opts[BsConstants.meta_appPodName]
 		opts[BsConstants.meta_appPod] = Pod.find(appPodName, true)
@@ -150,8 +164,9 @@ class BedSheetBuilder {
 		// reinstate appPod
 		bob := BedSheetBuilder()
 		bob._moduleTypes	= mods
-		bob._pods			= pods.map { [it[0], it[1]] }
+		bob._pods			= pods
 		bob.options			= opts
+		bob._modsToRemove	= rems
 		bob._initBanner
 		
 		return bob

@@ -7,7 +7,10 @@ using afIocEnv
 internal const class BedSheetEnvModule {
 
 	static Void defineModule(RegistryBuilder bob) {
+		// Ssshhhh! No one needs to know!
+		bob.suppressLogging = true
 		bob.removeModule(IocEnvModule#)
+		bob.suppressLogging = false
 	}
 
 	// define our own env from meta - so we can pass it through from BedSheetBuilder
