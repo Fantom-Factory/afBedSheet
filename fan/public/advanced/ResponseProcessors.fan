@@ -37,7 +37,7 @@ internal const class ResponseProcessorsImpl : ResponseProcessors {
 					cause = cause.cause			
 				if (cause isnot ReProcessErr)
 					throw err
-				return ((ReProcessErr) cause).responseObj
+				response = ((ReProcessErr) cause).responseObj
 			}
 		}
 		
