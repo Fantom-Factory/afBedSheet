@@ -9,6 +9,7 @@ v1.5.0
  - Chg: Tweaked the mechanics of 'BedSheetBuilder'.
  - Chg: Dev Proxy now uses the 'fanlaunch' scripts. 
  - Bug: IE didn't render Error pages in dev because it can't handle long and / or multiline header values.
+ - Bug: Error in 'ResponseProcessors' when handling wrapped 'ReProcessErrs'.
 
 v1.4.16
 =======

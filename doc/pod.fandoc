@@ -1,11 +1,18 @@
 Overview
 ********
 BedSheet is a platform for delivering web applications written in [Fantom]`http://fantom.org/`.
+It provides a rich middleware mechanism for the routing and delivery of content over HTTP.
 
-Built on top of [IoC]`pod:afIoc` and [Wisp]`pod:wisp`,
-BedSheet provides a rich middleware mechanism for routing and delivering content over HTTP.
+ - **An IoC Container** - BedSheet applications are IoC applications
+ - **Proxy Mode** - Never (manually) restart your application again!
+ - **Routing** - Map URLs to Fantom methods
+ - **Route Handlers** - Map URLs to file system and pod resources
+ - **Error Handling** - Customised error handling and detailed error reporting
+ - **Status Pages** - Customise 404 and 500 pages
 
-BedSheet is inspired by
+BedSheet is built on top of
+[IoC]`pod:afIoc` and
+[Wisp]`pod:wisp`, and was inspired by
 Java's [Tapestry5]`http://tapestry.apache.org/` and
 Ruby's [Sinatra]`http://www.sinatrarb.com/`.
 
@@ -134,8 +141,8 @@ See [Development Proxy]`#developmentProxy` for info on the '-proxy' option.
 
 
 
-IoC Services
-************
+IoC Container
+*************
 BedSheet is an IoC container. That is, it creates and looks after a 'Registry' instance, using it to create classes and provide access to services.
 
 [BedSheet]`pod:afBedSheet` Web applications are multi-threaded; each web request is served on a different thread. For that reason BedSheet defines a threaded scope called 'request'.
@@ -710,9 +717,7 @@ See [proxyPingInterval]`BedSheetConfigIds.proxyPingInterval` for more details.
 
 Wisp Integration
 ****************
-To some, BedSheet may look like a behemoth web framework, but it is in fact just a standard Fantom [WebMod]`web::WebMod`.
-This means it can be plugged into a [Wisp]`pod:wisp` application along side other all the other standard [webmods]`pod:webmod`.
-Just create an instance of `BedSheetWebMod` and pass it to Wisp like any other.
+To some, BedSheet may look like a behemoth web framework, but it is in fact just a standard Fantom [WebMod]`web::WebMod`. This means it can be plugged into a [Wisp]`pod:wisp` application along side other all the other standard [webmods]`pod:webmod`. Just create an instance of `BedSheetWebMod` and pass it to Wisp like any other.
 
 For example, the following Wisp application places BedSheet under the path 'poo/'.
 
