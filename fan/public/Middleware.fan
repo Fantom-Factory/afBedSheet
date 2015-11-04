@@ -25,7 +25,7 @@
 **   syntax: fantom 
 **   @Contribute { serviceType=MiddlewarePipeline# }
 **   Void contributeMiddleware(Configuration config) {
-**       config.set("MyMiddleware", config.build(MyMiddleware#)).before("afBedSheet::Routes")
+**       config.set("MyMiddleware", config.build(MyMiddleware#)).before("afBedSheet.routes")
 **   }
 ** <pre
 // Used by Duvet
