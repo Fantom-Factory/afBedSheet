@@ -753,7 +753,7 @@ const class TinyBedAppModule {
 
 When run, a request to 'http://localhost:8069/' will return a Wisp 404 and any request to 'http://localhost:8069/poo/*' will invoke BedSheet and return 'Hello Mum!'.
 
-When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()]`afBedSheet::BedSheetServer.toClientUrl` to ensure the extra path info is added.
+When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()]`BedSheetServer.toClientUrl` to ensure the extra path info is added.
 Similarly, ensure asset URLs are retrieved from the `FileHandler` service.
 
 Note that mulitple BedSheet instances may be run side by side in the same Wisp application.
