@@ -46,13 +46,6 @@ const class BedSheetWebMod : WebMod {
 				pipeline.service
 			}
 			
-		} catch (ScopeDestroyedErr err) {
-			// nothing we can do here
-			if (!webRes.isCommitted)
-				webRes.sendErr(500, "BedSheet shutting down...")
-			return
-
-			
 		} catch (RegistryShutdownErr err) {
 			// nothing we can do here
 			if (!webRes.isCommitted)
