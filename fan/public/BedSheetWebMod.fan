@@ -25,14 +25,14 @@ const class BedSheetWebMod : WebMod {
 
 	** Creates this 'WebMod'. Use a 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
 	new make(Registry registry) {
-		bedServer 		:= (BedSheetServer) registry.rootScope.serviceById(BedSheetServer#.qname)
+		bedServer 		:= (BedSheetServer) registry.activeScope.serviceById(BedSheetServer#.qname)
 		this.registry	= registry		
 		this.appName 	= bedServer.appName
 		this.port 		= bedServer.port
 		// BUGFIX: eager load the middleware pipeline, so we can use the ErrMiddleware
 		// otherwise Errs thrown when instantiating middleware end up in limbo
 		// Errs from the FileHandler ctor are a prime example
-		this.pipeline	= registry.rootScope.serviceById(MiddlewarePipeline#.qname)
+		this.pipeline	= registry.activeScope.serviceById(MiddlewarePipeline#.qname)
 	}
 
 	@NoDoc
@@ -40,7 +40,7 @@ const class BedSheetWebMod : WebMod {
 		req.mod = this
 		
 		try {
-			registry.rootScope.createChildScope("request") {
+			registry.activeScope.createChildScope("request") {
 				// this is actual call to BedSheet! 
 				// the rest of this class is just startup and error handling fluff! 
 				pipeline.service
@@ -66,7 +66,7 @@ const class BedSheetWebMod : WebMod {
 			// try to send something to the browser
 			errLog := err.traceToStr
 			try {
-				errPrinter := (ErrPrinterStr) registry.rootScope.serviceById(ErrPrinterStr#.qname)
+				errPrinter := (ErrPrinterStr) registry.activeScope.serviceById(ErrPrinterStr#.qname)
 				errLog = errPrinter.errToStr(err)
 			} catch {}
 
@@ -83,15 +83,15 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc
 	override Void onStart() {
 		// start the destroyer!
-		meta := (RegistryMeta) registry.rootScope.serviceById(RegistryMeta#.qname)
+		meta := (RegistryMeta) registry.activeScope.serviceById(RegistryMeta#.qname)
 		if (meta.options[BsConstants.meta_pingProxy] == true) {
 			pingPort := (Int) meta.options[BsConstants.meta_proxyPort]
-			destroyer := (AppDestroyer) registry.rootScope.build(AppDestroyer#, [ActorPool(), pingPort])
+			destroyer := (AppDestroyer) registry.activeScope.build(AppDestroyer#, [ActorPool(), pingPort])
 			destroyer.start
 		}
 
 		// print BedSheet connection details
-		configSrc := (ConfigSource) registry.rootScope.serviceByType(ConfigSource#)
+		configSrc := (ConfigSource) registry.activeScope.serviceByType(ConfigSource#)
 		host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
 		log.info(BsLogMsgs.bedSheetWebMod_started(appName, host))
 	}
