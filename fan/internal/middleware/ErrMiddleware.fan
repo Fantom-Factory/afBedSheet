@@ -26,10 +26,6 @@ internal const class ErrMiddleware : Middleware {
 				pipeline.service
 				return
 				
-			// nothing we can do here
-			} catch (ScopeDestroyedErr err) {
-				return
-
 				// nothing we can do here
 			} catch (RegistryShutdownErr err) {
 				return
