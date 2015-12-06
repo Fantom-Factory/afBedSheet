@@ -221,8 +221,8 @@ const class BedSheetModule {
 		// these are all the sections you see on the Err500 page
 		// stoopid retype - see http://fantom.org/forum/topic/2483
 		config["afBedSheet.causes"]					= ErrPrinterHtmlSections#printCauses				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
-		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.iocOperationTrace"]		= ErrPrinterHtmlSections#printIocOperationTrace		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.availableValues"]		= ErrPrinterHtmlSections#printAvailableValues		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.stackTrace"]				= ErrPrinterHtmlSections#printStackTrace			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.requestDetails"]			= ErrPrinterHtmlSections#printRequestDetails		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.requestHeaders"]			= ErrPrinterHtmlSections#printRequestHeaders		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
@@ -248,8 +248,8 @@ const class BedSheetModule {
 		// these are all the sections you see in the Err log
 		// stoopid retype - see http://fantom.org/forum/topic/2483
 		config["afBedSheet.causes"]				=  ErrPrinterStrSections#printCauses			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
-		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.iocOperationTrace"]	=  ErrPrinterStrSections#printIocOperationTrace	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.availableValues"]	=  ErrPrinterStrSections#printAvailableValues	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.stackTrace"]			=  ErrPrinterStrSections#printStackTrace		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.requestDetails"]		=  ErrPrinterStrSections#printRequestDetails	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.requestHeaders"]		=  ErrPrinterStrSections#printRequestHeaders	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
