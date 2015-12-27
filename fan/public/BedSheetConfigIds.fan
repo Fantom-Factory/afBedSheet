@@ -74,7 +74,7 @@ const mixin BedSheetConfigIds {
 	** The local URL under which pod resources are served.
 	** The URL must start and end with a slash.
 	** 
-	** Defaults to '`/pods/`' 
+	** Defaults to '`/pod/`' because Fantom '.js.map' files are hardcoded to be served under '/pod/'.
 	static const Str podHandlerBaseUrl				:= "afBedSheet.podHandler.baseUrl"
 	
 	** The default 'Cache-Control' HTTP response header to set when serving static files. 

@@ -155,30 +155,31 @@ const class BedSheetModule {
 		// by default, allow safe pod files to be served
 
 		// html files
-		config[".css"]	= "^.*\\.css\$"
-		config[".htm"]	= "^.*\\.htm\$"
-		config[".html"]	= "^.*\\.html\$"
-		config[".js"]	= "^.*\\.js\$"
-		config[".xhtml"]= "^.*\\.xhtml\$"
+		config[".css"]		= "^.*\\.css\$"
+		config[".htm"]		= "^.*\\.htm\$"
+		config[".html"]		= "^.*\\.html\$"
+		config[".js"]		= "^.*\\.js\$"
+		config[".js.map"]	= "^.*\\.js\\.map\$"
+		config[".xhtml"]	= "^.*\\.xhtml\$"
 		
 		// image files
-		config[".bmp"]	= "^.*\\.bmp\$"
-		config[".gif"]	= "^.*\\.gif\$"
-		config[".ico"]	= "^.*\\.ico\$"
-		config[".jpg"]	= "^.*\\.jpg\$"
-		config[".png"]	= "^.*\\.png\$"
-		config[".svg"]	= "^.*\\.svg\$"
+		config[".bmp"]		= "^.*\\.bmp\$"
+		config[".gif"]		= "^.*\\.gif\$"
+		config[".ico"]		= "^.*\\.ico\$"
+		config[".jpg"]		= "^.*\\.jpg\$"
+		config[".png"]		= "^.*\\.png\$"
+		config[".svg"]		= "^.*\\.svg\$"
 		
 		// web font files
-		config[".eot"]	= "^.*\\.eot\$"
-		config[".otf"]	= "^.*\\.otf\$"
-		config[".ttf"]	= "^.*\\.ttf\$"
-		config[".woff"]	= "^.*\\.woff\$"
+		config[".eot"]		= "^.*\\.eot\$"
+		config[".otf"]		= "^.*\\.otf\$"
+		config[".ttf"]		= "^.*\\.ttf\$"
+		config[".woff"]		= "^.*\\.woff\$"
 		
 		// other files
-		config[".csv"]	= "^.*\\.csv\$"
-		config[".txt"]	= "^.*\\.txt\$"
-		config[".xml"]	= "^.*\\.xml\$"
+		config[".csv"]		= "^.*\\.csv\$"
+		config[".txt"]		= "^.*\\.txt\$"
+		config[".xml"]		= "^.*\\.xml\$"
 	}
 
 	@Contribute { serviceType=GzipCompressible# }
@@ -276,7 +277,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.disableWelcomePage]		= false
 		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort}".toUri		
-		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pods/`
+		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pod/`
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		
 		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).toImmutableFunc
