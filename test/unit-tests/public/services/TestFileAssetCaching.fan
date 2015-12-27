@@ -31,11 +31,11 @@ internal class TestFileAssetCaching : BsTest {
 		
 		// check that non-existant files are NOT cached
 		verifyErr(ArgErr#) {
-			podHandler.fromLocalUrl(`/pods/icons/x256/whoops.png`)
+			podHandler.fromLocalUrl(`/pod/icons/x256/whoops.png`)
 		}
 		verifyEq(assetCache.size, 0)
 		
-		asset := podHandler.fromLocalUrl(`/pods/icons/x256/flux.png`)
+		asset := podHandler.fromLocalUrl(`/pod/icons/x256/flux.png`)
 		verifyEq(asset.exists, true)
 		verifyEq(assetCache.size, 1)
 		

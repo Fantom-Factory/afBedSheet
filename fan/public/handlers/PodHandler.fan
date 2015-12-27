@@ -74,7 +74,7 @@ using afBeanUtils::ArgNotFoundErr
 ** By default only a handful of files with common web extensions are allowed. These include:
 ** 
 ** pre>
-** .      web files: .css .htm .html .js .xhtml
+** .      web files: .css .htm .html .js .xhtml .js.map
 **      image files: .bmp .gif .ico .jpg .png
 **   web font files: .eot .otf .svg .ttf .woff
 **      other files: .csv .txt .xml
@@ -124,11 +124,11 @@ internal const class PodHandlerImpl : PodHandler {
 			return
 
 		if (!baseUrl.isPathOnly)
-			throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(baseUrl, `/pods/`))
+			throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(baseUrl, `/pod/`))
 		if (!baseUrl.isPathAbs)
-			throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(baseUrl, `/pods/`))
+			throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(baseUrl, `/pod/`))
 		if (!baseUrl.isDir)
-			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pods/`))
+			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pod/`))
 	}
 
 	override ClientAsset? produceAsset(Uri localUrl) {
@@ -148,7 +148,7 @@ internal const class PodHandlerImpl : PodHandler {
 			if (checked) throw Err(BsErrMsgs.podHandler_disabled)
 			else return null
 
-		Utils.validateLocalUrl(localUrl, `/pods/icons/x256/flux.png`)
+		Utils.validateLocalUrl(localUrl, `/pod/icons/x256/flux.png`)
 		if (!localUrl.toStr.startsWith(baseUrl.toStr))
 			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
 			else return null
