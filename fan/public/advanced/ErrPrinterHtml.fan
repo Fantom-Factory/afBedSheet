@@ -54,17 +54,15 @@ internal const class ErrPrinterHtmlSections {
 	new make(|This|in) { in(this) }
 
 	Void printCauses(WebOutStream out, Err? err) {
-		causes := Err[,]
-		forEachCause(err, Err#) |Err cause->Bool| { causes.add(cause); return false }
-		if (causes.size <= 1)	// don't bother if there are no causes
-			return
-		
+		causes := ErrPrinterStrSections.isolateCauses(err)
+		if (causes.size <= 1) return
+
 		title(out, "Causes")
 		out.pre
 
-		causes.each |Err cause, Int i| {
+		causes.each |Str cause, Int i| {
 			indent := "".padl(i*2)
-			out.w("${indent}${cause.typeof.qname} - ${cause.msg}\n")
+			out.w("${indent}${cause}\n")
 		}
 		out.preEnd
 	}
@@ -93,26 +91,29 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printStackTrace(WebOutStream out, Err? err) {
-		if (err != null) {
-			// special case for wrapped IocErrs, unwrap the err if it adds nothing 
-			if (err is IocErr && err.msg == err.cause?.msg)
-				err = err.cause			
-			title(out, "Stack Trace")
-			
-			out.div
-			out.printLine("""<label><input type="checkbox" value="wotever" checked="checked" onclick="document.getElementById('stackFrames').className = this.checked ? 'hideBoring' : '';"/> Hide boring stack frames</label> """)
-			out.divEnd
-			
-			out.pre("id=\"stackFrames\" class=\"hideBoring\"")
-			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
-			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").splitLines.each |frame| {
-				css := frameFilter.filter(frame) ? "dull" : "okay"
+		stacks := ErrPrinterStrSections.isolateStackFrames(err, noOfStackFrames) 
+		if (stacks.size == 0) return
+
+		// special case for wrapped IocErrs, unwrap the err if it adds nothing 
+		if (err is IocErr && err.msg == err.cause?.msg)
+			err = err.cause			
+		title(out, "Stack Trace")
+		
+		out.div
+		out.printLine("""<label><input type="checkbox" value="wotever" checked="checked" onclick="document.getElementById('stackFrames').className = this.checked ? 'hideBoring' : '';"/> Hide boring stack frames</label> """)
+		out.divEnd
+		
+		out.pre("id=\"stackFrames\" class=\"hideBoring\"")
+		stacks.each |stack, i| {
+			indent := "".padl(i * 2)
+			stack.each |frame| {
+				css := frame.startsWith(" ") && frameFilter.filter(frame) ? "dull" : "okay"
 				out.span("class=\"${css}\"")
-				out.writeXml("  ${frame}\n")
+				out.writeXml("  ${indent}${frame}\n")
 				out.spanEnd
 			}
-			out.preEnd
 		}
+		out.preEnd
 	}
 
 	Void printRequestDetails(WebOutStream out, Err? err) {

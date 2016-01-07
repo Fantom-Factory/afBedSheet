@@ -6,9 +6,12 @@ v1.5.0
  - Chg: Updated to work with [IoC v3]`pod:afIoc`. (Breaking change.)
  - Chg: Converted <port> arg in 'Main' to an option. (Breaking change.)
  - Chg: Created an IoC threaded 'request' scope.
- - Chg: Tweaked the mechanics of 'BedSheetBuilder'.
+ - Chg: Lots of internal tweaks to support Fantom 1.0.68.
+ - Chg: Values stored in 'HttpSession' must now be immutable and serializable.
  - Chg: Dev Proxy now uses the 'fanlaunch' scripts.
+ - Chg: Tweaked the mechanics of 'BedSheetBuilder'.
  - Chg: Config 'podHandlerBaseUrl' now defaults to '/pod/' (from '/pods/') because Fantom '.js.map' files are hardcoded to '/pod/'.
+ - Chg: Better isolation of stack traces in Err pages.
  - Bug: IE didn't render Error pages in dev because it can't handle long and / or multiline header values.
  - Bug: Error in 'ResponseProcessors' when handling wrapped 'ReProcessErrs'.
 
@@ -16,8 +19,6 @@ v1.4.16
 =======
  - New: Added 'HttpRequest.socketOptions()'.
  - New: Added 'BedSheetBuilder.runWebMod()' - a hook to run a fully configured BedSheet 'WebMod'.
- - Chg: Lots of internal tweaks to support Fantom-1.0.68.
- - Chg: Values stored in 'HttpSession' must now be immutable, serializable optional.
  - Chg: 'HttpResponseHeaders.set()' takes 'null'.
  - Chg: Tweaked the default 'RequestLogger' output.
  - Chg: 'HttpResponseHeaders.map()' now returns a read / write map.
