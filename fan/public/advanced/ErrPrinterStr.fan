@@ -30,12 +30,15 @@ const class ErrPrinterStr {
 			}
 		}
 		
-		return buf.toStr.trim
+		return buf.toStr
 	}
 }
 
 internal const class ErrPrinterStrSections {
 
+	private static const Str	typeChar		:= 	Str<|[\.:_\$\p{L}\d]|>
+	private static const Regex	basicFrameRegex	:= "^\\s*${typeChar}+\\s*\\(${typeChar}+\\)\$".toRegex
+	
 	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 	@Inject	private const Int 			noOfStackFrames
 	
@@ -50,15 +53,13 @@ internal const class ErrPrinterStrSections {
 	new make(|This|in) { in(this) }
 
 	Void printCauses(StrBuf buf, Err? err) {
-		causes := Err[,]
-		forEachCause(err, Err#) |Err cause->Bool| { causes.add(cause); return false }
-		if (causes.size <= 1)	// don't bother if there are no causes
-			return
-		
+		causes := isolateCauses(err)
+		if (causes.size <= 1) return
+
 		buf.add("\nCauses:\n")
-		causes.each |Err cause, Int i| {
+		causes.each |Str cause, Int i| {
 			indent := "".padl(i * 2)
-			buf.add("  ${indent}${cause.typeof.qname} - ${cause.msg}\n")
+			buf.add("  ${indent}${cause}\n")
 		}
 	}
 
@@ -70,7 +71,7 @@ internal const class ErrPrinterStrSections {
 		}
 	}
 
-	Void printIocOperationTrace(StrBuf buf, Err? err) {
+	static Void printIocOperationTrace(StrBuf buf, Err? err) {
 		// search for the first OpTrace
 		forEachCause(err, IocErr#) |IocErr iocErr->Bool| {
 			if (iocErr.operationTrace != null) {
@@ -82,16 +83,15 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printStackTrace(StrBuf buf, Err? err) {
-		if (err != null) {
-			// special case for wrapped IocErrs, unwrap the err if it adds nothing
-			if (err is IocErr && err.msg == err.cause?.msg)
-				err = err.cause
-			buf.add("\nStack Trace:\n")
-			buf.add("  ${err.typeof.qname} : ${err.msg}\n")
-			frames := Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").trim.splitLines
-			trace := "  " + frames.join("\n")
-			buf.add(trace)
-			buf.add("\n")
+		stacks := isolateStackFrames(err, noOfStackFrames) 
+		if (stacks.size == 0) return
+
+		buf.add("\nStack Trace:\n")
+		stacks.each |stack, i| {
+			indent := "".padl(i * 2)
+			stack.each {
+				buf.add("  ${indent}${it}\n")
+			}
 		}
 	}
 
@@ -178,12 +178,62 @@ internal const class ErrPrinterStrSections {
 		buf.add(Utils.prettyPrintMap(map, "  ", sortKeys))
 	}
 	
-	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
-		done := false
+	private static Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
+		done  := false
 		while (err != null && !done) {
 			if (err.typeof.fits(causeType))
 				done = f(err)
 			err = err.cause			
-		}		
-	}	
+		}
+	}
+
+	static Str[] isolateCauses(Err? err) {
+		causes := Str[,]
+		forEachCause(err, Err#) |Err cause->Bool| {
+			msg := "${cause.typeof.qname} - ${cause.msg}"
+			// don't bother adding dups
+			if (causes.last != msg)
+				causes.add(msg)
+			return false
+		}
+		return causes
+	}
+
+	// remove all the extra useful shite we bung into the toStr() methods
+	static Str[][] isolateStackFrames(Err? err, Int noOfStackFrames) {
+		// special case for wrapped IocErrs, unwrap the err if it adds nothing
+		if (err is IocErr && err.msg == err.cause?.msg)
+			err = err.cause
+
+		i := 0
+		stacks := Str[][,] 
+		forEachCause(err, Err#) |Err cause->Bool| {
+			frames := isolateStackFrame(cause, noOfStackFrames)
+			if (i++ > 0)
+				frames.insert(0, "Cause:").insert(0, "")
+			stacks.add(frames)
+			return false
+		}
+		return stacks
+	}
+
+	private static Str[] isolateStackFrame(Err? err, Int noOfStackFrames) {
+		frames := Utils.traceErr(err, noOfStackFrames).splitLines
+
+		fm := (Int?) null
+		to := frames.findIndex |frame, i->Bool| {
+			match := basicFrameRegex.matches(frame)
+
+			// hunting for the first frame
+			if (fm == null) {
+				if (match) fm = i
+				return false
+			}
+
+			// hunting for the last frame
+			return !match
+		} ?: -1
+		
+		return (fm == null || to <= fm) ? frames : frames[fm..<to].insert(0, "${err.typeof.qname}: ${err.msg}") 
+	}
 }

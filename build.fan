@@ -22,10 +22,10 @@ class Build : BuildPod {
 		depends = [
 			"sys        1.0.67 - 1.0", 
 			"concurrent 1.0.67 - 1.0", 
-			"web        1.0.67 - 1.0", 
+			"web        1.0.68 - 1.0", 
 			"wisp       1.0.66 - 1.0", 
 			"util       1.0.67 - 1.0", 
-			"inet       1.0.67 - 1.0",
+			"inet       1.0.68 - 1.0",
 	
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.6  - 1.0",

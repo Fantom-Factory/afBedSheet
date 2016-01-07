@@ -293,6 +293,7 @@ const class BedSheetModule {
 		config.add("^concurrent::Actor._send.*\$")
 		config.add("^concurrent::Actor._work.*\$")
 		config.add("^concurrent::ThreadPool\\\$Worker.run.*\$")
+		config.add("^wisp::WispActor.*\$")
 		
 		// Core Alien-Factory libs
 		config.add("^afIoc::.*\$")
