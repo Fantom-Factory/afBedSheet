@@ -20,15 +20,15 @@ class Build : BuildPod {
 		]
 
 		depends = [
-			"sys        1.0.67 - 1.0", 
-			"concurrent 1.0.67 - 1.0", 
+			"sys        1.0.68 - 1.0", 
+			"concurrent 1.0.68 - 1.0", 
 			"web        1.0.68 - 1.0", 
 			"wisp       1.0.66 - 1.0", 
-			"util       1.0.67 - 1.0", 
+			"util       1.0.68 - 1.0", 
 			"inet       1.0.68 - 1.0",
 	
 			// ---- Core ------------------------
-			"afBeanUtils  1.0.6  - 1.0",
+			"afBeanUtils  1.0.8  - 1.0",
 			"afConcurrent 1.0.12 - 1.0",
 			"afIoc        3.0.0  - 3.0", 
 			"afIocConfig  1.1.0  - 1.1", 
@@ -39,7 +39,7 @@ class Build : BuildPod {
 			"xml    1.0"
 		]
 
-		srcDirs = [`test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/utils/`, `test/unit-tests/public/services/`, `test/app-tests/`, `test/app/`, `fan/`, `fan/public/`, `fan/public/utils/`, `fan/public/services/`, `fan/public/responses/`, `fan/public/handlers/`, `fan/public/advanced/`, `fan/internal/`, `fan/internal/utils/`, `fan/internal/proxy/`, `fan/internal/processors/`, `fan/internal/middleware/`]
+		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/middleware/`, `fan/internal/processors/`, `fan/internal/proxy/`, `fan/internal/utils/`, `fan/public/`, `fan/public/advanced/`, `fan/public/handlers/`, `fan/public/responses/`, `fan/public/services/`, `fan/public/utils/`, `test/app/`, `test/app-tests/`, `test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/services/`, `test/unit-tests/public/utils/`]
 		resDirs = [`doc/`, `res/web/`, `res/misc/`, `res/test/`]
 	}
 	
