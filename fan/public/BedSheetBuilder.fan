@@ -222,7 +222,7 @@ class BedSheetBuilder {
 		mods := Type#.emptyList
 		modNames := pod.meta["afIoc.module"]
 		if (modNames != null) {
-			mods = modNames.split.map { Type.find(it, true) }
+			mods = modNames.split(',').map { Type.find(it, true) }
 			log.info(BsLogMsgs.bedSheetWebMod_foundType(mods.first))
 		} else {
 			// we have a pod with no module meta... so lets guess the name 'AppModule'
