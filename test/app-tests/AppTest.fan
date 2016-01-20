@@ -13,7 +13,6 @@ internal class AppTest : Test {
 	override Void setup() {
 		Log.get("web").level 		= LogLevel.warn
 		Log.get("afIoc").level 		= LogLevel.warn
-		Log.get("afIoc").level 	= LogLevel.warn
 		Log.get("afIocEnv").level 	= LogLevel.warn
 		Log.get("afBedSheet").level = LogLevel.warn
 		

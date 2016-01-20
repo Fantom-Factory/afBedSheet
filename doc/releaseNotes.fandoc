@@ -3,6 +3,7 @@ Versions
 
 v1.5.0
 ======
+ - New: Added 'File Handlers' section to default Err and 404 pages.
  - Chg: Updated to work with [IoC v3]`pod:afIoc`. (Breaking change.)
  - Chg: Converted <port> arg in 'Main' to an option. (Breaking change.)
  - Chg: Created an IoC threaded 'request' scope.
