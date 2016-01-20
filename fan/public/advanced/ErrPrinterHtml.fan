@@ -49,6 +49,7 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const HttpCookies		cookies
 	@Inject	private const ConfigSource		configSrc
 	@Inject	private const FileHandler		fileHandler
+	@Inject	private const PodHandler		podHandler
 	@Inject	private const Routes			routes
 	@Inject	private const ActorPools		actorPools
 
@@ -184,7 +185,12 @@ internal const class ErrPrinterHtmlSections {
 	Void printFileHandlers(WebOutStream out, Err? err) {
 		if (fileHandler.directoryMappings.size > 0) {
 			title(out, "File Handlers")
-			prettyPrintMap(out, fileHandler.directoryMappings, true)
+			map := Str:Str[:] 
+			fileHandler.directoryMappings.each |v, k|{ map["${k}*"] = "${v}*" }
+			if (podHandler.baseUrl != null) {
+				map["${podHandler.baseUrl}*"] = "fan://*"
+			}
+			prettyPrintMap(out, map, true)
 		}
 	}
 

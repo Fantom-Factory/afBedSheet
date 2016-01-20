@@ -10,9 +10,9 @@ using afBeanUtils::ArgNotFoundErr
 ** 
 **   /<baseUrl>/<podName>/<fileName>
 ** 
-** By default the base url is '/pods/' which means you should always be able to access the flux icon.
+** By default the base url is '/pod/' which means you should always be able to access the flux icon.
 ** 
-**   /pods/icons/x256/flux.png
+**   /pod/icons/x256/flux.png
 ** 
 ** Change the base url in the application defaults:
 ** 
@@ -41,10 +41,10 @@ using afBeanUtils::ArgNotFoundErr
 ** <!DOCTYPE html>
 ** <html>
 ** <head>
-**     <script type="text/javascript" src="/pods/sys/sys.js"></script>
-**     <script type="text/javascript" src="/pods/gfx/gfx.js"></script>
-**     <script type="text/javascript" src="/pods/web/web.js"></script>
-**     <script type="text/javascript" src="/pods/dom/dom.js"></script>
+**     <script type="text/javascript" src="/pod/sys/sys.js"></script>
+**     <script type="text/javascript" src="/pod/gfx/gfx.js"></script>
+**     <script type="text/javascript" src="/pod/web/web.js"></script>
+**     <script type="text/javascript" src="/pod/dom/dom.js"></script>
 ** </head>
 ** <body>
 **     <h1>Old Skool Example</h1>
