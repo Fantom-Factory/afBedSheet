@@ -29,7 +29,7 @@ const class ErrPrinterHtml {
 			try {
 				print.call(out, err)
 			} catch (Err e) {
-				log.warn("Err when printing Err - $e.msg")
+				log.warn("Err when printing Err to HTML - $e.msg", e)
 				out.p.w("ERROR!").pEnd
 			}
 		}
@@ -48,6 +48,7 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const HttpSession		session
 	@Inject	private const HttpCookies		cookies
 	@Inject	private const ConfigSource		configSrc
+	@Inject	private const FileHandler		fileHandler
 	@Inject	private const Routes			routes
 	@Inject	private const ActorPools		actorPools
 
@@ -180,6 +181,13 @@ internal const class ErrPrinterHtmlSections {
 		}
 	}
 
+	Void printFileHandlers(WebOutStream out, Err? err) {
+		if (fileHandler.directoryMappings.size > 0) {
+			title(out, "File Handlers")
+			prettyPrintMap(out, fileHandler.directoryMappings, true)
+		}
+	}
+
 	Void printBedSheetRoutes(WebOutStream out, Err? err) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
@@ -275,10 +283,10 @@ internal const class ErrPrinterHtmlSections {
 		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
 	}
 	
-	private static Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
+	private static Void prettyPrintMap(WebOutStream out, Obj:Obj? map, Bool sort, Str? cssClass := null) {
 		if (sort) {
 			newMap := Str:Obj?[:] { ordered = true } 
-			map.keys.sort.each |k| { newMap[k] = map[k] }
+			map.keys.sort.each |k| { newMap[k.toStr] = map[k] }
 			map = newMap
 		}
 		out.table(cssClass == null ? null : "class=\"${cssClass}\"")
@@ -287,7 +295,7 @@ internal const class ErrPrinterHtmlSections {
 				// a map inside a map! Used for Actor.Locals()
 				m2 := (Map) v1
 				out.tr
-				out.td.writeXml(k1).tdEnd
+				out.td.writeXml(k1.toStr).tdEnd
 				out.td.tag("ul")
 				m2.keys.sort.each |k2, i2|{
 					v2 := "$k2:${m2[k2]}"
@@ -303,7 +311,7 @@ internal const class ErrPrinterHtmlSections {
 				out.trEnd
 
 			} else
-				w(out, k1, v1)
+				w(out, k1.toStr, v1)
 		} 
 		out.tableEnd
 	}

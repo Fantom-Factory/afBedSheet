@@ -3,14 +3,15 @@ using afIocConfig
 using afIocEnv
 
 ** We want to make IocEnv ourselves, but we don't want to incur the overhead of an override Id 
-** This is 'cos most people will want to override our override in tests - it makes it all, um, icky!
+** This is 'cos most people will want to override our override in tests - which it makes it all, um, icky!
 internal const class BedSheetEnvModule {
 
 	static Void defineModule(RegistryBuilder bob) {
 		// Ssshhhh! No one needs to know!
+		old := bob.suppressLogging
 		bob.suppressLogging = true
 		bob.removeModule(IocEnvModule#)
-		bob.suppressLogging = false
+		bob.suppressLogging = old
 	}
 
 	// define our own env from meta - so we can pass it through from BedSheetBuilder
@@ -23,6 +24,7 @@ internal const class BedSheetEnvModule {
 	static Void contributeFactoryDefaults(Configuration config, IocEnv iocEnv) {
 		config[IocEnvConfigIds.env]		= iocEnv.env
 		config[IocEnvConfigIds.isProd]	= iocEnv.isProd
+		config[IocEnvConfigIds.isStage]	= iocEnv.isStage
 		config[IocEnvConfigIds.isTest]	= iocEnv.isTest
 		config[IocEnvConfigIds.isDev]	= iocEnv.isDev
 	}

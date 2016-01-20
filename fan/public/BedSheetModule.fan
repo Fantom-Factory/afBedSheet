@@ -211,8 +211,9 @@ const class BedSheetModule {
 		printer := (NotFoundPrinterHtmlSections) config.build(NotFoundPrinterHtmlSections#)
 
 		// these are all the sections you see on the 404 page
-		config["afBedSheet.routeCode"]	= |WebOutStream out| { printer.printRouteCode		(out) }
-		config["afBedSheet.routes"]		= |WebOutStream out| { printer.printBedSheetRoutes	(out) }
+		config["afBedSheet.routeCode"]		= |WebOutStream out| { printer.printRouteCode		(out) }
+		config["afBedSheet.fileHandlers"]	= |WebOutStream out| { printer.printFileHandlers	(out) }
+		config["afBedSheet.routes"]			= |WebOutStream out| { printer.printBedSheetRoutes	(out) }
 	}
 
 	@Contribute { serviceType=ErrPrinterHtml# }
@@ -232,6 +233,7 @@ const class BedSheetModule {
 		config["afBedSheet.cookies"]				= ErrPrinterHtmlSections#printCookies				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.locales"]				= ErrPrinterHtmlSections#printLocales				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.iocConfig"]				= ErrPrinterHtmlSections#printIocConfig				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.fileHandlers"]			= ErrPrinterHtmlSections#printFileHandlers			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printBedSheetRoutes		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.locals"]					= ErrPrinterHtmlSections#printLocals				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.actorPools"]				= ErrPrinterHtmlSections#printActorPools			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)

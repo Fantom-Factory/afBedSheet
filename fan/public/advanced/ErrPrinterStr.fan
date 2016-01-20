@@ -26,7 +26,7 @@ const class ErrPrinterStr {
 			try {
 				print.call(buf, err)
 			} catch (Err e) {
-				log.warn("Err when printing Err - $e.msg")
+				log.warn("Err when printing Err to Str - $e.msg", e)
 			}
 		}
 		
@@ -71,7 +71,7 @@ internal const class ErrPrinterStrSections {
 		}
 	}
 
-	static Void printIocOperationTrace(StrBuf buf, Err? err) {
+	Void printIocOperationTrace(StrBuf buf, Err? err) {
 		// search for the first OpTrace
 		forEachCause(err, IocErr#) |IocErr iocErr->Bool| {
 			if (iocErr.operationTrace != null) {
