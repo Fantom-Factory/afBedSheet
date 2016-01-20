@@ -32,6 +32,7 @@ const class NotFoundPrinterHtml {
 internal const class NotFoundPrinterHtmlSections {
 	@Inject	private const HttpRequest	request
 	@Inject	private const FileHandler	fileHandler
+	@Inject	private const PodHandler	podHandler
 	@Inject	private const Routes		routes
 
 	new make(|This|in) { in(this) }
@@ -43,12 +44,17 @@ internal const class NotFoundPrinterHtmlSections {
 	}
 	
 	Void printFileHandlers(WebOutStream out) {
-		if (fileHandler.directoryMappings.size > 0) {
+		if (fileHandler.directoryMappings.size > 0 || podHandler.baseUrl != null) {
 			title(out, "File Handlers")
-			prettyPrintMap(out, fileHandler.directoryMappings, true)
+			map := Str:Str[:] 
+			fileHandler.directoryMappings.each |v, k|{ map["${k}*"] = "${v}*" }
+			if (podHandler.baseUrl != null) {
+				map["${podHandler.baseUrl}*"] = "fan://*"
+			}
+			prettyPrintMap(out, map, true)
 		}
 	}
-
+	
 	Void printBedSheetRoutes(WebOutStream out) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
