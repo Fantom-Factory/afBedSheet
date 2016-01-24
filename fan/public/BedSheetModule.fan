@@ -278,7 +278,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024	// todo: why not kB?
 		config[BedSheetConfigIds.noOfStackFrames]			= errTraceMaxDepth.max(100)	// big 'cos we hide a lot
 		config[BedSheetConfigIds.disableWelcomePage]		= false
-		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort}".toUri		
+		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort ?: 0}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pod/`
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		
