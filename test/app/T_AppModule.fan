@@ -39,8 +39,11 @@ internal const class T_AppModule {
 		conf.add(Route(`/redirect/afterPost`,	T_PageHandler#afterPost))
 
 		conf.add(Route(`/session`, 				T_PageHandler#countReqs))
+		conf.add(Route(`/sessionImmutable1`,	T_PageHandler#sessionImmutable1))
+		conf.add(Route(`/sessionImmutable2`,	T_PageHandler#sessionImmutable2))
+		conf.add(Route(`/sessionSerialisable1`,	T_PageHandler#sessionSerialisable1))
+		conf.add(Route(`/sessionSerialisable2`,	T_PageHandler#sessionSerialisable2))
 		conf.add(Route(`/sessionBad`,			T_PageHandler#sessionBad))
-		conf.add(Route(`/sessionBad2`,			T_PageHandler#sessionBad2))
 
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))

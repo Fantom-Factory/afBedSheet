@@ -1,6 +1,7 @@
 using afIoc
 using web
 
+** Mutable request data
 internal class RequestState {	
 	@Inject	WebReq?					webReq		// nullable for testing
 	@Inject	WebRes?					webRes		// nullable for testing

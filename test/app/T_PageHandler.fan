@@ -104,15 +104,28 @@ internal const class T_PageHandler {
 		session["count"] = count
 		return Text.fromPlain("count $count")
 	}
-	
-	Obj sessionBad() {
-		// Params are const but not serialisable
-		session["oops"] = #statusCode.params[0]
-		return Text.fromPlain("Wot no fail fast Err?")
+
+	Obj sessionImmutable1() {
+		session["sess"] = ImmutableSessionValue() { it.val = request.url.query["v"] } 
+		return Text.fromPlain("OK")
 	}
 
-	Obj sessionBad2() {
-		return Text.fromPlain(session["oops"].toStr)
+	Obj sessionImmutable2() {
+		Text.fromPlain(session["sess"]->val)		
+	}
+	
+	Obj sessionSerialisable1() {
+		session["sess"] = MutableSessionValue() { it.val = request.url.query["v"] } 
+		return Text.fromPlain("OK")
+	}
+
+	Obj sessionSerialisable2() {
+		Text.fromPlain(session["sess"]->val)		
+	}
+
+	Obj sessionBad() {
+		session["sess"] = DodgySessionValue() { it.val = request.url.query["v"] } 
+		return Text.fromPlain("NOT OK")
 	}
 	
 	// ---- Status Code Page ----
@@ -212,4 +225,18 @@ internal class AutoBoom {
 	new make() {
 		throw Err("AutoBoom!")
 	}
+}
+
+@Serializable
+internal class MutableSessionValue {
+	Str? val
+}
+
+internal const class ImmutableSessionValue {
+	const Str? val
+	new make(|This|in) { in(this) }
+}
+
+internal class DodgySessionValue {
+	const Str? val
 }

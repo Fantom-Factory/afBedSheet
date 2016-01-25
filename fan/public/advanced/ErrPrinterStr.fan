@@ -150,9 +150,9 @@ internal const class ErrPrinterStrSections {
 	}
 	
 	Void printIocConfig(StrBuf buf, Err? err) {
-		if (!configSrc.config.isEmpty) {
+		if (!configSrc.configMuted.isEmpty) {
 			buf.add("\nIoc Config Values:\n")
-			prettyPrintMap(buf, configSrc.config, true)
+			prettyPrintMap(buf, configSrc.configMuted, true)
 		}
 	}
 	
