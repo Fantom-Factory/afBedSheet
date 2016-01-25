@@ -184,7 +184,6 @@ internal const class HttpSessionImpl : HttpSession {
 	
 	override Void _initFlash() {
 		reqState	:= (RequestState) reqState()
-		echo(map)
 		carriedOver := ((SessionValue?) get("afBedSheet.flash"))?.val
 		reqState.flashMapOld = carriedOver ?: emptyRoMap
 		reqState.flashMapNew = reqState.flashMapOld.dup
