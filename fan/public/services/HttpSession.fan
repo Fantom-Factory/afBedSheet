@@ -133,7 +133,7 @@ internal const class HttpSessionImpl : HttpSession {
 		
 		map := Str:Obj?[:]
 		reqState().webReq.session.each |val, key| {
-			map[key] = val
+			map[key] = ((SessionValue) val).val
 		} 
 		return map
 	}
@@ -141,7 +141,7 @@ internal const class HttpSessionImpl : HttpSession {
 	override Obj? getOrAdd(Str name, |Str->Obj?| valFunc) {
 		map := map
 		if (map.containsKey(name))
-			return map[name]
+			return ((SessionValue) map[name]).val
 		
 		val := valFunc.call(name)
 		set(name, val)
@@ -149,7 +149,7 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) { 
-		reqState().webReq.session.set(name, testImmutable(val))
+		reqState().webReq.session.set(name, SessionValue(val))
 	}
 	
 	override Void remove(Str name) {
@@ -184,9 +184,10 @@ internal const class HttpSessionImpl : HttpSession {
 	
 	override Void _initFlash() {
 		reqState	:= (RequestState) reqState()
-		carriedOver := get("afBedSheet.flash")
+		echo(map)
+		carriedOver := ((SessionValue?) get("afBedSheet.flash"))?.val
 		reqState.flashMapOld = carriedOver ?: emptyRoMap
-		reqState.flashMapNew = reqState.flashMapOld.rw
+		reqState.flashMapNew = reqState.flashMapOld.dup
 	}
 
 	override Void _finalFlash() {
@@ -204,18 +205,42 @@ internal const class HttpSessionImpl : HttpSession {
 				flashMapNew.remove(oldKey)
 		}
 
-		// test serialisation - would rather do this sooner if we could
-		flashMapNew.each {
-			testImmutable(it)
-		}
-		
 		if (flashMapNew.isEmpty)
 			remove("afBedSheet.flash")
 		else
-			set("afBedSheet.flash", flashMapNew)
+			set("afBedSheet.flash", SessionValue(flashMapNew))
+	}
+}
+
+// Wraps an object value, serialising it if it's not immutable
+internal const class SessionValue {
+	const Str?	objStr
+	const Obj?	objActual
+	
+	new make(Obj? val) {
+		if (val == null)
+			return
+		if (val.isImmutable)
+			return objActual = val
+		
+		if (val is Map || val is List || val is Buf || !val.typeof.hasFacet(Serializable#)) {
+			try objActual = val.toImmutable
+			catch (NotImmutableErr err) { /* try serialisation */ }
+		}
+
+		if (!val.typeof.hasFacet(Serializable#))
+			throw BedSheetErr("Session values should be immutable (preferably) or serialisable: ${val.typeof.qname} - ${val}")
+		
+		// do the serialisation
+		objStr = Buf().writeObj(val).flip.readAllStr
 	}
 	
-	private Obj? testImmutable(Obj? val) {
-		val?.toImmutable
+	Obj? val() {
+		objStr?.toBuf?.readObj ?: objActual
+	}
+	
+	override Str toStr() {
+		// pretend to be the real object when debugging 
+		val?.toStr ?: "null"
 	}
 }

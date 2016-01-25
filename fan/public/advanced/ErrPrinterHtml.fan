@@ -176,9 +176,9 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printIocConfig(WebOutStream out, Err? err) {
-		if (!configSrc.config.isEmpty) {
+		if (!configSrc.configMuted.isEmpty) {
 			title(out, "Ioc Config Values")
-			prettyPrintMap(out, configSrc.config, true)
+			prettyPrintMap(out, configSrc.configMuted, true)
 		}
 	}
 

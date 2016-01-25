@@ -18,19 +18,36 @@ internal class TestSession : AppTest {
 		verifyEq(getAsStr(`/session`), "count 1")
 	}
 
-	Void testSessionNotSerialisable() {
-		client.reqUri = reqUri(`/sessionBad`)
+	Void testImmutableSessionVals() {
+		client.reqUri = reqUri(`/sessionImmutable1?v=dredd`)
 		client.writeReq
 		client.readRes
-
-		// this test was to ensure dodgy session values are caught *before* the response is sent to the client.
-		// but despite the docs, it seems session values only need to be immutable, not serialisable
-//		verifyEq(client.resCode, 500)
+		verifyEq(client.resCode, 200)
 
 		cookie := client.resHeaders["Set-Cookie"].replace(";Path=/", "")
 		client = WebClient()
 		client.reqHeaders["Cookie"] = cookie
-		verifyEq(getAsStr(`/sessionBad2`), "sys::Int httpStatusCode")
+		verifyEq(getAsStr(`/sessionImmutable2`), "dredd")
+	}
 
+	Void testSerialisableSessionVals() {
+		client.reqUri = reqUri(`/sessionSerialisable1?v=anderson`)
+		client.writeReq
+		client.readRes
+		verifyEq(client.resCode, 200)
+
+		cookie := client.resHeaders["Set-Cookie"].replace(";Path=/", "")
+		client = WebClient()
+		client.reqHeaders["Cookie"] = cookie
+		verifyEq(getAsStr(`/sessionSerialisable2`), "anderson")
+	}
+
+	Void testBadSessionVals() {
+		client.reqUri = reqUri(`/sessionBad`)
+		client.writeReq
+		client.readRes
+
+		// ensure dodgy session values are caught *before* the response is sent to the client
+		verifyEq(client.resCode, 500)
 	}
 }
