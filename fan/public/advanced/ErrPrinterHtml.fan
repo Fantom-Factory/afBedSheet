@@ -64,7 +64,7 @@ internal const class ErrPrinterHtmlSections {
 
 		causes.each |Str cause, Int i| {
 			indent := "".padl(i*2)
-			out.w("${indent}${cause}\n")
+			out.writeXml("${indent}${cause}\n")
 		}
 		out.preEnd
 	}
@@ -286,7 +286,7 @@ internal const class ErrPrinterHtmlSections {
 	** If you're thinking of generating a ToC, think about those contributions not in BedSheet...
 	** ...and if we add a HTML Helper - do we want add a dependency to BedSheet?
 	private static Void title(WebOutStream out, Str title) {
-		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
+		out.h2("id=\"${title.fromDisplayName}\"").writeXml(title).h2End
 	}
 	
 	private static Void prettyPrintMap(WebOutStream out, Obj:Obj? map, Bool sort, Str? cssClass := null) {
