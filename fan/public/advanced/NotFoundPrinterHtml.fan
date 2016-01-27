@@ -101,7 +101,7 @@ internal const class NotFoundPrinterHtmlSections {
 	}
 
 	private static Void title(WebOutStream out, Str title) {
-		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
+		out.h2("id=\"${title.fromDisplayName}\"").writeXml(title).h2End
 	}
 	
 	private static Void w(WebOutStream out, Str key, Obj? val) {
