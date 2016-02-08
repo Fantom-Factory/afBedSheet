@@ -7,7 +7,8 @@ using concurrent::Actor
 ** Provides a name/value map associated with a specific browser *connection* to the web server.
 ** A cookie (with the name 'fanws') is used to track which session is made available to the request.
 ** 
-** All values stored in the session must be immutable.
+** All values stored in the session must be either immutable or serialisable. 
+** Note that immutable objects give better performance.  
 ** 
 ** For scalable applications, the session should be used sparingly; house cleaned regularly and not used as a dumping ground. 
 ** 
@@ -33,16 +34,12 @@ const mixin HttpSession {
 	** Returns 'true' if the session map is empty. 
 	** 
 	** Calling this method does not create a session if it does not exist.
-	virtual Bool isEmpty() {
-		exists ? map.isEmpty : true
-	}
+	abstract Bool isEmpty()
 
 	** Returns 'true' if the session map contains the given key. 
 	** 
 	** Calling this method does not create a session if it does not exist.
-	virtual Bool containsKey(Str key) {
-		exists ? map.containsKey(key) : false		
-	}
+	abstract Bool containsKey(Str key)
 	
 	** Returns session value or def if not defined.
 	** 
@@ -50,16 +47,14 @@ const mixin HttpSession {
 	** 
 	** @see `web::WebSession.get`
 	@Operator
-	virtual Obj? get(Str name, Obj? def := null) {
-		exists ? map.get(name, def) : def 
-	}
+	abstract Obj? get(Str name, Obj? def := null)
 
 	** Convenience for 'map.getOrAdd(name, valFunc)'.
 	** 
 	** Calling this **will** create a session if it doesn't already exist.
 	abstract Obj? getOrAdd(Str key, |Str->Obj?| valFunc)
 	
-	** Sets a session value - which must be immutable.
+	** Sets a session value - which must be immutable or serialisable.
 	** 
 	** Calling this method **will** create a session if it does not exist.
 	** 
@@ -127,6 +122,29 @@ internal const class HttpSessionImpl : HttpSession {
 		reqState().webReq.session.id
 	}
 
+	override Bool isEmpty() {
+		if (!exists)
+			return true
+		isEmpty := true
+		reqState().webReq.session.each { isEmpty = false }
+		return isEmpty
+	}
+
+	override Bool containsKey(Str key) {
+		if (!exists)
+			return false
+		containsKey := false
+		reqState().webReq.session.each |v, k| { if (k == key) containsKey = true }
+		return containsKey
+	}
+	
+	override Obj? get(Str name, Obj? def := null) {
+		if (!exists)
+			return def
+		val := reqState().webReq.session.get(name, def)
+		return val is SessionValue ? ((SessionValue) val).val : val
+	}
+
 	override Str:Obj? map() {
 		if (!exists) 
 			return emptyRoMap
@@ -139,16 +157,14 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Obj? getOrAdd(Str name, |Str->Obj?| valFunc) {
-		map := map
-		if (map.containsKey(name))
-			return ((SessionValue) map[name]).val
-		
+		if (containsKey(name))
+			return get(name)
 		val := valFunc.call(name)
 		set(name, val)
 		return val
 	}
 	
-	override Void set(Str name, Obj? val) { 
+	override Void set(Str name, Obj? val) {
 		reqState().webReq.session.set(name, SessionValue(val))
 	}
 	
@@ -158,11 +174,8 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void delete() {
-		if (exists) {
-			map := map
-			map.keys.each { reqState().webReq.session.remove(it) }
+		if (exists)
 			reqState().webReq.session.delete
-		}
 	}
 
 	override Bool exists() {
@@ -212,7 +225,8 @@ internal const class HttpSessionImpl : HttpSession {
 }
 
 // Wraps an object value, serialising it if it's not immutable
-internal const class SessionValue {
+@NoDoc	// for Bounce
+const class SessionValue {
 	const Str?	objStr
 	const Obj?	objActual
 	
