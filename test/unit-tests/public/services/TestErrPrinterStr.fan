@@ -6,7 +6,7 @@ internal class TestErrPrinterStr : BsTest {
 		str := ErrPrinterStrSections.isolateCauses(err).join(", ")
 		
 		// verify repeated causes are removed
-		verifyEq(str, "sys::ArgErr - Ouch!, sys::Err - Wotever, sys::ArgErr - Ouch!")
+		verifyEq(str, "sys::ArgErr, sys::ArgErr - Ouch!, sys::Err, sys::Err - Wotever, sys::ArgErr - Ouch!")
 	}
 	
 	Void testPrintStackTrace() {
