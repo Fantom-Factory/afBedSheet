@@ -49,7 +49,10 @@ abstract const class Asset {
 	** A new stream should be created each time 'in()' is called.
 	**  
 	** Returns 'null' if asset doesn't exist, or can't be opened.
-	** (Example, if the asset is a file resource).
+	** (For example, if the asset is a recently deleted file resource).
+	** 
+	** The caller is responsible for closing the stream. 
+	** Note this can be as easy as calling 'in.readAllBuf()' or 'in.readAllStr()'. 
 	abstract InStream?	in()
 
 	** Returns the content type for the asset.
