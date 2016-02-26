@@ -177,7 +177,7 @@ internal const class T_PageHandler {
 	
 	Obj saveFlashMsg(Str msg) {
 		oldMsg := session.flash["msg"]
-		session.flash["msg"] = msg
+		session.flashSet("msg", msg)
 		return Text.fromPlain("Msg = $oldMsg")
 	}
 
