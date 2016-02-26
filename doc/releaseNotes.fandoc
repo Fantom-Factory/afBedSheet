@@ -7,6 +7,7 @@ v1.5.0
  - New: Methods on 'Redirect' that return handy Err objects.
  - Chg: Updated to work with [IoC v3]`pod:afIoc`. (Breaking change.)
  - Chg: Converted <port> arg in 'Main' to an option. (Breaking change.)
+ - Chg: Reworked 'HttpSession.flash()' to add 'flashSet()' and 'flashRemove()' methods. (Breaking change.)
  - Chg: Created an IoC threaded 'request' scope.
  - Chg: Lots of internal tweaks to support Fantom 1.0.68.
  - Chg: Despite updates to Wisp, values stored in 'HttpSession' may still be serializable (and not immutable).

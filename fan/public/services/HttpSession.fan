@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIoc::Registry
+using afConcurrent::LocalRef
 using concurrent::Actor
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
@@ -91,21 +92,24 @@ const mixin HttpSession {
 	** Calling this method does not create a session if it does not exist.
 	abstract Bool exists()
 	
-	** A map whose name/value pairs are persisted *only* until the end of the user's next HTTP request. 
-	** Values stored in this map must be immutable.
+	** A map whose name/value pairs are persisted *only* until the end of the user's **next** HTTP request. 
 	** 
-	** The returned map is *MODIFIABLE*. 
-	** 
-	** Calling this method **will** create a session if it does not exist. 
-	** Use 'flashExists()' to check if a value exists without creating a session:
-	** 
-	**   if (httpSession.flashExists && httpSession.flash.contains("key")) { ... }
+	** The returned map is *READ ONLY*. 
 	abstract Str:Obj? flash()
-	
-	** Returns 'true' if the flash map exists.
+
+	** Sets the given value in the *flash*. 
+	** The key/value pair will be persisted until the end of the user's *next* request.
+	** 
+	** Values must be immutable or serialisable.
+	** 
+	** Calling this method **will** create a session if it does not exist.
+	abstract Void flashSet(Str key, Obj? val)
+
+	** Removes the key/value pair from *flash* and returns the value. 
+	** If the key was not mapped then returns 'null'.
 	** 
 	** Calling this method does not create a session if it does not exist.
-	abstract Bool flashExists()
+	abstract Obj? flashRemove(Str key)
 	
 	internal abstract Void _initFlash()
 	internal abstract Void _finalFlash()
@@ -115,6 +119,7 @@ internal const class HttpSessionImpl : HttpSession {
 	private static  const Str:Obj?			emptyRoMap	:= Str:Obj?[:].toImmutable
 	@Inject private const |->RequestState|	reqState
 	@Inject	private const HttpCookies		httpCookies
+	@Inject	private const LocalRef			existsRef
 	
 	new make(|This|in) { in(this) } 
 
@@ -179,48 +184,74 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Bool exists() {
+		// this gets called a *lot* and each time we manually compile cookie lists just to check if it's empty!
+		// so we do a little dirty cashing
+		if (existsRef.isMapped)
+			return existsRef.val
+		
 		// TODO: this session support only for WISP web server
-		Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
+		exists := Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
+		if (exists)
+			// don't save 'false' values, so we still re-evaluate next time round
+			existsRef.val = true
+		return exists
 	}
 	
 	override Str:Obj? flash() {
-		// need to preempt setting values
-		// FlashMiddleware happens too late 'cos the response has already been committed (usually) 
-		// when we try to create the cookie  
-		reqState().webReq.session.id
-		return reqState().flashMapNew
+		reqState	:= (RequestState) reqState()
+		map := Str:Obj?[:] { it.caseInsensitive = true }
+		if (reqState.flashMapOld != null)
+			map.setAll(reqState.flashMapOld)
+		if (reqState.flashMapNew != null)
+			map.setAll(reqState.flashMapNew)
+		return map.ro
+	}
+	
+	override Void flashSet(Str key, Obj? val) {
+		reqState	:= (RequestState) reqState()
+		flashMapNew := reqState.flashMapNew
+		
+		if (flashMapNew == null)
+			reqState.flashMapNew = flashMapNew = Str:Obj?[:]
+		flashMapNew[key] = val
+
+		// create a session to preempt setting values
+		// FlashMiddleware creates the cookie too late, because the response has already been committed
+		reqState.webReq.session.id
 	}
 
-	override Bool flashExists() {
-		exists && containsKey("afBedSheet.flash")
+	override Obj? flashRemove(Str key) {
+		if (!exists)
+			return null
+		reqState	:= (RequestState) reqState()
+		val			:= null
+		if (reqState.flashMapOld != null) {
+			if (reqState.flashMapOld.isRO)
+				reqState.flashMapOld = reqState.flashMapOld.rw
+			val = reqState.flashMapOld.remove(key)
+		}
+		if (reqState.flashMapNew != null)
+			// if the key was found in both maps, it is correct to return the new one
+			// as that was the last value to be added, hence the only value in 'flash()'
+			val = reqState.flashMapNew.remove(key)
+		return val
 	}
 	
 	override Void _initFlash() {
 		reqState	:= (RequestState) reqState()
 		carriedOver := ((SessionValue?) get("afBedSheet.flash"))?.val
-		reqState.flashMapOld = carriedOver ?: emptyRoMap
-		reqState.flashMapNew = reqState.flashMapOld.dup
+		reqState.flashMapOld = carriedOver
 	}
 
 	override Void _finalFlash() {
-		reqState	:= reqState()
-		flashMapOld := reqState.flashMapOld
+		reqState	:= (RequestState) reqState()
 		flashMapNew := reqState.flashMapNew
 
-		// TODO: replace flash map with a pseudo map so we can capture the get and set operations.
-		// - benefits are, we can capture the set() method to make note of re-setting keys 
-
-		// remove old key / values that have not changed
-		// note - this means we can not re-set the same value!
-		flashMapOld.each |oldVal, oldKey| {
-			if (flashMapNew.containsKey(oldKey) && flashMapNew[oldKey] == oldVal)
-				flashMapNew.remove(oldKey)
-		}
-
-		if (flashMapNew.isEmpty)
-			remove("afBedSheet.flash")
-		else
-			set("afBedSheet.flash", SessionValue(flashMapNew))
+		if (flashMapNew != null)
+			if (flashMapNew.isEmpty)
+				remove("afBedSheet.flash")
+			else
+				set("afBedSheet.flash", SessionValue(flashMapNew))
 	}
 }
 
