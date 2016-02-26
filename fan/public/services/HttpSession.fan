@@ -247,11 +247,9 @@ internal const class HttpSessionImpl : HttpSession {
 		reqState	:= (RequestState) reqState()
 		flashMapNew := reqState.flashMapNew
 
-		if (flashMapNew != null)
-			if (flashMapNew.isEmpty)
-				remove("afBedSheet.flash")
-			else
-				set("afBedSheet.flash", SessionValue(flashMapNew))
+		remove("afBedSheet.flash")
+		if (flashMapNew != null && flashMapNew.size > 0)
+			set("afBedSheet.flash", SessionValue(flashMapNew))
 	}
 }
 
