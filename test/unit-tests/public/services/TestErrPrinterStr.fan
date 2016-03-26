@@ -2,11 +2,15 @@
 internal class TestErrPrinterStr : BsTest {
 	
 	Void testPrintCauses() {
-		err := ArgErr("Ouch!", ArgErr("Ouch!", Err("Wotever", ArgErr("Ouch!"))))
-		str := ErrPrinterStrSections.isolateCauses(err).join(", ")
+		err := ArgErr("Ouch!", ArgErr("Ouch!", Err("Wotever", ArgErr("Ouch!", ArgErr("Ouch!")))))
+		str := ErrPrinterStrSections.isolateCauses(err).join("\n")
 		
-		// verify repeated causes are removed
-		verifyEq(str, "sys::ArgErr, sys::ArgErr - Ouch!, sys::Err, sys::Err - Wotever, sys::ArgErr - Ouch!")
+		// verify repeated cause msgs are removed
+		verifyEq(str, "sys::ArgErr
+		               sys::ArgErr - Ouch!
+		               sys::Err - Wotever
+		               sys::ArgErr
+		               sys::ArgErr - Ouch!")
 	}
 	
 	Void testPrintStackTrace() {

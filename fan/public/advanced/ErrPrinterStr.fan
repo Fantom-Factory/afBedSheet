@@ -189,15 +189,17 @@ internal const class ErrPrinterStrSections {
 
 	static Str[] isolateCauses(Err? err) {
 		causes := Str[,]
-		lastMsg := ""
+		lastErr := null as Err
 		forEachCause(err, Err#) |Err cause->Bool| {
-			// don't bother re-printing the same err msg
-			msg := cause.msg != lastMsg ? cause.typeof.qname : "${cause.typeof.qname} - ${cause.msg}"
+			if (lastErr?.msg == cause.msg) {
+				// the msg was obviously just copied up the chain, so only print it where it first occurred
+				causes.pop
+				causes.push(lastErr.typeof.qname)
+			}
 
-			// don't bother adding dups
-			if (causes.last != msg)
-				causes.add(msg)
-			lastMsg = cause.msg
+			causes.push("${cause.typeof.qname} - ${cause.msg}")
+
+			lastErr = cause
 			return false
 		}
 		return causes
