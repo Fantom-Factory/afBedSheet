@@ -27,7 +27,7 @@ const internal class MiddlewareTerminator : Middleware {
 			return
 		}
 
-		throw HttpStatusErr(statusCode, BsErrMsgs.route404(httpRequest.url, httpRequest.httpMethod))
+		throw HttpStatus.makeErr(statusCode, BsErrMsgs.route404(httpRequest.url, httpRequest.httpMethod))
 	}
 	
 	private Bool renderWelcomePage() {

@@ -36,16 +36,16 @@ class HttpRequestBody {
 	** Returns 'null' if there is no request content.
 	once Str? str() {
 		try return buf?.seek(0)?.readAllStr
-		catch (Err err) throw HttpStatusErr(400, "Invalid Str Data", err)
+		catch (Err err) throw HttpStatus.makeErr(400, "Invalid Str Data", err)
 	}
 	
 	** Returns the request body as a JSON Obj. Parsing is done with `util::JsonInStream`
-	** If the JSON is invalid, a 'HttpStatusErr' is thrown with a status code of '400 - Bad Request'.
+	** If the JSON is invalid, a 'HttpStatus' Err is thrown with a status code of '400 - Bad Request'.
 	** Returns 'null' if there is no request content.
 	once Obj? jsonObj() {
 		if (buf == null) return null
 		try return JsonInStream(buf.seek(0).in).readJson
-		catch (Err err) throw HttpStatusErr(400, "Invalid JSON Data", err)
+		catch (Err err) throw HttpStatus.makeErr(400, "Invalid JSON Data", err)
 	}
 	
 	** Returns the request body as a JSON Map. 
@@ -56,11 +56,11 @@ class HttpRequestBody {
 
 	** Get the request body as a form of key / value pairs. The form is parsed using `sys::Uri.decodeQuery`.
 	** 
-	** If the form data is invalid, a 'HttpStatusErr' is thrown with a status code of '400 - Bad Request'.
+	** If the form data is invalid, a 'HttpStatus' Err is thrown with a status code of '400 - Bad Request'.
 	once [Str:Str]? form() {
 		if (str == null) return null
 		try return Uri.decodeQuery(str)
-		catch (Err err) throw HttpStatusErr(400, "Invalid Form Data", err)
+		catch (Err err) throw HttpStatus.makeErr(400, "Invalid Form Data", err)
 	}
 
 	@NoDoc

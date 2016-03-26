@@ -131,7 +131,7 @@ internal const class T_PageHandler {
 	// ---- Status Code Page ----
 	
 	Obj statusCode(Int httpStatusCode) {
-		throw HttpStatusErr(httpStatusCode, "Ooops!")
+		throw HttpStatus.makeErr(httpStatusCode, "Ooops!")
 	}
 	
 	// ---- Text Pages ----

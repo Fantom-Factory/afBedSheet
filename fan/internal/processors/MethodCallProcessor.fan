@@ -52,7 +52,7 @@ const class MethodCallProcessor : ResponseProcessor {
 		// TODO: need to find a way of limiting this behaviour to Route calls
 		// maybe extend MethodCall and inject into it, and have MethodCall call the method
 		catch (ValueEncodingErr valEncErr) {
-			throw HttpStatusErr(404, valEncErr.msg, valEncErr)
+			throw HttpStatus.makeErr(404, valEncErr.msg, valEncErr)
 		}
 	}	
 }
