@@ -15,6 +15,7 @@ v1.5.0
  - Chg: Tweaked the mechanics of 'BedSheetBuilder'.
  - Chg: Config 'podHandlerBaseUrl' now defaults to '/pod/' (from '/pods/') because Fantom '.js.map' files are hardcoded to '/pod/'.
  - Chg: Better isolation of stack traces in Err pages.
+ - Chg: Deprecated 'HttpStatusErr' in favour of 'HttpStatus.makeErr(...)'.
  - Bug: IE didn't render Error pages in dev because it can't handle long and / or multiline header values.
  - Bug: Error in 'ResponseProcessors' when handling wrapped 'ReProcessErrs'.
 
