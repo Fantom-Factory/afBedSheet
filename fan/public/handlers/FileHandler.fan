@@ -5,19 +5,26 @@ using afIoc
 ** A 'ClientAssetProducer' that maps URLs to files on the file system.
 ** Use to serve up file assets.
 ** 
+** Note if no configuration is given to 'FileHandler' then it defaults to serving files from the 
+** 'etc/web-static/' directory.
+** 
+** 
+** 
+** Configuration [#configuration]
+** ==============================
 ** Suppose your project has this directory structure:
 ** 
 ** pre>
 ** myProj/
 **  |- fan/
 **  |- test/
-**  `- etc
-**      `- static-web/
+**  |- etc
+**      |- www/
 **          |- css/
-**          |   `- app.css
+**          |   |- app.css
 **          |- images/
-**          |   `- logo.png
-**          `- scripts/
+**          |   |- logo.png
+**          |- scripts/
 ** <pre
 ** 
 ** To serve up files from the 'css/' directory add the following to 'AppModule':
@@ -26,13 +33,14 @@ using afIoc
 ** syntax: fantom
 ** @Contribute { serviceType=FileHandler# }
 ** Void contributeFileHandler(Configuration config) {
-**   config[`/stylesheets/`] = `etc/static-web/css/`.toFile
+**     config[`/stylesheets/`] = `etc/www/css/`.toFile
 ** }
 ** <pre
 ** 
 ** Browsers may then access 'app.css' with the URL '/stylesheets/app.css'.
 ** 
-** Rather than hardcoding '/stylesheets/app.css' in HTML, it is better to generate a client URL from 'FileHandler'.
+** Rather than hardcoding the string '/stylesheets/app.css' in HTML, it is better to generate a 
+** client URL from 'FileHandler'.
 ** 
 **   syntax: fantom
 **   urlStr := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl.encode
@@ -42,20 +50,22 @@ using afIoc
 **  - generating correct URLs in non-root WebMods
 **  - utilising an asset caching strategy
 **
-** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
-** It is also transformed by asset caching strategies such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
+** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the BedSheet 'WebMod'.
+** It is also transformed by asset caching strategies such as [Cold Feet]`http://pods.fantomfactory.org/pods/afColdFeet/`.
 **  
 ** 
 ** 
 ** Serve All Root Directories [#serveAllDirs]
 ** ==========================================
 ** Using the above example, extra config would need to be added to serve the 'images/' and the 'scripts/' directories. 
-** This is not ideal. So to serve all the files and directories under 'etc/static-web/' add config for the root URL:  
+** This is not ideal. So to serve all the files and directories under 'etc/www/' add config for the root URL:  
 ** 
 **   syntax: fantom
-**   conf[`/`] = `etc/static-web/`.toFile
+**   conf[`/`] = `etc/www/`.toFile
 ** 
-** This way everything under 'etc/static-web/' is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
+** This way everything under 'etc/www/' is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
+** 
+** Note if no configuration is given to 'FileHandler' then it defaults to serving root files from the 'etc/web-static/' directory.
 ** 
 ** 
 ** 
@@ -110,7 +120,7 @@ internal const class FileHandlerImpl : FileHandler {
 		in?.call(this)
 		
 		// verify file and uri mappings, normalise the files
-		this.directoryMappings = dirMappings.map |file, uri -> File| {
+		directoryMappings := dirMappings.map |file, uri -> File| {
 			if (!file.exists)
 				throw BedSheetErr(BsErrMsgs.fileNotFound(file))
 			if (!file.isDir)
@@ -123,6 +133,12 @@ internal const class FileHandlerImpl : FileHandler {
 				throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(uri, `/foo/bar/`))
 			return file.normalize
 		}
+		
+		// add our default dir mapping should no config be given
+		if (directoryMappings.isEmpty)
+			directoryMappings[`/`] = `etc/web-static/`.toFile
+		
+		this.directoryMappings = directoryMappings
 	}
 		
 	override Uri? findMappingFromLocalUrl(Uri localUri) {
