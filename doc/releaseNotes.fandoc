@@ -16,6 +16,7 @@ v1.5.0
  - Chg: Config 'podHandlerBaseUrl' now defaults to '/pod/' (from '/pods/') because Fantom '.js.map' files are hardcoded to '/pod/'.
  - Chg: Better isolation of stack traces in Err pages.
  - Chg: Deprecated 'HttpStatusErr' in favour of 'HttpStatus.makeErr(...)'.
+ - Chg: 'FileHandler' defaults to serving files from 'etc/web-static/' should no configuration be given.
  - Bug: IE didn't render Error pages in dev because it can't handle long and / or multiline header values.
  - Bug: Error in 'ResponseProcessors' when handling wrapped 'ReProcessErrs'.
 
