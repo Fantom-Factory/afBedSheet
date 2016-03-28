@@ -22,6 +22,11 @@ const class ErrPrinterHtml {
 		out := WebOutStream(buf.out)
 
 		msg	  := "${err.typeof}\n - ${err.msg}"
+		// 512 chars is about 15 lines of h1 text - should be plenty!
+		// It gets confusing if the web page is ALL h1 text, so we limit it
+		if (msg.size > 512)
+			msg = msg[0..<508] + "..."
+
 		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
 		out.h1.w(h1Msg).h1End
 		
