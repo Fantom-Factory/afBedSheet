@@ -19,8 +19,14 @@ const class ErrPrinterStr {
 
 	Str errToStr(Err? err) {
 		buf := StrBuf(1000)
-		msg	:= (err == null) ? "Err!\n" : "${err?.typeof?.qname} - ${err?.msg}\n" 
-		buf.add(msg)
+		
+		msg	:= (err == null) ? "Err!\n" : "${err?.typeof?.qname} - ${err?.msg}" 
+		// 512 chars is about 15 lines of h1 text - should be plenty!
+		// we print it all in the causes anyway
+		if (msg.size > 512)
+			msg = msg[0..<508] + "..."
+
+		buf.add(msg).addChar('\n')
 
 		printers.each |print| { 
 			try {
