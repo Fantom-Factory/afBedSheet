@@ -33,6 +33,18 @@ const class HttpRequestHeaders {
 		private set { }
 	}
 
+	** Authorization header. For *BASIC* authorisation, the credentials should have been encoded 
+	** like this:
+	** 
+	**   syntax: fantom
+	**   creds := "Basic " + "${username}:${password}".toBuf.toBase64 
+	** 
+	** Example: 'Authorization: Basic QWxhZGRpbjpPcGVuU2VzYW1l'
+	Str? authorization {
+		get { headers["Authorization"] }
+		private set { }
+	}
+
 	** The length of the request body in octets (8-bit bytes).
 	** 
 	** Example: 'Content-Length: 348'
