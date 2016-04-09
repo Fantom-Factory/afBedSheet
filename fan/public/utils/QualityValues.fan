@@ -6,7 +6,12 @@
 **
 ** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`
 class QualityValues {
-	private Str:Float	qvalues	:= Utils.makeMap(Str#, Float#)
+
+	** Returns a dup of the internal 'name:qvalue' map.
+	Str:Float	qvalues {
+		get { &qvalues.dup }
+		private set
+	}
 	
 	private new make(Str:Float qvalues) {
 		this.qvalues = qvalues
@@ -14,7 +19,10 @@ class QualityValues {
 	
 	** Parses a HTTP header value into a 'name:qvalue' map.
 	** Throws 'ParseErr' if the header Str is invalid.
-	static new fromStr(Str? header, Bool checked := true) {
+	** 
+	**   syntax: fantom
+	**   QualityValues("Accept: audio/*; q=0.2, audio/basic")
+	static new fromStr(Str? header := null, Bool checked := true) {
 		qvalues	:= Utils.makeMap(Str#, Float#)
 		
 		if (header == null)
@@ -58,19 +66,29 @@ class QualityValues {
 	}
 
 	** Returns the qvalue associated with 'name'. Defaults to '0' if 'name' was not supplied.
+	** 
+	** Wildcards are *not* honoured but 'name' is case-insensitive.
 	@Operator
 	Float get(Str name) {
 		qvalues.get(name, 0f)
 	}
 
-	** Returns 'true' if 'name' was supplied in the header
+	** Returns 'true' if 'name' was supplied in the header.
+	** 
+	** This method matches against '*' wildcards.
 	Bool contains(Str name) {
-		qvalues.containsKey(name)
+		qvalues.any |qval, mime| {
+			Regex.glob(mime).matches(name)
+		}
 	}
 
 	** Returns 'true' if the name was supplied in the header AND has a qvalue > 0.0
+	** 
+	** This method matches against '*' wildcards.
 	Bool accepts(Str name) {
-		get(name) > 0f
+		qvalues.any |qval, mime| {
+			Regex.glob(mime).matches(name) && qval > 0f
+		}
 	}
 	
 	** Returns the number of values given in the header
@@ -83,7 +101,12 @@ class QualityValues {
 		qvalues.isEmpty
 	}
 	
-	** Returns a dup of the internal 'name:qvalue' map 
+	** Clears the qvalues
+	Void clear() {
+		qvalues.clear
+	}
+	
+	@NoDoc @Deprecated { msg="Use 'qvalues' instead" } 
 	Str:Float toMap() {
 		qvalues.dup
 	}
