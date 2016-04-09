@@ -20,8 +20,13 @@ const mixin BedSheetServer {
 	** The port BedSheet is listening to.
 	abstract Int port()
 	
-	** The public facing domain used to create absolute URLs.
-	** This is set by 'BedSheetConfigIds.host'. 
+	** The public facing domain (and scheme) used to create absolute URLs.
+	** 
+	** An attempt is made to get this from the requesting 'host' header,  
+	** if not, then this is retrieved from the 'BedSheetConfigIds.host' config value.
+	** Example:
+	** 
+	**   http://www.fantomfactory.org/ 
 	abstract Uri host()
 	
 	** The Registry options BedSheet was started with.
@@ -52,9 +57,9 @@ const mixin BedSheetServer {
 	
 	** Creates an absolute URL for public use; including scheme and authority (host).
 	** The given 'clientUrl' should be relative to the host and start with a '/'.
-	** 
-	** The scheme, if 'null', defaults to whatever was set in `BedSheetConfigIds.host`.
-	abstract Uri toAbsoluteUrl(Uri clientUrl, Str? scheme := null)
+	**
+	** The scheme and authority in the generated URL are taken from the 'host()' method. 
+	abstract Uri toAbsoluteUrl(Uri clientUrl)
 }
 
 internal const class BedSheetServerImpl : BedSheetServer {
@@ -99,10 +104,18 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 
 	override Uri host() {
+		if (webReq != null) {
+			// there's a small edge case where Wisp is HTTPS but no host header is supplied, so we 
+			// default to HTTP from the BedSheet host config value...
+			// ...but meh, I can't be arsed to code generating the URL from the little bits of url
+			try return webReq.absUri.relToAuth
+			catch { /* meh - host probably wasn't a header value */ }
+		}
+		
 		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
 		// DependencyProvider, so @Config is not available for injection
 		// host is validated on startup, so we know it's okay
-		configSrc.get(BedSheetConfigIds.host, Uri#)
+		return configSrc.get(BedSheetConfigIds.host, Uri#)
 	}
 	
 	override Uri toClientUrl(Uri localUrl) {
@@ -112,10 +125,9 @@ internal const class BedSheetServerImpl : BedSheetServer {
 		return path + localUrl.relTo(`/`)
 	}
 	
-	override Uri toAbsoluteUrl(Uri clientUrl, Str? scheme := null) {
+	override Uri toAbsoluteUrl(Uri clientUrl) {
 		Utils.validateLocalUrl(clientUrl, `/css/myStyles.css`)
-		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
-		return absUrl + clientUrl.relTo(`/`)
+		return host + clientUrl.relTo(`/`)
 	}
 	
 	private WebReq? webReq() {
