@@ -103,7 +103,7 @@ internal class AppRestarterState {
 			args	:= ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
 			
 			// can't use the new windows fan launcher mechanism - 'cos the batch file process finishes straight away
-			// can onlu manage a proper .exe process
+			// can only manage a proper .exe process
 //			cmd  := Env.cur.homeDir.normalize.plus(`bin/fan`).osPath
 //			if (Env.cur.os.startsWith("win"))
 //				cmd += ".bat"

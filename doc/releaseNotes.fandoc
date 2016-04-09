@@ -18,6 +18,7 @@ v1.5.0
  - Chg: Deprecated 'HttpStatusErr' in favour of 'HttpStatus.makeErr(...)'.
  - Chg: 'FileHandler' defaults to serving files from 'etc/web-static/' should no configuration be given.
  - Chg: 'QualityValues' now understands '*' wildcards.
+ - Chg: 'BedSheetServer.host()' first checks the HTTP request header.
  - Bug: IE didn't render Error pages in dev because it can't handle long and / or multiline header values.
  - Bug: Error in 'ResponseProcessors' when handling wrapped 'ReProcessErrs'.
 
