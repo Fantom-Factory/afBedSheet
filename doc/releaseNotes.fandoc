@@ -11,7 +11,6 @@ v1.5.0
  - Chg: Created an IoC threaded 'request' scope.
  - Chg: Lots of internal tweaks to support Fantom 1.0.68.
  - Chg: Despite updates to Wisp, values stored in 'HttpSession' may still be serializable (and not immutable).
- - Chg: Dev Proxy now uses the 'fanlaunch' scripts.
  - Chg: Tweaked the mechanics of 'BedSheetBuilder'.
  - Chg: Config 'podHandlerBaseUrl' now defaults to '/pod/' (from '/pods/') because Fantom '.js.map' files are hardcoded to '/pod/'.
  - Chg: Better isolation of stack traces in Err pages.

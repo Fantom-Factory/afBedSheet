@@ -12,7 +12,7 @@ class Build : BuildPod {
 			"stackOverflow.tag"	: "afbedsheet",
 			"afIoc.module"		: "afBedSheet::BedSheetModule",
 			"repo.tags"			: "web",
-			"repo.public"		: "false"
+			"repo.public"		: "true"
 		]
 
 		index = [
@@ -41,13 +41,8 @@ class Build : BuildPod {
 
 		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/middleware/`, `fan/internal/processors/`, `fan/internal/proxy/`, `fan/internal/utils/`, `fan/public/`, `fan/public/advanced/`, `fan/public/handlers/`, `fan/public/responses/`, `fan/public/services/`, `fan/public/utils/`, `test/app/`, `test/app-tests/`, `test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/services/`, `test/unit-tests/public/utils/`]
 		resDirs = [`doc/`, `res/web/`, `res/misc/`, `res/test/`]
-	}
-	
-	override Void compile() {
-		// remove test pods from final build
-		testPods := "webmod xml".split
-		depends = depends.exclude { testPods.contains(it.split.first) }
-		super.compile
-	}
+		
+		meta["afBuild.testPods"]	= "webmod xml"
+	}	
 }
 
