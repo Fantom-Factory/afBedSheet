@@ -108,8 +108,10 @@ internal const class BedSheetServerImpl : BedSheetServer {
 			// there's a small edge case where Wisp is HTTPS but no host header is supplied, so we 
 			// default to HTTP from the BedSheet host config value...
 			// ...but meh, I can't be arsed to code generating the URL from the little bits of url
-			try return webReq.absUri.relToAuth
-			catch { /* meh - host probably wasn't a header value */ }
+			try {
+				absUri := webReq.absUri
+				return `${absUri.scheme}://${absUri.auth}/`
+			} catch { /* meh - host probably wasn't a header value */ }
 		}
 		
 		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
