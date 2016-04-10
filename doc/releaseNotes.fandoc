@@ -1,6 +1,10 @@
 Versions
 ********
 
+v1.5.2
+======
+ - When in proxy mode, the real app process is launched with 'java.options' from 'etc/sys/config.props'.
+
 v1.5.0
 ======
  - New: Added 'File Handlers' section to default Err and 404 pages.

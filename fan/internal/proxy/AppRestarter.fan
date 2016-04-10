@@ -98,10 +98,6 @@ internal class AppRestarterState {
 	Void launchWebApp(Str appName, Int appPort, Str params) {
 		log.info(BsLogMsgs.appRestarter_lauchingApp(appName, appPort))
 		try {
-			home	:= Env.cur.homeDir.normalize
-			sysjar	:= home + `lib/java/sys.jar`
-			args	:= ["java", "-cp", sysjar.osPath, "-Dfan.home=${home.osPath}", "fanx.tools.Fan", MainProxied#.qname, params]
-			
 			// can't use the new windows fan launcher mechanism - 'cos the batch file process finishes straight away
 			// can only manage a proper .exe process
 //			cmd  := Env.cur.homeDir.normalize.plus(`bin/fan`).osPath
@@ -109,8 +105,9 @@ internal class AppRestarterState {
 //				cmd += ".bat"
 //			args := [cmd, MainProxied#.qname, params]
 			
-			log.info(BsLogMsgs.appRestarter_process(args.join(" ")))
-			realWebApp = Process(args).run
+			realWebApp = fanProcess([MainProxied#.qname, params]) 
+			log.info(BsLogMsgs.appRestarter_process(realWebApp.command.join(" ")))
+			realWebApp.run
 		} catch (Err err)
 			throw BedSheetErr(BsErrMsgs.appRestarter_couldNotLaunch(appName), err)
 	}
@@ -161,5 +158,13 @@ internal class AppRestarterState {
 		}
 		
 		return metaProps["pod.depends"].split(';').map { it.isEmpty ? null : Depend(it).name }.exclude { it == null }
+	}
+
+	static Process fanProcess(Str[] cmd) {
+		homeDir		:= Env.cur.homeDir.normalize
+		classpath	:= [homeDir + `lib/java/sys.jar`, homeDir + `lib/java/jline.jar`].join(File.pathSep) { it.osPath } 
+		javaOpts	:= Env.cur.config(Pod.find("sys"), "java.options", "")
+		args 		:= ["java", javaOpts, "-cp", classpath, "-Dfan.home=${homeDir.osPath}", "fanx.tools.Fan"].addAll(cmd)
+		return Process(args)
 	}
 }
