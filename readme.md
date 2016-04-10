@@ -211,7 +211,7 @@ Route handlers are written by the application developer, but a couple of common 
 - [FileHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/FileHandler): Maps request URLs to files on the file system.
 - [PodHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/PodHandler) : Maps request URLs to pod file resources.
 
-See the [FileHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/FileHandler) documentation for examples on how to serve up static files.
+See the [FileHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/FileHandler) documentation for examples on how to serve up static files. If no configuration is given to `FileHandler` then it defaults to serving files from the `etc/web-static/` directory.
 
 See the [PodHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/PodHandler) documentation for examples on how to serve up static pod files, including Fantom generated Javascript.
 
@@ -414,7 +414,7 @@ class RestService {
         form := httpRequest.body.form
 
         // as JSON objects
-        json := httpRequest.body.jsonObj
+        json := httpRequest.body.jsonMap
 
         // return a different status code, e.g. 201 - Created
         httpResponse.statusCode = 201
@@ -596,13 +596,13 @@ C:\> fan afBedSheet -port <port> -proxy <appModule>
 
 The proxy sits on `(port)` and starts the real app on `(port+1)`, forwarding all requests to it.
 
-```
-.                |<--> Web App (port+1)
-Proxy (port) <-->|
-                 |<--> Web Browser
-```
-
 Each time the web browser makes a request, it connects to the proxy which forwards it to the real web app.
+
+```
+.                |---> Web App (port+1)
+Proxy (port) <-->|
+                 |<--- Web Browser
+```
 
 On each request, the proxy scans the pod files in the Fantom environment, and should any of them be updated, it restarts the web application.
 

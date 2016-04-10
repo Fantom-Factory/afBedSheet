@@ -7,14 +7,10 @@
 ** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`
 class QualityValues {
 
-	** Returns a dup of the internal 'name:qvalue' map.
-	Str:Float	qvalues {
-		get { &qvalues.dup }
-		private set
-	}
+	private Str:Float map
 	
 	private new make(Str:Float qvalues) {
-		this.qvalues = qvalues
+		this.map = qvalues
 	}
 	
 	** Parses a HTTP header value into a 'name:qvalue' map.
@@ -62,7 +58,7 @@ class QualityValues {
 	** Returns a joined-up Str of qvalues that may be set in a HTTP header. The names are sorted by 
 	** qvalue. 
 	override Str toStr() {
-		qvalues.keys.sortr |q1, q2| { qvalues[q1] <=> qvalues[q2] }.join(", ") |q| { qvalues[q] == 1.0f ? "$q" : "$q;q=" + qvalues[q].toLocale("0.0##") }
+		map.keys.sortr |q1, q2| { map[q1] <=> map[q2] }.join(", ") |q| { map[q] == 1.0f ? "$q" : "$q;q=" + map[q].toLocale("0.0##") }
 	}
 
 	** Returns the qvalue associated with 'name'. Defaults to '0' if 'name' was not supplied.
@@ -70,14 +66,14 @@ class QualityValues {
 	** Wildcards are *not* honoured but 'name' is case-insensitive.
 	@Operator
 	Float get(Str name) {
-		qvalues.get(name, 0f)
+		map.get(name, 0f)
 	}
 
 	** Returns 'true' if 'name' was supplied in the header.
 	** 
 	** This method matches against '*' wildcards.
 	Bool contains(Str name) {
-		qvalues.any |qval, mime| {
+		map.any |qval, mime| {
 			Regex.glob(mime).matches(name)
 		}
 	}
@@ -86,28 +82,35 @@ class QualityValues {
 	** 
 	** This method matches against '*' wildcards.
 	Bool accepts(Str name) {
-		qvalues.any |qval, mime| {
+		map.any |qval, mime| {
 			Regex.glob(mime).matches(name) && qval > 0f
 		}
 	}
 	
 	** Returns the number of values given in the header
 	Int size() {
-		qvalues.size
+		map.size
 	}
 	
 	** Returns 'size() == 0'
 	Bool isEmpty() {
-		qvalues.isEmpty
+		map.isEmpty
 	}
 	
 	** Clears the qvalues
 	Void clear() {
-		qvalues.clear
+		map.clear
 	}
 	
 	@NoDoc @Deprecated { msg="Use 'qvalues' instead" } 
 	Str:Float toMap() {
-		qvalues.dup
+		map.dup
+	}
+	
+	** Returns a dup of the internal 'name:qvalue' map.
+	** 
+	** Use 'get()' and 'set()' to modify qvalues.
+	Str:Float qvalues() {
+		map.dup
 	}
 }
