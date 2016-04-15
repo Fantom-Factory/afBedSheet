@@ -340,8 +340,9 @@ Void contributeErrResponses(Configuration config) {
 <pre
 
 Note that in the above example, 'ArgErr' and all subclasses of 'ArgErr' will be processed by 'MyErrHandler.process()'.
-A contribute for just 'Err' will act as a capture all and be used should a more precise match not be found.
-You could also replace the default err response object:
+A contribution for just 'Err' will act as a capture all and be used should a more precise match not be found.
+
+You can also replace the default err response object:
 
 pre>
 syntax: fantom
@@ -351,7 +352,7 @@ Void contributeApplicationDefaults(Configuration config) {
 }
 <pre
 
-'Err' objects are stored in the 'HttpRequest.stash' map and may be retrieved by handlers with the following:
+When processing an Err, note that the thrown 'Err' is stored in 'HttpRequest.stash'. It may be retrieved by handlers with the following:
 
   syntax: fantom
   err := (Err) httpRequest.stash["afBedSheet.err"]
