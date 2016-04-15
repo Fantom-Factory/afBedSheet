@@ -10,7 +10,7 @@ using afBeanUtils::ArgNotFoundErr
 ** 
 **   /<baseUrl>/<podName>/<fileName>
 ** 
-** By default the base url is '/pod/' which means you should always be able to access the flux icon.
+** By default the 'baseUrl' is '/pod/' which means you should always be able to access the flux icon.
 ** 
 **   /pod/icons/x256/flux.png
 ** 
