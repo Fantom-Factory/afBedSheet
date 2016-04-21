@@ -156,7 +156,7 @@ internal const class HttpSessionImpl : HttpSession {
 		
 		map := Str:Obj?[:]
 		reqState().webReq.session.each |val, key| {
-			map[key] = ((SessionValue) val).val
+			map[key] = val is SessionValue ? ((SessionValue) val).val : val
 		} 
 		return map
 	}
