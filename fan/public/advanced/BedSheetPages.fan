@@ -19,6 +19,9 @@ const mixin BedSheetPages {
 	** Renders the 'BedSheet' welcome page. 
 	** Usually shown in place of a 404 if no [Routes]`Route` have been contributed to the `Routes` service. 
 	abstract Text renderWelcome()
+	
+	** Returns the content type the pages are rendered as.
+	abstract MimeType contentType()
 }
 
 internal const class BedSheetPagesImpl : BedSheetPages {
@@ -50,6 +53,11 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 		return render(title, content)
 	}	
 	
+	override MimeType contentType() {
+		// this is like a sneak preview!
+		toText("").contentType
+	}
+	
 	private Text render(Str title, Str content, BedSheetLogo logo := BedSheetLogo.alienHead) {
 		alienHeadSvg	:= typeof.pod.file(logo.svgUri).readAllStr
 		bedSheetCss		:= typeof.pod.file(`/res/web/bedSheet.css`).readAllStr
@@ -62,7 +70,11 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 							.replace("{{{ content }}}", content)
 							.replace("{{{ version }}}", version)
 
-		return Text.fromXhtml(xhtml)
+		return toText(xhtml)
+	}
+	
+	private Text toText(Str str) {
+		Text.fromXhtml(str)
 	}
 }
 

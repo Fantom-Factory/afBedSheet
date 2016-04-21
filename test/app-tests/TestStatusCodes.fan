@@ -33,4 +33,22 @@ internal class TestStatusCodes : AppTest {
 		client.resIn.readAllBuf	// drain the stream to prevent errs on the server
 		verifyEq(client.resCode, 417, "$client.resCode "+ client.resPhrase)
 	}
+	
+	Void testHtmlOnlyReturnedIfWanted() {
+		verify404(`/e-r-r-o-r-4-0-4`)
+		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "application/xhtml+xml")
+		verify  (client.resStr.size > 0)
+		
+		client = WebClient()
+		client.reqHeaders["Accept"] = "application/*; q=0"
+		verify404(`/e-r-r-o-r-4-0-4`)
+		verifyFalse(client.resHeaders.containsKey("Content-Type"))
+		verifyFalse(client.resStr.size > 0)
+
+		client = WebClient()
+		client.reqHeaders["Accept"] = "text/*; q=0.1"
+		verify404(`/e-r-r-o-r-4-0-4`)
+		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "text/plain")
+		verifyEq(client.resStr, "404 - Route `/e-r-r-o-r-4-0-4` not found (GET)")
+	}
 }

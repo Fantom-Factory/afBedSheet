@@ -70,6 +70,26 @@ internal class TestBoom : AppTest {
 		verifyEq(client.resCode, 500)
 		verify(client.resStr.contains("Fantom Diagnostics"))
 	}
+	
+	Void testHtmlOnlyReturnedIfWanted() {
+		super.setup
+
+		verifyStatus(`/boom`, 500)
+		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "application/xhtml+xml")
+		verify  (client.resStr.size > 0)
+		
+		client = WebClient()
+		client.reqHeaders["Accept"] = "application/*; q=0"
+		verifyStatus(`/boom`, 500)
+		verifyFalse(client.resHeaders.containsKey("Content-Type"))
+		verifyFalse(client.resStr.size > 0)
+
+		client = WebClient()
+		client.reqHeaders["Accept"] = "text/*; q=0.1"
+		verifyStatus(`/boom`, 500)
+		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "text/plain")
+		verifyEq(client.resStr, "500 - BOOM!")
+	}
 }
 
 internal const class T_TestBoomMod1 {
