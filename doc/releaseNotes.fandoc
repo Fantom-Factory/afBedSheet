@@ -3,7 +3,8 @@ Versions
 
 v1.5.2
 ======
- - When in proxy mode, the real app process is launched with 'java.options' from 'etc/sys/config.props'.
+ - Chg: When in proxy mode, the real app process is launched with 'java.options' from 'etc/sys/config.props'.
+ - Chg: The default error and status pages are only returned if the client can handle XHTML / HTML content.
 
 v1.5.0
 ======
