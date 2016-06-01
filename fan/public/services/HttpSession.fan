@@ -113,6 +113,7 @@ const mixin HttpSession {
 	
 	internal abstract Void _initFlash()
 	internal abstract Void _finalFlash()
+	internal abstract Void _finalSession()
 }
 
 internal const class HttpSessionImpl : HttpSession {
@@ -130,35 +131,68 @@ internal const class HttpSessionImpl : HttpSession {
 	override Bool isEmpty() {
 		if (!exists)
 			return true
+		
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		if (sessionMap.size > 0)
+			return false
+		
 		isEmpty := true
-		reqState().webReq.session.each { isEmpty = false }
+		reqState.webReq.session.each { isEmpty = false }
 		return isEmpty
 	}
 
 	override Bool containsKey(Str key) {
 		if (!exists)
 			return false
+
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		if (sessionMap.containsKey(key))
+			return true
+		
 		containsKey := false
-		reqState().webReq.session.each |v, k| { if (k == key) containsKey = true }
+		reqState.webReq.session.each |v, k| { if (k == key) containsKey = true }
 		return containsKey
 	}
 	
 	override Obj? get(Str name, Obj? def := null) {
 		if (!exists)
 			return def
-		val := reqState().webReq.session.get(name, def)
-		return val is SessionValue ? ((SessionValue) val).val : val
+
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		if (sessionMap.containsKey(name))
+			return sessionMap[name]
+
+		val := reqState.webReq.session.get(name, def)
+		if (val is SessionValue) {
+			rawVal := ((SessionValue) val).val
+			sessionMap[name] = rawVal
+			val = rawVal 
+		}
+		return val
 	}
 
 	override Str:Obj? map() {
 		if (!exists) 
 			return emptyRoMap
+
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		map			:= reqState.mutableSessionState.dup
 		
-		map := Str:Obj?[:]
-		reqState().webReq.session.each |val, key| {
-			map[key] = val is SessionValue ? ((SessionValue) val).val : val
+		reqState.webReq.session.each |val, key| {
+			if (!map.containsKey(key)) {
+				if (val is SessionValue) {
+					rawVal := ((SessionValue) val).val
+					map[key] = rawVal
+					sessionMap[key] = rawVal
+				} else
+					map[key] = val
+			}
 		} 
-		return map
+		return map.ro
 	}
 
 	override Obj? getOrAdd(Str name, |Str->Obj?| valFunc) {
@@ -170,17 +204,29 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) {
-		reqState().webReq.session.set(name, SessionValue(val))
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		sessVal		:= SessionValue.coerce(val)
+		if (sessVal is SessionValue)
+			sessionMap[name] = val
+		reqState.webReq.session.set(name, sessVal)
 	}
 	
 	override Void remove(Str name) {
-		if (exists)
-			reqState().webReq.session.remove(name)
+		if (exists) {
+			reqState := (RequestState) reqState()
+			reqState.mutableSessionState.remove(name)
+			reqState.webReq.session.remove(name)
+		}
 	}
 	
 	override Void delete() {
-		if (exists)
-			reqState().webReq.session.delete
+		if (exists) {
+			reqState := (RequestState) reqState()
+			reqState.mutableSessionState.clear
+			reqState.mutableSessionState = null
+			reqState.webReq.session.delete
+		}
 	}
 
 	override Bool exists() {
@@ -249,36 +295,52 @@ internal const class HttpSessionImpl : HttpSession {
 
 		remove("afBedSheet.flash")
 		if (flashMapNew != null && flashMapNew.size > 0)
-			set("afBedSheet.flash", SessionValue(flashMapNew))
+			set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
+		
+		reqState.flashMapNew = null
+	}
+
+	override Void _finalSession() {
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		
+		sessionMap.each |v, k| { set(k, v) }
+		reqState.mutableSessionState.clear
+		reqState.mutableSessionState = null
 	}
 }
 
 // Wraps an object value, serialising it if it's not immutable
 @NoDoc	// for Bounce
 const class SessionValue {
-	const Str?	objStr
-	const Obj?	objActual
+	const Str	objStr
 	
-	new make(Obj? val) {
+	private new make(|This| f) { f(this) }
+	
+	static Obj? coerce(Obj? val) {
 		if (val == null)
-			return
+			return null
 		if (val.isImmutable)
-			return objActual = val
+			return val
 		
 		if (val is Map || val is List || val is Buf || !val.typeof.hasFacet(Serializable#)) {
-			try objActual = val.toImmutable
-			catch (NotImmutableErr err) { /* try serialisation */ }
+			try {
+				objActual := val.toImmutable
+				return objActual
+			} catch (NotImmutableErr err) { /* try serialisation */ }
 		}
 
 		if (!val.typeof.hasFacet(Serializable#))
 			throw BedSheetErr("Session values should be immutable (preferably) or serialisable: ${val.typeof.qname} - ${val}")
 		
 		// do the serialisation
-		objStr = Buf().writeObj(val).flip.readAllStr
+		return SessionValue {
+			it.objStr = Buf().writeObj(val).flip.readAllStr
+		}
 	}
 	
 	Obj? val() {
-		objStr?.toBuf?.readObj ?: objActual
+		objStr.toBuf.readObj
 	}
 	
 	override Str toStr() {

@@ -86,7 +86,7 @@ const mixin HttpRequest {
 	** This method will:
 	**   1. check that the content-type is form-data
 	**   2. get the boundary string
-	**   3. invoke the callback for each part (see `web::WebUtil.parseMultiPart`)
+	**   3. invoke the callback for each part.
 	**
 	** For each part in the stream this calls the given callback function with the part's form 
 	** name, headers, and an input stream used to read the part's body.
