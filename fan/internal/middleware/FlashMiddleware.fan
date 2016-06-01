@@ -9,6 +9,9 @@ internal const class FlashMiddleware : Middleware {
 	override Void service(MiddlewarePipeline pipeline) {
 				httpSession._initFlash
 		try		pipeline.service
-		finally	httpSession._finalFlash
+		finally	{
+			httpSession._finalFlash
+			httpSession._finalSession
+		}
 	}
 }

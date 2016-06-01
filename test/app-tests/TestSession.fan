@@ -1,7 +1,7 @@
 using web::WebClient
 
 internal class TestSession : AppTest {
-	
+
 	Void testSession() {
 		verifyEq(getAsStr(`/session`), "count 1")
 		cookie 		:= client.resHeaders["Set-Cookie"].replace(";Path=/", "")
@@ -40,6 +40,22 @@ internal class TestSession : AppTest {
 		client = WebClient()
 		client.reqHeaders["Cookie"] = cookie
 		verifyEq(getAsStr(`/sessionSerialisable2`), "anderson")
+	}
+
+	Void testMutableSessionVals() {
+		client.reqUri = reqUri(`/sessionMutable1?v=death`)
+		client.writeReq
+		client.readRes
+		verifyEq(client.resCode, 200)
+
+		cookie := client.resHeaders["Set-Cookie"].replace(";Path=/", "")
+		client = WebClient()
+		client.reqHeaders["Cookie"] = cookie
+		verifyEq(getAsStr(`/sessionMutable2?v=dredd`), "death")
+
+		client = WebClient()
+		client.reqHeaders["Cookie"] = cookie
+		verifyEq(getAsStr(`/sessionMutable3`), "dredd")
 	}
 
 	Void testBadSessionVals() {

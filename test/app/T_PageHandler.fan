@@ -123,6 +123,24 @@ internal const class T_PageHandler {
 		Text.fromPlain(session["sess"]->val)		
 	}
 
+	Obj sessionMutable1() {
+		ses := session.getOrAdd("sess") { MutableSessionValue() } as MutableSessionValue
+		ses.val = request.url.query["v"] 
+		return Text.fromPlain("OK")
+	}
+
+	Obj sessionMutable2() {
+		ses := session.getOrAdd("sess") { MutableSessionValue() } as MutableSessionValue
+		val := ses.val
+		ses.val = request.url.query["v"]
+		return Text.fromPlain(val ?: "null")		
+	}
+
+	Obj sessionMutable3() {
+		ses := session.getOrAdd("sess") { MutableSessionValue() } as MutableSessionValue
+		return Text.fromPlain(ses->val)		
+	}
+
 	Obj sessionBad() {
 		session["sess"] = DodgySessionValue() { it.val = request.url.query["v"] } 
 		return Text.fromPlain("NOT OK")

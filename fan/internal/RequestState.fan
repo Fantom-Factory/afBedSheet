@@ -12,6 +12,9 @@ internal class RequestState {
 			Bool?					disableBuffering
 			[Str:Obj?]?				flashMapOld
 			[Str:Obj?]?				flashMapNew
+			[Str:Obj?]?				mutableSessionState {
+				get { if (&mutableSessionState == null) &mutableSessionState = Str:Obj?[:]; return &mutableSessionState }
+			}
 	private HttpRequestBody?		requestBodyRef
 	private [Str:Str]?				responseHeadersRef
 	private OutStream?				outStreamRef
