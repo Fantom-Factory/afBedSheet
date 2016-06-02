@@ -285,7 +285,10 @@ internal const class HttpSessionImpl : HttpSession {
 	
 	override Void _initFlash() {
 		reqState	:= (RequestState) reqState()
-		carriedOver := ((SessionValue?) get("afBedSheet.flash"))?.val
+		val			:= reqState.webReq.session.get("afBedSheet.flash")
+		carriedOver := val is SessionValue
+			? ((SessionValue) val).val
+			: val
 		reqState.flashMapOld = carriedOver
 	}
 
@@ -295,7 +298,7 @@ internal const class HttpSessionImpl : HttpSession {
 
 		remove("afBedSheet.flash")
 		if (flashMapNew != null && flashMapNew.size > 0)
-			set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
+			reqState.webReq.session.set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
 		
 		reqState.flashMapNew = null
 	}
