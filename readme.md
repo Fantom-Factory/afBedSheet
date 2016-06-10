@@ -170,7 +170,7 @@ In IoC's default `root` scope, only one instance of the service is created for t
 
 In BedSheet's `request` scope a new instance of the service will be created for each thread / web request. BedSheet's `WebReq` and `WebRes` are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
 
-Writing `const` services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. The article [From One Thread to Another...](http://www.fantomfactory.org/articles/from-one-thread-to-another) shows you how.
+Writing `const` services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. See the Maps and Lists in Alien-Factory's [Concurrent](http://pods.fantomfactory.org/pods/afConcurrent) pod for examples. The article [From One Thread to Another...](http://www.fantomfactory.org/articles/from-one-thread-to-another) explains the principles in more detail.
 
 The smart ones may be thinking that `root` scoped services can only hold other `root` scoped services. Well, they would be wrong too! Using IoC's active scope and the magic of IoC's *Lazy Funcs*, `request` scoped services may be injected into `root` scoped services. See IoC's Lazy Funcs for more info.
 
@@ -307,7 +307,9 @@ Void contributeErrResponses(Configuration config) {
 }
 ```
 
-Note that in the above example, `ArgErr` and all subclasses of `ArgErr` will be processed by `MyErrHandler.process()`. A contribute for just `Err` will act as a capture all and be used should a more precise match not be found. You could also replace the default err response object:
+Note that in the above example, `ArgErr` and all subclasses of `ArgErr` will be processed by `MyErrHandler.process()`. A contribution for just `Err` will act as a capture all and be used should a more precise match not be found.
+
+You can also replace the default err response object:
 
 ```
 @Contribute { serviceType=ApplicationDefaults# }
@@ -316,7 +318,7 @@ Void contributeApplicationDefaults(Configuration config) {
 }
 ```
 
-`Err` objects are stored in the `HttpRequest.stash` map and may be retrieved by handlers with the following:
+When processing an Err, note that the thrown `Err` is stored in `HttpRequest.stash`. It may be retrieved by handlers with the following:
 
     err := (Err) httpRequest.stash["afBedSheet.err"]
 
