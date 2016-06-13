@@ -1,5 +1,6 @@
 using afIoc::Inject
 using afIoc::Registry
+using afIoc::IocErr
 using afConcurrent::LocalRef
 using concurrent::Actor
 
@@ -118,7 +119,7 @@ const mixin HttpSession {
 
 internal const class HttpSessionImpl : HttpSession {
 	private static  const Str:Obj?			emptyRoMap	:= Str:Obj?[:].toImmutable
-	@Inject private const |->RequestState|	reqState
+	@Inject private const |->RequestState|	reqStateFunc
 	@Inject	private const HttpCookies		httpCookies
 	@Inject	private const LocalRef			existsRef
 	
@@ -230,6 +231,11 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Bool exists() {
+		// make sure the request scope exists so we can further interrogate the session objs 
+		try	reqStateFunc()
+		catch (IocErr ie)
+			return false
+
 		// this gets called a *lot* and each time we manually compile cookie lists just to check if it's empty!
 		// so we do a little dirty cashing
 		if (existsRef.isMapped)
@@ -310,6 +316,12 @@ internal const class HttpSessionImpl : HttpSession {
 		sessionMap.each |v, k| { set(k, v) }
 		reqState.mutableSessionState.clear
 		reqState.mutableSessionState = null
+	}
+	
+	private RequestState reqState() {
+		try	return reqStateFunc()
+		catch (IocErr ie)
+			throw IocErr("Request scope is not available")
 	}
 }
 

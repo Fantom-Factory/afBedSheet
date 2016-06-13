@@ -128,7 +128,7 @@ internal const class ErrPrinterStrSections {
 	}
 	
 	Void printCookies(StrBuf buf, Err? err) {
-		if (!cookies.all.isEmpty) {
+		if (session.exists && !cookies.all.isEmpty) {
 			buf.add("\nCookies:\n")
 			cookieMap := [:]
 			cookies.all.each |c| { cookieMap[c.name] = c.val }

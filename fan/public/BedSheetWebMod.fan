@@ -38,14 +38,14 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc
 	override Void onService() {
 		req.mod = this
-		
+
 		try {
 			registry.activeScope.createChildScope("request") {
 				// this is actual call to BedSheet! 
 				// the rest of this class is just startup and error handling fluff! 
 				pipeline.service
 			}
-			
+
 		} catch (RegistryShutdownErr err) {
 			// nothing we can do here
 			if (!webRes.isCommitted)
