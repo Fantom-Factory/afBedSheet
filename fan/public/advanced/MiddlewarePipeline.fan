@@ -6,11 +6,14 @@ using afConcurrent::LocalRefManager
 const mixin MiddlewarePipeline {
 
 	** Calls the next middleware in the pipeline.
-	abstract Void service() 
+	abstract Void service()
+	
+	abstract Str dumpMiddleware()
 }
 
 internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 
+	@Inject const Log				log
 	@Inject const |->RequestState|	reqState
 	@Inject	const LocalRefManager?	localManager
 	@Inject	const HttpResponse?		httpResponse
@@ -40,5 +43,16 @@ internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 				localManager.cleanUpThread				
 			}
 		}
+	}
+	
+	override Str dumpMiddleware() {
+		buf := StrBuf()
+		buf.add("\n\n")
+		buf.add("BedSheet Middleware\n")
+		buf.add("===================\n")
+		middleware.each |ware, i| {
+			buf.add("${(i+1).toStr.padl(2)}. ${ware.typeof}\n")
+		}
+		return buf.toStr
 	}
 }

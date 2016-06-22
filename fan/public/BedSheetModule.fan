@@ -16,7 +16,7 @@ const class BedSheetModule {
 	// IocConfigModule is referenced explicitly so there is no dicking about with transitive 
 	// dependencies on BedSheet startup
 	
-	static Void defineModule(RegistryBuilder defs) {
+	Void defineModule(RegistryBuilder defs) {
 		defs.addScope("request", true)		
 
 		// Route handlers
@@ -29,12 +29,12 @@ const class BedSheetModule {
 		defs.addService(HttpStatusResponses#)	.withRootScope
 		defs.addService(Routes#)				.withRootScope
 		defs.addService(ValueEncoders#)			.withRootScope
-		
+
 		// Public services - root
 		defs.addService(BedSheetServer#)		.withRootScope
 		defs.addService(GzipCompressible#)		.withRootScope
 		defs.addService(BedSheetPages#)			.withRootScope
-		
+
 		// Public services - request
 		defs.addService(RequestLoggers#)		.withRootScope
 		defs.addService(HttpSession#)			.withRootScope
@@ -56,7 +56,11 @@ const class BedSheetModule {
 		defs.addService(RequestState#)			.withScope("request")
 	}
 
-	static Void onRegistryStartup(Configuration config, ConfigSource configSrc) {
+	Void onRegistryStartup(Configuration config, ConfigSource configSrc) {
+		config["afBedSheet.logMiddleware"] = |->| {
+			pipe := (MiddlewarePipeline) config.scope.serviceByType(MiddlewarePipeline#)
+			typeof.pod.log.info(pipe.dumpMiddleware)
+		}
 		config["afBedSheet.validateHost"] = |->| {
 			host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
 			validateHost(host)
@@ -64,7 +68,7 @@ const class BedSheetModule {
 	}
 
 	@Build { scopes=["root"] }
-	static MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
+	MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
 		// hardcode BedSheet default middleware
 		middleware := Middleware?[
 			// loggers wrap SystemMiddleware so they can report 500 errors
@@ -76,63 +80,65 @@ const class BedSheetModule {
 	}
 
 	@Build { scopes=["root"] }
-	static HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope scope) {
+	HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope scope) {
 		httpReq := scope.build(HttpRequestImpl#)
 		return builders.isEmpty ? httpReq : makeDelegateChain(builders, httpReq)
 	}
 
 	@Build { scopes=["root"] }
-	static HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope scope) {
+	HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope scope) {
 		httpRes := scope.build(HttpResponseImpl#)
 		return builders.isEmpty ? httpRes : makeDelegateChain(builders, httpRes)
 	}
 
 	@Build { scopes=["request"] }	
-	private static WebReq buildWebReq() {
+	static WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
 	@Build { scopes=["request"] } 
-	private static WebRes buildWebRes() {
+	static WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")
 	}
 
 	@Contribute { serviceType=ActorPools# }
-	static Void contributeActorPools(Configuration config) {
+	Void contributeActorPools(Configuration config) {
 		// used by ClientAssetCache only
 		config["afBedSheet.system"] = ActorPool() { it.name = "afBedSheet.system" }
 	}
 
 	@Contribute { serviceType=MiddlewarePipeline# }
-	static Void contributeMiddlewarePipeline(Configuration config) {
+	Void contributeMiddlewarePipeline(Configuration config) {
 		config["afBedSheet.assets"] = config.build(AssetsMiddleware#)
 		config["afBedSheet.routes"] = config.build(RoutesMiddleware#)
 	}
 
 	@Contribute { serviceType=RequestLoggers# }
-	static Void contributeRequestLoggers(Configuration config, IocEnv iocEnv) {
+	Void contributeRequestLoggers(Configuration config, IocEnv iocEnv) {
 		config["afBedSheet.requestLogger"] = config.build(BasicRequestLogger#, [120])
 	}
 
 	@Contribute { serviceType=ClientAssetProducers# }
-	static Void contributeAssetProducers(Configuration config, FileHandler fileHandler, PodHandler podHandler) {
+	Void contributeAssetProducers(Configuration config, FileHandler fileHandler, PodHandler podHandler) {
 		config["afBedSheet.fileHandler"] = fileHandler
 		config["afBedSheet.podHandler"]  = podHandler
+
+		config["afBedSheet.devHandler"]  = config.build(SrcMapHandler#)
 	}
 	
 	@Contribute { serviceType=HttpOutStreamBuilder# }
-	static Void contributeHttpOutStream(Configuration config) {
+	Void contributeHttpOutStream(Configuration config) {
 		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()				// inner
 		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
 		config["afBedSheet.gzipBuilder"] = config.build(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
-	static Void contributeResponseProcessors(Configuration config) {
+	Void contributeResponseProcessors(Configuration config) {
 		config[Asset#]		= config.build(AssetProcessor#)
 		config[Err#]		= config.build(ErrProcessor#)
 		config[Field#]		= config.build(FieldProcessor#)
@@ -146,12 +152,12 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
-	static Void contributeValueEncoders(Configuration config) {
+	Void contributeValueEncoders(Configuration config) {
 		// wot no value encoders!? Aha! I see you're using TypeCoercer as a backup!
 	}
 
 	@Contribute { serviceType=PodHandler# }
-	static Void contributePodHandlerWhitelist(Configuration config) {
+	Void contributePodHandlerWhitelist(Configuration config) {
 		// by default, allow safe pod files to be served
 
 		// html files
@@ -183,7 +189,7 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=GzipCompressible# }
-	static Void contributeGzipCompressible(Configuration config) {
+	Void contributeGzipCompressible(Configuration config) {
 		// add some standard compressible mime types
 		config["application/atom+xml"]			= true
 		config["application/json"]				= true
@@ -207,7 +213,7 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=NotFoundPrinterHtml# }
-	static Void contributeNotFoundPrinterHtml(Configuration config) {
+	Void contributeNotFoundPrinterHtml(Configuration config) {
 		printer := (NotFoundPrinterHtmlSections) config.build(NotFoundPrinterHtmlSections#)
 
 		// these are all the sections you see on the 404 page
@@ -217,7 +223,7 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=ErrPrinterHtml# }
-	static Void contributeErrPrinterHtml(Configuration config) {
+	Void contributeErrPrinterHtml(Configuration config) {
 		funcArgs := [config.build(ErrPrinterHtmlSections#)]
 
 		// these are all the sections you see on the Err500 page
@@ -245,7 +251,7 @@ const class BedSheetModule {
 	}
 
 	@Contribute { serviceType=ErrPrinterStr# }
-	static Void contributeErrPrinterStr(Configuration config) {
+	Void contributeErrPrinterStr(Configuration config) {
 		funcArgs := [config.build(ErrPrinterStrSections#)]
 		
 		// these are all the sections you see in the Err log
@@ -267,7 +273,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(Configuration config, RegistryMeta meta) {
+	Void contributeFactoryDefaults(Configuration config, RegistryMeta meta) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
 		bedSheetPort	 := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
@@ -287,7 +293,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=StackFrameFilter# }
-	static Void contributeStackFrameFilter(Configuration config) {
+	Void contributeStackFrameFilter(Configuration config) {
 		// remove meaningless and boring stack frames
 		
 		// Core Fantom libs
@@ -318,7 +324,7 @@ const class BedSheetModule {
 			throw BedSheetErr(BsErrMsgs.startup_hostMustNotHavePath(BedSheetConfigIds.host, host))		
 	}
 
-	private static Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
+	private Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
 		delegateBuilders.reduce(service) |Obj delegate, DelegateChainBuilder builder -> Obj| { 		
 			return builder.build(delegate)
 		}

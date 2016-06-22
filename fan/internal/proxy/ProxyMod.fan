@@ -101,7 +101,7 @@ internal const class ProxyMod : WebMod {
 		c.reqUri = "http://localhost:${appPort}${req.uri.relToAuth}".toUri
 		c.reqMethod = req.method
 		req.headers.each |v, k| {
-			if (k != "Host")	// don't mess with the Hoff! Err, I mean host.
+			if (!k.equalsIgnoreCase("Host"))	// don't mess with the Hoff! Err, I mean host.
 				c.reqHeaders[k] = v
 		}
 		
