@@ -104,6 +104,10 @@ internal const class BsErrMsgs {
 		"Pod URL `${podPath}` does not match any whitelist filter"
 	}
 	
+	static Str srcMapHandler_disabled() {
+		"Pod source handling has been disabled - config ID '${BedSheetConfigIds.srcMapHandlerBaseUrl}' has been set to null"
+	}
+
 	// ---- Other ----
 
 	static Str valueEncoding_buggered(Obj? value, Type toType) {

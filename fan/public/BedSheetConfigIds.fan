@@ -76,6 +76,17 @@ const mixin BedSheetConfigIds {
 	** 
 	** Defaults to '`/pod/`' because Fantom '.js.map' files are hardcoded to be served under '/pod/'.
 	static const Str podHandlerBaseUrl				:= "afBedSheet.podHandler.baseUrl"
+
+	** The local URL under which Fantom source code is served.
+	** The URL must start and end with a slash.
+	** 
+	** Defaults to '`/dev/`' because Fantom '.js.map' files are hardcoded to be served under '/dev/'.
+	** 
+	** Note that source maps are only enabled in 'dev' environments. To enable in other environments 
+	** you must manually contribute your own value of '`/dev/`'.
+	**  
+	** See 'compilerJs::SourceMap.write()' and [JS Source Maps on Fantom Forum]`http://fantom.org/forum/topic/2531`.
+	static const Str srcMapHandlerBaseUrl			:= "afBedSheet.srcMapHandler.baseUrl"
 	
 	** The default 'Cache-Control' HTTP response header to set when serving static files. 
 	** Example, to cache files for 1 day:
