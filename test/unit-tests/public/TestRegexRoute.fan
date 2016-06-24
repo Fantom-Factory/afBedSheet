@@ -1,6 +1,20 @@
 
 internal class TestRegexRoute : BsTest {
 	
+//	Void testBuggy() {
+//		Str?[]? match
+//		
+//		// this test shows that we've overstretched the limites of Regexs!
+//		// was trying to do some fancy page event handling
+//		
+//		match = RegexRoute("(?i)^\\/package\\/(.*)\\/edit\\/(.*)\\/?(.*)\$".toRegex, #handlerBug).matchUri(`/package/fin5Ext/edit/addPkgTag`)
+//		verifyEq(match.size,	2)
+//		verifyEq(match[0],		"fin5Ext")
+//		verifyEq(match[1],		"addPkgTag")
+//	}
+	
+	Void handlerBug(Str event, Str? extra := null) { }
+	
 	Void handler1() { }
 	Void handler2(Str p1) { }
 	Void handler3(Str p1, Int p2) { }

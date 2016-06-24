@@ -89,7 +89,7 @@ internal class TestPodHandler : BsTest {
 	}
 
 	private PodHandler podHandler(Uri url := `/pod/`, Str filter := ".*") {
-		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
+		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModulesFromPod("afConcurrent").addModule(AssetCacheModule#).build
 		try {
 			AssetCacheModule.urlRef.val = url
 			return reg.rootScope.build(PodHandler#, [Regex[filter.toRegex]])

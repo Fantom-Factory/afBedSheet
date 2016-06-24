@@ -290,6 +290,9 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void _initFlash() {
+		if (!exists)
+			return
+
 		reqState	:= (RequestState) reqState()
 		val			:= reqState.webReq.session.get("afBedSheet.flash")
 		carriedOver := val is SessionValue
