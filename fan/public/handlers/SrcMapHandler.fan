@@ -42,8 +42,6 @@ internal const class SrcMapHandlerImpl : SrcMapHandler {
 	}
 
 	ClientAsset? _fromLocalUrl(Uri localUrl, Bool checked, Bool cache) {
-		echo("src map for $localUrl")
-		echo("baseUrl for $baseUrl")
 		if (baseUrl == null)
 			if (checked) throw Err(BsErrMsgs.srcMapHandler_disabled)
 			else return null
