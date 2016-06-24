@@ -124,10 +124,9 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ClientAssetProducers# }
 	Void contributeAssetProducers(Configuration config, FileHandler fileHandler, PodHandler podHandler) {
-		config["afBedSheet.fileHandler"] = fileHandler
-		config["afBedSheet.podHandler"]  = podHandler
-
-		config["afBedSheet.devHandler"]  = config.build(SrcMapHandler#)
+		config["afBedSheet.fileHandler"] 	= fileHandler
+		config["afBedSheet.podHandler"]  	= podHandler
+		config["afBedSheet.srcMapHandler"]  = config.build(SrcMapHandler#)
 	}
 	
 	@Contribute { serviceType=HttpOutStreamBuilder# }
@@ -273,7 +272,7 @@ const class BedSheetModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	Void contributeFactoryDefaults(Configuration config, RegistryMeta meta) {
+	Void contributeFactoryDefaults(Configuration config, RegistryMeta meta, IocEnv iocEnv) {
 		// honour the system config from Fantom-1.0.66 
 		errTraceMaxDepth := (Int) (Env.cur.config(Env#.pod, "errTraceMaxDepth")?.toInt(10, false) ?: 0)
 		bedSheetPort	 := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
@@ -286,6 +285,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.disableWelcomePage]		= false
 		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort ?: 0}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pod/`
+		config[BedSheetConfigIds.srcMapHandlerBaseUrl]		= iocEnv.isDev ? `/dev/` : null
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
 		
 		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).toImmutableFunc
