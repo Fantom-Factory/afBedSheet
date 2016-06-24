@@ -3,6 +3,7 @@ Versions
 
 v1.5.2
 ======
+ - New: JS Source Map support - Fantom source served from '/dev/*' URLs (but only in dev environments).
  - New: BedSheet middleware is listed on startup.
  - Chg: When in proxy mode, the real app process is launched with 'java.options' from 'etc/sys/config.props'.
  - Chg: The default error and status pages are only returned if the client can handle XHTML / HTML content.

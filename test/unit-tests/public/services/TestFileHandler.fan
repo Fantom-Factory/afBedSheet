@@ -123,7 +123,7 @@ internal class TestFileHandler : BsTest {
 
 		
 	private FileHandler makeFileHandler(Uri:File dirMappings) {
-		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
+		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModulesFromPod("afConcurrent").addModule(AssetCacheModule#).build
 		try {
 			return reg.rootScope.build(FileHandler#, [dirMappings])
 		} catch (IocErr err) {
