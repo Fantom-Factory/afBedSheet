@@ -89,8 +89,8 @@ internal const class BsLogMsgs {
 		"Could not find any AppModules!"
 	}
 
-	static Str bedSheetWebMod_started(Str appName, Uri host) {
-		"\n\nBed App '$appName' listening on ${host}\n"
+	static Str bedSheetWebMod_started(Str appName, Version? ver, Uri host) {
+		"\n\nBed App '$appName' v" + (ver ?: "???") + " listening on ${host}\n"
 	}
 	
 	static Str bedSheetWebMod_stopping(Str appModule) {

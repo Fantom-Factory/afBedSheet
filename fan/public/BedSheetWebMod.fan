@@ -76,7 +76,8 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc
 	override Void onStart() {
 		// start the destroyer!
-		meta := (RegistryMeta) registry.activeScope.serviceById(RegistryMeta#.qname)
+		meta := (RegistryMeta)   registry.activeScope.serviceById(RegistryMeta#.qname)
+		beds := (BedSheetServer) registry.activeScope.serviceById(BedSheetServer#.qname)
 		if (meta.options[BsConstants.meta_pingProxy] == true) {
 			pingPort := (Int) meta.options[BsConstants.meta_proxyPort]
 			destroyer := (AppDestroyer) registry.activeScope.build(AppDestroyer#, [ActorPool(), pingPort])
@@ -85,8 +86,9 @@ const class BedSheetWebMod : WebMod {
 
 		// print BedSheet connection details
 		configSrc := (ConfigSource) registry.activeScope.serviceByType(ConfigSource#)
-		host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)			
-		log.info(BsLogMsgs.bedSheetWebMod_started(appName, host))
+		host := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
+		ver  := beds.appPod?.version
+		log.info(BsLogMsgs.bedSheetWebMod_started(appName, ver, host))
 	}
 	
 	@NoDoc
