@@ -84,15 +84,15 @@ const mixin HttpRequest {
   	abstract HttpRequestBody body()
 	
 	** This method will:
-	**   1. check that the content-type is form-data
-	**   2. get the boundary string
-	**   3. invoke the callback for each part.
+	**   1. Check that the content-type is form-data
+	**   2. Get the boundary string
+	**   3. Invoke the callback for each part
 	**
-	** For each part in the stream this calls the given callback function with the part's form 
+	** For each part in the stream this calls the given callback function with the part's 
 	** name, headers, and an input stream used to read the part's body.
 	** 
 	** @see `web::WebReq.parseMultiPartForm`
-	abstract Void parseMultiPartForm(|Str formName, InStream in, Str:Str headers| callback)
+	abstract Void parseMultiPartForm(|Str partName, InStream in, Str:Str headers| callback)
 
 	abstract SocketOptions socketOptions()
 	
