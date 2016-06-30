@@ -56,7 +56,9 @@ class QualityValues {
 	}
 
 	** Returns a joined-up Str of qvalues that may be set in a HTTP header. The names are sorted by 
-	** qvalue. 
+	** qvalue. Example:
+	**
+	**   audio/*; q=0.2, audio/basic
 	override Str toStr() {
 		map.keys.sortr |q1, q2| { map[q1] <=> map[q2] }.join(", ") |q| { map[q] == 1.0f ? "$q" : "$q;q=" + map[q].toLocale("0.0##") }
 	}
