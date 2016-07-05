@@ -10,27 +10,29 @@ using web::WebOutStream
 const class ErrPrinterHtml {
 	@Inject	private const Log log
 		
-	private const |WebOutStream out, Err? err|[]	printers
+	const Str:|WebOutStream out, Err? err|	printerFuncs
 
-	new make(|WebOutStream out, Err? err|[] printers, |This|in) {
+	new make(Str:|WebOutStream out, Err? err| printerFuncs, |This|in) {
 		in(this)
-		this.printers = printers
+		this.printerFuncs = printerFuncs
 	}
 	
-	Str errToHtml(Err err) {
+	Str errToHtml(Err? err) {
 		buf := StrBuf()
 		out := WebOutStream(buf.out)
 
-		msg	  := "${err.typeof}\n - ${err.msg}"
-		// 512 chars is about 15 lines of h1 text - should be plenty!
-		// It gets confusing if the web page is ALL h1 text, so we limit it
-		if (msg.size > 512)
-			msg = msg[0..<508] + "..."
-
-		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
-		out.h1.w(h1Msg).h1End
+		if (err != null) {
+			msg	  := "${err.typeof}\n - ${err.msg}"
+			// 512 chars is about 15 lines of h1 text - should be plenty!
+			// It gets confusing if the web page is ALL h1 text, so we limit it
+			if (msg.size > 512)
+				msg = msg[0..<508] + "..."
+	
+			h1Msg := msg.split('\n').join("<br/>") { it.toXml }
+			out.h1.w(h1Msg).h1End
+		}
 		
-		printers.each |print| { 
+		printerFuncs.each |print| { 
 			try {
 				print.call(out, err)
 			} catch (Err e) {
@@ -221,6 +223,7 @@ internal const class ErrPrinterHtmlSections {
 		title(out, "Fantom Environment")
 		out.table
 		w(out, "Cmd Args", 	Env.cur.args)
+		w(out, "Cur Dir", 	`./`.toFile.normalize.uri)
 		w(out, "Home Dir", 	Env.cur.homeDir)
 		w(out, "Host", 		Env.cur.host)
 		w(out, "Platform", 	Env.cur.platform)
