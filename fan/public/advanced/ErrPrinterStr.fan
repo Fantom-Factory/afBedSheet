@@ -10,11 +10,11 @@ using web::WebOutStream
 const class ErrPrinterStr {
 	private const static Log log := Utils.getLog(ErrPrinterStr#)
 	
-	private const |StrBuf buf, Err? err|[]	printers
+	const Str:|StrBuf buf, Err? err|	printerFuncs
 
-	new make(|StrBuf buf, Err? err|[] printers, |This|in) {
+	new make(Str:|StrBuf buf, Err? err| printerFuncs, |This|in) {
+		this.printerFuncs = printerFuncs
 		in(this)
-		this.printers = printers
 	}
 
 	Str errToStr(Err? err) {
@@ -28,7 +28,7 @@ const class ErrPrinterStr {
 
 		buf.add(msg).addChar('\n')
 
-		printers.each |print| { 
+		printerFuncs.each |print| { 
 			try {
 				print.call(buf, err)
 			} catch (Err e) {
@@ -165,7 +165,7 @@ internal const class ErrPrinterStrSections {
 	Void printRoutes(StrBuf buf, Err? err) {
 		if (!routes.routes.isEmpty) {
 			buf.add("\nBedSheet Routes:\n")
-			map := [:]
+			map := [:] { it.ordered = true }
 			routes.routes.each |r| { 
 				map[r.matchHint] = r.responseHint
 			}
@@ -179,7 +179,22 @@ internal const class ErrPrinterStrSections {
 			prettyPrintMap(buf, actorPools.stats, true)
 		}
 	}
-	
+
+	Void printFantomEnvironment(StrBuf buf, Err? err) {
+		buf.add("\nFantom Environment:\n")
+		map := [:] { it.ordered = true }
+		map["Cmd Args"]	= Env.cur.args
+		map["Cur Dir"]	= `./`.toFile.normalize.uri
+		map["Home Dir"]	= Env.cur.homeDir
+		map["Host"]		= Env.cur.host
+		map["Platform"]	= Env.cur.platform
+		map["Runtime"]	= Env.cur.runtime
+		map["Temp Dir"]	= Env.cur.tempDir
+		map["User"]		= Env.cur.user
+		map["Work Dir"]	= Env.cur.workDir
+		prettyPrintMap(buf, map, false)
+	}
+
 	private Void prettyPrintMap(StrBuf buf, Str:Obj? map, Bool sortKeys) {
 		buf.add(Utils.prettyPrintMap(map, "  ", sortKeys))
 	}

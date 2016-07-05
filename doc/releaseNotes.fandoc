@@ -1,5 +1,8 @@
 Versions
 ********
+v1.5.4
+======
+ - Chg: Tweaked 'ErrPrinterHtml' and 'ErrPrinterStr' services to make the printer funcs accessible.
 
 v1.5.2
 ======

@@ -269,6 +269,7 @@ const class BedSheetModule {
 		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.locals"]				=  ErrPrinterStrSections#printLocals			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.actorPools"]			=  ErrPrinterStrSections#printActorPools		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.fantomEnvironment"]	=  ErrPrinterStrSections#printFantomEnvironment	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
