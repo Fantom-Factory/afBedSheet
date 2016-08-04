@@ -34,6 +34,7 @@ internal const class NotFoundPrinterHtmlSections {
 	@Inject	private const FileHandler	fileHandler
 	@Inject	private const PodHandler	podHandler
 	@Inject	private const Routes		routes
+	@Inject	private const |->MiddlewarePipeline|	middleware
 
 	new make(|This|in) { in(this) }
 	
@@ -55,7 +56,7 @@ internal const class NotFoundPrinterHtmlSections {
 		}
 	}
 	
-	Void printBedSheetRoutes(WebOutStream out) {
+	Void printRoutes(WebOutStream out) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
 
@@ -65,6 +66,13 @@ internal const class NotFoundPrinterHtmlSections {
 			}
 			out.tableEnd
 		}
+	}
+	
+	Void printMiddleware(WebOutStream out) {
+		title(out, "BedSheet Middleware")
+		out.ol
+		middleware().middleware.each |ware| { out.li.writeXml(ware.typeof.qname).liEnd }
+		out.olEnd		
 	}
 
 	private static Void prettyPrintMap(WebOutStream out, Obj:Obj? map, Bool sort, Str? cssClass := null) {

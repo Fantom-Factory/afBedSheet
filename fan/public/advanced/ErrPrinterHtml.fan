@@ -59,6 +59,7 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const PodHandler		podHandler
 	@Inject	private const Routes			routes
 	@Inject	private const ActorPools		actorPools
+	@Inject	private const |->MiddlewarePipeline|	middleware
 
 	new make(|This|in) { in(this) }
 
@@ -201,13 +202,20 @@ internal const class ErrPrinterHtmlSections {
 		}
 	}
 
-	Void printBedSheetRoutes(WebOutStream out, Err? err) {
+	Void printRoutes(WebOutStream out, Err? err) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
 			map := [:] { ordered = true }
 			routes.routes.each |r| { map[r.matchHint] = r.responseHint }
 			prettyPrintMap(out, map, false)
 		}
+	}
+	
+	Void printMiddleware(WebOutStream out, Err? err) {
+		title(out, "BedSheet Middleware")
+		out.ol
+		middleware().middleware.each |ware| { out.li.writeXml(ware.typeof.qname).liEnd }
+		out.olEnd		
 	}
 
 	Void printActorPools(WebOutStream out, Err? err) {

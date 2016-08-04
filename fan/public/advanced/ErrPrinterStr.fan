@@ -55,6 +55,7 @@ internal const class ErrPrinterStrSections {
 	@Inject	private const ConfigSource		configSrc
 	@Inject	private const Routes			routes
 	@Inject	private const ActorPools		actorPools
+	@Inject	private const |->MiddlewarePipeline|	middleware
 
 	new make(|This|in) { in(this) }
 
@@ -170,6 +171,13 @@ internal const class ErrPrinterStrSections {
 				map[r.matchHint] = r.responseHint
 			}
 			prettyPrintMap(buf, map, false)
+		}
+	}
+
+	Void printMiddleware(StrBuf buf, Err? err) {
+		buf.add("\nBedSheet Middleware:\n")
+		middleware().middleware.each |ware, i| {
+			buf.add("  ${(i+1).toStr.padl(2)}. ${ware.typeof}\n")
 		}
 	}
 
