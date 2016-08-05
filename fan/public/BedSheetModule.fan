@@ -214,8 +214,8 @@ const class BedSheetModule {
 		// these are all the sections you see on the 404 page
 		config["afBedSheet.routeCode"]		= |WebOutStream out| { printer.printRouteCode	(out) }
 		config["afBedSheet.fileHandlers"]	= |WebOutStream out| { printer.printFileHandlers(out) }
-		config["afBedSheet.routes"]			= |WebOutStream out| { printer.printRoutes		(out) }
 		config["afBedSheet.middleware"]		= |WebOutStream out| { printer.printMiddleware	(out) }
+		config["afBedSheet.routes"]			= |WebOutStream out| { printer.printRoutes		(out) }
 	}
 
 	@Contribute { serviceType=ErrPrinterHtml# }
@@ -236,8 +236,8 @@ const class BedSheetModule {
 		config["afBedSheet.locales"]				= ErrPrinterHtmlSections#printLocales				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.iocConfig"]				= ErrPrinterHtmlSections#printIocConfig				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.fileHandlers"]			= ErrPrinterHtmlSections#printFileHandlers			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
-		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printRoutes				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.middleware"]				= ErrPrinterHtmlSections#printMiddleware			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
+		config["afBedSheet.routes"]					= ErrPrinterHtmlSections#printRoutes				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.locals"]					= ErrPrinterHtmlSections#printLocals				.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.actorPools"]				= ErrPrinterHtmlSections#printActorPools			.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
 		config["afBedSheet.fantomEnvironment"]		= ErrPrinterHtmlSections#printFantomEnvironment		.func.bind(funcArgs).retype(|WebOutStream, Err?|#)
@@ -264,8 +264,8 @@ const class BedSheetModule {
 		config["afBedSheet.cookies"]			=  ErrPrinterStrSections#printCookies			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.locales"]			=  ErrPrinterStrSections#printLocales			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.iocConfig"]			=  ErrPrinterStrSections#printIocConfig			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
-		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.middleware"]			=  ErrPrinterStrSections#printMiddleware		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
+		config["afBedSheet.routes"]				=  ErrPrinterStrSections#printRoutes			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.locals"]				=  ErrPrinterStrSections#printLocals			.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.actorPools"]			=  ErrPrinterStrSections#printActorPools		.func.bind(funcArgs).retype(|StrBuf, Err?|#)
 		config["afBedSheet.fantomEnvironment"]	=  ErrPrinterStrSections#printFantomEnvironment	.func.bind(funcArgs).retype(|StrBuf, Err?|#)
