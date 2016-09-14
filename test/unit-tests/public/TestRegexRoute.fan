@@ -285,7 +285,7 @@ internal class TestRegexRoute : BsTest {
 		
 		match = matchParams([""], #doc2)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		match = matchParams([""], #doc3)
 		verifyEq(match.size,	1)
