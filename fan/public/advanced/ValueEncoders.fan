@@ -30,9 +30,8 @@ internal const class ValueEncodersImpl : ValueEncoders {
 	}
 	
 	override Str toClient(Type valType, Obj? value) {
-		// check the basics first!
-		if (value is Str)
-			return value
+		// don't shortcut strings - someone (like me!) may want special str valEnc handling!
+		// assuming no-one would want to deviate from the default is a very annoying "Brian" thing!
 		
 		// give the val encs a chance to handle nulls
 		valEnc := find(valType)
@@ -51,9 +50,8 @@ internal const class ValueEncodersImpl : ValueEncoders {
 	}
 
 	override Obj? toValue(Type valType, Str clientValue) {
-		// check the basics first!
-		if (valType.toNonNullable == Str#)
-			return clientValue
+		// don't shortcut strings - someone (like me!) may want special str valEnc handling!
+		// assuming no-one would want to deviate from the default is a very annoying "Brian" thing!
 
 		// give the val encs a chance to handle nulls
 		valEnc := find(valType)
@@ -75,8 +73,8 @@ internal const class ValueEncodersImpl : ValueEncoders {
 		// empty string values WILL ALWAYS DIE in the coercer, so treat them as null and create a default value
 		if (clientValue.trim.isEmpty)
 			try	return BeanFactory.defaultValue(valType)
-		catch (Err cause)
-			throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
+			catch (Err cause)
+				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 		
 		try	return typeCoercer.coerce(clientValue, valType) 
 		catch (Err cause)
