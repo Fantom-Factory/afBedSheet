@@ -40,7 +40,7 @@ const class BedSheetWebMod : WebMod {
 		req.mod = this
 
 		try {
-			registry.activeScope.createChildScope("request") {
+			registry.activeScope.createChild("request") {
 				// this is actual call to BedSheet! 
 				// the rest of this class is just startup and error handling fluff! 
 				pipeline.service
