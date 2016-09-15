@@ -30,6 +30,8 @@ internal class TestRegexRoute : BsTest {
 	Void bar3(Str? a, Str? b := "") { }
 	Void bar4(Str? a, Str b := "") { }
 
+	Void stackhubOrg(Str org, Str? pageUrl := null) { }
+
 	Void testUriPathOnly() {
 		verifyErrMsg(ArgErr#, BsErrMsgs.route_shouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
 			r := Route(`http://www.alienfactory.co.uk/`, #handler1)
@@ -126,6 +128,12 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
+
+		// FIXME Regex limitation (yeah - I got 2 problems!)
+		match = RegexRoute(Regex<|(?i)^\/org\/(.*?)\/?(.*?)$|>, #stackhubOrg, "GET", true).matchUri(`/org/StackHub`)
+		verifyEq(match.size,	2)
+		verifyEq(match[0],		null)		// :( should be null
+		verifyEq(match[1],		"StackHub")	// :( should be "StackHub"
 	}
 	
 	Void testMatchGlobFromDocs() {
