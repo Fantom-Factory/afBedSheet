@@ -24,7 +24,7 @@ internal const class DefaultHttpStatusResponse {
 		
 		// give some token plain text
 		if (accept.accepts("text/plain"))
-			return Text.fromPlain("${httpStatus.code} - ${httpStatus.msg}")
+			return Text.fromPlain(httpStatus.toStr)
 
 		return true
 	}	
