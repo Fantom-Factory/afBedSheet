@@ -4,6 +4,7 @@ v1.5.4
 ======
  - Chg: Tweaked 'ErrPrinterHtml' and 'ErrPrinterStr' services to make the printer funcs accessible.
  - Chg: Moved Middleware listing to err printers.
+ - Chg: 'ErrMiddleware' respects 'noOfStackFrames' config when printing errs in repsonse headers.
  - Bug: An empty string, when value encoded to 'Str?#' gave an empty string, not 'null'.
  - Bug: Creating 'HttpStatus' with a non-standard HTTP code caused an NPE.
 
