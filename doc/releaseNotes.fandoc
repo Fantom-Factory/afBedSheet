@@ -8,6 +8,7 @@ v1.5.4
  - Chg: Changed 'Asset.exists()' from 'abstract' to 'virtual' with a default value of 'true'.
  - Bug: An empty string, when value encoded to 'Str?#' gave an empty string, not 'null'.
  - Bug: Creating 'HttpStatus' with a non-standard HTTP code caused an NPE.
+ - Bug: 'ClientAsset.clientUrl()' could throw an NPE if the asset didn't exist.
 
 v1.5.2
 ======
