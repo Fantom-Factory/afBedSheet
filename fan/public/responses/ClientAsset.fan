@@ -97,5 +97,4 @@ const abstract class ClientAsset : Asset {
 	virtual DateTime? actualModified() {
 		modified
 	}
-
 }
