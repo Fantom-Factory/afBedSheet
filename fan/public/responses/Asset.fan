@@ -23,7 +23,9 @@ abstract const class Asset {
 	private const AtomicRef	_etagRef		:= AtomicRef()
 	
 	** Returns 'true' if the asset exists. (Or did at the time this class was created.)
-	abstract Bool		exists()
+	** 
+	** Returns 'true' by default.
+	virtual Bool		exists() { true }
 
 	** Get the modified time of the asset. Note that pod files have last modified info too!
 	** 
