@@ -54,6 +54,9 @@ const abstract class ClientAsset : Asset {
 	virtual Uri? clientUrl() {
 		if (_assetCache == null)	// assetCache is nullable for FileAsset legacy code
 			throw Err("${this.typeof.qname} needs to be built via IoC")
+		localUrl := localUrl
+		if (localUrl == null)
+			return null
 		if (_clientUrlRef.val == null)
 			_clientUrlRef.val = _assetCache.toClientUrl(localUrl, this)
 		return _clientUrlRef.val
