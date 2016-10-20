@@ -2,6 +2,7 @@ Versions
 ********
 v1.5.4
 ======
+ - New: 'BedSheetServer.host()' now checks the HTTP request for 'Forwarded' & 'X-Forwarded' proxy values.
  - Chg: Tweaked 'ErrPrinterHtml' and 'ErrPrinterStr' services to make the printer funcs accessible.
  - Chg: Moved Middleware listing to err printers.
  - Chg: 'ErrMiddleware' respects 'noOfStackFrames' config when printing errs in repsonse headers.
