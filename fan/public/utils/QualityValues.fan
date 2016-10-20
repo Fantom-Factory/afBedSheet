@@ -4,7 +4,7 @@
 ** useful accessor methods; like [#accepts(Str name)]`QualityValues.accepts` which returns 'true' only if the 
 ** name exists AND has a qvalue greater than 0.0.
 **
-** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`
+** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html`
 class QualityValues {
 
 	private Str:Float map
@@ -65,15 +65,20 @@ class QualityValues {
 
 	** Returns the qvalue associated with 'name'. Defaults to '0' if 'name' was not supplied.
 	** 
-	** Wildcards are *not* honoured but 'name' is case-insensitive.
+	** This method matches against '*' wildcards in the qvalue list, but favours exact match.
 	@Operator
 	Float get(Str name) {
-		map.get(name, 0f)
+		// favour an exact matach before a wildcard matche
+		map.get(name) ?: ( 
+			map.find |qval, mime| {
+				Regex.glob(mime).matches(name) && qval > 0f
+			} ?: 0f
+		)
 	}
 
 	** Returns 'true' if 'name' was supplied in the header.
 	** 
-	** This method matches against '*' wildcards.
+	** This method matches against '*' wildcards in the qvalue list.
 	Bool contains(Str name) {
 		map.any |qval, mime| {
 			Regex.glob(mime).matches(name)
@@ -82,7 +87,7 @@ class QualityValues {
 
 	** Returns 'true' if the name was supplied in the header AND has a qvalue > 0.0
 	** 
-	** This method matches against '*' wildcards.
+	** This method matches against '*' wildcards in the qvalue list.
 	Bool accepts(Str name) {
 		map.any |qval, mime| {
 			Regex.glob(mime).matches(name) && qval > 0f
