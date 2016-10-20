@@ -31,6 +31,15 @@ class TestQualityValues : Test {
 		verifyEq(qvs.accepts("audio/*"), true)
 		verifyEq(qvs.accepts("audio/basic"), true)
 		verifyEq(qvs.accepts("wotever"), false)
+
+		
+		qvs	= QualityValues("application/*")
+		
+		verifyEq(qvs.size, 1)
+		verifyEq(qvs["application/xhtml+xml"], 1f)
+		verifyEq(qvs.accepts("application/*"), true)
+		verifyEq(qvs.accepts("application/basic"), true)
+		verifyEq(qvs.accepts("wotever"), false)
 	}
 
 	Void testParseQValues2() {
