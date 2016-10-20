@@ -9,6 +9,7 @@ v1.5.4
  - Chg: 'ErrMiddleware' respects 'noOfStackFrames' config when printing errs in repsonse headers.
  - Chg: Changed 'Asset.exists()' from 'abstract' to 'virtual' with a default value of 'true'.
  - Chg: 'QualityValues.get()' now matches against wildcard qvalues.
+ - Chg: Deprecated 'BedSheetConfigIds.noOfStackFrames', BedSheet now honours 'errTraceMaxDepth' from 'etc/sys/config.props'.
  - Bug: An empty string, when value encoded to 'Str?#' gave an empty string, not 'null'.
  - Bug: Creating 'HttpStatus' with a non-standard HTTP code caused an NPE.
  - Bug: 'ClientAsset.clientUrl()' could throw an NPE if the asset didn't exist.

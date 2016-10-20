@@ -15,12 +15,10 @@ internal class TestErrPrinterStr : BsTest {
 	
 	Void testPrintStackTrace() {
 		err := TestToStrErr("Ouch!", "-= argh =-", TestToStrErr("Boo!", "-= boo =-\n..shite.."))
-		fms := ErrPrinterStrSections.isolateStackFrames(err, 3)
+		fms := ErrPrinterStrSections.isolateStackFrames(err)
 		
-		verifyEq(fms[0].size, 4)
 		verifyEq(fms[0][0], "afBedSheet::TestToStrErr: Ouch!")
 
-		verifyEq(fms[1].size, 6)
 		verifyEq(fms[1][0], "")
 		verifyEq(fms[1][1], "Cause:")
 		verifyEq(fms[1][2], "afBedSheet::TestToStrErr: Boo!")

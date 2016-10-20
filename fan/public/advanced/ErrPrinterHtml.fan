@@ -46,9 +46,6 @@ const class ErrPrinterHtml {
 }
 
 internal const class ErrPrinterHtmlSections {
-	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
-	@Inject	private const Int 			noOfStackFrames
-	
 	@Inject	private const StackFrameFilter	frameFilter
 	@Inject	private const BedSheetServer	bedServer
 	@Inject	private const HttpRequest		request
@@ -101,7 +98,7 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printStackTrace(WebOutStream out, Err? err) {
-		stacks := ErrPrinterStrSections.isolateStackFrames(err, noOfStackFrames) 
+		stacks := ErrPrinterStrSections.isolateStackFrames(err) 
 		if (stacks.size == 0) return
 
 		// special case for wrapped IocErrs, unwrap the err if it adds nothing 

@@ -47,10 +47,8 @@ const mixin BedSheetConfigIds {
 	** Defaults to a method call to an internal handler which sets the HTTP status code and renders 
 	** the standard verbose BedSheet error page.
 	static const Str defaultErrResponse				:= "afBedSheet.defaultErrResponse"
-	
-	** The number of stack frames to print in logs and error pages.
-	** 
-	** Defaults to '75'
+
+	@NoDoc @Deprecated { msg="BedSheet now honours 'errTraceMaxDepth' from etc/sys/config.props" }
 	static const Str noOfStackFrames				:= "afBedSheet.errPrinter.noOfStackFrames"
 	
 	** Set to 'true' to ensure the welcome page is never displayed. 
