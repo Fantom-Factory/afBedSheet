@@ -45,9 +45,6 @@ internal const class ErrPrinterStrSections {
 	private static const Str	typeChar		:= 	Str<|[\.:_\$\p{L}\d]|>
 	private static const Regex	basicFrameRegex	:= "^\\s*${typeChar}+\\s*\\(${typeChar}+\\)\$".toRegex
 	
-	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
-	@Inject	private const Int 			noOfStackFrames
-	
 	@Inject	private const BedSheetServer	bedServer
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpSession		session
@@ -90,7 +87,7 @@ internal const class ErrPrinterStrSections {
 	}
 
 	Void printStackTrace(StrBuf buf, Err? err) {
-		stacks := isolateStackFrames(err, noOfStackFrames) 
+		stacks := isolateStackFrames(err) 
 		if (stacks.size == 0) return
 
 		buf.add("\nStack Trace:\n")
@@ -235,7 +232,7 @@ internal const class ErrPrinterStrSections {
 	}
 
 	// remove all the extra useful shite we bung into the toStr() methods
-	static Str[][] isolateStackFrames(Err? err, Int noOfStackFrames) {
+	static Str[][] isolateStackFrames(Err? err) {
 		// special case for wrapped IocErrs, unwrap the err if it adds nothing
 		if (err is IocErr && err.msg == err.cause?.msg)
 			err = err.cause
@@ -243,7 +240,7 @@ internal const class ErrPrinterStrSections {
 		i := 0
 		stacks := Str[][,] 
 		forEachCause(err, Err#) |Err cause->Bool| {
-			frames := isolateStackFrame(cause, noOfStackFrames)
+			frames := isolateStackFrame(cause)
 			if (i++ > 0)
 				frames.insert(0, "Cause:").insert(0, "")
 			stacks.add(frames)
@@ -252,8 +249,8 @@ internal const class ErrPrinterStrSections {
 		return stacks
 	}
 
-	private static Str[] isolateStackFrame(Err? err, Int noOfStackFrames) {
-		frames := Utils.traceErr(err, noOfStackFrames).splitLines
+	private static Str[] isolateStackFrame(Err? err) {
+		frames := Utils.traceErr(err).splitLines
 
 		fm := (Int?) null
 		to := frames.findIndex |frame, i->Bool| {

@@ -8,9 +8,6 @@ internal const class ErrMiddleware : Middleware {
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool					inProd
 	
-	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
-	@Inject	private const Int 					noOfStackFrames
-
 	@Inject	private const ResponseProcessors	responseProcessors
 	@Inject	private const HttpRequest			httpRequest
 	@Inject	private const HttpResponse			httpResponse
@@ -79,7 +76,7 @@ internal const class ErrMiddleware : Middleware {
 			} else {
 				addHeader("X-afBedSheet-errMsg", 		err.msg)
 				addHeader("X-afBedSheet-errType", 		err.typeof.qname)
-				addHeader("X-afBedSheet-errStackTrace",	Utils.traceErr(err, noOfStackFrames))
+				addHeader("X-afBedSheet-errStackTrace",	Utils.traceErr(err))
 			}
 		}
 	}
