@@ -10,7 +10,7 @@ internal class TestBedSheetPages : AppTest {
 	
 	Void testPagesAreValidXml() {
 		registry.rootScope.inject(this)
-		Actor.locals["web.req"] = T_WebReq()
+		Actor.locals["web.req"] = T_WebReq() { headers=["Accept":"application/xhtml+xml"]}
 		Actor.locals["web.res"] = T_WebRes()
 
 		xml := pages.renderHttpStatus(HttpStatus(418, "I'm a teapot"), true).text
@@ -25,7 +25,7 @@ internal class TestBedSheetPages : AppTest {
 		xml = pages.renderErr(Err("Whoops!"), false).text
 		XParser(xml.in).parseDoc
 
-		xml = pages.renderWelcome.text
+		xml = pages.renderWelcome(HttpStatus(404, "Ooops")).text
 		XParser(xml.in).parseDoc
 	}
 }

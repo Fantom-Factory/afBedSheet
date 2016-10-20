@@ -1,5 +1,6 @@
 using afIoc
 using web
+using concurrent
 
 ** (Service) - Use to manage your Cookies.
 const mixin HttpCookies {
@@ -37,7 +38,6 @@ const mixin HttpCookies {
 
 internal const class HttpCookiesImpl : HttpCookies {
 	@Inject	private const HttpRequest	httpReq
-	@Inject	private const |->WebRes|	webRes
 	
 	new make(|This|in) { in(this) } 
 
@@ -75,5 +75,12 @@ internal const class HttpCookiesImpl : HttpCookies {
 		if (!webRes().isCommitted)
 			cookies.addAll(webRes().cookies)
 		return cookies
+	}
+	
+	private WebRes webRes() {
+		// let's simplify and optimise, no point in querying IoC for this.
+		try return Actor.locals["web.res"]
+		catch (NullErr e) 
+			throw Err("No web request active in thread")
 	}
 }

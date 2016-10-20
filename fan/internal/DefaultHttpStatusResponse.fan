@@ -7,26 +7,14 @@ internal const class DefaultHttpStatusResponse {
 	@Inject private const Bool				inProd
 	@Inject	private const HttpRequest 		httpReq
 	@Inject	private const BedSheetPages		bedSheetPages
-			private const MimeType			pageContentType
 	
-	internal new make(|This|in) {
-		in(this)
-		pageContentType = bedSheetPages.contentType.noParams		
-	}
+	internal new make(|This|in) { in(this) }
 
 	Obj process() {
-		httpStatus := (HttpStatus) httpReq.stash["afBedSheet.httpStatus"]
+		httpStatus	:= (HttpStatus) httpReq.stash["afBedSheet.httpStatus"]
+		page		:= bedSheetPages.renderHttpStatus(httpStatus, !inProd)
 
-		// only return the XHTML / HTML status page if it's actually wanted
-		accept := httpReq.headers.accept
-		if (accept == null || accept.accepts(pageContentType.toStr))
-			return bedSheetPages.renderHttpStatus(httpStatus, !inProd)
-		
-		// give some token plain text
-		if (accept.accepts("text/plain"))
-			return Text.fromPlain(httpStatus.toStr)
-
-		return true
+		return page ?: true
 	}	
 }
 
