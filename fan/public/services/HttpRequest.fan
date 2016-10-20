@@ -137,7 +137,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.method
 	}	
 	override IpAddr remoteAddr() {
-		webReq.remoteAddr		
+		webReq.remoteAddr
 	}
 	override Int remotePort() {
 		webReq.remotePort		

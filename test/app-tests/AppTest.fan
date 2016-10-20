@@ -61,7 +61,12 @@ internal class AppTest : Test {
 	}
 	
 	Void verifyStatus(Uri uri, Int status) {
-		client.reqUri = reqUri(uri) 
+		if (!client.reqHeaders.containsKey("Accept"))
+			client.reqHeaders["Accept"] = "text/html"
+		if (client.reqHeaders["Accept"] == "<no-accept>")
+			client.reqHeaders.remove("Accept")
+
+		client.reqUri = reqUri(uri)
 		client.writeReq
 		client.readRes
 		verifyEq(client.resCode, status, "$client.resCode - $client.resPhrase")

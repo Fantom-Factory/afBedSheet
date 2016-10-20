@@ -18,16 +18,17 @@ const internal class MiddlewareTerminator : Middleware {
 
 	override Void service(MiddlewarePipeline pipeline) {
 		// distinguish between Not Found and Not Implemented depending on the requested HTTP method.
-		statusCode := status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
+		statusCode	:= status404Methods.contains(httpRequest.httpMethod) ? 404 : 501
+		status404	:= HttpStatus(statusCode, BsErrMsgs.route404(httpRequest.url, httpRequest.httpMethod))
 		
 		// if no routes have been defined, return the default 'BedSheet Welcome' page
 		if (renderWelcomePage) {
 			httpResponse.statusCode = statusCode
-			responseProcessors.processResponse(bedSheetPages.renderWelcome)
+			page := bedSheetPages.renderWelcome(status404)
+			responseProcessors.processResponse(page ?: true)
 			return
 		}
 
-		status404 := HttpStatus(statusCode, BsErrMsgs.route404(httpRequest.url, httpRequest.httpMethod))
 		responseProcessors.processResponse(status404)
 	}
 	

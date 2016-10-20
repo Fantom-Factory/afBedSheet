@@ -2,6 +2,7 @@ Versions
 ********
 v1.5.4
 ======
+ - New: BedSheet error and status pages may be returned as HTML / XHTML / or plain text.
  - New: 'BedSheetServer.host()' now checks the HTTP request for 'Forwarded' & 'X-Forwarded' proxy values.
  - Chg: Tweaked 'ErrPrinterHtml' and 'ErrPrinterStr' services to make the printer funcs accessible.
  - Chg: Moved Middleware listing to err printers.

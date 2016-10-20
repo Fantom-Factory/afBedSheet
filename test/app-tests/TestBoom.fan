@@ -52,6 +52,7 @@ internal class TestBoom : AppTest {
 		super.setup
 		
 		client.reqUri = reqUri(`/boom2`)
+		client.reqHeaders["Accept"] = "text/html"
 		client.writeReq
 		client.readRes
 		
@@ -64,6 +65,7 @@ internal class TestBoom : AppTest {
 		super.setup
 		
 		client.reqUri = reqUri(`/boom`)
+		client.reqHeaders["Accept"] = "text/html"
 		client.writeReq
 		client.readRes
 
@@ -74,8 +76,9 @@ internal class TestBoom : AppTest {
 	Void testHtmlOnlyReturnedIfWanted() {
 		super.setup
 
+		client.reqHeaders["Accept"] = "<no-accept>"
 		verifyStatus(`/boom`, 500)
-		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "application/xhtml+xml")
+		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "text/plain")
 		verify  (client.resStr.size > 0)
 		
 		client = WebClient()
@@ -85,10 +88,10 @@ internal class TestBoom : AppTest {
 		verifyFalse(client.resStr.size > 0)
 
 		client = WebClient()
-		client.reqHeaders["Accept"] = "text/*; q=0.1"
+		client.reqHeaders["Accept"] = "text/plain; q=0.1"
 		verifyStatus(`/boom`, 500)
 		verifyEq(MimeType(client.resHeaders["Content-Type"]).noParams.toStr, "text/plain")
-		verifyEq(client.resStr, "500 - BOOM!")
+		verify  (client.resStr.contains("sys::Err - BOOM!"))
 	}
 }
 

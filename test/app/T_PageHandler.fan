@@ -207,7 +207,7 @@ internal const class T_PageHandler {
 	// ---- Other ----
 	
 	Obj renderWelcome() {
-		bedSheetPages.renderWelcome
+		bedSheetPages.renderWelcome(HttpStatus(404, "Ooops"))
 	}
 	
 	File altFileHandler(Uri remaining) {
