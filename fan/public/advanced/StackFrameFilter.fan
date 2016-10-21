@@ -8,7 +8,7 @@
 ** 
 **   syntax: fantom 
 **   @Contribute { serviceType=StackFrameFilter# }
-**   static Void contributeStackFrameFilter(Configuration config) {
+**   Void contributeStackFrameFilter(Configuration config) {
 **       config.add("^afIoc::.*\$")
 **   }
 @NoDoc	// Advanced use only

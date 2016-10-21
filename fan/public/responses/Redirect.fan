@@ -48,6 +48,33 @@ const final class Redirect {
 		Redirect.make(redirectTo, RedirectType.afterPost)
 	}
 	
+	** Throw to send a redirect to the client. 
+	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
+	** 
+	**   syntax: fantom
+	**   throw Redirect.movedPermanentlyErr(`/some/other/page.html`)
+	static ReProcessErr movedPermanentlyErr(Uri redirectTo) {
+		ReProcessErr(Redirect.movedPermanently(redirectTo))
+	}
+
+	** Throw to send a redirect to the client. 
+	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
+	** 
+	**   syntax: fantom
+	**   throw Redirect.movedTemporarilyErr(`/some/other/page.html`)
+	static ReProcessErr movedTemporarilyErr(Uri redirectTo) {
+		ReProcessErr(Redirect.movedTemporarily(redirectTo))
+	}
+
+	** Throw to send a redirect to the client. 
+	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
+	** 
+	**   syntax: fantom
+	**   throw Redirect.afterPostErr(`/some/other/page.html`)
+	static ReProcessErr afterPostErr(Uri redirectTo) {
+		ReProcessErr(Redirect.afterPost(redirectTo))
+	}
+	
 	@NoDoc
 	override Str toStr() {
 		"Redirect -> ${uri} (${type.toStr.toDisplayName})"

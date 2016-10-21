@@ -5,19 +5,19 @@ using afBeanUtils
 internal class TestPodHandler : BsTest {
 	
 	Void testUrlPathOnly() {
-		verifyBsErrMsg(BsErrMsgs.urlMustBePathOnly(`http://wotever.com`, `/pods/`)) {
+		verifyBsErrMsg(BsErrMsgs.urlMustBePathOnly(`http://wotever.com`, `/pod/`)) {
 			podHandler(`http://wotever.com`)
 		}
 	}
 
 	Void testUrlNotStartWithSlash() {
-		verifyBsErrMsg(BsErrMsgs.urlMustStartWithSlash(`wotever/`, `/pods/`)) {
+		verifyBsErrMsg(BsErrMsgs.urlMustStartWithSlash(`wotever/`, `/pod/`)) {
 			podHandler(`wotever/`)
 		}
 	}
 
 	Void testUrlNotEndWithSlash() {
-		verifyBsErrMsg(BsErrMsgs.urlMustEndWithSlash(`/wotever`, `/pods/`)) {
+		verifyBsErrMsg(BsErrMsgs.urlMustEndWithSlash(`/wotever`, `/pod/`)) {
 			podHandler(`/wotever`)
 		}
 	}
@@ -25,22 +25,22 @@ internal class TestPodHandler : BsTest {
 	// ---- fromLocalUrl() ----
 
 	Void testLocalUrlIsPathOnly() {
-		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustBePathOnly(`http://myStyles.css`, `/pods/icons/x256/flux.png`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustBePathOnly(`http://myStyles.css`, `/pod/icons/x256/flux.png`)) {
 			podHandler.fromLocalUrl(`http://myStyles.css`)
 		}
-		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustBePathOnly(`//myStyles.css`, `/pods/icons/x256/flux.png`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustBePathOnly(`//myStyles.css`, `/pod/icons/x256/flux.png`)) {
 			podHandler.fromLocalUrl(`//myStyles.css`)
 		}
 	}
 
 	Void testLocalUrlStartsWithSlash() {
-		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustStartWithSlash(`css/myStyles.css`, `/pods/icons/x256/flux.png`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.urlMustStartWithSlash(`css/myStyles.css`, `/pod/icons/x256/flux.png`)) {
 			podHandler.fromLocalUrl(`css/myStyles.css`)
 		}
 	}
 
 	Void testLocalUrlMustBeMapped() {
-		verifyErrMsg(ArgErr#, BsErrMsgs.podHandler_urlNotMapped(`/css/myStyles.css`, `/pods/`)) {
+		verifyErrMsg(ArgErr#, BsErrMsgs.podHandler_urlNotMapped(`/css/myStyles.css`, `/pod/`)) {
 			podHandler.fromLocalUrl(`/css/myStyles.css`)
 		}
 	}
@@ -77,22 +77,22 @@ internal class TestPodHandler : BsTest {
 	Void testFromPodResource() {
 		asset := podHandler.fromPodResource(`fan://icons/x256/flux.png`)
 		verifyEq(asset->file->uri,	`fan://icons/x256/flux.png`)
-		verifyEq(asset.localUrl,	`/pods/icons/x256/flux.png`)
-		verifyEq(asset.clientUrl,	`/pods/icons/x256/flux.png`)
+		verifyEq(asset.localUrl,	`/pod/icons/x256/flux.png`)
+		verifyEq(asset.clientUrl,	`/pod/icons/x256/flux.png`)
 	}
 
 	Void testFromLocalUrl() {
-		asset := podHandler.fromLocalUrl(`/pods/icons/x256/flux.png`)
+		asset := podHandler.fromLocalUrl(`/pod/icons/x256/flux.png`)
 		verifyEq(asset->file->uri,	`fan://icons/x256/flux.png`)
-		verifyEq(asset.localUrl,	`/pods/icons/x256/flux.png`)
-		verifyEq(asset.clientUrl,	`/pods/icons/x256/flux.png`)
+		verifyEq(asset.localUrl,	`/pod/icons/x256/flux.png`)
+		verifyEq(asset.clientUrl,	`/pod/icons/x256/flux.png`)
 	}
 
-	private PodHandler podHandler(Uri url := `/pods/`, Str filter := ".*") {
-		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModule(AssetCacheModule#).build
+	private PodHandler podHandler(Uri url := `/pod/`, Str filter := ".*") {
+		reg := RegistryBuilder().addModulesFromPod("afIocEnv").addModulesFromPod("afConcurrent").addModule(AssetCacheModule#).build
 		try {
 			AssetCacheModule.urlRef.val = url
-			return reg.autobuild(PodHandler#, [Regex[filter.toRegex]])
+			return reg.rootScope.build(PodHandler#, [Regex[filter.toRegex]])
 		} catch (IocErr err) {
 			throw err.cause ?: err
 		}

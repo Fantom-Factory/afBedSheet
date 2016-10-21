@@ -6,7 +6,7 @@
 ** pre>
 ** syntax: fantom 
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void configureApplicationDefaults(Configuration conf) {
+** Void configureApplicationDefaults(Configuration conf) {
 **   conf[BedSheetConfigIds.gzipThreshold] = 500
 ** }
 ** <pre
@@ -47,17 +47,9 @@ const mixin BedSheetConfigIds {
 	** Defaults to a method call to an internal handler which sets the HTTP status code and renders 
 	** the standard verbose BedSheet error page.
 	static const Str defaultErrResponse				:= "afBedSheet.defaultErrResponse"
-	
-	** The number of stack frames to print in logs and error pages.
-	** 
-	** Defaults to '75'
+
+	@NoDoc @Deprecated { msg="BedSheet now honours 'errTraceMaxDepth' from etc/sys/config.props" }
 	static const Str noOfStackFrames				:= "afBedSheet.errPrinter.noOfStackFrames"
-	
-	** When printing 'SrcCodeErrs', this is the number of lines of code to print before and 
-	** after the line in error.
-	**  
-	** Defaults to '5'
-	static const Str srcCodeErrPadding				:= "afBedSheet.plastic.srcCodeErrPadding"
 	
 	** Set to 'true' to ensure the welcome page is never displayed. 
 	** 
@@ -80,8 +72,19 @@ const mixin BedSheetConfigIds {
 	** The local URL under which pod resources are served.
 	** The URL must start and end with a slash.
 	** 
-	** Defaults to '`/pods/`' 
+	** Defaults to '`/pod/`' because Fantom '.js.map' files are hardcoded to be served under '/pod/'.
 	static const Str podHandlerBaseUrl				:= "afBedSheet.podHandler.baseUrl"
+
+	** The local URL under which Fantom source code is served.
+	** The URL must start and end with a slash.
+	** 
+	** Defaults to '`/dev/`' because Fantom '.js.map' files are hardcoded to be served under '/dev/'.
+	** 
+	** Note that source maps are only enabled in 'dev' environments. To enable in other environments 
+	** you must manually contribute your own value of '`/dev/`'.
+	**  
+	** See 'compilerJs::SourceMap.write()' and [JS Source Maps on Fantom Forum]`http://fantom.org/forum/topic/2531`.
+	static const Str srcMapHandlerBaseUrl			:= "afBedSheet.srcMapHandler.baseUrl"
 	
 	** The default 'Cache-Control' HTTP response header to set when serving static files. 
 	** Example, to cache files for 1 day:
@@ -93,35 +96,5 @@ const mixin BedSheetConfigIds {
 	** 
 	** Defaults to 'null'
 	static const Str fileAssetCacheControl			:= "afBedSheet.fileAsset.cacheControl"
-
-
-
-	// --- LoggingMiddleware ----
-	
-	** Directory where request log files are to be written. 
-	** Set to enable request logging. 
-	** Must end in a trailing /slash/.
-	** 
-	** @see `RequestLogMiddleware`
-	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
-	static const Str requestLogDir					:= "afBedSheet.requestLog.dir"
-
-	** Log filename pattern.
-	** The name may contain a pattern between '{}' using the pattern format of 'DateTime.toLocale'. 
-	** For example to maintain a log file per month, use a filename such as 'mylog-{YYYY-MM}.log'.
-	** 
-	** Defaults to 'afBedSheet-{YYYY-MM}.log'
-	** 
-	** @see `RequestLogMiddleware`
-	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
-	static const Str requestLogFilenamePattern		:= "afBedSheet.requestLog.filenamePattern" 
-
-	** Format of the web log records as a string of names.
-	** 
-	** Defaults to 'date time c-ip cs(X-Real-IP) cs-method cs-uri-stem cs-uri-query sc-status time-taken cs(User-Agent) cs(Referer) cs(Cookie)'
-	** 
-	** @see `RequestLogMiddleware`
-	@NoDoc @Deprecated { msg="Use 'RequestLogger' instead" }
-	static const Str requestLogFields				:= "afBedSheet.requestLog.fields"
 
 }

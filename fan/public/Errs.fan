@@ -40,6 +40,7 @@ const class ReProcessErr : Err {
 ** 404 to the client, example:
 ** 
 **   throw HttpStatusErr(404, "Page not found")
+@NoDoc @Deprecated { msg="Use 'HttpStatus.makeErr(...)' instead" } 
 const class HttpStatusErr : ReProcessErr {
 	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super.makeWithMsg(HttpStatus(statusCode, statusMsg), statusMsg, cause) { }
 }

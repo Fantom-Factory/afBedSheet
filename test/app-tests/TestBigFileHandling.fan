@@ -47,7 +47,7 @@ internal class TestBigFileHandling : AppTest {
 	}
 }
 
-internal class T_TestBigFileHandlingBigBuffMod {
+internal const class T_TestBigFileHandlingBigBuffMod {
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(Configuration conf) {
 		conf.overrideValue(BedSheetConfigIds.responseBufferThreshold, 20 * 1024)

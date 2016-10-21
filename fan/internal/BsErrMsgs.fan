@@ -103,33 +103,11 @@ internal const class BsErrMsgs {
 	static Str podHandler_notInWhitelist(Str podPath) {
 		"Pod URL `${podPath}` does not match any whitelist filter"
 	}
-
-	// ---- Pipeline Service Messages -------------------------------------------------------------
-
-	static Str pipeline_typeMustBePublic(Str thing, Type type) {
-		"${thing} ${type.qname} must be public"
-	}
-
-	static Str pipeline_typeMustBeMixin(Str thing, Type type) {
-		"${thing} ${type.qname} must be a mixin"
-	}
-
-	static Str pipeline_typeMustNotDeclareFields(Type type) {
-		"Pipeline type ${type.qname} must not declare fields: " + type.fields.join(", ") { it.name }
-	}
-
-	static Str pipeline_terminatorMustExtendPipeline(Type pipelineType, Type terminatorType) {
-		"Pipeline Terminator ${terminatorType.qname} must extend Pipeline mixin ${pipelineType.qname}"
-	}
-
-	static Str middleware_mustExtendMiddleware(Type middlewareType, Type middlewareImplType) {
-		"Middleware ${middlewareImplType.qname} must extend Middleware mixin ${middlewareType.qname}"
-	}
 	
-	static Str middleware_mustDeclareMethod(Type middlewareType, Str methodSig) {
-		"Middleware ${middlewareType.qname} must declare method : ${methodSig}"
+	static Str srcMapHandler_disabled() {
+		"Pod source handling has been disabled - config ID '${BedSheetConfigIds.srcMapHandlerBaseUrl}' has been set to null"
 	}
-	
+
 	// ---- Other ----
 
 	static Str valueEncoding_buggered(Obj? value, Type toType) {

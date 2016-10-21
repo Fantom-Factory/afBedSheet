@@ -1,6 +1,7 @@
 using afIoc::Inject
 using afIoc::Registry
-using web::WebReq
+using afIoc::IocErr
+using afConcurrent::LocalRef
 using concurrent::Actor
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
@@ -8,7 +9,8 @@ using concurrent::Actor
 ** Provides a name/value map associated with a specific browser *connection* to the web server.
 ** A cookie (with the name 'fanws') is used to track which session is made available to the request.
 ** 
-** All values stored in the session must be serializable.
+** All values stored in the session must be either immutable or serialisable. 
+** Note that immutable objects give better performance.  
 ** 
 ** For scalable applications, the session should be used sparingly; house cleaned regularly and not used as a dumping ground. 
 ** 
@@ -28,61 +30,53 @@ const mixin HttpSession {
 	** 
 	** Calling this method **will** create a session if it does not exist.
 	** 
-	** @see `web::WebSession`
+	** @see `web::WebSession.id`
 	abstract Str id()
 
 	** Returns 'true' if the session map is empty. 
 	** 
 	** Calling this method does not create a session if it does not exist.
-	virtual Bool isEmpty() {
-		exists ? map.isEmpty : true
-	}
+	abstract Bool isEmpty()
 
 	** Returns 'true' if the session map contains the given key. 
 	** 
 	** Calling this method does not create a session if it does not exist.
-	virtual Bool containsKey(Str key) {
-		exists ? map.containsKey(key) : false		
-	}
+	abstract Bool containsKey(Str key)
 	
-	** Convenience for 'map.get(name, def)'.
+	** Returns session value or def if not defined.
 	** 
 	** Calling this method does not create a session if it does not exist.
 	** 
-	** @see `web::WebSession`
+	** @see `web::WebSession.get`
 	@Operator
-	virtual Obj? get(Str name, Obj? def := null) {
-		exists ? map.get(name, def) : def 
-	}
+	abstract Obj? get(Str name, Obj? def := null)
 
 	** Convenience for 'map.getOrAdd(name, valFunc)'.
 	** 
 	** Calling this **will** create a session if it doesn't already exist.
 	abstract Obj? getOrAdd(Str key, |Str->Obj?| valFunc)
 	
-	** Convenience for 'map.set(name, val)'.
+	** Sets a session value - which must be immutable or serialisable.
 	** 
 	** Calling this method **will** create a session if it does not exist.
 	** 
-	** @see `web::WebSession`
+	** @see `web::WebSession.set`
 	@Operator 
 	abstract Void set(Str name, Obj? val)
 	
 	** Convenience for 'map.remove(name)'.
 	** 
 	** Calling this method does not create a session if it does not exist.
+	** 
+	** @see `web::WebSession.remove`
 	abstract Void remove(Str name)
 
-	** Application name/value pairs which are persisted between HTTP requests. 
-	** The values stored in this map must be serializable.
+	** The application name/value pairs which are persisted between HTTP requests. 
+	** Returns an empty map if a session does not exist.
 	** 
-	** Calling this method **will** create a session if it does not exist.
+	** Calling this method does not create a session if it does not exist.
 	** 
 	** The returned map is *READ ONLY*. 
-	** Use the methods on this class to write to the session.
-	** This is so we can *fail fast* (before a response is sent to the user) should a value not be serializable.
-	** 
-	** @see `web::WebSession`
 	abstract Str:Obj? map()
 
 	** Delete this web session which clears both the user agent cookie and the server side session 
@@ -91,7 +85,7 @@ const mixin HttpSession {
 	** 
 	** Calling this method does not create a session if it does not exist.
 	** 
-	** @see `web::WebSession`
+	** @see `web::WebSession.delete`
 	abstract Void delete()
 	
 	** Returns 'true' if a session exists. 
@@ -99,89 +93,276 @@ const mixin HttpSession {
 	** Calling this method does not create a session if it does not exist.
 	abstract Bool exists()
 	
-	** A map whose name/value pairs are persisted *only* until the end of the user's next HTTP request. 
-	** Values stored in this map must be serializable.
+	** A map whose name/value pairs are persisted *only* until the end of the user's **next** HTTP request. 
 	** 
-	** The returned map is *MODIFIABLE*. 
-	** 
-	** Calling this method **will** create a session if it does not exist. 
-	** Use 'flashExists()' to check if a value exists without creating a session:
-	** 
-	**   if (httpSession.flashExists && httpSession.flash.contains("key")) { ... }
-	** 
-	** @see `web::WebSession`
+	** The returned map is *READ ONLY*. 
 	abstract Str:Obj? flash()
-	
-	** Returns 'true' if the flash map exists.
+
+	** Sets the given value in the *flash*. 
+	** The key/value pair will be persisted until the end of the user's *next* request.
+	** 
+	** Values must be immutable or serialisable.
+	** 
+	** Calling this method **will** create a session if it does not exist.
+	abstract Void flashSet(Str key, Obj? val)
+
+	** Removes the key/value pair from *flash* and returns the value. 
+	** If the key was not mapped then returns 'null'.
 	** 
 	** Calling this method does not create a session if it does not exist.
-	abstract Bool flashExists()
+	abstract Obj? flashRemove(Str key)
+	
+	internal abstract Void _initFlash()
+	internal abstract Void _finalFlash()
+	internal abstract Void _finalSession()
 }
 
 internal const class HttpSessionImpl : HttpSession {
-
-	@Inject	private const Registry 		registry
-	@Inject	private const HttpCookies	httpCookies
+	private static  const Str:Obj?			emptyRoMap	:= Str:Obj?[:].toImmutable
+	@Inject private const |->RequestState|	reqStateFunc
+	@Inject	private const HttpCookies		httpCookies
+	@Inject	private const LocalRef			existsRef
 	
 	new make(|This|in) { in(this) } 
 
 	override Str id() {
-		webReq.session.id
+		reqState().webReq.session.id
+	}
+
+	override Bool isEmpty() {
+		if (!exists)
+			return true
+		
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		if (sessionMap.size > 0)
+			return false
+		
+		isEmpty := true
+		reqState.webReq.session.each { isEmpty = false }
+		return isEmpty
+	}
+
+	override Bool containsKey(Str key) {
+		if (!exists)
+			return false
+
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		if (sessionMap.containsKey(key))
+			return true
+		
+		containsKey := false
+		reqState.webReq.session.each |v, k| { if (k == key) containsKey = true }
+		return containsKey
+	}
+	
+	override Obj? get(Str name, Obj? def := null) {
+		if (!exists)
+			return def
+
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		if (sessionMap.containsKey(name))
+			return sessionMap[name]
+
+		val := reqState.webReq.session.get(name, def)
+		if (val is SessionValue) {
+			rawVal := ((SessionValue) val).val
+			sessionMap[name] = rawVal
+			val = rawVal 
+		}
+		return val
 	}
 
 	override Str:Obj? map() {
-		mapRw.ro
+		if (!exists) 
+			return emptyRoMap
+
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		map			:= reqState.mutableSessionState.dup
+		
+		reqState.webReq.session.each |val, key| {
+			if (!map.containsKey(key)) {
+				if (val is SessionValue) {
+					rawVal := ((SessionValue) val).val
+					map[key] = rawVal
+					sessionMap[key] = rawVal
+				} else
+					map[key] = val
+			}
+		} 
+		return map.ro
 	}
 
-	override Obj? getOrAdd(Str key, |Str->Obj?| valFunc) {
-		if (!mapRw.containsKey(key)) {
-			val := valFunc.call(key)
-			mapRw[key] = testSerialisation(val)
-		}
-		return mapRw[key]
+	override Obj? getOrAdd(Str name, |Str->Obj?| valFunc) {
+		if (containsKey(name))
+			return get(name)
+		val := valFunc.call(name)
+		set(name, val)
+		return val
 	}
 	
-	override Void set(Str name, Obj? val) { 
-		mapRw[name] = testSerialisation(val)
+	override Void set(Str name, Obj? val) {
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		sessVal		:= SessionValue.coerce(val)
+		if (sessVal is SessionValue)
+			sessionMap[name] = val
+		reqState.webReq.session.set(name, sessVal)
 	}
 	
 	override Void remove(Str name) {
-		if (exists)
-			mapRw.remove(name) 		
+		if (exists) {
+			reqState := (RequestState) reqState()
+			reqState.mutableSessionState.remove(name)
+			reqState.webReq.session.remove(name)
+		}
 	}
 	
 	override Void delete() {
 		if (exists) {
-			mapRw.clear
-			webReq.session.delete
+			reqState := (RequestState) reqState()
+			reqState.mutableSessionState.clear
+			reqState.mutableSessionState = null
+			reqState.webReq.session.delete
 		}
 	}
 
 	override Bool exists() {
+		// make sure the request scope exists so we can further interrogate the session objs 
+		try	reqStateFunc()
+		catch (IocErr ie)
+			return false
+
+		// this gets called a *lot* and each time we manually compile cookie lists just to check if it's empty!
+		// so we do a little dirty cashing
+		if (existsRef.isMapped)
+			return existsRef.val
+		
 		// TODO: this session support only for WISP web server
-		Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
+		exists := Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
+		if (exists)
+			// don't save 'false' values, so we still re-evaluate next time round
+			existsRef.val = true
+		return exists
 	}
 	
-	// TODO: replace flash map with a pseudo map so we can capture the get and set operations.
-	// - benefits are, we don't create a session on read and split map up into a req and res 
 	override Str:Obj? flash() {
-		getOrAdd("afBedSheet.flash") { Str:Obj?[:] }
+		reqState	:= (RequestState) reqState()
+		map := Str:Obj?[:] { it.caseInsensitive = true }
+		if (reqState.flashMapOld != null)
+			map.setAll(reqState.flashMapOld)
+		if (reqState.flashMapNew != null)
+			map.setAll(reqState.flashMapNew)
+		return map.ro
+	}
+	
+	override Void flashSet(Str key, Obj? val) {
+		reqState	:= (RequestState) reqState()
+		flashMapNew := reqState.flashMapNew
+		
+		if (flashMapNew == null)
+			reqState.flashMapNew = flashMapNew = Str:Obj?[:]
+		flashMapNew[key] = val
+
+		// create a session to preempt setting values
+		// FlashMiddleware creates the cookie too late, because the response has already been committed
+		reqState.webReq.session.id
 	}
 
-	override Bool flashExists() {
-		exists && containsKey("afBedSheet.flash")
-	}
-	
-	private Obj? testSerialisation(Obj? val) {
-		Buf().out.writeObj(val, ["skipErrors":false])
+	override Obj? flashRemove(Str key) {
+		if (!exists)
+			return null
+		reqState	:= (RequestState) reqState()
+		val			:= null
+		if (reqState.flashMapOld != null) {
+			if (reqState.flashMapOld.isRO)
+				reqState.flashMapOld = reqState.flashMapOld.rw
+			val = reqState.flashMapOld.remove(key)
+		}
+		if (reqState.flashMapNew != null)
+			// if the key was found in both maps, it is correct to return the new one
+			// as that was the last value to be added, hence the only value in 'flash()'
+			val = reqState.flashMapNew.remove(key)
 		return val
 	}
 	
-	private Str:Obj? mapRw() {
-		webReq.session.map
+	override Void _initFlash() {
+		if (!exists)
+			return
+
+		reqState	:= (RequestState) reqState()
+		val			:= reqState.webReq.session.get("afBedSheet.flash")
+		carriedOver := val is SessionValue
+			? ((SessionValue) val).val
+			: val
+		reqState.flashMapOld = carriedOver
+	}
+
+	override Void _finalFlash() {
+		reqState	:= (RequestState) reqState()
+		flashMapNew := reqState.flashMapNew
+
+		remove("afBedSheet.flash")
+		if (flashMapNew != null && flashMapNew.size > 0)
+			reqState.webReq.session.set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
+		
+		reqState.flashMapNew = null
+	}
+
+	override Void _finalSession() {
+		reqState	:= (RequestState) reqState()
+		sessionMap	:= reqState.mutableSessionState
+		
+		sessionMap.each |v, k| { set(k, v) }
+		reqState.mutableSessionState.clear
+		reqState.mutableSessionState = null
 	}
 	
-	private WebReq webReq() {
-		registry.dependencyByType(WebReq#)
+	private RequestState reqState() {
+		try	return reqStateFunc()
+		catch (IocErr ie)
+			throw IocErr("Request scope is not available")
+	}
+}
+
+// Wraps an object value, serialising it if it's not immutable
+@NoDoc	// for Bounce
+const class SessionValue {
+	const Str	objStr
+	
+	private new make(|This| f) { f(this) }
+	
+	static Obj? coerce(Obj? val) {
+		if (val == null)
+			return null
+		if (val.isImmutable)
+			return val
+		
+		if (val is Map || val is List || val is Buf || !val.typeof.hasFacet(Serializable#)) {
+			try {
+				objActual := val.toImmutable
+				return objActual
+			} catch (NotImmutableErr err) { /* try serialisation */ }
+		}
+
+		if (!val.typeof.hasFacet(Serializable#))
+			throw BedSheetErr("Session values should be immutable (preferably) or serialisable: ${val.typeof.qname} - ${val}")
+		
+		// do the serialisation
+		return SessionValue {
+			it.objStr = Buf().writeObj(val).flip.readAllStr
+		}
+	}
+	
+	Obj? val() {
+		objStr.toBuf.readObj
+	}
+	
+	override Str toStr() {
+		// pretend to be the real object when debugging 
+		val?.toStr ?: "null"
 	}
 }

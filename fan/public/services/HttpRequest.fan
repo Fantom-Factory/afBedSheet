@@ -1,6 +1,5 @@
 using afIoc::Inject
 using afIoc::Registry
-using afConcurrent::LocalRef
 using web::WebReq
 using inet::IpAddr
 using inet::SocketOptions
@@ -85,23 +84,18 @@ const mixin HttpRequest {
   	abstract HttpRequestBody body()
 	
 	** This method will:
-	**   1. check that the content-type is form-data
-	**   2. get the boundary string
-	**   3. invoke the callback for each part (see `web::WebUtil.parseMultiPart`)
+	**   1. Check that the content-type is form-data
+	**   2. Get the boundary string
+	**   3. Invoke the callback for each part
 	**
-	** For each part in the stream this calls the given callback function with the part's form 
+	** For each part in the stream this calls the given callback function with the part's 
 	** name, headers, and an input stream used to read the part's body.
 	** 
 	** @see `web::WebReq.parseMultiPartForm`
-	abstract Void parseMultiPartForm(|Str formName, InStream in, Str:Str headers| callback)
+	abstract Void parseMultiPartForm(|Str partName, InStream in, Str:Str headers| callback)
 
 	abstract SocketOptions socketOptions()
 	
-	@NoDoc @Deprecated { msg="Use 'body.in()' instead." }
-	InStream in() { body.in }
-
-	@NoDoc @Deprecated { msg="Use 'body.form()' instead." }
-	[Str:Str]? form() { body.form }
 }
 
 ** Wraps a given `HttpRequest`, delegating all its methods. 
@@ -126,16 +120,13 @@ const class HttpRequestWrapper : HttpRequest {
 }
 
 internal const class HttpRequestImpl : HttpRequest {	
-	override const HttpRequestHeaders headers
-	@Inject private const LocalRef bodyRef
+	override const HttpRequestHeaders	headers
+	@Inject  const |->RequestState|?	reqState	// nullable for testing
 	
 	new make(|This|? in := null) { 
 		in?.call(this) 
 		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
-		if (bodyRef == null)
-			bodyRef = LocalRef("body")
 	}
-
 	override Bool isXmlHttpRequest() {
 		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false
 	}
@@ -146,7 +137,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.method
 	}	
 	override IpAddr remoteAddr() {
-		webReq.remoteAddr		
+		webReq.remoteAddr
 	}
 	override Int remotePort() {
 		webReq.remotePort		
@@ -167,9 +158,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.stash
 	}
 	override HttpRequestBody body() {
-		if (bodyRef.val == null)
-			bodyRef.val = HttpRequestBody(webReq)
-		return bodyRef.val
+		reqState().requestBody
 	}
 	override SocketOptions socketOptions()	{
 		webReq.socketOptions

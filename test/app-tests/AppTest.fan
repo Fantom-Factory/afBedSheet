@@ -1,6 +1,6 @@
 using web::WebClient
 using wisp::WispService
-using afIocConfig::ConfigModule
+using afIocConfig::IocConfigModule
 using afIoc::Registry
 
 internal class AppTest : Test {
@@ -18,10 +18,11 @@ internal class AppTest : Test {
 		
 		client.reqHeaders.clear
 
-		bob := BedSheetBuilder(iocModules[0].qname).addModule(ConfigModule#)
-		iocModules.each { bob.addModule(it) }
+		bob := BedSheetBuilder(iocModules[0].qname)
+			.addModules(iocModules)
+			.addModule(IocConfigModule#)
 		mod := BedSheetBootMod(bob)
-		willow 	= WispService { it.port=this.port; it.root=mod }
+		willow 	= WispService { it.httpPort=this.port; it.root=mod }
 		willow.start
 		
 		registry = mod.webMod->registry
@@ -60,7 +61,12 @@ internal class AppTest : Test {
 	}
 	
 	Void verifyStatus(Uri uri, Int status) {
-		client.reqUri = reqUri(uri) 
+		if (!client.reqHeaders.containsKey("Accept"))
+			client.reqHeaders["Accept"] = "text/html"
+		if (client.reqHeaders["Accept"] == "<no-accept>")
+			client.reqHeaders.remove("Accept")
+
+		client.reqUri = reqUri(uri)
 		client.writeReq
 		client.readRes
 		verifyEq(client.resCode, status, "$client.resCode - $client.resPhrase")

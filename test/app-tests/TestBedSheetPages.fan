@@ -9,8 +9,8 @@ internal class TestBedSheetPages : AppTest {
 	@Inject BedSheetPages? pages
 	
 	Void testPagesAreValidXml() {
-		registry.injectIntoFields(this)
-		Actor.locals["web.req"] = T_WebReq()
+		registry.rootScope.inject(this)
+		Actor.locals["web.req"] = T_WebReq() { headers=["Accept":"application/xhtml+xml"]}
 		Actor.locals["web.res"] = T_WebRes()
 
 		xml := pages.renderHttpStatus(HttpStatus(418, "I'm a teapot"), true).text
@@ -25,13 +25,13 @@ internal class TestBedSheetPages : AppTest {
 		xml = pages.renderErr(Err("Whoops!"), false).text
 		XParser(xml.in).parseDoc
 
-		xml = pages.renderWelcome.text
+		xml = pages.renderWelcome(HttpStatus(404, "Ooops")).text
 		XParser(xml.in).parseDoc
 	}
 }
 
 internal class T_WebReq : WebReq {
-	override WebMod mod 					:= webmod::LogMod()
+	override WebMod 	mod 				{ get {(Obj)5} set {} }
 	override IpAddr remoteAddr()			{ IpAddr("127.0.0.1") }
 	override Int remotePort() 				{ 80 }
 	override SocketOptions socketOptions()	{ TcpSocket().options }
@@ -41,6 +41,7 @@ internal class T_WebReq : WebReq {
 	override Str:Str 	headers				:= [:]
 	override WebSession	session				:= T_WebSession()
 	override InStream 	in					:= "in".toBuf.in
+	override TcpSocket	socket()			{ throw Err() }
 }
 
 internal class T_WebRes : WebRes {
@@ -60,11 +61,10 @@ internal class T_WebSession : WebSession {
 	override Str:Obj? map := Str:Obj[:]
 	override Void delete() { }
 	
-	// Fantom 1.0.68
-//	override Void each(|Obj?,Str| f) { map.each(f) }
-//	@Operator
-//	override Obj? get(Str name, Obj? def := null) {map.get(name, def)}
-//	@Operator
-//	override Void set(Str name, Obj? val) {map.set(name, val) }
-//	override Void remove(Str name) {map.remove(name) }
+	override Void each(|Obj?,Str| f) { map.each(f) }
+	@Operator
+	override Obj? get(Str name, Obj? def := null) {map.get(name, def)}
+	@Operator
+	override Void set(Str name, Obj? val) {map.set(name, val) }
+	override Void remove(Str name) {map.remove(name) }
 }

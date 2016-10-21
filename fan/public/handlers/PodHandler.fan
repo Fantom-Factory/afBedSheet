@@ -1,5 +1,5 @@
 using afIoc::Inject
-using afIoc::Registry
+using afIoc::Scope
 using afIocConfig::Config
 using afBeanUtils::ArgNotFoundErr
 
@@ -10,17 +10,17 @@ using afBeanUtils::ArgNotFoundErr
 ** 
 **   /<baseUrl>/<podName>/<fileName>
 ** 
-** By default the base url is '/pods/' which means you should always be able to access the flux icon.
+** By default the 'baseUrl' is '/pod/' which means you should always be able to access the flux icon.
 ** 
-**   /pods/icons/x256/flux.png
+**   /pod/icons/x256/flux.png
 ** 
 ** Change the base url in the application defaults:
 ** 
 ** pre>
 ** syntax: fantom
 ** @Contribute { serviceType=ApplicationDefaults# } 
-** static Void contributeAppDefaults(Configuration conf) {
-**     conf[BedSheetConfigIds.podHandlerBaseUrl] = `/some/other/url/`
+** Void contributeAppDefaults(Configuration config) {
+**     config[BedSheetConfigIds.podHandlerBaseUrl] = `/some/other/url/`
 ** }
 ** <pre
 ** 
@@ -41,10 +41,10 @@ using afBeanUtils::ArgNotFoundErr
 ** <!DOCTYPE html>
 ** <html>
 ** <head>
-**     <script type="text/javascript" src="/pods/sys/sys.js"></script>
-**     <script type="text/javascript" src="/pods/gfx/gfx.js"></script>
-**     <script type="text/javascript" src="/pods/web/web.js"></script>
-**     <script type="text/javascript" src="/pods/dom/dom.js"></script>
+**     <script type="text/javascript" src="/pod/sys/sys.js"></script>
+**     <script type="text/javascript" src="/pod/gfx/gfx.js"></script>
+**     <script type="text/javascript" src="/pod/web/web.js"></script>
+**     <script type="text/javascript" src="/pod/dom/dom.js"></script>
 ** </head>
 ** <body>
 **     <h1>Old Skool Example</h1>
@@ -74,7 +74,7 @@ using afBeanUtils::ArgNotFoundErr
 ** By default only a handful of files with common web extensions are allowed. These include:
 ** 
 ** pre>
-** .      web files: .css .htm .html .js .xhtml
+** .      web files: .css .htm .html .js .xhtml .js.map
 **      image files: .bmp .gif .ico .jpg .png
 **   web font files: .eot .otf .svg .ttf .woff
 **      other files: .csv .txt .xml
@@ -110,10 +110,10 @@ const mixin PodHandler : ClientAssetProducer {
 internal const class PodHandlerImpl : PodHandler {
 
 	@Config { id="afBedSheet.podHandler.baseUrl" }
-	@Inject override const Uri?				baseUrl
-	@Inject	private const ClientAssetCache	assetCache
-	@Inject	private const Registry			registry
-			private const Regex[] 			whitelistFilters
+	@Inject override const Uri?					baseUrl
+	@Inject	private const |->ClientAssetCache|	assetCache
+	@Inject	private const Scope					scope
+			private const Regex[] 				whitelistFilters
 	
 	new make(Regex[] filters, |This|? in) {
 		this.whitelistFilters = filters
@@ -124,11 +124,11 @@ internal const class PodHandlerImpl : PodHandler {
 			return
 
 		if (!baseUrl.isPathOnly)
-			throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(baseUrl, `/pods/`))
+			throw BedSheetErr(BsErrMsgs.urlMustBePathOnly(baseUrl, `/pod/`))
 		if (!baseUrl.isPathAbs)
-			throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(baseUrl, `/pods/`))
+			throw BedSheetErr(BsErrMsgs.urlMustStartWithSlash(baseUrl, `/pod/`))
 		if (!baseUrl.isDir)
-			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pods/`))
+			throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(baseUrl, `/pod/`))
 	}
 
 	override ClientAsset? produceAsset(Uri localUrl) {
@@ -148,7 +148,7 @@ internal const class PodHandlerImpl : PodHandler {
 			if (checked) throw Err(BsErrMsgs.podHandler_disabled)
 			else return null
 
-		Utils.validateLocalUrl(localUrl, `/pods/icons/x256/flux.png`)
+		Utils.validateLocalUrl(localUrl, `/pod/icons/x256/flux.png`)
 		if (!localUrl.toStr.startsWith(baseUrl.toStr))
 			if (checked) throw ArgErr(BsErrMsgs.podHandler_urlNotMapped(localUrl, baseUrl))
 			else return null
@@ -192,9 +192,9 @@ internal const class PodHandlerImpl : PodHandler {
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 			
-			return registry.autobuild(FileAsset#, [localUrl, file])
+			return scope.build(FileAsset#, [localUrl, file])
 		}
 		
-		return cache ? assetCache.getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl) 
+		return cache ? assetCache().getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl) 
 	}	
 }

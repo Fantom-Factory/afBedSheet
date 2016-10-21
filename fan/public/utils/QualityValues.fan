@@ -4,17 +4,21 @@
 ** useful accessor methods; like [#accepts(Str name)]`QualityValues.accepts` which returns 'true' only if the 
 ** name exists AND has a qvalue greater than 0.0.
 **
-** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3`
+** @see `http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html`
 class QualityValues {
-	private Str:Float	qvalues	:= Utils.makeMap(Str#, Float#)
+
+	private Str:Float map
 	
 	private new make(Str:Float qvalues) {
-		this.qvalues = qvalues
+		this.map = qvalues
 	}
 	
 	** Parses a HTTP header value into a 'name:qvalue' map.
 	** Throws 'ParseErr' if the header Str is invalid.
-	static new fromStr(Str? header, Bool checked := true) {
+	** 
+	**   syntax: fantom
+	**   QualityValues("Accept: audio/*; q=0.2, audio/basic")
+	static new fromStr(Str? header := null, Bool checked := true) {
 		qvalues	:= Utils.makeMap(Str#, Float#)
 		
 		if (header == null)
@@ -52,39 +56,68 @@ class QualityValues {
 	}
 
 	** Returns a joined-up Str of qvalues that may be set in a HTTP header. The names are sorted by 
-	** qvalue. 
+	** qvalue. Example:
+	**
+	**   audio/*; q=0.2, audio/basic
 	override Str toStr() {
-		qvalues.keys.sortr |q1, q2| { qvalues[q1] <=> qvalues[q2] }.join(", ") |q| { qvalues[q] == 1.0f ? "$q" : "$q;q=" + qvalues[q].toLocale("0.0##") }
+		map.keys.sortr |q1, q2| { map[q1] <=> map[q2] }.join(", ") |q| { map[q] == 1.0f ? "$q" : "$q;q=" + map[q].toLocale("0.0##") }
 	}
 
 	** Returns the qvalue associated with 'name'. Defaults to '0' if 'name' was not supplied.
+	** 
+	** This method matches against '*' wildcards in the qvalue list, but favours exact match.
 	@Operator
 	Float get(Str name) {
-		qvalues.get(name, 0f)
+		// favour an exact matach before a wildcard matche
+		map.get(name) ?: ( 
+			map.find |qval, mime| {
+				Regex.glob(mime).matches(name) && qval > 0f
+			} ?: 0f
+		)
 	}
 
-	** Returns 'true' if 'name' was supplied in the header
+	** Returns 'true' if 'name' was supplied in the header.
+	** 
+	** This method matches against '*' wildcards in the qvalue list.
 	Bool contains(Str name) {
-		qvalues.containsKey(name)
+		map.any |qval, mime| {
+			Regex.glob(mime).matches(name)
+		}
 	}
 
 	** Returns 'true' if the name was supplied in the header AND has a qvalue > 0.0
+	** 
+	** This method matches against '*' wildcards in the qvalue list.
 	Bool accepts(Str name) {
-		get(name) > 0f
+		map.any |qval, mime| {
+			Regex.glob(mime).matches(name) && qval > 0f
+		}
 	}
 	
 	** Returns the number of values given in the header
 	Int size() {
-		qvalues.size
+		map.size
 	}
 	
 	** Returns 'size() == 0'
 	Bool isEmpty() {
-		qvalues.isEmpty
+		map.isEmpty
 	}
 	
-	** Returns a dup of the internal 'name:qvalue' map 
+	** Clears the qvalues
+	Void clear() {
+		map.clear
+	}
+	
+	@NoDoc @Deprecated { msg="Use 'qvalues' instead" } 
 	Str:Float toMap() {
-		qvalues.dup
+		map.dup
+	}
+	
+	** Returns a dup of the internal 'name:qvalue' map.
+	** 
+	** Use 'get()' and 'set()' to modify qvalues.
+	Str:Float qvalues() {
+		map.dup
 	}
 }

@@ -45,17 +45,17 @@
 ** 
 **   syntax: fantom 
 **   @Contribute { serviceType=RequestLoggers# }
-**   static Void contributeRequestLoggers(Configuration config) {
+**   Void contributeRequestLoggers(Configuration config) {
 **       config.add(MyRequestLogger())
 **   }
 ** 
-** A config key isn't required, but it's polite to provide one so other may remove it, or order their loggers before or after yours. 
+** A config key is not required, but it's polite to provide one so others may remove it, or order their loggers before or after yours. 
 ** You can also use IoC to autobuild your logger should it have any dependencies:
 ** 
 **   syntax: fantom 
 **   @Contribute { serviceType=RequestLoggers# }
-**   static Void contributeRequestLoggers(Configuration config) {
-**       config["myLogger"] = config.autobuild(MyRequestLogger#)
+**   Void contributeRequestLoggers(Configuration config) {
+**       config["myLogger"] = config.build(MyRequestLogger#)
 **   }
 **  
 const mixin RequestLogger {

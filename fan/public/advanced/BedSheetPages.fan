@@ -7,50 +7,53 @@ using web::WebRes
 const mixin BedSheetPages {
 
 	** Renders the 'BedSheet' status page, such as the 404 page.
-	abstract Text renderHttpStatus(HttpStatus httpStatus, Bool verbose)
+	abstract Text? renderHttpStatus(HttpStatus httpStatus, Bool verbose)
 
 	** Renders the 'BedSheet' Err page. If 'verbose' is 'false' a very minimal page is rendered, otherwise the standard
 	** detail BedSheet Err page is rendered.
 	** 
 	** > **ALIEN-AID:** To ensure you see the verbose Err page, start 'BedSheet' with the '-env dev' option or set the 
 	** environment variable 'env' to 'dev'.   
-	abstract Text renderErr(Err err, Bool verbose)
+	abstract Text? renderErr(Err err, Bool verbose)
 	
 	** Renders the 'BedSheet' welcome page. 
 	** Usually shown in place of a 404 if no [Routes]`Route` have been contributed to the `Routes` service. 
-	abstract Text renderWelcome()
+	abstract Text? renderWelcome(HttpStatus httpStatus)
 }
 
 internal const class BedSheetPagesImpl : BedSheetPages {
 
-	@Inject	private const HttpRequest			request
-	@Inject	private const ErrPrinterHtml 		errPrinterHtml
-	@Inject	private const NotFoundPrinterHtml 	notFoundPrinterHtml
+	@Inject	private const HttpRequest				httpRequest
+	@Inject	private const |->ErrPrinterHtml|		errPrinterHtml
+	@Inject	private const |->ErrPrinterStr|			errPrinterStr
+	@Inject	private const |->NotFoundPrinterHtml| 	notFoundPrinterHtml
 
 	new make(|This|in) { in(this) }
 
-	override Text renderHttpStatus(HttpStatus httpStatus, Bool verbose) {
+	override Text? renderHttpStatus(HttpStatus httpStatus, Bool verbose) {
 		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
 		// if the msg is html, leave it as is
 		msg		:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>\n"
-		content	:= (verbose && httpStatus.code == 404) ? msg + notFoundPrinterHtml.toHtml : msg
-		return render(title, content)
+		xhtml	:= (verbose && httpStatus.code == 404) ? msg + notFoundPrinterHtml().toHtml : msg
+		str		:= httpStatus.toStr
+		return render(title, xhtml, str)
 	}	
 
-	override Text renderErr(Err err, Bool verbose) {
+	override Text? renderErr(Err err, Bool verbose) {
 		title	:= "500 - " + WebRes.statusMsg[500]
-		content	:= verbose ? errPrinterHtml.errToHtml(err) : "<p><b>${err.msg}</b></p>\n"
-		return render(title, content, BedSheetLogo.skull)
+		xhtml	:= verbose ? errPrinterHtml().errToHtml(err) : "<p><b>${err.msg}</b></p>\n"
+		str		:= verbose ? errPrinterStr() .errToStr (err) : "${err.msg}\n"
+		return render(title, xhtml, str, BedSheetLogo.skull)
 	}
 	
-	override Text renderWelcome() {
+	override Text? renderWelcome(HttpStatus httpStatus) {
 		title	:= "BedSheet ${typeof.pod.version}"
-		content	:= typeof.pod.file(`/res/web/welcomePage.html`).readAllStr
-		content	 = content.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr)
-		return render(title, content)
-	}	
+		xhtml	:= typeof.pod.file(`/res/web/welcomePage.html`).readAllStr
+		str		:= httpStatus.toStr
+		return render(title, xhtml.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr), str.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr))
+	}
 	
-	private Text render(Str title, Str content, BedSheetLogo logo := BedSheetLogo.alienHead) {
+	private Text? render(Str title, Str xhtmlContent, Str strContent, BedSheetLogo logo := BedSheetLogo.alienHead) {
 		alienHeadSvg	:= typeof.pod.file(logo.svgUri).readAllStr
 		bedSheetCss		:= typeof.pod.file(`/res/web/bedSheet.css`).readAllStr
 		bedSheetXhtml	:= typeof.pod.file(`/res/web/bedSheet.html`).readAllStr
@@ -59,10 +62,39 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 							.replace("{{{ title }}}", title)
 							.replace("{{{ bedSheetCss }}}", bedSheetCss)
 							.replace("{{{ alienHeadSvg }}}", alienHeadSvg)
-							.replace("{{{ content }}}", content)
+							.replace("{{{ content }}}", xhtmlContent)
 							.replace("{{{ version }}}", version)
 
-		return Text.fromXhtml(xhtml)
+		return toText(xhtml, strContent)
+	}
+	
+	private Text? toText(Str xhtml, Str str) {
+		retType	:= "plain" as Str	// the default if no accept header is sent
+
+		accept  := httpRequest.headers.accept
+		if (accept != null) {
+			accMap := [
+				["html",  accept.get("text/html")],
+				["plain", accept.get("text/plain")],
+				["xhtml", accept.get("application/xhtml+xml")]
+			].sortr |a1, a2| { a1[1] <=> a2[1] }
+				
+			accepts := accMap.first
+			if (accepts.last == 0f)
+				retType = null
+			else
+				retType = accepts.first
+		}
+		
+		if (retType == "html")
+			return Text.fromHtml(StrBuf().add(xhtml).replaceRange(0..<60, "<!DOCTYPE html>\n<html>\n").toStr)
+		if (retType == "plain")
+			return Text.fromPlain(str)
+		if (retType == "xhtml")
+			return Text.fromXhtml(xhtml)
+		
+		// client doesn't want anything we have... :(
+		return null
 	}
 }
 
