@@ -6,7 +6,7 @@
 ** pre>
 ** syntax: fantom
 ** @Contribute { serviceType=GzipCompressible# }
-** static Void configureGzipCompressible(Configuration config) {
+** Void configureGzipCompressible(Configuration config) {
 **     config[MimeType("text/funky")] = true
 ** }
 ** <pre
@@ -16,7 +16,7 @@
 ** pre>
 ** syntax: fantom
 ** @Contribute { serviceType=GzipCompressible# }
-** static Void configureGzipCompressible(Configuration config) {
+** Void configureGzipCompressible(Configuration config) {
 **     config["text/funky"] = true
 ** }
 ** <pre

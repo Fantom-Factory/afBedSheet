@@ -1,4 +1,4 @@
-using concurrent
+using concurrent::Actor
 
 internal const class Utils {
 	
@@ -15,7 +15,10 @@ internal const class Utils {
 		return keyType.fits(Str#) ? Map.make(mapType) { caseInsensitive = true } : Map.make(mapType) { ordered = true }
 	}
 	
-	static Str traceErr(Err err, Int maxDepth := 50) {
+	static Str traceErr(Err err, Int? maxDepth := null) {
+		if (maxDepth == null || maxDepth < 1)
+			return err.traceToStr
+		
 		b := Buf()	// can't trace to a StrBuf
 		err.trace(b.out, ["maxDepth":maxDepth])
 		return b.flip.in.readAllStr

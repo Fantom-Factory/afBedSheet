@@ -20,7 +20,7 @@ internal const class AssetProcessor : ResponseProcessor {
 
 		if (!asset.exists) {
 			assetCache.remove((asset as ClientAsset)?.localUrl)
-			throw HttpStatusErr(404, "File not found: $httpRequest.url")
+			return HttpStatus(404, "File not found: $httpRequest.url")
 		}
 
 		// set cache headers
@@ -51,9 +51,16 @@ internal const class AssetProcessor : ResponseProcessor {
 			if (in == null) {
 				// oh, it really doesn't exist! (damn that caching!)
 				assetCache.remove((asset as ClientAsset)?.localUrl)
-				throw HttpStatusErr(404, "File not found: $httpRequest.url")
+				return HttpStatus(404, "File not found: $httpRequest.url")
 			}
-			in.pipe(httpResponse.out, asset.size, true) 
+			try	
+				in.pipe(httpResponse.out, asset.size, true)
+			catch (IOErr ioe) {
+				// guard against 'Unexpected end of stream'
+				// oh, it really doesn't exist! (damn that caching!)
+				assetCache.remove((asset as ClientAsset)?.localUrl)
+				return HttpStatus(404, "File not found: $httpRequest.url")				
+			}
 		}
 
 		return true

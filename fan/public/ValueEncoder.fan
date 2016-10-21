@@ -15,15 +15,15 @@
 ** Nullablity
 ** ==========
 ** 'Obj' values may be 'null', but they must always be converted to a 'Str' instance since you can't express 'null' as 
-** a HTML attribute. Bear this in mind when constructing your 'ValueEncoder' for the empty string is used as a 'null' 
-** representation. Example:   
+** a HTML attribute. Bear this in mind when constructing your 'ValueEncoder' for the empty string is often used to 
+** represent 'null'. Example:   
 ** 
 ** pre>
 ** syntax: fantom
 ** const class MyValueEncoder : ValueEncoder {
 ** 
 **     override Str toClient(Obj? value) {
-**         if (value == null) return Str.defVal
+**         if (value == null) return ""
 **         ...
 **     }
 ** 
@@ -39,7 +39,7 @@
 ** 
 ** 
 ** 
-** IOC Configuration
+** IoC Configuration
 ** =================
 ** Instances of 'ValueEncoder' should be contributed to the 'ValueEncoders' service and mapped to a 
 ** 'Type' representing the object it converts. 
@@ -49,14 +49,16 @@
 ** pre>
 **   syntax: fantom
 **   @Contribute { serviceType=ValueEncoders# }
-**   static Void contributeValueEncoders(Configuration conf) {
-**     conf[MyEntity#] = conf.autobuild(MyEntityEncoder#)
+**   Void contributeValueEncoders(Configuration config) {
+**     config[MyEntity#] = config.build(MyEntityEncoder#)
 **   }
 ** <pre
 ** 
 const mixin ValueEncoder {
 
 	** Encode the given value into a 'Str'.
+	** 
+	** Note clients values need not be XML or URI escaped as this should be done as a seperate step. 
 	abstract Str toClient(Obj? value)
 
 	** Decode the given 'Str' back into an 'Obj'.

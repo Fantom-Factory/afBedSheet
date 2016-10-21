@@ -15,7 +15,7 @@ internal class TestPodHandling : AppTest {
 	}
 
 	Void testFileIsServed() {
-		verifyStatus(`/pods/icons/x256/flux.png`, 200)
+		verifyStatus(`/pod/icons/x256/flux.png`, 200)
 
 		verifyEq(client.resHeaders["ETag"], file1_eTag)
 		verifyEq(client.resHeaders["Content-Length"], "20517")
@@ -23,27 +23,27 @@ internal class TestPodHandling : AppTest {
 	}
 
 	Void test404_1() {
-		verify404(`/pods/iconz.png`)
+		verify404(`/pod/iconz.png`)
 	}
 
 	Void test404_2() {
-		verify404(`/pods/iconz/x256/flux.png`)
+		verify404(`/pod/iconz/x256/flux.png`)
 	}
 
 	Void test404_3() {
-		verify404(`/pods/icons/x69/flux.png`)
+		verify404(`/pod/icons/x69/flux.png`)
 	}
 
 	Void testFolder() {
-		verify404(`/pods/icons/x69/`)
+		verify404(`/pod/icons/x69/`)
 	}
 
 	Void testNoPodHandling() {
-		verify404(`/pods/icons/x256/flux.png`)
+		verify404(`/pod/icons/x256/flux.png`)
 	}
 }
 
-internal class T_WelcomeMod3 { 
+internal const class T_WelcomeMod3 { 
 	@Contribute { serviceType=ApplicationDefaults# } 
 	static Void contributeApplicationDefaults(Configuration conf) {
 		conf[BedSheetConfigIds.podHandlerBaseUrl] = null

@@ -1,6 +1,4 @@
-using afIoc::IocShutdownErr
-using afIoc::Inject
-using afIoc::Registry
+using afIoc
 using afIocConfig::Config
 
 ** Catches and processes Errs. This usually involves generating and sending a error page to the client. 
@@ -11,6 +9,7 @@ internal const class ErrMiddleware : Middleware {
 	@Inject private const Bool					inProd
 	
 	@Inject	private const ResponseProcessors	responseProcessors
+	@Inject	private const HttpRequest			httpRequest
 	@Inject	private const HttpResponse			httpResponse
 	@Inject	private const BedSheetPages			bedSheetPages
 
@@ -27,8 +26,8 @@ internal const class ErrMiddleware : Middleware {
 				pipeline.service
 				return
 				
-			// nothing we can do here
-			} catch (IocShutdownErr shutdownErr) {
+				// nothing we can do here
+			} catch (RegistryShutdownErr err) {
 				return
 
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 
@@ -69,9 +68,16 @@ internal const class ErrMiddleware : Middleware {
 	
 	private Void setStackTraceHeader(Err err) {
 		if (!httpResponse.isCommitted && !inProd) {
-			addHeader("X-afBedSheet-errMsg", 		err.msg)
-			addHeader("X-afBedSheet-errType", 		err.typeof.qname)
-			addHeader("X-afBedSheet-errStackTrace",	Utils.traceErr(err, 100))
+			
+			// IE doesn't like these headers, so if called by a real browser, water down and sanitise them
+			if (httpRequest.headers.userAgent != null && httpRequest.headers.userAgent.size > 20) {
+				addHeader("X-afBedSheet-errMsg", 		err.msg.replace("\n", " "))
+				addHeader("X-afBedSheet-errType", 		err.typeof.qname)				
+			} else {
+				addHeader("X-afBedSheet-errMsg", 		err.msg)
+				addHeader("X-afBedSheet-errType", 		err.typeof.qname)
+				addHeader("X-afBedSheet-errStackTrace",	Utils.traceErr(err))
+			}
 		}
 	}
 	

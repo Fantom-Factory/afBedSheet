@@ -2,34 +2,41 @@ using afBeanUtils::NotFoundErr
 using afIoc
 using afIocConfig::Config
 using afIocConfig::ConfigSource
+using afConcurrent::ActorPools
 using web::WebOutStream
-using afPlastic::SrcCodeErr
 
 ** (Service) - public, 'cos it's useful for emails. 
 @NoDoc	// Advanced use only
 const class ErrPrinterHtml {
 	@Inject	private const Log log
 		
-	private const |WebOutStream out, Err? err|[]	printers
+	const Str:|WebOutStream out, Err? err|	printerFuncs
 
-	new make(|WebOutStream out, Err? err|[] printers, |This|in) {
+	new make(Str:|WebOutStream out, Err? err| printerFuncs, |This|in) {
 		in(this)
-		this.printers = printers
+		this.printerFuncs = printerFuncs
 	}
 	
-	Str errToHtml(Err err) {
+	Str errToHtml(Err? err) {
 		buf := StrBuf()
 		out := WebOutStream(buf.out)
 
-		msg	  := "${err.typeof}\n - ${err.msg}"
-		h1Msg := msg.split('\n').join("<br/>") { it.toXml }
-		out.h1.w(h1Msg).h1End
+		if (err != null) {
+			msg	  := "${err.typeof}\n - ${err.msg}"
+			// 512 chars is about 15 lines of h1 text - should be plenty!
+			// It gets confusing if the web page is ALL h1 text, so we limit it
+			if (msg.size > 512)
+				msg = msg[0..<508] + "..."
+	
+			h1Msg := msg.split('\n').join("<br/>") { it.toXml }
+			out.h1.w(h1Msg).h1End
+		}
 		
-		printers.each |print| { 
+		printerFuncs.each |print| { 
 			try {
 				print.call(out, err)
 			} catch (Err e) {
-				log.warn("Err when printing Err - $e.msg")
+				log.warn("Err when printing Err to HTML - $e.msg", e)
 				out.p.w("ERROR!").pEnd
 			}
 		}
@@ -39,35 +46,30 @@ const class ErrPrinterHtml {
 }
 
 internal const class ErrPrinterHtmlSections {
-	@Config { id="afBedSheet.plastic.srcCodeErrPadding" } 	
-	@Inject	private const Int			srcCodePadding	
-	
-	@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
-	@Inject	private const Int 			noOfStackFrames
-	
 	@Inject	private const StackFrameFilter	frameFilter
 	@Inject	private const BedSheetServer	bedServer
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpSession		session
 	@Inject	private const HttpCookies		cookies
 	@Inject	private const ConfigSource		configSrc
+	@Inject	private const FileHandler		fileHandler
+	@Inject	private const PodHandler		podHandler
 	@Inject	private const Routes			routes
 	@Inject	private const ActorPools		actorPools
+	@Inject	private const |->MiddlewarePipeline|	middleware
 
 	new make(|This|in) { in(this) }
 
 	Void printCauses(WebOutStream out, Err? err) {
-		causes := Err[,]
-		forEachCause(err, Err#) |Err cause->Bool| { causes.add(cause); return false }
-		if (causes.size <= 1)	// don't bother if there are no causes
-			return
-		
+		causes := ErrPrinterStrSections.isolateCauses(err)
+		if (causes.size <= 1) return
+
 		title(out, "Causes")
 		out.pre
 
-		causes.each |Err cause, Int i| {
+		causes.each |Str cause, Int i| {
 			indent := "".padl(i*2)
-			out.w("${indent}${cause.typeof.qname} - ${cause.msg}\n")
+			out.writeXml("${indent}${cause}\n")
 		}
 		out.preEnd
 	}
@@ -95,50 +97,30 @@ internal const class ErrPrinterHtmlSections {
 		}
 	}
 
-	Void printSrcCodeErrs(WebOutStream out, Err? err) {
-		forEachCause(err, SrcCodeErr#) |SrcCodeErr srcCodeErr->Bool| {
-			srcCode 	:= srcCodeErr.srcCode
-			title		:= srcCodeErr.typeof.name.toDisplayName
-			
-			this.title(out, title)
-			
-			out.p.w(srcCode.srcCodeLocation).w(" : Line ${srcCodeErr.errLineNo}").br
-			out.w("&#160;&#160;-&#160;").writeXml(srcCodeErr.msg).pEnd
-			
-			out.div("class=\"srcLoc\"")
-			out.table
-			srcCode.srcCodeSnippetMap(srcCodeErr.errLineNo, srcCodePadding).each |src, line| {
-				if (line == srcCodeErr.errLineNo) { out.tr("class=\"errLine\"") } else { out.tr }
-				out.td.w(line).tdEnd.td.w(src.toXml).tdEnd
-				out.trEnd
-			}
-			out.tableEnd
-			out.divEnd
-			return false
-		}
-	}
-
 	Void printStackTrace(WebOutStream out, Err? err) {
-		if (err != null) {
-			// special case for wrapped IocErrs, unwrap the err if it adds nothing 
-			if (err is IocErr && err.msg == err.cause?.msg)
-				err = err.cause			
-			title(out, "Stack Trace")
-			
-			out.div
-			out.printLine("""<label><input type="checkbox" value="wotever" checked="checked" onclick="document.getElementById('stackFrames').className = this.checked ? 'hideBoring' : '';"/> Hide boring stack frames</label> """)
-			out.divEnd
-			
-			out.pre("id=\"stackFrames\" class=\"hideBoring\"")
-			out.writeXml("${err.typeof.qname} : ${err.msg}\n")
-			Utils.traceErr(err, noOfStackFrames).replace(err.toStr, "").splitLines.each |frame| {
-				css := frameFilter.filter(frame) ? "dull" : "okay"
+		stacks := ErrPrinterStrSections.isolateStackFrames(err) 
+		if (stacks.size == 0) return
+
+		// special case for wrapped IocErrs, unwrap the err if it adds nothing 
+		if (err is IocErr && err.msg == err.cause?.msg)
+			err = err.cause			
+		title(out, "Stack Trace")
+		
+		out.div
+		out.printLine("""<label><input type="checkbox" value="wotever" checked="checked" onclick="document.getElementById('stackFrames').className = this.checked ? 'hideBoring' : '';"/> Hide boring stack frames</label> """)
+		out.divEnd
+		
+		out.pre("id=\"stackFrames\" class=\"hideBoring\"")
+		stacks.each |stack, i| {
+			indent := "".padl(i * 2)
+			stack.each |frame| {
+				css := frame.startsWith(" ") && frameFilter.filter(frame) ? "dull" : "okay"
 				out.span("class=\"${css}\"")
-				out.writeXml("  ${frame}\n")
+				out.writeXml("  ${indent}${frame}\n")
 				out.spanEnd
 			}
-			out.preEnd
 		}
+		out.preEnd
 	}
 
 	Void printRequestDetails(WebOutStream out, Err? err) {
@@ -199,19 +181,38 @@ internal const class ErrPrinterHtmlSections {
 	}
 
 	Void printIocConfig(WebOutStream out, Err? err) {
-		if (!configSrc.config.isEmpty) {
+		if (!configSrc.configMuted.isEmpty) {
 			title(out, "Ioc Config Values")
-			prettyPrintMap(out, configSrc.config, true)
+			prettyPrintMap(out, configSrc.configMuted, true)
 		}
 	}
 
-	Void printBedSheetRoutes(WebOutStream out, Err? err) {
+	Void printFileHandlers(WebOutStream out, Err? err) {
+		if (fileHandler.directoryMappings.size > 0) {
+			title(out, "File Handlers")
+			map := Str:Str[:] 
+			fileHandler.directoryMappings.each |v, k|{ map["${k}*"] = "${v}*" }
+			if (podHandler.baseUrl != null) {
+				map["${podHandler.baseUrl}*"] = "fan://*"
+			}
+			prettyPrintMap(out, map, true)
+		}
+	}
+
+	Void printRoutes(WebOutStream out, Err? err) {
 		if (!routes.routes.isEmpty) {
 			title(out, "BedSheet Routes")
 			map := [:] { ordered = true }
 			routes.routes.each |r| { map[r.matchHint] = r.responseHint }
 			prettyPrintMap(out, map, false)
 		}
+	}
+	
+	Void printMiddleware(WebOutStream out, Err? err) {
+		title(out, "BedSheet Middleware")
+		out.ol
+		middleware().middleware.each |ware| { out.li.writeXml(ware.typeof.qname).liEnd }
+		out.olEnd		
 	}
 
 	Void printActorPools(WebOutStream out, Err? err) {
@@ -227,6 +228,7 @@ internal const class ErrPrinterHtmlSections {
 		title(out, "Fantom Environment")
 		out.table
 		w(out, "Cmd Args", 	Env.cur.args)
+		w(out, "Cur Dir", 	`./`.toFile.normalize.uri)
 		w(out, "Home Dir", 	Env.cur.homeDir)
 		w(out, "Host", 		Env.cur.host)
 		w(out, "Platform", 	Env.cur.platform)
@@ -282,7 +284,7 @@ internal const class ErrPrinterHtmlSections {
 		prettyPrintMap(out, map, true)
 	}
 
-	private Str readPodVersion(Str podName) {
+	private static Str readPodVersion(Str podName) {
 		try {
 			podFile := Env.cur.findPodFile(podName)
 			zip 	:= Zip.open(podFile)
@@ -296,14 +298,14 @@ internal const class ErrPrinterHtmlSections {
 	
 	** If you're thinking of generating a ToC, think about those contributions not in BedSheet...
 	** ...and if we add a HTML Helper - do we want add a dependency to BedSheet?
-	private Void title(WebOutStream out, Str title) {
-		out.h2("id=\"${title.fromDisplayName}\"").w(title).h2End
+	private static Void title(WebOutStream out, Str title) {
+		out.h2("id=\"${title.fromDisplayName}\"").writeXml(title).h2End
 	}
 	
-	private Void prettyPrintMap(WebOutStream out, Str:Obj? map, Bool sort, Str? cssClass := null) {
+	private static Void prettyPrintMap(WebOutStream out, Obj:Obj? map, Bool sort, Str? cssClass := null) {
 		if (sort) {
 			newMap := Str:Obj?[:] { ordered = true } 
-			map.keys.sort.each |k| { newMap[k] = map[k] }
+			map.keys.sort.each |k| { newMap[k.toStr] = map[k] }
 			map = newMap
 		}
 		out.table(cssClass == null ? null : "class=\"${cssClass}\"")
@@ -312,7 +314,7 @@ internal const class ErrPrinterHtmlSections {
 				// a map inside a map! Used for Actor.Locals()
 				m2 := (Map) v1
 				out.tr
-				out.td.writeXml(k1).tdEnd
+				out.td.writeXml(k1.toStr).tdEnd
 				out.td.tag("ul")
 				m2.keys.sort.each |k2, i2|{
 					v2 := "$k2:${m2[k2]}"
@@ -328,16 +330,16 @@ internal const class ErrPrinterHtmlSections {
 				out.trEnd
 
 			} else
-				w(out, k1, v1)
+				w(out, k1.toStr, v1)
 		} 
 		out.tableEnd
 	}
 
-	private Void w(WebOutStream out, Str key, Obj? val) {
+	private static Void w(WebOutStream out, Str key, Obj? val) {
 		out.tr.td.writeXml(key).tdEnd.td.writeXml(val?.toStr ?: "null").tdEnd.trEnd
 	}
 	
-	private Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
+	private static Void forEachCause(Err? err, Type causeType, |Obj->Bool| f) {
 		done := false
 		while (err != null && !done) {
 			if (err.typeof.fits(causeType))

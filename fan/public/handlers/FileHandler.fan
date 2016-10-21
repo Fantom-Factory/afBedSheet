@@ -5,19 +5,26 @@ using afIoc
 ** A 'ClientAssetProducer' that maps URLs to files on the file system.
 ** Use to serve up file assets.
 ** 
+** Note if no configuration is given to 'FileHandler' then it defaults to serving files from the 
+** 'etc/web-static/' directory.
+** 
+** 
+** 
+** Configuration [#configuration]
+** ==============================
 ** Suppose your project has this directory structure:
 ** 
 ** pre>
 ** myProj/
-**  |-- fan/
-**  |-- test/
-**  `-- etc
-**       `-- static-web/
-**            |-- css/
-**            |    `-- app.css
-**            |-- images/
-**            |    `-- logo.png
-**            `-- scripts/
+**  |- fan/
+**  |- test/
+**  |- etc
+**      |- www/
+**          |- css/
+**          |   |- app.css
+**          |- images/
+**          |   |- logo.png
+**          |- scripts/
 ** <pre
 ** 
 ** To serve up files from the 'css/' directory add the following to 'AppModule':
@@ -25,14 +32,15 @@ using afIoc
 ** pre>
 ** syntax: fantom
 ** @Contribute { serviceType=FileHandler# }
-** static Void contributeFileHandler(Configuration conf) {
-**   conf[`/stylesheets/`] = `etc/static-web/css/`.toFile
+** Void contributeFileHandler(Configuration config) {
+**     config[`/stylesheets/`] = `etc/www/css/`.toFile
 ** }
 ** <pre
 ** 
 ** Browsers may then access 'app.css' with the URL '/stylesheets/app.css'.
 ** 
-** Rather than hardcoding '/stylesheets/app.css' in HTML, it is better to generate a client URL from 'FileHandler'.
+** Rather than hardcoding the string '/stylesheets/app.css' in HTML, it is better to generate a 
+** client URL from 'FileHandler'.
 ** 
 **   syntax: fantom
 **   urlStr := fileHandler.fromLocalUrl(`/stylesheets/app.css`).clientUrl.encode
@@ -42,20 +50,22 @@ using afIoc
 **  - generating correct URLs in non-root WebMods
 **  - utilising an asset caching strategy
 **
-** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the 'BedSheet WebMod'.
-** It is also transformed by asset caching strategies such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`.
+** The generated 'clientUrl' contains any extra 'WebMod' path segments required to reach the BedSheet 'WebMod'.
+** It is also transformed by asset caching strategies such as [Cold Feet]`http://pods.fantomfactory.org/pods/afColdFeet/`.
 **  
 ** 
 ** 
 ** Serve All Root Directories [#serveAllDirs]
 ** ==========================================
 ** Using the above example, extra config would need to be added to serve the 'images/' and the 'scripts/' directories. 
-** This is not ideal. So to serve all the files and directories under 'etc/static-web/' add config for the root URL:  
+** This is not ideal. So to serve all the files and directories under 'etc/www/' add config for the root URL:  
 ** 
 **   syntax: fantom
-**   conf[`/`] = `etc/static-web/`.toFile
+**   conf[`/`] = `etc/www/`.toFile
 ** 
-** This way everything under 'etc/static-web/' is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
+** This way everything under 'etc/www/' is served as is. Example, 'logo.png' is accessed with the URL '/images/logo.png'.
+** 
+** Note if no configuration is given to 'FileHandler' then it defaults to serving root files from the 'etc/web-static/' directory.
 ** 
 ** 
 ** 
@@ -102,15 +112,15 @@ const mixin FileHandler : ClientAssetProducer {
 
 internal const class FileHandlerImpl : FileHandler {
 	
-	@Inject	private const ClientAssetCache	assetCache
-	@Inject	private const Registry			registry
-			override const Uri:File 		directoryMappings
+	@Inject	private const |->ClientAssetCache|	assetCache
+	@Inject	private const Scope					scope
+			override const Uri:File 			directoryMappings
 		
 	new make(Uri:File dirMappings, |This|? in) {
 		in?.call(this)
 		
 		// verify file and uri mappings, normalise the files
-		this.directoryMappings = dirMappings.map |file, uri -> File| {
+		directoryMappings := dirMappings.map |file, uri -> File| {
 			if (!file.exists)
 				throw BedSheetErr(BsErrMsgs.fileNotFound(file))
 			if (!file.isDir)
@@ -123,6 +133,12 @@ internal const class FileHandlerImpl : FileHandler {
 				throw BedSheetErr(BsErrMsgs.urlMustEndWithSlash(uri, `/foo/bar/`))
 			return file.normalize
 		}
+		
+		// add our default dir mapping should no config be given
+		if (directoryMappings.isEmpty)
+			directoryMappings[`/`] = `etc/web-static/`.toFile
+		
+		this.directoryMappings = directoryMappings
 	}
 		
 	override Uri? findMappingFromLocalUrl(Uri localUri) {
@@ -185,9 +201,9 @@ internal const class FileHandlerImpl : FileHandler {
 				if (checked) throw ArgErr(BsErrMsgs.fileNotFound(file))
 				else return null
 
-			return registry.autobuild(FileAsset#, [localUrl, file])
+			return scope.build(FileAsset#, [localUrl, file])
 		}
 		
-		return cache ? assetCache.getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl)
+		return cache ? assetCache().getAndUpdateOrMake(localUrl, makeFunc) : makeFunc(localUrl)
 	}
 }

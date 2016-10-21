@@ -29,12 +29,20 @@ internal const class BsLogMsgs {
 		"Killing BedSheet WebApp '$appModule'"
 	}	
 
-	static Str appRestarter_podUpdatd(Str podName, Duration timeDiff) {
+	static Str appRestarter_podUpdated(Str podName, Duration timeDiff) {
 		"Pod '$podName' pod was updated $timeDiff.toLocale ago"
 	}
 
 	static Str appRestarter_noMetaProps(File podFile) {
 		"Could not find `meta.props` in ${podFile.normalize}"
+	}
+
+	static Str appRestarter_noPodFile(Str podName) {
+		"Could not find pod file for '$podName'"
+	}
+
+	static Str appRestarter_canNotProxyScripts(Str podName) {
+		"Can not proxy applications run from a script - ${podName}"
 	}
 
 	// ---- AppDestroyer --------------------------------------------------------------------------
@@ -81,12 +89,12 @@ internal const class BsLogMsgs {
 		"Could not find any AppModules!"
 	}
 
-	static Str bedSheetWebMod_started(Str appName, Uri host) {
-		"\n\nBed App '$appName' listening on ${host}\n"
+	static Str bedSheetWebMod_started(Str appName, Version? ver, Uri host) {
+		"\n\nBed App '$appName' v" + (ver ?: "???") + " listening on ${host}\n"
 	}
 	
 	static Str bedSheetWebMod_stopping(Str appModule) {
-		"\"Goodbye!\" from afBedSheet!"
+		"BedSheet says, \"Farewell!\""
 	}
 
 	// ---- Other ---------------------------------------------------------------------------------

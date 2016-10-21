@@ -31,6 +31,15 @@ class TestQualityValues : Test {
 		verifyEq(qvs.accepts("audio/*"), true)
 		verifyEq(qvs.accepts("audio/basic"), true)
 		verifyEq(qvs.accepts("wotever"), false)
+
+		
+		qvs	= QualityValues("application/*")
+		
+		verifyEq(qvs.size, 1)
+		verifyEq(qvs["application/xhtml+xml"], 1f)
+		verifyEq(qvs.accepts("application/*"), true)
+		verifyEq(qvs.accepts("application/basic"), true)
+		verifyEq(qvs.accepts("wotever"), false)
 	}
 
 	Void testParseQValues2() {
@@ -91,4 +100,46 @@ class TestQualityValues : Test {
 		verifyEq(qvs.toStr, "gzip, identity;q=0.5, deflate;q=0.256, *;q=0.0")
 	}
 	
+	
+	Void testContainsMediaWildCards() {
+		qvs	:= QualityValues("*")
+		verifyEq(qvs.contains("text"), true)
+	}
+
+	Void testContainsSubWildCards() {
+		qvs	:= QualityValues("text/*")
+		verifyEq(qvs.contains("text/*"), true)
+		verifyEq(qvs.contains("text/html"), true)
+		verifyEq(qvs.contains("text"), false)
+		verifyEq(qvs.contains("app/html"), false)
+	}
+	
+	Void testAcceptMediaWildCards() {
+		qvs	:= QualityValues("*")
+		verifyEq(qvs.accepts("text"), true)
+
+		qvs	= QualityValues("*; q=0")
+		verifyEq(qvs.accepts("text"), false)
+	}
+
+	Void testAcceptSubWildCards() {
+		qvs	:= QualityValues("text/*")
+		verifyEq(qvs.accepts("text/*"), true)
+		verifyEq(qvs.accepts("text/html"), true)
+		verifyEq(qvs.accepts("text"), false)
+		verifyEq(qvs.accepts("app/html"), false)
+
+		qvs	= QualityValues("app/*, text/*; q=0")
+		verifyEq(qvs.accepts("text/*"), false)
+		verifyEq(qvs.accepts("text/html"), false)
+		verifyEq(qvs.accepts("text"), false)
+		verifyEq(qvs.accepts("app"), false)
+		verifyEq(qvs.accepts("app/html"), true)
+
+		qvs	= QualityValues("*, text/*; q=0")	// the "*;q=1.0" means everything is accepted!
+		verifyEq(qvs.accepts("text/*"), true)
+		verifyEq(qvs.accepts("text/html"), true)
+		verifyEq(qvs.accepts("text"), true)
+		verifyEq(qvs.accepts("app/html"), true)
+	}
 }

@@ -25,17 +25,10 @@ internal class TestWelcomePage : AppTest {
 		super.setup
 		
 		verify404(`/wotever`)
-		client = WebClient()
-		verifyErr(IOErr#) {
-			// err 'cos there is no body to read
-			client.resStr
-		}
-		
-		client = WebClient()
-		page := getAsStr(`/welcome`)
-		verify(page.contains("Welcome to BedSheet ${typeof.pod.version}!"))
+		page := client.resIn.readAllStr.trim
+		verifyFalse(page.contains("Welcome to BedSheet ${typeof.pod.version}!"))
+		verifyTrue (page.contains("Try contributing the following Route to your AppModule class:"))
 	}
-	
 }
 
-internal class T_WelcomeMod1 { }
+internal const class T_WelcomeMod1 { }

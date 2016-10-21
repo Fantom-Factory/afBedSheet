@@ -10,8 +10,8 @@ internal class TestRoutes : BsTest {
 	Bool handler5() 		{ Actor.locals["handler5"] = true; return true }
 
 	Void testFallThrough() {
-		reg := RegistryBuilder().addModule(T_MyModule02#).build.startup
-		Routes routes := reg.serviceById("routes")
+		reg := RegistryBuilder().addModule(T_MyModule02#).build
+		Routes routes := reg.rootScope.serviceByType(Routes#)
 
 		httpReq := T_HttpRequest { it.url = `/1/2/3/4/5`; it.httpMethod = "GET" }
 		ret := routes.processRequest(httpReq)
@@ -25,12 +25,12 @@ internal class TestRoutes : BsTest {
 	}
 }
 
-internal class T_MyModule02 {
-	static Void defineServices(ServiceDefinitions defs) {
-		defs.add(Routes#)
-		defs.add(ResponseProcessors#)
-		defs.add(ValueEncoders#)
-		defs.add(ObjCache#)
+internal const class T_MyModule02 {
+	static Void defineServices(RegistryBuilder defs) {
+		defs.addService(Routes#)
+		defs.addService(ResponseProcessors#)
+		defs.addService(ValueEncoders#)
+		defs.addService(ObjCache#)
 	}	
 
 	@Contribute { serviceType=Routes# }
@@ -44,6 +44,6 @@ internal class T_MyModule02 {
 	
 	@Contribute { serviceType=ResponseProcessors# }
 	static Void contributeResponseProcessors(Configuration conf) {
-		conf[MethodCall#]	= conf.autobuild(MethodCallProcessor#)
+		conf[MethodCall#]	= conf.build(MethodCallProcessor#)
 	}
 }

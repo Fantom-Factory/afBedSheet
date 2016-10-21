@@ -1,5 +1,4 @@
 using afIoc
-using afConcurrent
 
 @NoDoc	// Don't overwhelm the masses
 const class RequestLoggers : Middleware {
@@ -32,24 +31,24 @@ const class RequestLoggers : Middleware {
 
 @NoDoc	// Don't overwhelm the masses
 const class BasicRequestLogger : RequestLogger {
-	@Inject private const HttpRequest	httpRequest
-	@Inject private const HttpResponse	httpResponse
-	@Inject private const LocalRef		startTime
-	@Inject private const Log			log
+	@Inject private const HttpRequest		httpRequest
+	@Inject private const HttpResponse		httpResponse
+	@Inject private const |->RequestState|	reqState
+	@Inject private const Log				log
+			private const Int				minLogWidth
 	
-	new make(|This|in) { in(this) }
-	
-	override Void logIncoming() {
-		startTime.val = Duration.now
+	new make(Int minLogWidth, |This|in) {
+		in(this)
+		this.minLogWidth = minLogWidth
 	}
 
 	override Void logOutgoing() {
 		if (log.isDebug) {
 			// attempt to keep the standard debug line at 120 chars (120 isn't special, it just seems to be a manageable width)
-			timeTaken := Duration.now.minus(startTime.val)
-			len := 56 - (httpRequest.httpMethod.size.max(4) - 4)
-			url := "${httpRequest.url.encode} ".padr(len, '-') + "->"
-			msg := "${httpRequest.httpMethod.justl(4)} ${url} ${httpResponse.statusCode} (in ${timeTaken.toLocale.justr(4)})"
+			timeTaken := Duration.now.minus(reqState().startTime)
+			// 42 is the preamble length ... [20:33:47 04-Oct-15] [debug] [afBedSheet] 
+			// 16 is the suffix ............ -> 200 (in 17ms)
+			msg := "${httpRequest.httpMethod.justl(4)} ${httpRequest.url.encode}".padr(minLogWidth - 42 - 16, '-') + "-> ${httpResponse.statusCode} (in ${timeTaken.toLocale.justr(4)})"
 			log.debug(msg)
 		}
 	}

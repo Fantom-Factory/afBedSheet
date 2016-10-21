@@ -2,6 +2,7 @@ using afIoc::Inject
 using afIoc::RegistryMeta
 using afIocConfig::ConfigSource
 using web::WebReq
+using web::WebUtil
 using concurrent
 
 ** (Service) -
@@ -20,8 +21,21 @@ const mixin BedSheetServer {
 	** The port BedSheet is listening to.
 	abstract Int port()
 	
-	** The public facing domain used to create absolute URLs.
-	** This is set by 'BedSheetConfigIds.host'. 
+	** The public facing domain (including scheme & port) used to create absolute URLs.
+	** 
+	** If set, this is taken from the `BedSheetConfigIds.host` config value.
+	** 
+	** If not, then an attempt is made to get this from the HTTP request via the following (in order):
+	**  1. The 'Forwarded' HTTP header - see [RFC 7239]`https://tools.ietf.org/html/rfc7239`  
+	**  2. The 'X-Forwarded-XXXX' HTTP headers
+	**  3. The 'host' HTTP header  
+	** 
+	** If all else fails, example a HTTP 1.0. request, then 'http://localhost:${port}/' is returned.
+	** 
+	** Example:
+	** 
+	**   syntax: fantom
+	**   bedSheetServer.host() // --> http://www.fantomfactory.org/ 
 	abstract Uri host()
 	
 	** The Registry options BedSheet was started with.
@@ -52,9 +66,9 @@ const mixin BedSheetServer {
 	
 	** Creates an absolute URL for public use; including scheme and authority (host).
 	** The given 'clientUrl' should be relative to the host and start with a '/'.
-	** 
-	** The scheme, if 'null', defaults to whatever was set in `BedSheetConfigIds.host`.
-	abstract Uri toAbsoluteUrl(Uri clientUrl, Str? scheme := null)
+	**
+	** The scheme and authority in the generated URL are taken from the 'host()' method. 
+	abstract Uri toAbsoluteUrl(Uri clientUrl)
 }
 
 internal const class BedSheetServerImpl : BedSheetServer {
@@ -62,6 +76,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	// nullable for testing
 	@Inject private const RegistryMeta?	regMeta 
 	@Inject private const ConfigSource?	configSrc 
+	@Inject private const Log?			log
 	
 	new make(|This|in) { in(this) }
 	
@@ -90,7 +105,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Pod[] modulePods() {
-		regMeta.modulePods		
+		regMeta.modulePods
 	}
 	
 	override Uri path() {
@@ -99,23 +114,85 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 
 	override Uri host() {
+		// if someone has gone to the trouble of setting a config value - then let's use it
+		// as it's probably the normalised host of multiple sites
+
 		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
 		// DependencyProvider, so @Config is not available for injection
 		// host is validated on startup, so we know it's okay
-		configSrc.get(BedSheetConfigIds.host, Uri#)
+		bedSheetHost := configSrc.get(BedSheetConfigIds.host, Uri#)
+		if (!bedSheetHost.toStr.startsWith("http://localhost:"))
+			return bedSheetHost
+		
+		// otherwise, lets parse the web req
+		webReq := webReq
+		if (webReq != null) {
+			host := hostViaHeaders(webReq.headers)
+			if (host != null)
+				return host
+		}
+		
+		return bedSheetHost
 	}
-	
+
 	override Uri toClientUrl(Uri localUrl) {
 		// if we stop throwing an Err here, then we need to update ColdFeet
 		if (localUrl.host != null || !localUrl.isRel)	// can't use Uri.isPathOnly because we allow QueryStrs and Fragments...?
 			throw ArgErr(BsErrMsgs.urlMustBePathOnly(localUrl, `/css/myStyles.css`))
 		return path + localUrl.relTo(`/`)
 	}
-	
-	override Uri toAbsoluteUrl(Uri clientUrl, Str? scheme := null) {
+
+	override Uri toAbsoluteUrl(Uri clientUrl) {
 		Utils.validateLocalUrl(clientUrl, `/css/myStyles.css`)
-		absUrl := (scheme == null) ? host : (scheme + host.toStr[host.scheme.size..-1]).toUri
-		return absUrl + clientUrl.relTo(`/`)
+		return host + clientUrl.relTo(`/`)
+	}
+
+	internal Uri? hostViaHeaders(Str:Str headers) {
+		forwarded 	:= headers["Forwarded"]
+		try {
+			if (forwarded != null) {
+				forHost := null as Str
+				forProt := null as Str
+
+				splits	:= forwarded.split(';')
+				splits.each {
+					vals := it.split('=')
+					if (vals.first.equalsIgnoreCase("proto"))
+						forProt = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
+					if (vals.first.equalsIgnoreCase("host"))
+						forHost = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
+				}
+				if (forHost != null && forProt != null)
+					return `${forProt}://${forHost}`
+			}
+		} catch {
+			log.warn("Dodgy 'Forwarded' HTTP header value:  Forwarded = ${forwarded}")
+		}
+			
+		proxyScheme := headers["X-Forwarded-Proto"]
+		proxyHost	:= headers["X-Forwarded-Host"]
+		proxyPort	:= headers["X-Forwarded-Port"]
+		try {
+			if (proxyScheme != null && proxyHost != null) {
+				if (proxyHost.endsWith(":"))
+					proxyHost = proxyHost[0..<-1]
+				if (proxyPort != null && !proxyHost.contains(":"))
+					return `${proxyScheme}://${proxyHost}:${proxyPort}`
+				else
+					return `${proxyScheme}://${proxyHost}`
+			}
+		} catch {
+			log.warn("Dodgy 'X-Forwarded-XXXX' HTTP header values:\n  X-Forwarded-Proto= ${proxyScheme}\n  X-Forwarded-Host = ${proxyHost}\n  X-Forwarded-Port = ${proxyPort}")
+		}
+			
+		host := headers["Host"]
+		try {
+			return `http://${host}/`
+		} catch {
+			log.warn("Dodgy 'Host' HTTP header value: Host = ${host}")
+		}
+		
+		return null
 	}
 	
 	private WebReq? webReq() {

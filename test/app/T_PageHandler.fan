@@ -1,9 +1,8 @@
-using afIoc::Inject
-using afIoc::Registry
+using afIoc
 
 internal const class T_PageHandler {
 	
-	@Inject	private const Registry 			registry
+	@Inject	private const Scope 			scope
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const HttpSession 		session
@@ -24,7 +23,7 @@ internal const class T_PageHandler {
 	}
 	
 	Obj iocErr() {
-		registry.autobuild(AutoBoom#)
+		scope.build(AutoBoom#)
 	}
 	
 	// ---- Buff Pages ----
@@ -105,17 +104,52 @@ internal const class T_PageHandler {
 		session["count"] = count
 		return Text.fromPlain("count $count")
 	}
+
+	Obj sessionImmutable1() {
+		session["sess"] = ImmutableSessionValue() { it.val = request.url.query["v"] } 
+		return Text.fromPlain("OK")
+	}
+
+	Obj sessionImmutable2() {
+		Text.fromPlain(session["sess"]->val)		
+	}
 	
+	Obj sessionSerialisable1() {
+		session["sess"] = MutableSessionValue() { it.val = request.url.query["v"] } 
+		return Text.fromPlain("OK")
+	}
+
+	Obj sessionSerialisable2() {
+		Text.fromPlain(session["sess"]->val)		
+	}
+
+	Obj sessionMutable1() {
+		ses := session.getOrAdd("sess") { MutableSessionValue() } as MutableSessionValue
+		ses.val = request.url.query["v"] 
+		return Text.fromPlain("OK")
+	}
+
+	Obj sessionMutable2() {
+		ses := session.getOrAdd("sess") { MutableSessionValue() } as MutableSessionValue
+		val := ses.val
+		ses.val = request.url.query["v"]
+		return Text.fromPlain(val ?: "null")		
+	}
+
+	Obj sessionMutable3() {
+		ses := session.getOrAdd("sess") { MutableSessionValue() } as MutableSessionValue
+		return Text.fromPlain(ses->val)		
+	}
+
 	Obj sessionBad() {
-		// Params are const but not serialisable
-		session["oops"] = #statusCode.params[0]
-		return Text.fromPlain("Wot no fail fast Err?")
+		session["sess"] = DodgySessionValue() { it.val = request.url.query["v"] } 
+		return Text.fromPlain("NOT OK")
 	}
 	
 	// ---- Status Code Page ----
 	
 	Obj statusCode(Int httpStatusCode) {
-		throw HttpStatusErr(httpStatusCode, "Ooops!")
+		throw HttpStatus.makeErr(httpStatusCode, "Ooops!")
 	}
 	
 	// ---- Text Pages ----
@@ -161,7 +195,7 @@ internal const class T_PageHandler {
 	
 	Obj saveFlashMsg(Str msg) {
 		oldMsg := session.flash["msg"]
-		session.flash["msg"] = msg
+		session.flashSet("msg", msg)
 		return Text.fromPlain("Msg = $oldMsg")
 	}
 
@@ -173,7 +207,7 @@ internal const class T_PageHandler {
 	// ---- Other ----
 	
 	Obj renderWelcome() {
-		bedSheetPages.renderWelcome
+		bedSheetPages.renderWelcome(HttpStatus(404, "Ooops"))
 	}
 	
 	File altFileHandler(Uri remaining) {
@@ -209,4 +243,18 @@ internal class AutoBoom {
 	new make() {
 		throw Err("AutoBoom!")
 	}
+}
+
+@Serializable
+internal class MutableSessionValue {
+	Str? val
+}
+
+internal const class ImmutableSessionValue {
+	const Str? val
+	new make(|This|in) { in(this) }
+}
+
+internal class DodgySessionValue {
+	const Str? val
 }

@@ -1,6 +1,3 @@
-using afIoc
-using afIocEnv
-using afConcurrent
 
 @NoDoc	// Advanced use only
 const mixin ClientAssetProducers {

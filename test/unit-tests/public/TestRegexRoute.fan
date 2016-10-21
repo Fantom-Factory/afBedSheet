@@ -1,6 +1,20 @@
 
 internal class TestRegexRoute : BsTest {
 	
+//	Void testBuggy() {
+//		Str?[]? match
+//		
+//		// this test shows that we've overstretched the limites of Regexs!
+//		// was trying to do some fancy page event handling
+//		
+//		match = RegexRoute("(?i)^\\/package\\/(.*)\\/edit\\/(.*)\\/?(.*)\$".toRegex, #handlerBug).matchUri(`/package/fin5Ext/edit/addPkgTag`)
+//		verifyEq(match.size,	2)
+//		verifyEq(match[0],		"fin5Ext")
+//		verifyEq(match[1],		"addPkgTag")
+//	}
+	
+	Void handlerBug(Str event, Str? extra := null) { }
+	
 	Void handler1() { }
 	Void handler2(Str p1) { }
 	Void handler3(Str p1, Int p2) { }
@@ -15,6 +29,8 @@ internal class TestRegexRoute : BsTest {
 	Void bar2(Str? a, Str? b) { }
 	Void bar3(Str? a, Str? b := "") { }
 	Void bar4(Str? a, Str b := "") { }
+
+	Void stackhubOrg(Str org, Str? pageUrl := null) { }
 
 	Void testUriPathOnly() {
 		verifyErrMsg(ArgErr#, BsErrMsgs.route_shouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
@@ -112,6 +128,12 @@ internal class TestRegexRoute : BsTest {
 		verifyEq(match[0],		"dude")
 		verifyEq(match[1],		"2")
 		verifyEq(match[2],		"argh")
+
+		// FIXME Regex limitation (yeah - I got 2 problems!)
+		match = RegexRoute(Regex<|(?i)^\/org\/(.*?)\/?(.*?)$|>, #stackhubOrg, "GET", true).matchUri(`/org/StackHub`)
+		verifyEq(match.size,	2)
+		verifyEq(match[0],		null)		// :( should be null
+		verifyEq(match[1],		"StackHub")	// :( should be "StackHub"
 	}
 	
 	Void testMatchGlobFromDocs() {
@@ -271,7 +293,7 @@ internal class TestRegexRoute : BsTest {
 		
 		match = matchParams([""], #doc2)
 		verifyEq(match.size,	1)
-		verifyEq(match[0],		"")
+		verifyEq(match[0],		null)
 
 		match = matchParams([""], #doc3)
 		verifyEq(match.size,	1)
@@ -508,5 +530,7 @@ internal class TestRegexRoute : BsTest {
 internal const class T_HttpRequest : HttpRequestImpl {
 	override const Str httpMethod := "GET"
 	override const Uri url
-	new make(|This|in) : super() { in(this) }
+	new make(|This|in) : super(in) {
+		in(this)
+	}
 }
