@@ -15,9 +15,14 @@ internal const class Utils {
 		return keyType.fits(Str#) ? Map.make(mapType) { caseInsensitive = true } : Map.make(mapType) { ordered = true }
 	}
 	
-	static Str traceErr(Err err, Int? maxDepth := null) {
-		if (maxDepth == null || maxDepth < 1)
-			return err.traceToStr
+	static Str traceErr(Err err, Int? maxDepth := null) {		
+		if (maxDepth == null || maxDepth < 1) {
+			// take the default from /etc/sys/config.props
+			maxDepth = (Int) (Env.cur.config(Pod.find("sys"), "errTraceMaxDepth")?.toInt(10, false) ?: 50)
+
+			// then make it extra large, given we hide most of the frames
+			maxDepth = maxDepth * 2
+		}
 		
 		b := Buf()	// can't trace to a StrBuf
 		err.trace(b.out, ["maxDepth":maxDepth])
