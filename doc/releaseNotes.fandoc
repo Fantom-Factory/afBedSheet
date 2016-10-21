@@ -4,9 +4,9 @@ v1.5.4
 ======
  - New: BedSheet error and status pages may be returned as HTML / XHTML / or plain text.
  - New: 'BedSheetServer.host()' now checks the HTTP request for 'Forwarded' & 'X-Forwarded' proxy values.
+ - New: Added a *SkySpark Integration* section to the docs.
  - Chg: Tweaked 'ErrPrinterHtml' and 'ErrPrinterStr' services to make the printer funcs accessible.
  - Chg: Moved Middleware listing to err printers.
- - Chg: 'ErrMiddleware' respects 'noOfStackFrames' config when printing errs in repsonse headers.
  - Chg: Changed 'Asset.exists()' from 'abstract' to 'virtual' with a default value of 'true'.
  - Chg: 'QualityValues.get()' now matches against wildcard qvalues.
  - Chg: Deprecated 'BedSheetConfigIds.noOfStackFrames', BedSheet now honours 'errTraceMaxDepth' from 'etc/sys/config.props'.
