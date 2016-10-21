@@ -1,7 +1,7 @@
-#BedSheet v1.5.2
+#BedSheet v1.5.4
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.5.2](http://img.shields.io/badge/pod-v1.5.2-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.5.4](http://img.shields.io/badge/pod-v1.5.4-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -669,66 +669,74 @@ When running BedSheet under a non-root path, be sure to transform all link hrefs
 
 Note that mulitple BedSheet instances may be run side by side in the same Wisp application.
 
+## SkySpark Integration
+
+BedSheet can also be seemlessly run as [SkySpark Web Extension](https://skyfoundry.com/doc/docSkySpark/Exts#extClass)
+
+Following is a SkySpark Web [Ext](https://skyfoundry.com/doc/skyarcd/Ext) that delegates all web requests to BedSheet.
+
+```
+using skyarcd::Ext
+using skyarcd::ExtMeta
+using concurrent::AtomicRef
+using afIoc
+using afBedSheet::MiddlewarePipeline
+using web::Weblet
+
+@ExtMeta { name = "myExtensionName" }
+const class BedSheetExt : Ext, Weblet {
+
+    private const AtomicRef    registryRef := AtomicRef(null)
+    private Registry           registry {
+        get { registryRef.val }
+        set { registryRef.val = it }
+    }
+
+    private const AtomicRef    pipelineRef := AtomicRef(null)
+    private MiddlewarePipeline pipeline {
+        get { pipelineRef.val }
+        set { pipelineRef.val = it }
+    }
+
+    override Void onStart() {
+        this.registry = RegistryBuilder().addModulesFromPod("afBedSheet").addModule(AppModule#).build
+        this.pipeline = registry.activeScope.serviceById(MiddlewarePipeline#.qname)
+    }
+
+    override Void onService() {
+        registry.activeScope.createChild("request") {
+            // this is the actual call to BedSheet!
+            pipeline.service
+        }
+    }
+
+    override Void onStop() {
+        registry.shutdown
+    }
+}
+```
+
+`onStart()` creates the IoC registry based on your `AppModule` and caches BedSheet's `MiddlewarePipeline` service. A new IoC web `request` scope is created on every web request and the BedSheet pipeline is used to service it.
+
+`onStop()` then just shuts down the IoC registry, and hence BedSheet also.
+
+Note that SkySpark will need the BedSheet pod, and all its dependencies, in its `/lib/fan/` dir (or some other environment lib dir). How you maintain and distribute these with your SkySpark application is then up to you.
+
 ## Go Live!
 
 ### ...with Heroku
 
 In a hurry to go live? Use [Heroku](http://www.heroku.com/)!
 
-[Heroku](http://www.heroku.com/) and the [heroku-fantom-buildpack](https://bitbucket.org/AlienFactory/heroku-buildpack-fantom) makes it ridiculously to deploy your web app to a live server. Just check in your code and Heroku will build your web app from source and deploy it to a live environment!
+The [heroku-fantom-buildpack](https://bitbucket.org/AlienFactory/heroku-buildpack-fantom) makes it ridiculously to deploy your web app to a live server. Just check in your code and Heroku will build your web app from source and deploy it to a live environment!
 
-To have Heroku run your BedSheet web app you have 2 options:
-
-1. Create a Heroku text file called `Procfile` at the same level as your `build.fan` with the following line:
-
-        web: fan afBedSheet -port $PORT <app-name>
-
-
-
-  substituting `<app-name>` with your fully qualified app module name. Type `$PORT` verbatim, as it is. Example:
-
-
-
-        web: fan afBedSheet -port $PORT acme::AppModule
-
-
-
-  Now Heroku will start BedSheet, passing in your app name.
-
-
-
-  OR
-
-
-2. Create a `Main` class in your app:
-
-        using util
-        
-        class Main : AbstractMain {
-        
-            @Arg { help="The HTTP port to run the app on" }
-            private Int port
-        
-            override Int run() {
-                BedSheetBuilder(AppModule#.qname).startWisp(port)
-            }
-        }
-
-
-
-  Main classes have the advantage of being easy to run from an IDE or cmd line.
-
-
-
-  See [heroku-fantom-buildpack](https://bitbucket.org/AlienFactory/heroku-buildpack-fantom) for more details.
-
-
+See the [Fantom Buildpack for Heroku](https://bitbucket.org/AlienFactory/heroku-buildpack-fantom) for more details.
 
 ### ...with OpenShift
 
-In a hurry to go live? Use [OpenShift](https://www.openshift.com/)!
+In a hurry to go live? Use [OpenShift](https://www.openshift.com/)! RedHat's OpenShift [Origin](https://www.openshift.org/) is a cloud PaaS with free plans. Just check in your code and OpenShift will build your web app from source and deploy it to a live environment!
 
-RedHat's OpenShift [Origin](https://www.openshift.org/) is a cloud PaaS with free plans. See Alien-Factory's [Fantom Quickstart for OpenShift](https://bitbucket.org/AlienFactory/openshift-fantom-quickstart) for details on how to deploy your BedSheet app.
+See Alien-Factory's [Fantom Quickstart for OpenShift](https://bitbucket.org/AlienFactory/openshift-fantom-quickstart) template for details on how to deploy your BedSheet application to OpenShift.
 
 ## Tips
 
