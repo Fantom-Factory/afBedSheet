@@ -171,6 +171,12 @@ const class BedSheetModule {
 		config[".png"]		= "^.*\\.png\$"
 		config[".svg"]		= "^.*\\.svg\$"
 		
+		// sound files
+		config[".mp3"]		= "^.*\\.mp3\$"
+		config[".ogg"]		= "^.*\\.ogg\$"
+		config[".wav"]		= "^.*\\.wav\$"
+		config[".opus"]		= "^.*\\.opus\$"
+		
 		// web font files
 		config[".eot"]		= "^.*\\.eot\$"
 		config[".otf"]		= "^.*\\.otf\$"

@@ -44,7 +44,7 @@ Quick Start [#quickStart]
 
     class Example {
         Int main() {
-            BedSheetBuilder(AppModule#.qname).startWisp(8080)
+            BedSheetBuilder(AppModule#).startWisp(8080)
         }
     }
 

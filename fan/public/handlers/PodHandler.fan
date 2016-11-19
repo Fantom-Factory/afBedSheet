@@ -76,6 +76,7 @@ using afBeanUtils::ArgNotFoundErr
 ** pre>
 ** .      web files: .css .htm .html .js .xhtml .js.map
 **      image files: .bmp .gif .ico .jpg .png
+**      sound files: .mp3 .ogg .wav .opus
 **   web font files: .eot .otf .svg .ttf .woff
 **      other files: .csv .txt .xml
 ** <pre
