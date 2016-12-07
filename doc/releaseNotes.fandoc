@@ -1,5 +1,10 @@
 Versions
 ********
+v1.5.6
+======
+ - Chg: 'HttpRequestHeaders' interprets dodgy values as 'null' rather than throwing an Err.
+ - Chg: Added some common sound file formats to 'PodHandlers' whitelist: '.mp3 .ogg .wav .opus'
+
 v1.5.4
 ======
  - New: BedSheet error and status pages may be returned as HTML / XHTML / or plain text.
