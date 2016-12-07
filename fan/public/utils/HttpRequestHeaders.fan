@@ -2,6 +2,8 @@ using web::Cookie
 
 ** A wrapper for HTTP request headers with accessors for commonly used headings.
 ** 
+** Note that the accessors are *safe* and will return 'null', rather than throw an Err, when they encounter a dodgy header value.
+** 
 ** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 const class HttpRequestHeaders {
 	private const static Log 	log := Utils.getLog(HttpRequestHeaders#)
@@ -25,7 +27,7 @@ const class HttpRequestHeaders {
 		private set { }
 	}
 
-	** List of acceptable human languages for response.
+	** List of acceptable human languages for the response.
 	** 
 	** Example: 'Accept-Language: da, en-gb;q=0.8, en;q=0.7'
 	QualityValues? acceptLanguage {
@@ -94,7 +96,7 @@ const class HttpRequestHeaders {
 	** 
 	** Example: 'If-Modified-Since: Sat, 29 Oct 1994 19:43:31 GMT'
 	DateTime? ifModifiedSince {
-		get { makeIfNotNull("If-Modified-Since") { DateTime.fromHttpStr(it, true) }}
+		get { makeIfNotNull("If-Modified-Since") { DateTime.fromHttpStr(it, true) } }
 		private set { }
 	}
 
@@ -149,26 +151,34 @@ const class HttpRequestHeaders {
 		private set { }
 	}
 
+	** Returns the associated HTTP header.
 	@Operator
 	Str? get(Str name) {
 		headers[name]
 	}
 
+	** Call the specified function for every key/value in the header map.
 	Void each(|Str val, Str key| c) {
 		headers.each(c)
 	}
 	
+	** Returns the underlying header map.
 	Str:Str map() {
 		headers
 	}
 
+	@NoDoc
 	override Str toStr() {
 		headers.toStr
 	}
 	
-	private Obj? makeIfNotNull(Str name, |Str->Obj| func) {
+	private Obj? makeIfNotNull(Str name, |Str->Obj?| func) {
 		val := headers[name]
-		return (val == null) ? null : func(val)
+		if (val == null)
+			return val
+		try		return func(name)
+		catch	log.warn("Could not parse dodgy ${name} HTTP Header: ${val}")
+		return	null
 	}
 	
 	private Str:Str headers() {

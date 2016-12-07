@@ -191,6 +191,8 @@ const class HttpResponseHeaders {
 	
 	private Obj? makeIfNotNull(Str name, |Obj->Obj| func) {
 		val := get(name)
+		// no need for a "try / catch return null" here as the response is in the users hand
+		// and should all errors should be avoidable 
 		return (val == null) ? null : func(val)
 	}
 
