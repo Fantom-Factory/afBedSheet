@@ -76,7 +76,7 @@ End of message.
 # Sneakers (1992)
 "Hi, my name is Werner Brandes. My voice is my      passport. Verify Me."
 
-# Bill & Ted’s Excellent Adventure
+# Bill & Ted's Excellent Adventure
 # --------------------------------------------------
 "Bill, strange things are afoot at the Circle K."                                                  - Ted
 
