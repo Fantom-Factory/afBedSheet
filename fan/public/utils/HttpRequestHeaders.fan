@@ -67,8 +67,8 @@ const class HttpRequestHeaders {
 	** 
 	** Example: 'Cookie: Version=1; Skin=new;'
 	Cookie[]? cookies {
-		get { makeIfNotNull("Cookie") { 
-			it.split(';').map |cookieStr->Cookie?| {
+		get { makeIfNotNull("Cookie") |cookieVal->Obj?| { 
+			return cookieVal.split(';').map |cookieStr->Cookie?| {
 				// corrupted cookies aren't the end of the world - so lets not treat it so!
 				try return Cookie.fromStr(cookieStr)
 				catch {
@@ -176,7 +176,7 @@ const class HttpRequestHeaders {
 		val := headers[name]
 		if (val == null)
 			return val
-		try		return func(name)
+		try		return func(val)
 		catch	log.warn("Could not parse dodgy ${name} HTTP Header: ${val}")
 		return	null
 	}
