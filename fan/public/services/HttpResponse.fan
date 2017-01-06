@@ -110,7 +110,7 @@ internal const class HttpResponseImpl : HttpResponse {
 		reqState().out
 	}
 	override Void saveAsAttachment(Str fileName) {
-		headers.contentDisposition = "Attachment; filename=${fileName}"
+		headers.contentDisposition = "attachment; filename=${fileName}"
 		headers.contentType = fileName.toUri.mimeType
 	}
 }
