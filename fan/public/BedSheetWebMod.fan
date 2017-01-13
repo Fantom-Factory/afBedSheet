@@ -12,7 +12,7 @@ using afIocConfig::ConfigSource
 const class BedSheetWebMod : WebMod {
 	private const static Log log := Utils.getLog(BedSheetWebMod#)
 
-	** Returns 'proj.name' from the application's pod meta, or the pod name if not defined.
+	** Returns 'pod.dis' (or 'proj.name'if not found) from the application's pod meta, or the pod name if neither are defined.
 	const Str		appName
 	
 	** The port number this Bed App will be listening on. 

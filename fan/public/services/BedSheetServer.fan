@@ -15,7 +15,7 @@ const mixin BedSheetServer {
 	** The 'AppModule'.
 	abstract Type?	appModule()	
 	
-	** Returns 'proj.name' from the application's pod meta, or the pod name if not defined.
+	** Returns 'pod.dis' (or 'proj.name'if not found) from the application's pod meta, or the pod name if neither are defined.
 	abstract Str appName()
 	
 	** The port BedSheet is listening to.

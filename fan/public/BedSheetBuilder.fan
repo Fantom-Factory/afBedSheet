@@ -75,7 +75,7 @@ class BedSheetBuilder {
 	}
 
 	** The application name. 
-	** Taken from the app pod's 'proj.name' meta, or the pod name if the meta doesn't exist.
+	** Returns 'pod.dis' (or 'proj.name'if not found) from the application's pod meta, or the pod name if neither are defined.
 	** Read only.
 	Str appName() {
 		options[BsConstants.meta_appName]		
@@ -208,11 +208,7 @@ class BedSheetBuilder {
 		// (transitive dependencies are added explicitly via @SubModule)
 		addModule(BedSheetModule#)
 
-		projName := (Str?) null
-		try pod?.meta?.get("proj.name")
-		catch { /* JS F4 Errs */ }
-
-		options[BsConstants.meta_appName]	= (projName ?: pod?.name) ?: "Unknown"
+		options[BsConstants.meta_appName]	= ((pod.meta["pod.dis"] ?: pod.meta["proj.name"]) ?: pod?.name) ?: "Unknown"
 		options[BsConstants.meta_appPod]	= pod
 		options[BsConstants.meta_appModule]	= mod
 	}
