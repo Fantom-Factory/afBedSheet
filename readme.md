@@ -1,8 +1,9 @@
-#BedSheet v1.5.4
+#BedSheet v1.5.6
 ---
-[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.5.4](http://img.shields.io/badge/pod-v1.5.4-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
-![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
+
+[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom-lang.org/)
+[![pod: v1.5.6](http://img.shields.io/badge/pod-v1.5.6-yellow.svg)](http://www.fantomfactory.org/pods/afBedSheet)
+![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)
 
 ## Overview
 
@@ -15,21 +16,25 @@ BedSheet is a platform for delivering web applications written in [Fantom](http:
 - **Error Handling** - Customised error handling and detailed error reporting
 - **Status Pages** - Customise 404 and 500 pages
 
-BedSheet is built on top of [IoC](http://pods.fantomfactory.org/pods/afIoc) and [Wisp](http://fantom.org/doc/wisp/index.html), and was inspired by Java's [Tapestry5](http://tapestry.apache.org/) and Ruby's [Sinatra](http://www.sinatrarb.com/).
+BedSheet is built on top of [IoC](http://eggbox.fantomfactory.org/pods/afIoc) and [Wisp](http://fantom.org/doc/wisp/index.html), and was inspired by Java's [Tapestry5](http://tapestry.apache.org/) and Ruby's [Sinatra](http://www.sinatrarb.com/).
 
 ## Install
 
-Install `BedSheet` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
+Install `BedSheet` with the Fantom Pod Manager ( [FPM](http://eggbox.fantomfactory.org/pods/afFpm) ):
 
-    C:\> fanr install -r http://pods.fantomfactory.org/fanr/ afBedSheet
+    C:\> fpm install afBedSheet
 
-To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
+Or install `BedSheet` with [fanr](http://fantom.org/doc/docFanr/Tool.html#install):
+
+    C:\> fanr install -r http://eggbox.fantomfactory.org/fanr/ afBedSheet
+
+To use in a [Fantom](http://fantom-lang.org/) project, add a dependency to `build.fan`:
 
     depends = ["sys 1.0", ..., "afBedSheet 1.5"]
 
 ## Documentation
 
-Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fantomfactory.org/pods/afBedSheet/).
+Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org/pods/afBedSheet/) - the Fantom Pod Repository.
 
 ## Quick Start
 
@@ -54,7 +59,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
         
         class Example {
             Int main() {
-                BedSheetBuilder(AppModule#.qname).startWisp(8080)
+                BedSheetBuilder(AppModule#).startWisp(8080)
             }
         }
 
@@ -104,13 +109,13 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
 
 Wow! That's awesome! But what just happened!?
 
-Every BedSheet application has an `AppModule` that configures [IoC](http://pods.fantomfactory.org/pods/afIoc) services. Here we told the `Routes` service to return some plain text in response to `/index` and to call the `HelloPage#hello` method for all requests that start with `/hello`. [Route](http://pods.fantomfactory.org/pods/afBedSheet/api/Route) converts URL path segments into method arguments, or in our case, to `Str name` and to an optional `Int iq`.
+Every BedSheet application has an `AppModule` that configures [IoC](http://eggbox.fantomfactory.org/pods/afIoc) services. Here we told the `Routes` service to return some plain text in response to `/index` and to call the `HelloPage#hello` method for all requests that start with `/hello`. [Route](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Route) converts URL path segments into method arguments, or in our case, to `Str name` and to an optional `Int iq`.
 
-Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our `HelloPage` route handler simply returns a plain [Text](http://pods.fantomfactory.org/pods/afBedSheet/api/Text) response, which BedSheet sends to the client via an appropriate [ResponseProcessor](http://pods.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor).
+Route handlers are typically what we, the application developers, write. They perform logic processing and render responses. Our `HelloPage` route handler simply returns a plain [Text](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Text) response, which BedSheet sends to the client via an appropriate [ResponseProcessor](http://eggbox.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor).
 
 ## Starting BedSheet
 
-You can start BedSheet manually, as we did in the Quick Start example, or you can [start BedSheet from the command line](http://pods.fantomfactory.org/pods/afBedSheet/api/Main). Just tell it where to find an `AppModule` and the port to run on:
+You can start BedSheet manually, as we did in the Quick Start example, or you can [start BedSheet from the command line](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Main). Just tell it where to find an `AppModule` and the port to run on:
 
 ```
 C:\> fan afBedSheet [-port <port>] [-env <env>] [-proxy] <qualified-appModule-name>
@@ -122,7 +127,7 @@ For example:
 C:\> fan afBedSheet -port 8069 myWebApp::AppModule
 ```
 
-Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://pods.fantomfactory.org/pods/afIoc) services. It is an IoC concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
+Every Bed App (BedSheet Application) has an `AppModule` class that defines and configures your [IoC](http://eggbox.fantomfactory.org/pods/afIoc) services. It is an IoC concept that allows you centralise your application's configuration in one place. It is the `AppModule` that defines your Bed App and is central everything it does.
 
 `<qualified-appModule-name>` may be replaced with just `<pod-name>` as long as your pod's `build.fan` defines the following meta:
 
@@ -148,7 +153,7 @@ See [Development Proxy](#developmentProxy) for info on the `-proxy` option.
 
 BedSheet is an IoC container. That is, it creates and looks after a `Registry` instance, using it to create classes and provide access to services.
 
-[BedSheet](http://pods.fantomfactory.org/pods/afBedSheet) Web applications are multi-threaded; each web request is served on a different thread. For that reason BedSheet defines a threaded scope called `request`.
+[BedSheet](http://eggbox.fantomfactory.org/pods/afBedSheet) Web applications are multi-threaded; each web request is served on a different thread. For that reason BedSheet defines a threaded scope called `request`.
 
 By default const services are matched to the root scope and non-const services are matched the to request scope. But it it better to be explicit and set which scopes a service is available on when it is defined.
 
@@ -170,13 +175,13 @@ In IoC's default `root` scope, only one instance of the service is created for t
 
 In BedSheet's `request` scope a new instance of the service will be created for each thread / web request. BedSheet's `WebReq` and `WebRes` are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
 
-Writing `const` services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. See the Maps and Lists in Alien-Factory's [Concurrent](http://pods.fantomfactory.org/pods/afConcurrent) pod for examples. The article [From One Thread to Another...](http://www.fantomfactory.org/articles/from-one-thread-to-another) explains the principles in more detail.
+Writing `const` services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. See the Maps and Lists in Alien-Factory's [Concurrent](http://eggbox.fantomfactory.org/pods/afConcurrent) pod for examples. The article [From One Thread to Another...](http://www.fantomfactory.org/articles/from-one-thread-to-another) explains the principles in more detail.
 
 The smart ones may be thinking that `root` scoped services can only hold other `root` scoped services. Well, they would be wrong too! Using IoC's active scope and the magic of IoC's *Lazy Funcs*, `request` scoped services may be injected into `root` scoped services. See IoC's Lazy Funcs for more info.
 
 ## Request Routing
 
-The `Routes` service maps HTTP request URLs to response objects and handler methods. It is where you would typically define how requests are handled. You configure the `Routes` service by contributing instances of [Route](http://pods.fantomfactory.org/pods/afBedSheet/api/Route). Example:
+The `Routes` service maps HTTP request URLs to response objects and handler methods. It is where you would typically define how requests are handled. You configure the `Routes` service by contributing instances of [Route](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Route). Example:
 
 ```
 using afIoc
@@ -194,7 +199,7 @@ class AppModule {
 }
 ```
 
-[Route](http://pods.fantomfactory.org/pods/afBedSheet/api/Route) objects take a matching `glob` and a response object. A response object is any object that BedSheet knows how to [process](#responseObjects) or a `Method` to be called. If a method is given, then request URL path segments are matched to the method parameters. See [Route](http://pods.fantomfactory.org/pods/afBedSheet/api/Route) for more details.
+[Route](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Route) objects take a matching `glob` and a response object. A response object is any object that BedSheet knows how to [process](#responseObjects) or a `Method` to be called. If a method is given, then request URL path segments are matched to the method parameters. See [Route](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Route) for more details.
 
 Note that `Route` is actually a mixin, so you can create custom instances that match on anything, not just URLs.
 
@@ -204,38 +209,38 @@ Routing lesson over.
 
 ## Route Handling
 
-*Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](#quickStart) `HelloPage` *route handler* returns a [Text](http://pods.fantomfactory.org/pods/afBedSheet/api/Text) *response object*.
+*Route Handler* is the name given to a class or method that is processed by a `Route`. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start](#quickStart) `HelloPage` *route handler* returns a [Text](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Text) *response object*.
 
 Route handlers are written by the application developer, but a couple of common use-cases are bundled with BedSheet:
 
-- [FileHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/FileHandler): Maps request URLs to files on the file system.
-- [PodHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/PodHandler) : Maps request URLs to pod file resources.
+- [FileHandler](http://eggbox.fantomfactory.org/pods/afBedSheet/api/FileHandler): Maps request URLs to files on the file system.
+- [PodHandler](http://eggbox.fantomfactory.org/pods/afBedSheet/api/PodHandler) : Maps request URLs to pod file resources.
 
-See the [FileHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/FileHandler) documentation for examples on how to serve up static files. If no configuration is given to `FileHandler` then it defaults to serving files from the `etc/web-static/` directory.
+See the [FileHandler](http://eggbox.fantomfactory.org/pods/afBedSheet/api/FileHandler) documentation for examples on how to serve up static files. If no configuration is given to `FileHandler` then it defaults to serving files from the `etc/web-static/` directory.
 
-See the [PodHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/PodHandler) documentation for examples on how to serve up static pod files, including Fantom generated Javascript.
+See the [PodHandler](http://eggbox.fantomfactory.org/pods/afBedSheet/api/PodHandler) documentation for examples on how to serve up static pod files, including Fantom generated Javascript.
 
 (Note that, as of BedSheet 1.4.10, `FileHandler` and `PodHandler` are actually processed by Asset Middleware and not Routes.)
 
 ## Response Objects
 
-*Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors](http://pods.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor) to process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return *Response Objects*, which will be handled by another *Response Processor*.
+*Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors](http://eggbox.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor) to process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return *Response Objects*, which will be handled by another *Response Processor*.
 
 You can define *Response Processors* and process *Response Objects* yourself; but by default, BedSheet handles the following:
 
 - `Void` / `null` / `false` : Processing should fall through to the next Route match.
 - `true` : No further processing is required.
-- [Asset](http://pods.fantomfactory.org/pods/afBedSheet/api/Asset) : The asset is piped to the client.
-- [ClientAsset](http://pods.fantomfactory.org/pods/afBedSheet/api/ClientAsset) : Caching and identity headers are set and the asset piped to the client.
+- [Asset](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Asset) : The asset is piped to the client.
+- [ClientAsset](http://eggbox.fantomfactory.org/pods/afBedSheet/api/ClientAsset) : Caching and identity headers are set and the asset piped to the client.
 - [Err](http://fantom.org/doc/sys/Err.html) : An appropriate response object is selected from contributed Err responses. (See [Error Processing](#errorProcessing).)
 - [Field](http://fantom.org/doc/sys/Field.html) : The field value is returned for further processing. (*)
 - [File](http://fantom.org/doc/sys/File.html) : The file is piped to the client.
 - [Func](http://fantom.org/doc/sys/Func.html) : The function is called, using IoC to inject the parameters. The return value is treated as a new reposonse object for further processing.
-- [HttpStatus](http://pods.fantomfactory.org/pods/afBedSheet/api/HttpStatus) : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing](#httpStatusProcessing).)
+- [HttpStatus](http://eggbox.fantomfactory.org/pods/afBedSheet/api/HttpStatus) : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing](#httpStatusProcessing).)
 - [InStream](http://fantom.org/doc/sys/InStream.html) : The `InStream` is piped to the client. The `InStream` is guaranteed to be closed.
-- [MethodCall](http://pods.fantomfactory.org/pods/afBedSheet/api/MethodCall) : The method is called and the return value used for further processing. (*)
-- [Redirect](http://pods.fantomfactory.org/pods/afBedSheet/api/Redirect) : Sends a 3xx redirect response to the client.
-- [Text](http://pods.fantomfactory.org/pods/afBedSheet/api/Text) : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding `Content-Type`.
+- [MethodCall](http://eggbox.fantomfactory.org/pods/afBedSheet/api/MethodCall) : The method is called and the return value used for further processing. (*)
+- [Redirect](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Redirect) : Sends a 3xx redirect response to the client.
+- [Text](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Text) : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding `Content-Type`.
 
 Because of the nature of response object processing it is possible, nay normal, to *chain* multiple response objects together. Example:
 
@@ -244,7 +249,7 @@ Because of the nature of response object processing it is possible, nay normal, 
 3. `FuncProcessor` calls a handler method which returns a `Text`,
 4. `TextProcessor` serves content to the client and returns `true`.
 
-Note that response object processing is extensible, just contribute your own [Response Processor](http://pods.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor).
+Note that response object processing is extensible, just contribute your own [Response Processor](http://eggbox.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor).
 
 (*) If the slot is not static, then if the parent class:
 
@@ -256,11 +261,11 @@ Note that response object processing is extensible, just contribute your own [Re
 
 Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of BedSheet. That said, there a couple templating libraries *out there* and integrating them into BedSheet is relatively simple. For instance, Alien-Factory provides the following libraries:
 
-- [efan](http://pods.fantomfactory.org/pods/afEfan) for basic templating,
-- [Slim](http://pods.fantomfactory.org/pods/afSlim) for concise HTML templating, and
-- [Pillow](http://pods.fantomfactory.org/pods/afPillow) for integrating [efanXtra](http://pods.fantomfactory.org/pods/afEfanXtra) components (may be used with [Slim](http://pods.fantomfactory.org/pods/afSlim)!)
+- [efan](http://eggbox.fantomfactory.org/pods/afEfan) for basic templating,
+- [Slim](http://eggbox.fantomfactory.org/pods/afSlim) for concise HTML templating, and
+- [Pillow](http://eggbox.fantomfactory.org/pods/afPillow) for integrating [efanXtra](http://eggbox.fantomfactory.org/pods/afEfanXtra) components (may be used with [Slim](http://eggbox.fantomfactory.org/pods/afSlim)!)
 
-Taking [Slim](http://pods.fantomfactory.org/pods/afSlim) as an example, simply inject the Slim service into your *Route Handler* and use it to return a `Text` response object:
+Taking [Slim](http://eggbox.fantomfactory.org/pods/afSlim) as an example, simply inject the Slim service into your *Route Handler* and use it to return a `Text` response object:
 
 ```
 using afIoc::Inject
@@ -279,7 +284,7 @@ class IndexPage {
 
 ## BedSheet Middleware
 
-When a HTTP request is received, it is passed through a pipeline of BedSheet [Middleware](http://pods.fantomfactory.org/pods/afBedSheet/api/Middleware); this is a similar to [Java Servlet Filters](http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html). If the request reaches the end of the pipeline without being processed, a 404 is returned.
+When a HTTP request is received, it is passed through a pipeline of BedSheet [Middleware](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Middleware); this is a similar to [Java Servlet Filters](http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html). If the request reaches the end of the pipeline without being processed, a 404 is returned.
 
 Middleware bundled with BedSheet include:
 
@@ -292,11 +297,11 @@ You can define your own middleware to address cross cutting concerns such as aut
 
 When BedSheet catches an Err it scans through a list of contributed response objects to find one that can handle the Err. If no matching response object is found then the *default err response object* is used. This default response object displays BedSheet's extremely verbose Error 500 page. It displays (a shed load of) debugging information and is highly customisable:
 
-![BedSheet's Verbose Err500 Page](http://pods.fantomfactory.org/pods/afBedSheet/doc/err500.png)
+![BedSheet's Verbose Err500 Page](http://eggbox.fantomfactory.org/pods/afBedSheet/doc/err500.png)
 
-The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public! So note that in a production environment (see [IocEnv](http://pods.fantomfactory.org/pods/afIocEnv)) a simple HTTP status page is displayed instead.
+The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public! So note that in a production environment (see [IocEnv](http://eggbox.fantomfactory.org/pods/afIocEnv)) a simple HTTP status page is displayed instead.
 
-> **ALIEN-AID:** BedSheet defaults to production mode, so to see the verbose error page you must switch to development mode. The easiest way to do this is to set an environment variable called `ENV` with the value `development`. See [IocEnv](http://pods.fantomfactory.org/pods/afIocEnv) details.
+> **ALIEN-AID:** BedSheet defaults to production mode, so to see the verbose error page you must switch to development mode. The easiest way to do this is to set an environment variable called `ENV` with the value `development`. See [IocEnv](http://eggbox.fantomfactory.org/pods/afIocEnv) details.
 
 To handle a specific Err, contribute a response object to `ErrResponses`:
 
@@ -324,9 +329,9 @@ When processing an Err, note that the thrown `Err` is stored in `HttpRequest.sta
 
 ## HTTP Status Processing
 
-`HttpStatus` objects are handled by a [ResponseProcessor](http://pods.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor) that selects a contributed response object that corresponds to the HTTP status code. If no specific response object is found then the *default http status response object* is used. This default response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a `404 Not Found` error.
+`HttpStatus` objects are handled by a [ResponseProcessor](http://eggbox.fantomfactory.org/pods/afBedSheet/api/ResponseProcessor) that selects a contributed response object that corresponds to the HTTP status code. If no specific response object is found then the *default http status response object* is used. This default response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a `404 Not Found` error.
 
-![BedSheet's 404 Status Page](http://pods.fantomfactory.org/pods/afBedSheet/doc/err404.png)
+![BedSheet's 404 Status Page](http://eggbox.fantomfactory.org/pods/afBedSheet/doc/err404.png)
 
 To set your own `404 Not Found` page contribute a response object to the `HttpStatusResponses` service with the status code `404`:
 
@@ -354,7 +359,7 @@ Void contributeApplicationDefaults(Configuration config) {
 
 ## Config Injection
 
-BedSheet uses [IoC Config](http://pods.fantomfactory.org/pods/afIocConfig) to give injectable `@Config` values. `@Config` values are essentially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider config values to be immutable once the app has started).
+BedSheet uses [IoC Config](http://eggbox.fantomfactory.org/pods/afIocConfig) to give injectable `@Config` values. `@Config` values are essentially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider config values to be immutable once the app has started).
 
 BedSheet sets the initial config values by contributing to the `FactoryDefaults` service. An application may then override these values by contributing to the `ApplicationDefaults` service.
 
@@ -367,13 +372,13 @@ Void contributeApplicationDefaults(Configuration conf) {
 }
 ```
 
-All BedSheet config keys are listed in [BedSheetConfigIds](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds) meaning the above can be more safely rewriten as:
+All BedSheet config keys are listed in [BedSheetConfigIds](http://eggbox.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds) meaning the above can be more safely rewriten as:
 
 ```
 conf[BedSheetConfigIds.noOfStackFrames] = 100
 ```
 
-To inject config values in your services, use the `@Config` facet with conjunction with [IoC](http://pods.fantomfactory.org/pods/afIoc)'s `@Inject`:
+To inject config values in your services, use the `@Config` facet with conjunction with [IoC](http://eggbox.fantomfactory.org/pods/afIoc)'s `@Inject`:
 
 ```
 @Inject @Config { id="afBedSheet.errPrinter.noOfStackFrames" }
@@ -480,7 +485,7 @@ class UploadService {
 
 ## Request Logging
 
-BedSheet has a hook for logging HTTP requests. Just implement [RequestLogger](http://pods.fantomfactory.org/pods/afBedSheet/api/RequestLogger) and contribute it to the `RequestLoggers` service. This service ensures the loggers are able to log what gets sent to the browser, without interruption from the error handling framework.
+BedSheet has a hook for logging HTTP requests. Just implement [RequestLogger](http://eggbox.fantomfactory.org/pods/afBedSheet/api/RequestLogger) and contribute it to the `RequestLoggers` service. This service ensures the loggers are able to log what gets sent to the browser, without interruption from the error handling framework.
 
 Example, this simple logger generates standard HTTP request log files in the [W3C Extended Log File Format](http://www.w3.org/TR/WD-logfile.html).
 
@@ -572,7 +577,7 @@ Void configureGzipCompressible(Configuration config) {
 
 Guaranteed that someone, somewhere is still using Internet Explorer 3.0 - or some other client that can't handle gzipped content from the server. As such, and as per [RFC 2616 HTTP1.1 Sec14.3](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3), the response is only gzipped if the appropriate HTTP request header was set.
 
-Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger than the original - which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped. See [gzipThreshold](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.gzipThreshold) for more details.
+Gzip is great when compressing large files, but if you've only got a few bytes to squash... then the compressed version is going to be bigger than the original - which kinda defeats the point compression! For that reason the response data must reach a minimum size / threshold before it gets gzipped. See [gzipThreshold](http://eggbox.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.gzipThreshold) for more details.
 
 ## Buffered Response
 
@@ -584,7 +589,7 @@ Response buffering may be disabled on a per request / response basis by calling:
 HttpResponse.disableBuffering()
 ```
 
-A threshold can be set, whereby if the buffer size exeeds that value, all content is streamed directly to the client. See [responseBufferThreshold](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.responseBufferThreshold) for more details.
+A threshold can be set, whereby if the buffer size exeeds that value, all content is streamed directly to the client. See [responseBufferThreshold](http://eggbox.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.responseBufferThreshold) for more details.
 
 ## Development Proxy
 
@@ -614,7 +619,7 @@ Proxy (port) <-->|
                  |<--> Web Browser
 ```
 
-Note that the proxy is intelligent enough to only scan those pods used by the web application. If need be, use the [-watchAllPods](http://pods.fantomfactory.org/pods/afBedSheet/api/Main) option to watch *all* pods.
+Note that the proxy is intelligent enough to only scan those pods used by the web application. If need be, use the [-watchAllPods](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Main) option to watch *all* pods.
 
 A problem other web frameworks (*cough* *draft*) suffer from is that, when the proxy dies, your real web app is left hanging around; requiring you to manually kill it. Which can be both confusing and annoying.
 
@@ -626,11 +631,11 @@ A problem other web frameworks (*cough* *draft*) suffer from is that, when the p
 
 BedSheet applications go a step further and, should it be started in proxy mode, it pings the proxy every second to stay alive. Should the proxy not respond, the web app kills itself.
 
-See [proxyPingInterval](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.proxyPingInterval) for more details.
+See [proxyPingInterval](http://eggbox.fantomfactory.org/pods/afBedSheet/api/BedSheetConfigIds.proxyPingInterval) for more details.
 
 ## Wisp Integration
 
-To some, BedSheet may look like a behemoth web framework, but it is in fact just a standard Fantom [WebMod](http://fantom.org/doc/web/WebMod.html). This means it can be plugged into a [Wisp](http://fantom.org/doc/wisp/index.html) application along side other all the other standard [webmods](http://fantom.org/doc/webmod/index.html). Just create an instance of [BedSheetWebMod](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetWebMod) and pass it to Wisp like any other.
+To some, BedSheet may look like a behemoth web framework, but it is in fact just a standard Fantom [WebMod](http://fantom.org/doc/web/WebMod.html). This means it can be plugged into a [Wisp](http://fantom.org/doc/wisp/index.html) application along side other all the other standard [webmods](http://fantom.org/doc/webmod/index.html). Just create an instance of [BedSheetWebMod](http://eggbox.fantomfactory.org/pods/afBedSheet/api/BedSheetWebMod) and pass it to Wisp like any other.
 
 For example, the following Wisp application places BedSheet under the path `poo/`.
 
@@ -665,7 +670,7 @@ const class TinyBedAppModule {
 
 When run, a request to `http://localhost:8069/` will return a Wisp 404 and any request to `http://localhost:8069/poo/*` will invoke BedSheet and return `Hello Mum!`.
 
-When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()](http://pods.fantomfactory.org/pods/afBedSheet/api/BedSheetServer.toClientUrl) to ensure the extra path info is added. Similarly, ensure asset URLs are retrieved from the [FileHandler](http://pods.fantomfactory.org/pods/afBedSheet/api/FileHandler) service.
+When running BedSheet under a non-root path, be sure to transform all link hrefs with [BedSheetServer.toClientUrl()](http://eggbox.fantomfactory.org/pods/afBedSheet/api/BedSheetServer.toClientUrl) to ensure the extra path info is added. Similarly, ensure asset URLs are retrieved from the [FileHandler](http://eggbox.fantomfactory.org/pods/afBedSheet/api/FileHandler) service.
 
 Note that mulitple BedSheet instances may be run side by side in the same Wisp application.
 
@@ -740,9 +745,9 @@ See Alien-Factory's [Fantom Quickstart for OpenShift](https://bitbucket.org/Alie
 
 ## Tips
 
-All route handlers and processors are built by [IoC](http://pods.fantomfactory.org/pods/afIoc) so feel free to `@Inject` DAOs and other services.
+All route handlers and processors are built by [IoC](http://eggbox.fantomfactory.org/pods/afIoc) so feel free to `@Inject` DAOs and other services.
 
-BedSheet itself is built with [IoC](http://pods.fantomfactory.org/pods/afIoc) so look at the [BedSheet Source](https://bitbucket.org/AlienFactory/afbedsheet/src) for [IoC](http://pods.fantomfactory.org/pods/afIoc) examples.
+BedSheet itself is built with [IoC](http://eggbox.fantomfactory.org/pods/afIoc) so look at the [BedSheet Source](https://bitbucket.org/AlienFactory/afbedsheet/src) for [IoC](http://eggbox.fantomfactory.org/pods/afIoc) examples.
 
 Even if your route handlers aren't services, if they're `const` classes, they're cached by BedSheet and reused on every request.
 
