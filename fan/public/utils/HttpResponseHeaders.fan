@@ -110,6 +110,16 @@ const class HttpResponseHeaders {
 		set { addOrRemove("Vary", it) }
 	}
 
+	** WWW-Authenticate header to indicate supported authentication mechanisms.
+	** 
+	** Example: 'WWW-Authenticate: SCRAM hash=SHA-256'
+	** 
+	** Returns 'null' if the header doesn't exist.
+	Str? wwwAuthenticate {
+		get { get("WWW-Authenticate") }
+		set { addOrRemove("WWW-Authenticate", it) }
+	}
+	
 	** Clickjacking protection, set to:
 	**  - 'deny' - no rendering within a frame, 
 	**  - 'sameorigin' - no rendering if origin mismatch

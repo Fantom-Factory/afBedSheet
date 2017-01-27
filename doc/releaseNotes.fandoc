@@ -1,9 +1,11 @@
 Versions
 ********
+
 v1.5.6
 ======
  - Chg: 'HttpRequestHeaders' interprets dodgy values as 'null' rather than throwing an Err.
  - Chg: Added some common sound file formats to 'PodHandlers' whitelist: '.mp3 .ogg .wav .opus'
+ - Chg: Added 'WWW-Authenticate' to 'HttpRequestHeaders'.
  - Chg: Supports 'pod.dis' for app names.
 
 v1.5.4
