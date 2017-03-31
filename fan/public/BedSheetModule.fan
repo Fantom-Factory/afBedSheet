@@ -279,8 +279,8 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	Void contributeFactoryDefaults(Configuration config, RegistryMeta meta, IocEnv iocEnv) {
-		// honour the system config from Fantom-1.0.66 
-		bedSheetPort	 := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
+		// look for the proxyPort (8069) before the appPort (8070) as generally, that's where we want to point to 
+		bedSheetPort := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
 
 		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		config[BedSheetConfigIds.gzipDisabled]				= false
