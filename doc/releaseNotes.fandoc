@@ -1,5 +1,8 @@
 Versions
 ********
+v1.5.8
+======
+ - Chg: When running in dev mode 'BedSheetServer.host()' now returns the usable proxy port, not the actual app port.
 
 v1.5.6
 ======

@@ -120,7 +120,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
 		// DependencyProvider, so @Config is not available for injection
 		// host is validated on startup, so we know it's okay
-		bedSheetHost := configSrc.get(BedSheetConfigIds.host, Uri#)
+		bedSheetHost := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
 		if (!bedSheetHost.toStr.startsWith("http://localhost:"))
 			return bedSheetHost
 		
@@ -128,10 +128,20 @@ internal const class BedSheetServerImpl : BedSheetServer {
 		webReq := webReq
 		if (webReq != null) {
 			host := hostViaHeaders(webReq.headers)
-			if (host != null)
+			
+			if (host != null) {
+				if (regMeta != null) {
+					// generate absolute URLs that point back to the proxy, not the app
+					appPort := regMeta[BsConstants.meta_appPort] ?: 0
+					if (host == `http://localhost:${appPort}/`) {
+						proxyPort := regMeta[BsConstants.meta_proxyPort]
+						return `http://localhost:${proxyPort ?: 0}`
+					}
+				}
 				return host
+			}
 		}
-		
+
 		return bedSheetHost
 	}
 
