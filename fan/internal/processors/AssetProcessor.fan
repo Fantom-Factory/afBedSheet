@@ -29,7 +29,7 @@ internal const class AssetProcessor : ResponseProcessor {
 		
 		// set identity headers
 		httpResponse.headers.eTag 		  = asset.etag
-		httpResponse.headers.lastModified = asset.modified.floor(1sec)	// 1 second which is the most precision that HTTP can deal with
+		httpResponse.headers.lastModified = asset.modified?.floor(1sec)	// 1 second which is the most precision that HTTP can deal with
 
 		// initially set the Content-Length 
 		// - GzipOutStream may reset this to zero if it kicks in 
