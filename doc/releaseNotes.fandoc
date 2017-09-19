@@ -3,6 +3,7 @@ Versions
 v1.5.8
 ======
  - Chg: When running in dev mode 'BedSheetServer.host()' now returns the usable proxy port, not the actual app port.
+ - Chg: Updated [afConcurrent]`pod:afConcurrent` to 1.0.20.
  - Bug: Fixed NPE in 'AssetProcessor' when the asset's modified field was null.
 
 v1.5.6

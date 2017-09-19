@@ -58,7 +58,7 @@ internal const class AppRestarter {
 	}
 	
 	private Future withState(|AppRestarterState| state) {
-		conState.withState(state)
+		conState.async(state)
 	}
 }
 
