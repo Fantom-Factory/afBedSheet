@@ -8,6 +8,11 @@ using web::WebMod
 **   useDevProxy := true
 **   BedSheetBuilder(AppModule#).startWisp(8069, useDevProxy, "dev")
 ** 
+** Note that BedSheet requires specific IoC config to run. Hence when running BedSheet apps this class should be used in
+** preference to 'afIoc::RegistryBuilder'. 
+** 
+** Note the `toRegistryBuilder` method should wish to build a web app, but not start the web app or listen to a port.  
+** 
 class BedSheetBuilder {
 	private static const Log log 	:= Utils.getLog(BedSheetBuilder#)
 	private IpAddr? _ipAddr
@@ -100,14 +105,21 @@ class BedSheetBuilder {
 		return this
 	}
 	
-	** Builds the IoC 'Registry'. 
-	Registry build() {
+	** Copies the content of this builder, including all the BedSheet specific config, into an IoC 'RegistryBuilder' instance.
+	RegistryBuilder toRegistryBuilder() {
 		bob := RegistryBuilder()
 		_modsToRemove.each { bob.removeModule(it) }
 		_pods.each { bob.addModulesFromPod(it[0], it[1]) }
 		_moduleTypes.each { bob.addModule(it) }
 		options.each |v, k| { bob.options[k] = v }
-		return bob.build
+		return bob
+	}
+	
+	** Builds the IoC 'Registry'. 
+	** 
+	** Essentially a convenience method for 'toRegistryBuilder.build()'.
+	Registry build() {
+		toRegistryBuilder.build
 	}
 
 	** Convenience method to start a Wisp server running 'BedSheetWebMod'.
