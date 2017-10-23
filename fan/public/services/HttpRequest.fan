@@ -122,6 +122,7 @@ const class HttpRequestWrapper : HttpRequest {
 internal const class HttpRequestImpl : HttpRequest {	
 	override const HttpRequestHeaders	headers
 	@Inject  const |->RequestState|?	reqState	// nullable for testing
+	@Inject  const |->BedSheetServer|?	bedServer
 	
 	new make(|This|? in := null) { 
 		in?.call(this) 
@@ -148,8 +149,8 @@ internal const class HttpRequestImpl : HttpRequest {
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Uri urlAbs() {
-		host := headers.host ?: throw Err("Missing Host header")
-		return `http://${host}/` + webReq.uri
+		// use BedServer's fancy Host processing
+		bedServer().toAbsoluteUrl(webReq.uri)
 	}
 	override Locale[] locales() {
 		webReq.locales
