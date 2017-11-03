@@ -149,6 +149,9 @@ const class BedSheetModule {
 	@Contribute { serviceType=ValueEncoders# }
 	Void contributeValueEncoders(Configuration config) {
 		// wot no value encoders!? Aha! I see you're using TypeCoercer as a backup!
+		
+		// well, I nabbed this one from afFormBean for checkboxes
+		config[Bool#] = BoolEncoder()
 	}
 
 	@Contribute { serviceType=PodHandler# }
