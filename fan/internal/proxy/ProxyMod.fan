@@ -81,14 +81,19 @@ internal const class ProxyMod : WebMod {
 
 			// because v1.0.67 auto de-gzips the response, we need to re-gzip it on the way out
 			// I'm not overly happy with this but it's ingrained deep in web::WebUtil.makeContentInStream()
-			if (webVer >= Version("1.0.67")) {
-				if (regzip)
-					resOut = Zip.gzipOutStream(resOut)
-				if (redeflate)
-					resOut = Zip.deflateOutStream(resOut)
-			}
+			if (regzip)
+				resOut = Zip.gzipOutStream(resOut)
+			if (redeflate)
+				resOut = Zip.deflateOutStream(resOut)
 				
-			resOut.writeBuf(resBuf).flush.close
+			try
+				resOut.writeBuf(resBuf)
+			catch (IOErr ioe) {
+				resOut.flush.close
+				// we don't care for the stacktrace, so just log the msg. It's usually something like:
+				//  java.net.SocketException: Software caused connection abort: socket write error
+				log.err("Error processing: ${req.uri.relToAuth}\n  ${ioe.msg}")
+			}
 		}
 
 		c.close

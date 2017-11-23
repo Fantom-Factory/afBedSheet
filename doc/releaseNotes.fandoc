@@ -8,6 +8,7 @@ v1.5.8
  - Chg: When running in dev mode 'BedSheetServer.host()' now returns the usable proxy port, not the actual app port.
  - Chg: Updated [afConcurrent]`pod:afConcurrent` to 1.0.20.
  - Chg: Updated tests to work with Fantom 1.0.70.
+ - Chg: Neater err msgs from ProxyMod for closed connections.
  - Bug: Fixed NPE in 'AssetProcessor' when the asset's modified field was null.
 
 v1.5.6
