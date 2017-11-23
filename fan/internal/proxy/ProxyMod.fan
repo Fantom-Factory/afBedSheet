@@ -88,12 +88,12 @@ internal const class ProxyMod : WebMod {
 				
 			try
 				resOut.writeBuf(resBuf)
-			catch (IOErr ioe) {
-				resOut.flush.close
+			catch (IOErr ioe)
 				// we don't care for the stacktrace, so just log the msg. It's usually something like:
 				//  java.net.SocketException: Software caused connection abort: socket write error
 				log.err("Error processing: ${req.uri.relToAuth}\n  ${ioe.msg}")
-			}
+			finally
+				resOut.flush.close
 		}
 
 		c.close
