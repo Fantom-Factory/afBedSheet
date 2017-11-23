@@ -54,6 +54,7 @@ internal class T_WebRes : WebRes {
 	override WebOutStream out()				{ WebOutStream(Buf().out) }
 	override Void redirect(Uri u, Int s := 303)  { }
 	override Void sendErr(Int s, Str? m := null) { }
+	override TcpSocket upgrade(Int statusCode := 101) { throw UnsupportedErr() }
 }
 
 internal class T_WebSession : WebSession {
