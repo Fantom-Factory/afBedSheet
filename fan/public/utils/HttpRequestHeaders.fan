@@ -162,8 +162,13 @@ const class HttpRequestHeaders {
 		headers.each(c)
 	}
 	
-	** Returns the underlying header map.
+	@NoDoc @Deprecated { msg="Use val() instead" }
 	Str:Str map() {
+		headers
+	}
+	
+	** Returns the underlying header map.
+	Str:Str val() {
 		headers
 	}
 
