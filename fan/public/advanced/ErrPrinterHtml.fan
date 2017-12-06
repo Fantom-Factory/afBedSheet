@@ -134,7 +134,7 @@ internal const class ErrPrinterHtmlSections {
 
 	Void printRequestHeaders(WebOutStream out, Err? err) {
 		title(out, "Request Headers")
-		map := request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") } 
+		map := request.headers.val.exclude |v, k| { k.equalsIgnoreCase("Cookie") } 
 		prettyPrintMap(out, map, true)
 	}
 

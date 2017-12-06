@@ -111,7 +111,7 @@ internal const class ErrPrinterStrSections {
 
 	Void printRequestHeaders(StrBuf buf, Err? err) {
 		buf.add("\nRequest Headers:\n")
-		reqHeaders := request.headers.map.exclude |v, k| { k.equalsIgnoreCase("Cookie") }
+		reqHeaders := request.headers.val.exclude |v, k| { k.equalsIgnoreCase("Cookie") }
 		prettyPrintMap(buf, reqHeaders, true)
 	}
 
