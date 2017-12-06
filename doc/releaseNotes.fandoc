@@ -3,12 +3,14 @@ Versions
 v1.5.8
 ======
  - New: Added 'BedSheetBuilder.toRegistryBuilder()'.
+ - New: Added 'HttpRequest.host()' for making sense of proxy values.
  - New: Added a 'BoolValueEncoder' for converting checkbox values - nabbed from [FormBean]`pod:afFormBean`.
  - Chg: 'HttpReqest.urlAbs()' now utilises 'BedSheetServer.toAbsoluteUrl()' for smarter 'Host' processing.
  - Chg: When running in dev mode 'BedSheetServer.host()' now returns the usable proxy port, not the actual app port.
  - Chg: Updated [afConcurrent]`pod:afConcurrent` to 1.0.20.
  - Chg: Updated tests to work with Fantom 1.0.70.
  - Chg: Neater err msgs from ProxyMod for closed connections.
+ - Chg: Renamed 'HttpRequestHeaders.map' to 'val'.
  - Bug: Fixed NPE in 'AssetProcessor' when the asset's modified field was null.
 
 v1.5.6

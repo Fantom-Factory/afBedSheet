@@ -26,11 +26,14 @@ const mixin BedSheetServer {
 	** If set, this is taken from the `BedSheetConfigIds.host` config value.
 	** 
 	** If not, then an attempt is made to get this from the HTTP request via the following (in order):
+	** 
 	**  1. The 'Forwarded' HTTP header - see [RFC 7239]`https://tools.ietf.org/html/rfc7239`  
 	**  2. The 'X-Forwarded-XXXX' HTTP headers
 	**  3. The 'host' HTTP header  
+	**
+	** See `HttpRequest.host` for details. 
 	** 
-	** If all else fails, example a HTTP 1.0. request, then 'http://localhost:${port}/' is returned.
+	** If all fails then 'http://localhost:${port}/' is returned.
 	** 
 	** Example:
 	** 
@@ -76,7 +79,6 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	// nullable for testing
 	@Inject private const RegistryMeta?	regMeta 
 	@Inject private const ConfigSource?	configSrc 
-	@Inject private const Log?			log
 	
 	new make(|This|in) { in(this) }
 	
@@ -127,7 +129,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 		// otherwise, lets parse the web req
 		webReq := webReq
 		if (webReq != null) {
-			host := hostViaHeaders(webReq.headers)
+			host := HttpRequestImpl.hostViaHeaders(webReq.headers)
 			
 			if (host != null) {
 				if (regMeta != null) {
@@ -138,6 +140,9 @@ internal const class BedSheetServerImpl : BedSheetServer {
 						return `http://localhost:${proxyPort ?: 0}`
 					}
 				}
+				// hostViaHeaders is not guarenteed to return a scheme
+				if (host.scheme == null)
+					host = `http:${host}`
 				return host
 			}
 		}
@@ -155,54 +160,6 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	override Uri toAbsoluteUrl(Uri clientUrl) {
 		Utils.validateLocalUrl(clientUrl, `/css/myStyles.css`)
 		return host + clientUrl.relTo(`/`)
-	}
-
-	internal Uri? hostViaHeaders(Str:Str headers) {
-		forwarded 	:= headers["Forwarded"]
-		try {
-			if (forwarded != null) {
-				forHost := null as Str
-				forProt := null as Str
-
-				splits	:= forwarded.split(';')
-				splits.each {
-					vals := it.split('=')
-					if (vals.first.equalsIgnoreCase("proto"))
-						forProt = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
-					if (vals.first.equalsIgnoreCase("host"))
-						forHost = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
-				}
-				if (forHost != null && forProt != null)
-					return `${forProt}://${forHost}`
-			}
-		} catch {
-			log.warn("Dodgy 'Forwarded' HTTP header value:  Forwarded = ${forwarded}")
-		}
-			
-		proxyScheme := headers["X-Forwarded-Proto"]
-		proxyHost	:= headers["X-Forwarded-Host"]
-		proxyPort	:= headers["X-Forwarded-Port"]
-		try {
-			if (proxyScheme != null && proxyHost != null) {
-				if (proxyHost.endsWith(":"))
-					proxyHost = proxyHost[0..<-1]
-				if (proxyPort != null && !proxyHost.contains(":"))
-					return `${proxyScheme}://${proxyHost}:${proxyPort}`
-				else
-					return `${proxyScheme}://${proxyHost}`
-			}
-		} catch {
-			log.warn("Dodgy 'X-Forwarded-XXXX' HTTP header values:\n  X-Forwarded-Proto= ${proxyScheme}\n  X-Forwarded-Host = ${proxyHost}\n  X-Forwarded-Port = ${proxyPort}")
-		}
-			
-		host := headers["Host"]
-		try {
-			return `http://${host}/`
-		} catch {
-			log.warn("Dodgy 'Host' HTTP header value: Host = ${host}")
-		}
-		
-		return null
 	}
 	
 	private WebReq? webReq() {
