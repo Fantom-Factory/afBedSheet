@@ -70,11 +70,8 @@ const class HttpRequestHeaders {
 		get { makeIfNotNull("Cookie") |cookieVal->Obj?| { 
 			return cookieVal.split(';').map |cookieStr->Cookie?| {
 				// corrupted cookies aren't the end of the world - so lets not treat it so!
-				try return Cookie.fromStr(cookieStr)
-				catch {
-					log.warn("Could not parse Cookie value: ${cookieStr}")
-					return null
-				}
+				// in fact, they're so common, let's not even log them - just ignore them!
+				return Cookie(cookieStr, false)
 			}.exclude { it == null }
 		}}
 		private set { }

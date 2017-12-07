@@ -11,6 +11,7 @@ v1.5.8
  - Chg: Updated tests to work with Fantom 1.0.70.
  - Chg: Neater err msgs from ProxyMod for closed connections.
  - Chg: Renamed 'HttpRequestHeaders.map' to 'val'.
+ - Chg: Given they're so common, corrupted cookie values are no longer logged.
  - Bug: Fixed NPE in 'AssetProcessor' when the asset's modified field was null.
 
 v1.5.6
