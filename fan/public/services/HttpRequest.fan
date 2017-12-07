@@ -46,17 +46,18 @@ const mixin HttpRequest {
 	** @see `web::WebReq.modRel`
 	abstract Uri url()
 
-	** The absolute request URL including the full authority and the query string.  
-	** This method is equivalent to:
+	** Returns the absolute request URL including the full authority, mod path, and the query string.  
+	** Efforts are made to restore the original 'host' should it have been lost / replaced by a proxy.
 	** 
-	**   "http://" + host + path + url
-	**
-	** where 'path' is the request path to the current 'WebMod'.
+	** Equivalent(ish) to:
+	**   
+	**   host() + WebReq.absUri
 	** 
 	** Examples:
 	**   http://www.foo.com/a/b/index.html
 	**   http://www.foo.com/a?q=bar
 	** 
+	** @see `host`
 	** @see `web::WebReq.absUri`
 	abstract Uri urlAbs()
 
@@ -175,8 +176,12 @@ internal const class HttpRequestImpl : HttpRequest {
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Uri urlAbs() {
-		// use BedServer's fancy Host processing
-		bedServer().toAbsoluteUrl(webReq.uri)
+		host := host
+		if (host == null)
+			host = bedServer().host
+		if (host.scheme == null)
+			host = `http:${host}`
+		return host + webReq.uri
 	}
 	override Uri? host() {
 		hostViaHeaders(headers.val)
