@@ -153,7 +153,7 @@
 ** -----------------
 ** Handler methods may be non-static. 
 ** They they belong to an IoC service then the service is obtained from the IoC registry.
-** Otherwise the containing class is [autobuilt]`afIoc::Registry.autobuild`. 
+** Otherwise the containing class is [autobuilt]`afIoc::Scope.build`. 
 ** If the class is 'const', the instance is cached for future use.
 ** 
 const mixin Route {
