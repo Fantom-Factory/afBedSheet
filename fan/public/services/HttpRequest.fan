@@ -47,7 +47,8 @@ const mixin HttpRequest {
 	abstract Uri url()
 
 	** Returns the absolute request URL including the full authority, mod path, and the query string.  
-	** Efforts are made to restore the original 'host' should it have been lost / replaced by a proxy.
+	** If defined, this is taken from the `BedSheetConfigIds.host` config value othereise
+	** efforts are made to restore the original HTTP header 'host' should it have been lost / replaced by a proxy.
 	** 
 	** Equivalent(ish) to:
 	**   
@@ -176,9 +177,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Uri urlAbs() {
-		host := host
-		if (host == null)
-			host = bedServer().host
+		host := bedServer().host
 		if (host.scheme == null)
 			host = `http:${host}`
 		return host + webReq.uri
@@ -208,55 +207,72 @@ internal const class HttpRequestImpl : HttpRequest {
 			throw Err("No web request active in thread")
 	}
 	static Uri? hostViaHeaders(Str:Str headers) {
+		proto	:= null as Str
+		host	:= null as Str
+		port	:= null as Str
+		
 		forwarded 	:= headers["Forwarded"]
 		try {
+			// note rfc7239 doesn't define a port number for the host
 			if (forwarded != null) {
-				forHost := null as Str
-				forProt := null as Str
-
 				splits	:= forwarded.split(';')
 				splits.each {
 					vals := it.split('=')
 					if (vals.first.equalsIgnoreCase("proto"))
-						forProt = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
+						proto = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
 					if (vals.first.equalsIgnoreCase("host"))
-						forHost = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
+						host  = vals.last.startsWith("\"") ? WebUtil.fromQuotedStr(vals.last) : vals.last
 				}
-				if (forProt != null && forHost != null)
-					return `${forProt}://${forHost}`
-				if (forHost != null)
-					return `//${forHost}/`
 			}
 		} catch {
 			log.warn("Dodgy 'Forwarded' HTTP header value:  Forwarded = ${forwarded}")
 		}
-			
-		proxyScheme := headers["X-Forwarded-Proto"]
-		proxyHost	:= headers["X-Forwarded-Host"]
-		proxyPort	:= headers["X-Forwarded-Port"]
-		try {
-			if (proxyHost != null) {
-				if (proxyHost.endsWith(":"))
-					proxyHost = proxyHost[0..<-1]
-				if (proxyPort != null && !proxyHost.contains(":"))
-					proxyHost = "${proxyHost}:${proxyPort}"
-				if (proxyScheme != null)
-					return `${proxyScheme}://${proxyHost}/`
-				else
-					return `//${proxyHost}/`
+		
+		if (forwarded == null) {
+			proxyProto	:= headers["X-Forwarded-Proto"]
+			proxyHost	:= headers["X-Forwarded-Host"]
+			proxyPort	:= headers["X-Forwarded-Port"]
+			try {
+				if (proxyHost != null) {
+					if (proxyHost.endsWith(":"))
+						proxyHost = proxyHost[0..<-1]
+					if (proxyHost.contains(":")) {
+						i := proxyHost.index(":")
+						if (proxyPort == null)
+							proxyPort = proxyHost[i+1..-1]
+						proxyHost = proxyHost[0..<i]
+					}
+				}
+				
+				proto	= proxyProto
+				host	= proxyHost
+				port	= proxyPort
+			} catch {
+				log.warn("Dodgy 'X-Forwarded-XXXX' HTTP header values:\n  X-Forwarded-Proto=${proxyProto}\n  X-Forwarded-Host=${proxyHost}\n  X-Forwarded-Port=${proxyPort}")
 			}
-		} catch {
-			log.warn("Dodgy 'X-Forwarded-XXXX' HTTP header values:\n  X-Forwarded-Proto= ${proxyScheme}\n  X-Forwarded-Host = ${proxyHost}\n  X-Forwarded-Port = ${proxyPort}")
-		}
-			
-		host := headers["Host"]
-		try {
-			if (host != null)
-				return `//${host}/`
-		} catch {
-			log.warn("Dodgy 'Host' HTTP header value: Host = ${host}")
 		}
 		
+		if (host == null)
+			host = headers["host"]
+
+		try {
+			if (host == null)
+				return null
+			
+			if (proto != null && port != null)
+				return `${proto}://${host}:${port}/`
+				
+			if (proto != null)
+				return `${proto}://${host}/`
+
+			if (port != null)
+				return `//${host}:${port}/`
+
+			return `//${host}/`
+		} catch {
+			log.warn("Dodgy 'proto' & 'Host' values: proto=${proto}  host=${host}  port=${port}")
+		}
+
 		return null
 	}
 }
