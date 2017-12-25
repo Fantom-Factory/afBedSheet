@@ -4,6 +4,22 @@ internal class TestFileHandling : AppTest {
 	File	file1	:= `test/app-web/mr-file.txt`.toFile
 	File	file2	:= `test/app-web/name with spaces.txt`.toFile
 	
+	** See `https://en.wikipedia.org/wiki/Directory_traversal_attack`
+	Void testPathTraversalAttacks() {
+		
+		// This is mainly handled by Wisp that normalises URIs
+		client.reqUri = reqUri(`/test-src/../../build.fan`) 
+		client.writeReq.readRes
+		res := client.resIn.readAllStr.trim
+		verifyEq(client.resCode, 400, "$client.resCode - $client.resPhrase")
+		
+		client = WebClient()
+		verifyStatus(`/test-src/../Example.fan`, 404)
+
+		client = WebClient()
+		verifyStatus(`/test-src/%2e%2e%2f%2e%2e%2fbuild.fan`, 404)
+	}
+
 	Void testFileIsServed() {
 		text := getAsStr(`/test-src/mr-file.txt`)
 
