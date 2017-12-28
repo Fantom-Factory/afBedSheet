@@ -20,6 +20,31 @@ internal class TestPostForm : AppTest {
 		verifyEq(res, ["wot":"ever"].toCode)
 	}
 
+	Void testMultipartPost() {
+		// bug-fix - make sure multipart forms can be read more than once
+		body := 
+"--Boundary-XXXX\r
+ Content-Disposition: form-data; name=\"wot2\"\r
+ Content-Type: text/plain; charset=utf-8\r
+ \r
+ ever2\r
+ --Boundary-XXXX--\r\n"
+		client.with {
+			it.reqUri	 = this.reqUri(`/postMultipartForm`) 
+			it.reqMethod = "POST"
+			it.reqHeaders["Content-Type"]	= "multipart/form-data;boundary=Boundary-XXXX"
+			it.reqHeaders["Content-Length"]	= body.size.toStr
+			it.writeReq
+			it.reqOut.print(body).close
+			it.readRes
+		}
+		res := client.resIn.readAllStr.trim
+		if (client.resCode != 200)
+			fail("$client.resCode $client.resPhrase \n$res")
+
+		verifyEq(res, [:].add("wot2","ever2").toCode)
+	}
+
 	Void testPostWith100Continue() {
 		// this is handled by WispReq
 		body := Uri.encodeQuery(["wot":"ever"])

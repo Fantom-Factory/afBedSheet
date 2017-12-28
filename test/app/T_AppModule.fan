@@ -65,6 +65,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/slow`, 				T_PageHandler#slow))
 
 		conf.add(Route(`/postForm`, 			T_PageHandler#postForm, "POST"))
+		conf.add(Route(`/postMultipartForm`, 	T_PageHandler#postMultipartForm, "POST"))
 
 		conf.add(Route(`/fieldResponse`,		T_PageHandler#fieldResponse))
 		

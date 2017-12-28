@@ -1,5 +1,7 @@
-Versions
-********
+v1.5.10
+=======
+ - Chg: Allow request bodies be read *and* parsed as multipart forms.
+
 v1.5.8
 ======
  - New: Added 'BedSheetBuilder.toRegistryBuilder()'.
