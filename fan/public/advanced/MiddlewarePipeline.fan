@@ -39,7 +39,7 @@ internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 			if (reqState.middlewareDepth == 0) {
 				// this commits the response (by calling res.out) if it hasn't already
 				// e.g. 304's and redirects have no body, so need to be committed here
-				httpResponse.out.close
+				httpResponse.out.flush.close
 				
 				localManager.cleanUpThread				
 			}

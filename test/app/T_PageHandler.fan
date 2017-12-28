@@ -237,6 +237,15 @@ internal const class T_PageHandler {
 		str := request.body.form.toCode
 		return Text.fromPlain(str)
 	}
+
+	Obj postMultipartForm() {
+		// check we can read the request body AND parse the multipart
+		str := request.body.str
+		
+		form := [:]
+		request.parseMultiPartForm |nom, in| { form[nom] = in.readAllStr }
+		return Text.fromPlain(form.toCode)
+	}
 }
 
 internal class AutoBoom {

@@ -198,7 +198,18 @@ internal const class HttpRequestImpl : HttpRequest {
 		webReq.socketOptions
 	}
 	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb) {
-		webReq.parseMultiPartForm(cb)
+		// copied from 'webReq.parseMultiPartForm()' but uses body.in.
+		mime := MimeType(this.headers["Content-Type"])
+		if (mime.subType != "form-data") throw Err("Invalid content-type: $mime")
+		boundary := mime.params["boundary"] ?: throw Err("Missing boundary param: $mime")
+		WebUtil.parseMultiPart(body.in, boundary) |partHeaders, partIn| {
+			cd			:= partHeaders["Content-Disposition"] ?: throw Err("Multi-part missing Content-Disposition")
+			semi		:= cd.index(";") ?: throw Err("Expected semicolon; Content-Disposition: $cd")
+			params		:= MimeType.parseParams(cd[cd.index(";")+1..-1])
+			formName	:= params["name"] ?: throw Err("Expected name param; Content-Disposition: $cd")
+			cb(formName, partIn, partHeaders)
+			try { partIn.skip(Int.maxVal) } catch {} // drain stream
+		}
 	}
 	private WebReq webReq() {
 		// let's simplify and optimise, no point in querying IoC for this.

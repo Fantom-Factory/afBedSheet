@@ -3,7 +3,8 @@ using util::JsonInStream
 
 ** Convenience methods for accessing the request body.
 class HttpRequestBody {
-	private WebReq webReq
+	private WebReq	webReq
+	private Buf? 	inBuf
 	
 	internal new make(WebReq webReq) {
 		this.webReq = webReq
@@ -18,7 +19,7 @@ class HttpRequestBody {
 	**
 	** @see `web::WebReq.in`
 	InStream? in() {
-		try return webReq.in
+		try return inBuf != null ? inBuf.seek(0).in : webReq.in
 		catch (Err err) {
 			if (err.msg.contains("Attempt to access WebReq.in with no content"))
 				return null
@@ -28,8 +29,10 @@ class HttpRequestBody {
 	
 	** Returns the request body as a 'Buf'. 
 	** Returns 'null' if there is no request content.
-	once Buf? buf() {
-		in?.readAllBuf
+	Buf? buf() {
+		if (inBuf != null)
+			return inBuf
+		return inBuf = in?.readAllBuf
 	}
 	
 	** Returns the request body as a 'Str'. 
