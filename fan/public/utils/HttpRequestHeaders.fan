@@ -120,7 +120,7 @@ const class HttpRequestHeaders {
 	Uri? referrer {
 		// yeah, I know I've mispelt referrer!
 		// see `https://en.wikipedia.org/wiki/HTTP_referrer`
-		get { headers["Referer"]?.toUri }
+		get { makeIfNotNull("Referer") { Uri(it, true) } }
 		private set { }
 	}
 
