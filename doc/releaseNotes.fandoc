@@ -1,8 +1,8 @@
 v1.5.10
 =======
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
- - Chg: Lenient 'Referer' HTTP header parsing.
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
+ - Chg: BedSheet defaults to port 80 when testing (and not port 0).
 
 v1.5.8
 ======

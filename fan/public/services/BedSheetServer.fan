@@ -134,10 +134,10 @@ internal const class BedSheetServerImpl : BedSheetServer {
 			if (host != null) {
 				if (regMeta != null) {
 					// generate absolute URLs that point back to the proxy, not the app
-					appPort := regMeta[BsConstants.meta_appPort] ?: 0
+					appPort := regMeta[BsConstants.meta_appPort] ?: 80
 					if (host == `http://localhost:${appPort}/`) {
 						proxyPort := regMeta[BsConstants.meta_proxyPort]
-						return `http://localhost:${proxyPort ?: 0}`
+						return `http://localhost:${proxyPort ?: 80}/`
 					}
 				}
 				// hostViaHeaders is not guarenteed to return a scheme
