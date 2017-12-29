@@ -3,6 +3,7 @@ v1.5.10
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
  - Chg: BedSheet defaults to port 80 when testing (and not port 0).
+ - Chg: Converted 'HttpRequestHeaders.origin' from 'Str' to a 'URI'. (Potential breaking change.)
 
 v1.5.8
 ======

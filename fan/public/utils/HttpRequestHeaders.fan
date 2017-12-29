@@ -107,9 +107,9 @@ const class HttpRequestHeaders {
 
 	** Initiates a request for cross-origin resource sharing.
 	** 
-	** Example: 'Origin: http://www.example-social-network.com'
-	Str? origin {
-		get { headers["Origin"] }
+	** Example: 'Origin: http://www.example-social-network.com/'
+	Uri? origin {
+		get { makeIfNotNull("Origin") { Uri.decode(it, true) } }
 		private set { }
 	}
 
