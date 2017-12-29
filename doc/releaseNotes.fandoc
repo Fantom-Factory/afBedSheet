@@ -2,6 +2,7 @@ v1.5.10
 =======
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
  - Chg: Lenient 'Referer' HTTP header parsing.
+ - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
 
 v1.5.8
 ======
