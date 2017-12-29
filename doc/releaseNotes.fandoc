@@ -4,6 +4,7 @@ v1.5.10
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
  - Chg: BedSheet defaults to port 80 when testing (and not port 0).
  - Chg: Converted 'HttpRequestHeaders.origin' from 'Str' to a 'URI'. (Potential breaking change.)
+ - Bug: 'BedSheetServer.host()' could sometimes contain the app port, not the proxy port.
 
 v1.5.8
 ======
