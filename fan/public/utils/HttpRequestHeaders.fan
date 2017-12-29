@@ -120,7 +120,8 @@ const class HttpRequestHeaders {
 	Uri? referrer {
 		// yeah, I know I've mispelt referrer!
 		// see `https://en.wikipedia.org/wiki/HTTP_referrer`
-		get { makeIfNotNull("Referer") { Uri(it, true) } }
+		// decode Referer as per `https://security.stackexchange.com/questions/126248/is-displaying-a-non-encoded-http-referer-header-vulnerable-to-xss#126251`
+		get { makeIfNotNull("Referer") { Uri.decode(it, true) } }
 		private set { }
 	}
 
