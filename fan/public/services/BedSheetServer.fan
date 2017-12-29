@@ -95,7 +95,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Int port() {
-		regMeta[BsConstants.meta_appPort]
+		regMeta[BsConstants.meta_proxyPort] ?: regMeta[BsConstants.meta_appPort]
 	}
 	
 	override [Str:Obj] options() {
@@ -116,14 +116,14 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 
 	override Uri host() {
-		// if someone has gone to the trouble of setting a config value - then let's use it
-		// as it's probably the normalised host of multiple sites
-
 		// we get host this way 'cos BedSheetServer is used (in a round about way by Pillow) in a 
 		// DependencyProvider, so @Config is not available for injection
 		// host is validated on startup, so we know it's okay
 		bedSheetHost := (Uri) configSrc.get(BedSheetConfigIds.host, Uri#)
-		if (!bedSheetHost.toStr.startsWith("http://localhost:"))
+		
+		// if someone has gone to the trouble of setting a config value - then let's use it
+		// as it's probably the normalised host of multiple sites
+		if (bedSheetHost.host != "localhost")
 			return bedSheetHost
 		
 		// otherwise, lets parse the web req
@@ -132,17 +132,18 @@ internal const class BedSheetServerImpl : BedSheetServer {
 			host := HttpRequestImpl.hostViaHeaders(webReq.headers)
 			
 			if (host != null) {
+				// hostViaHeaders is not guarenteed to return a scheme
+				if (host.scheme == null)
+					host = `http:${host}`
+
 				if (regMeta != null) {
 					// generate absolute URLs that point back to the proxy, not the app
 					appPort := regMeta[BsConstants.meta_appPort] ?: 80
 					if (host == `http://localhost:${appPort}/`) {
-						proxyPort := regMeta[BsConstants.meta_proxyPort]
-						return `http://localhost:${proxyPort ?: 80}/`
+						proxyPort := regMeta[BsConstants.meta_proxyPort] ?: 80
+						return `http://localhost:${proxyPort}/`
 					}
 				}
-				// hostViaHeaders is not guarenteed to return a scheme
-				if (host.scheme == null)
-					host = `http:${host}`
 				return host
 			}
 		}
