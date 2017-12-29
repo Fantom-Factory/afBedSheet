@@ -39,7 +39,7 @@ class BedSheetBuilder {
 	** 'modOrPodName' may be a pod name or a qualified 'AppModule' type name. 
 	** 'addPodDependencies' is only used if a pod name is passed in.
 	new makeFromName(Str modOrPodName, Bool addPodDependencies := true) {
-		port = 0
+		port = 80
 		_initModules(modOrPodName, addPodDependencies)
 		_initBanner()
 	}

@@ -290,7 +290,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.gzipThreshold]				= 376
 		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024	// todo: why not kB?
 		config[BedSheetConfigIds.disableWelcomePage]		= false
-		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort ?: 0}".toUri		
+		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort ?: 80}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pod/`
 		config[BedSheetConfigIds.srcMapHandlerBaseUrl]		= iocEnv.isDev ? `/dev/` : null
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
