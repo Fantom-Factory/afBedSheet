@@ -1,6 +1,7 @@
 using web::WebUtil
 
 ** A wrapper for HTTP response headers with accessors for commonly used headings.
+** Accessors return 'null' if the header doesn't exist, or isn't encoded properly.
 ** 
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 const class HttpResponseHeaders {
@@ -61,7 +62,21 @@ const class HttpResponseHeaders {
 				return map
 			}
 		}}
-		set { addOrRemove("Content-Security-Policy", it?.join("; ") |v, k| { "${k} ${v}" }) }
+		set { addOrRemove("Content-Security-Policy", it?.join("; ") |v, k| { "${k} ${v}" }?.trimToNull) }
+	}
+
+	** Similar to `contentSecurityPolicy` only violations aren't blocked, just reported. Useful for development / testing.
+	** 
+	**   Content-Security-Policy-Report-Only: default-src 'self'; font-src 'self' https://fonts.googleapis.com/; object-src 'none'
+	[Str:Str]? contentSecurityPolicyReportOnly {
+		get { makeIfNotNull("Content-Security-Policy-Report-Only") {
+			it.split(';').reduce(Str:Str[:]{it.ordered=true}) |Str:Str map, Str dir->Obj| {
+				vals := dir.split(' ')
+				map[vals.first] = vals[1..-1].join(" ")
+				return map
+			}
+		}}
+		set { addOrRemove("Content-Security-Policy-Report-Only", it?.join("; ") |v, k| { "${k} ${v}" }) }
 	}
 
 	** The MIME type of this content.
@@ -112,20 +127,20 @@ const class HttpResponseHeaders {
 		set { addOrRemove("Pragma", it) }
 	}
 
-	** Tells browsers to always use HTTPS. 
-	** 
-	**   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-	Str? strictTransportSecurity {
-		get { get("Strict-Transport-Security") }
-		set { addOrRemove("Strict-Transport-Security", it) }		
-	}
-	
 	** Tells browsers how and when to transmit the HTTP 'Referer' (sic) header. 
 	** 
 	**   Referrer-Policy: same-origin
 	Str? referrerPolicy {
 		get { get("Referrer-Policy") }
 		set { addOrRemove("Referrer-Policy", it) }		
+	}
+
+	** Tells browsers to always use HTTPS. 
+	** 
+	**   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+	Str? strictTransportSecurity {
+		get { get("Strict-Transport-Security") }
+		set { addOrRemove("Strict-Transport-Security", it) }		
 	}
 	
 	** Tells downstream proxies how to match future request headers to decide whether the cached 
