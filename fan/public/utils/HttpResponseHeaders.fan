@@ -9,7 +9,6 @@ const class HttpResponseHeaders {
 	private const static Int 	maxTokenSize	:= 4096 - 10	// taken from web::WebUtil.maxTokenSize. -10 for good measure!
 	private const |->Str:Str|	getHeaders
 	private const |->| 			checkUncommitted
-	private const Bool 			oldWispVer		:= Pod.find("wisp").version <= Version("1.0.67")
 
 	internal new make(|->Str:Str| getHeaders, |->| checkUncommitted) {
 		this.getHeaders = getHeaders
@@ -19,23 +18,15 @@ const class HttpResponseHeaders {
 	** Tells all caching mechanisms from server to client whether they may cache this object. It is 
 	** measured in seconds.
 	** 
-	** Example: 'Cache-Control: max-age=3600'
+	**   Cache-Control: max-age=3600
 	Str? cacheControl {
 		get { get("Cache-Control") }
 		set { addOrRemove("Cache-Control", it) }
 	}
 
-	** The type of encoding used on the data.
-	** 
-	** Example: 'Content-Encoding: gzip'
-	Str? contentEncoding {
-		get { get("Content-Encoding") }
-		set { addOrRemove("Content-Encoding", it) }
-	}
-
 	** Usually used to direct the client to display a 'save as' dialog.
 	** 
-	** Example: 'Content-Disposition: Attachment; filename=example.html'
+	**   Content-Disposition: Attachment; filename=example.html
 	** 
 	** @see `http://tools.ietf.org/html/rfc6266`
 	Str? contentDisposition {
@@ -43,17 +34,43 @@ const class HttpResponseHeaders {
 		set { addOrRemove("Content-Disposition", it) }
 	}
 
+	** The type of encoding used on the data.
+	** 
+	**   Content-Encoding: gzip
+	Str? contentEncoding {
+		get { get("Content-Encoding") }
+		set { addOrRemove("Content-Encoding", it) }
+	}
+
 	** The length of the response body in octets (8-bit bytes).
 	** 
-	** Example: 'Content-Length: 348'
+	**   Content-Length: 348
 	Int? contentLength {
 		get { makeIfNotNull("Content-Length") { Int.fromStr(it) }}
 		set { addOrRemove("Content-Length", it?.toStr) }
 	}
 
+	** Mitigates XSS attacks by telling browsers to restrict where content can be loaded from.
+	** 
+	**   Content-Security-Policy: default-src 'self'; font-src 'self' https://fonts.googleapis.com/; object-src 'none'
+	[Str:Str]? contentSecurityPolicy {
+		get { makeIfNotNull("Content-Security-Policy") {
+			it.split(';').reduce(Str:Str[:]{it.ordered=true}) |Str:Str map, Str dir->Obj| {
+				echo(dir)
+				echo(dir)
+				echo(dir)
+				echo(dir)
+				vals := dir.split(' ')
+				map[vals.first] = vals[1..-1].join(" ")
+				return map
+			} {echo(it)}
+		}}
+		set { addOrRemove("Content-Security-Policy", it?.join("; ") |v, k| { "${k} ${v}" }) }
+	}
+
 	** The MIME type of this content.
 	** 
-	** Example: 'Content-Type: text/html; charset=utf-8'
+	**   Content-Type: text/html; charset=utf-8
 	MimeType? contentType {
 		get { makeIfNotNull("Content-Type") { MimeType(it, true) }}
 		set { addOrRemove("Content-Type", it?.toStr) }
@@ -61,7 +78,7 @@ const class HttpResponseHeaders {
 
 	** An identifier for a specific version of a resource, often a message digest.
 	** 
-	** Example: 'ETag: "737060cd8c284d8af7ad3082f209582d"'
+	**   ETag: "737060cd8c284d8af7ad3082f209582d"
 	Str? eTag {
 		get { makeIfNotNull("ETag") { WebUtil.fromQuotedStr(it) }}
 		set { addOrRemove("ETag", (it==null) ? null : WebUtil.toQuotedStr(it)) }
@@ -69,7 +86,7 @@ const class HttpResponseHeaders {
 	
 	** Gives the date/time after which the response is considered stale.
 	** 
-	** Example: 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'
+	**   Expires: Thu, 01 Dec 1994 16:00:00 GMT
 	DateTime? expires {
 		get { makeIfNotNull("Expires") { DateTime.fromHttpStr(it, true)} }
 		set { addOrRemove("Expires", it?.toHttpStr) }
@@ -77,7 +94,7 @@ const class HttpResponseHeaders {
 
 	** The last modified date for the requested object, in RFC 2822 format.
 	** 
-	** Example: 'Last-Modified: Tue, 15 Nov 1994 12:45:26 +0000'
+	**   Last-Modified: Tue, 15 Nov 1994 12:45:26 +0000
 	DateTime? lastModified {
 		get { makeIfNotNull("Last-Modified") { DateTime.fromHttpStr(it, true)} }
 		set { addOrRemove("Last-Modified", it?.toHttpStr) }
@@ -85,7 +102,7 @@ const class HttpResponseHeaders {
 
 	** Used in redirection, or when a new resource has been created.
 	** 
-	** Example: 'Location: http://www.w3.org/pub/WWW/People.html'
+	**   Location: http://www.w3.org/pub/WWW/People.html
 	Uri? location {
 		get { makeIfNotNull("Location") { Uri.decode(it, true) } }
 		set { addOrRemove("Location", it?.encode) }
@@ -93,16 +110,32 @@ const class HttpResponseHeaders {
 
 	** Implementation-specific headers.
 	** 
-	** Example: 'Pragma: no-cache'
+	**   Pragma: no-cache
 	Str? pragma {
 		get { get("Pragma") }
 		set { addOrRemove("Pragma", it) }
 	}
 
+	** Tells browsers to always use HTTPS. 
+	** 
+	**   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+	Str? strictTransportSecurity {
+		get { get("Strict-Transport-Security") }
+		set { addOrRemove("Strict-Transport-Security", it) }		
+	}
+	
+	** Tells browsers how and when to transmit the HTTP 'Referer' (sic) header. 
+	** 
+	**   Referrer-Policy: same-origin
+	Str? referrerPolicy {
+		get { get("Referrer-Policy") }
+		set { addOrRemove("Referrer-Policy", it) }		
+	}
+	
 	** Tells downstream proxies how to match future request headers to decide whether the cached 
 	** response can be used rather than requesting a fresh one from the origin server.
 	** 
-	** Example: 'Vary: Accept-Encoding'
+	**   Vary: Accept-Encoding
 	** 
 	** @see [Accept-Encoding, It’s Vary important]`http://blog.maxcdn.com/accept-encoding-its-vary-important/`
 	Str? vary {
@@ -112,19 +145,25 @@ const class HttpResponseHeaders {
 
 	** WWW-Authenticate header to indicate supported authentication mechanisms.
 	** 
-	** Example: 'WWW-Authenticate: SCRAM hash=SHA-256'
-	** 
-	** Returns 'null' if the header doesn't exist.
+	**   WWW-Authenticate: SCRAM hash=SHA-256
 	Str? wwwAuthenticate {
 		get { get("WWW-Authenticate") }
 		set { addOrRemove("WWW-Authenticate", it) }
 	}
 	
+	** Tells browsers to trust the 'Content-Type' header. 
+	** 
+	**   X-Content-Type-Options: nosniff
+	Str? xContentTypeOptions {
+		get { get("X-Content-Type-Options") }
+		set { addOrRemove("X-Content-Type-Options", it) }
+	}
+
 	** Clickjacking protection, set to:
 	**  - 'deny' - no rendering within a frame, 
 	**  - 'sameorigin' - no rendering if origin mismatch
 	** 
-	** Example: 'X-Frame-Options: deny'
+	**   X-Frame-Options: deny
 	Str? xFrameOptions {
 		get { get("X-Frame-Options") }
 		set { addOrRemove("X-Frame-Options", it) }
@@ -132,7 +171,7 @@ const class HttpResponseHeaders {
 
 	** Cross-site scripting (XSS) filter.
 	** 
-	** Example: 'X-XSS-Protection: 1; mode=block'
+	**   X-XSS-Protection: 1; mode=block
 	Str? xXssProtection {
 		get { get("X-XSS-Protection") }
 		set { addOrRemove("X-XSS-Protection", it) }
@@ -158,15 +197,9 @@ const class HttpResponseHeaders {
 
 		maxTokenSize := maxTokenSize
 		valueSize	 := value.size
-		if (oldWispVer) {
-			// multiple lines in the header need to be prefixed with whitespace
-			// see http://fantom.org/forum/topic/2427
-			if (value.containsChar('\n'))
-				value = value.splitLines.join("\n ")
 
-		} else
-			// newer Wisps will append whitespace for us, we just need to adjust our calculations
-			maxTokenSize -= value.numNewlines * 2
+		// Wisp appends whitespace for us, we just need to adjust our calculations
+		maxTokenSize -= value.numNewlines * 2
 
 		// 4096 limit is imposed by web::WebUtil.token() when reading headers,
 		// encountered by the BedSheet Dev Proxy when returning the request back to the browser
@@ -199,7 +232,7 @@ const class HttpResponseHeaders {
 		getHeaders().toStr
 	}
 	
-	private Obj? makeIfNotNull(Str name, |Obj->Obj| func) {
+	private Obj? makeIfNotNull(Str name, |Str->Obj| func) {
 		val := get(name)
 		// no need for a "try / catch return null" here as the response is in the users hand
 		// and should all errors should be avoidable 
