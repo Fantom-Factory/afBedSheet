@@ -56,14 +56,10 @@ const class HttpResponseHeaders {
 	[Str:Str]? contentSecurityPolicy {
 		get { makeIfNotNull("Content-Security-Policy") {
 			it.split(';').reduce(Str:Str[:]{it.ordered=true}) |Str:Str map, Str dir->Obj| {
-				echo(dir)
-				echo(dir)
-				echo(dir)
-				echo(dir)
 				vals := dir.split(' ')
 				map[vals.first] = vals[1..-1].join(" ")
 				return map
-			} {echo(it)}
+			}
 		}}
 		set { addOrRemove("Content-Security-Policy", it?.join("; ") |v, k| { "${k} ${v}" }) }
 	}
