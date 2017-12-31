@@ -1,6 +1,11 @@
 v1.5.10
 =======
- - New: Added 'contentSecurityPolicy', 'referrerPolicy', 'strictTransportSecurity', 'xContentTypeOptions' to 'HttpRequestHeaders'.
+ - New: Added to 'HttpResponseHeaders':
+   - 'contentSecurityPolicy'
+   - 'contentSecurityPolicyReportOnly'
+   - 'referrerPolicy'
+   - 'strictTransportSecurity'
+   - 'xContentTypeOptions'
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
  - Chg: BedSheet defaults to port 80 when testing (and not port 0).

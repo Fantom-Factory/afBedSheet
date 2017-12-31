@@ -24,5 +24,11 @@ class TestHttpResponseHeaders : Test {
 		verifyEq(httpRes.contentSecurityPolicy["font-src"], "'self' https://fonts.googleapis.com/")
 		verifyEq(httpRes.contentSecurityPolicy["object-src"], "'none'")
 		verifyEq(httpRes.contentSecurityPolicy["neep"], "")
+		
+		httpRes.contentSecurityPolicy = null
+		verifyEq(httpRes.contentSecurityPolicy, null)
+
+		httpRes.contentSecurityPolicy = [:]
+		verifyEq(httpRes.contentSecurityPolicy, null)
 	}
 }
