@@ -126,6 +126,16 @@ code {
 	overflow:			auto;
 }
 
+/* -- Syntax Colours -- */
+
+.col01 { color : #a6e22e; }
+.col02 { color : #f8f8f2; }
+.col03 { color : #f92672; }
+.col04 { color : #a6e22e; }
+.col05 { color : #66d9ef; }
+.col06 { color : #e6db74; }
+
+
 /* ---- Err 500 Page --------------------------------------------------------------------------- */
 
 .cookies td:first-child,
