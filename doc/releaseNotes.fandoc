@@ -1,3 +1,6 @@
+v1.5
+****
+
 v1.5.10
 =======
  - New: Added to 'HttpResponseHeaders':
@@ -6,6 +9,7 @@ v1.5.10
    - 'referrerPolicy'
    - 'strictTransportSecurity'
    - 'xContentTypeOptions'
+ - Chg: The standard BedSheet pages alter 'Content-Security-Policy' directives (should one be defined) to add hashes for their inline scripts and styles.
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
  - Chg: BedSheet defaults to port 80 when testing (and not port 0).
@@ -76,6 +80,11 @@ v1.5.0
  - Chg: 'BedSheetServer.host()' first checks the HTTP request header.
  - Bug: IE didn't render Error pages in dev because it can't handle long and / or multiline header values.
  - Bug: Error in 'ResponseProcessors' when handling wrapped 'ReProcessErrs'.
+
+
+
+v1.4
+****
 
 v1.4.16
 =======
@@ -178,6 +187,11 @@ v1.4.0
  - Bug: 'FileAsset.toStr()' sometimes threw an Err.
  - Bug: HTTP Flash objects no longer need to be immutable, just serialisable.
 
+
+
+v1.3
+****
+
 v1.3.16
 =======
  - Chg: Updated to use [IoC 2.0.0]`pod:afIoc` and [IoC Config 1.0.16]`pod:afIocConfig`.
@@ -268,6 +282,11 @@ v1.3.0
  - Chg: '@NoDoc'ed some services as they're only referenced by '@Contribute' methods: 'ErrProcessors, HttpStatusProcessors, ResponseProcessor, ValueEncoders'.
  - Chg: 'QualityValues' are nullable from 'HttpRequestHeaders'
 
+
+
+v1.2
+****
+
 v1.2.4
 ======
  - Chg: Upgraded to [IoC 1.5.0]`pod:afIoc`.
@@ -296,6 +315,11 @@ v1.2.0
  - Chg: Removed 'CorsHandler' with no replacement. (Breaking change.)
  - Chg: Massaged a lot of the documentation.
 
+
+
+v1.1
+****
+
 v1.1.4
 ======
  - New: The cause of startup Errs are printed before service shutdown - see this [topic]`http://fantom.org/sidewalk/topic/2201`.
@@ -321,6 +345,11 @@ v1.1.0
  - Bug: 'IoC Config' was not always added as a
  [transitive dependency]`http://stackoverflow.com/questions/19736876/running-afbedsheet-sample-produces-service-does-not-exist-for-type-afiocconfig`.
  (Thanks to 'LightDye' for reporting.)
+
+
+
+v1.0
+****
 
 v1.0.16
 =======

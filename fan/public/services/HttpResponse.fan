@@ -1,5 +1,6 @@
 using afIoc::Inject
 using web::Cookie
+using concurrent::Actor
 
 ** (Service) - An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
@@ -81,14 +82,18 @@ internal const class HttpResponseImpl : HttpResponse {
 
 	new make(|This|in) { 
 		in(this)
-		this.headers = HttpResponseHeaders(|->Str:Str| {
-			// cache the headers so we can access / read it after the response has been committed - handy for logging
-			// note this only works while 'webRes.headers' returns the actual map used, and not a copy
-			reqState().responseHeaders
-		}, |->| {
-			if (reqState().webRes.isCommitted)
-				throw Err("HTTP Response has already been committed")
-		})
+		if (Actor.locals.containsKey("web.req"))
+			this.headers = HttpResponseHeaders(|->Str:Str| {
+				// cache the headers so we can access / read it after the response has been committed - handy for logging
+				// note this only works while 'webRes.headers' returns the actual map used, and not a copy
+				reqState().responseHeaders
+			}, |->| {
+				if (reqState().webRes.isCommitted)
+					throw Err("HTTP Response has already been committed")
+			})
+		else
+			// for testing
+			this.headers = HttpResponseHeaders(|->Str:Str| { Str:Str[:] }, |->| { })
 	} 
 
 	override Bool disableGzip {
