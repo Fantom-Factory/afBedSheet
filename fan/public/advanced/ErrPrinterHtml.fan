@@ -49,6 +49,7 @@ internal const class ErrPrinterHtmlSections {
 	@Inject	private const StackFrameFilter	frameFilter
 	@Inject	private const BedSheetServer	bedServer
 	@Inject	private const HttpRequest		request
+	@Inject	private const HttpResponse		response
 	@Inject	private const HttpSession		session
 	@Inject	private const HttpCookies		cookies
 	@Inject	private const ConfigSource		configSrc
@@ -106,10 +107,25 @@ internal const class ErrPrinterHtmlSections {
 			err = err.cause			
 		title(out, "Stack Trace")
 		
+		script := """var box = document.getElementById("stackFrameCheckbox");
+		             box.addEventListener("click", function() {
+		             	document.getElementById("stackFrames").className = box.checked ? "hideBoring" : "";
+		             });"""
 		out.div
-		out.printLine("""<label><input type="checkbox" value="wotever" checked="checked" onclick="document.getElementById('stackFrames').className = this.checked ? 'hideBoring' : '';"/> Hide boring stack frames</label> """)
+		out.printLine("""<label><input type="checkbox" id="stackFrameCheckbox" value="wotever" checked="checked"/> Hide boring stack frames</label> """)
+		out.script.w(script).scriptEnd
 		out.divEnd
 		
+		csp := response.headers.contentSecurityPolicy
+		if (csp != null) {
+			scriptSrc := csp.get("script-src", "")
+			if (!scriptSrc.split.contains("'unsafe-inline'")) {
+				if (!scriptSrc.isEmpty) scriptSrc += " "
+				csp["script-src"] = scriptSrc + "'sha256-" + ("\n"+script).toBuf.toDigest("SHA-256").toBase64 + "'"
+				response.headers.contentSecurityPolicy = csp
+			}
+		}
+
 		out.pre("id=\"stackFrames\" class=\"hideBoring\"")
 		stacks.each |stack, i| {
 			indent := "".padl(i * 2)

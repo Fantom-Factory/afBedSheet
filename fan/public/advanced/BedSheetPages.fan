@@ -24,6 +24,7 @@ const mixin BedSheetPages {
 internal const class BedSheetPagesImpl : BedSheetPages {
 
 	@Inject	private const HttpRequest				httpRequest
+	@Inject	private const HttpResponse				httpResponse
 	@Inject	private const |->ErrPrinterHtml|		errPrinterHtml
 	@Inject	private const |->ErrPrinterStr|			errPrinterStr
 	@Inject	private const |->NotFoundPrinterHtml| 	notFoundPrinterHtml
@@ -49,8 +50,10 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 	override Text? renderWelcome(HttpStatus httpStatus) {
 		title	:= "BedSheet ${typeof.pod.version}"
 		xhtml	:= typeof.pod.file(`/res/web/welcomePage.html`).readAllStr
+					.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr)
 		str		:= httpStatus.toStr
-		return render(title, xhtml.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr), str.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr))
+					.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr)
+		return render(title, xhtml, str)
 	}
 	
 	private Text? render(Str title, Str xhtmlContent, Str strContent, BedSheetLogo logo := BedSheetLogo.alienHead) {
@@ -64,6 +67,23 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 							.replace("{{{ alienHeadSvg }}}", alienHeadSvg)
 							.replace("{{{ content }}}", xhtmlContent)
 							.replace("{{{ version }}}", version)
+
+		csp := httpResponse.headers.contentSecurityPolicy
+		if (csp != null) {
+			styleSrc := csp.get("style-src", "")
+			if (!styleSrc.split.contains("'unsafe-inline'")) {
+				if (!styleSrc.isEmpty) styleSrc += " "
+				csp["style-src"] = styleSrc + "'sha256-" + bedSheetCss.toBuf.toDigest("SHA-256").toBase64 + "'"
+				httpResponse.headers.contentSecurityPolicy = csp
+			}
+	
+			imageSrc := csp.get("img-src", "")
+			if (!imageSrc.split.contains("data:")) {
+				if (!imageSrc.isEmpty) imageSrc += " "
+				csp["img-src"] = imageSrc + "data:"
+				httpResponse.headers.contentSecurityPolicy = csp
+			}
+		}
 
 		return toText(xhtml, strContent)
 	}
