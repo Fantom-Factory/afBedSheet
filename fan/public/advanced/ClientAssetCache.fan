@@ -6,10 +6,18 @@ using afConcurrent::SynchronizedMap
 @NoDoc	// Advanced use only
 const mixin ClientAssetCache {
 	
+	** Returns a cached 'ClientAsset' from the given 'localUrl'. 
+	** If the asset doesn't exist, or has been modified since being cached (see `Asset.isModified`) then 
+	** all 'AssetProducers' are polled to return a fresh instance.
 	abstract ClientAsset? getAndUpdateOrProduce(Uri localUrl)
 
+	** Returns a cached 'ClientAsset' from the given 'localUrl'. 
+	** If the asset doesn't exist, or has been modified since being cached (see `Asset.isModified`) then 
+	** a fresh instance is created using the given func.
+	** 
+	** This is generally called by 'AssetProducers' themselves in a 'getOrMake()' capacity. 
 	abstract ClientAsset? getAndUpdateOrMake(Uri localUrl, |Uri->ClientAsset?| makeFunc)
-	
+
 	** Removes the given asset from the internal cache.
 	** Does nothing if 'localUrl' is 'null'.
 	abstract Void remove(Uri? localUrl)
