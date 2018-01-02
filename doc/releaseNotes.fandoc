@@ -9,6 +9,7 @@ v1.5.10
    - 'referrerPolicy'
    - 'strictTransportSecurity'
    - 'xContentTypeOptions'
+ - Chg: 'HttpRequestHeaders' and 'HttpResponseHeaders' are now non-const, it makes more sense and makes testing easier. They also have general purpose ctors, and generally received some love.
  - Chg: The standard BedSheet pages alter 'Content-Security-Policy' directives (should one be defined) to add hashes for their inline scripts and styles.
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.

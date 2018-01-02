@@ -2,7 +2,7 @@
 class TestHttpRequestHeaders : Test {
 	
 	Void testDodgyIfModifiedDoesNotThrowErr() {
-		httpReq := HttpRequestHeaders() |->Obj| { ["If-Modified-Since":"oops"] }
+		httpReq := HttpRequestHeaders(["If-Modified-Since":"oops"])
 		verifyNull(httpReq.ifModifiedSince)
 	}
 }

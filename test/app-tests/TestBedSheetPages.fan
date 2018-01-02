@@ -9,24 +9,26 @@ internal class TestBedSheetPages : AppTest {
 	@Inject BedSheetPages? pages
 	
 	Void testPagesAreValidXml() {
-		registry.rootScope.inject(this)
-		Actor.locals["web.req"] = T_WebReq() { headers=["Accept":"application/xhtml+xml"]}
-		Actor.locals["web.res"] = T_WebRes()
-
-		xml := pages.renderHttpStatus(HttpStatus(418, "I'm a teapot"), true).text
-		XParser(xml.in).parseDoc
-
-		xml = pages.renderHttpStatus(HttpStatus(418, "I'm a teapot"), false).text
-		XParser(xml.in).parseDoc
-
-		xml = pages.renderErr(Err("Whoops!"), true).text
-		XParser(xml.in).parseDoc
-
-		xml = pages.renderErr(Err("Whoops!"), false).text
-		XParser(xml.in).parseDoc
-
-		xml = pages.renderWelcome(HttpStatus(404, "Ooops")).text
-		XParser(xml.in).parseDoc
+		registry.activeScope.inject(this)
+		registry.activeScope.createChild("request") {
+			Actor.locals["web.req"] = T_WebReq() { headers=["Accept":"application/xhtml+xml"]}
+			Actor.locals["web.res"] = T_WebRes()
+	
+			xml := pages.renderHttpStatus(HttpStatus(418, "I'm a teapot"), true).text
+			XParser(xml.in).parseDoc
+	
+			xml = pages.renderHttpStatus(HttpStatus(418, "I'm a teapot"), false).text
+			XParser(xml.in).parseDoc
+	
+			xml = pages.renderErr(Err("Whoops!"), true).text
+			XParser(xml.in).parseDoc
+	
+			xml = pages.renderErr(Err("Whoops!"), false).text
+			XParser(xml.in).parseDoc
+	
+			xml = pages.renderWelcome(HttpStatus(404, "Ooops")).text
+			XParser(xml.in).parseDoc
+		}
 	}
 }
 

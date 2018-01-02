@@ -76,26 +76,13 @@ const class HttpResponseWrapper : HttpResponse {
 
 
 internal const class HttpResponseImpl : HttpResponse {
-	
 	@Inject  const |->RequestState|		reqState
-	override const HttpResponseHeaders	headers
-
 	new make(|This|in) { 
 		in(this)
-		if (Actor.locals.containsKey("web.req"))
-			this.headers = HttpResponseHeaders(|->Str:Str| {
-				// cache the headers so we can access / read it after the response has been committed - handy for logging
-				// note this only works while 'webRes.headers' returns the actual map used, and not a copy
-				reqState().responseHeaders
-			}, |->| {
-				if (reqState().webRes.isCommitted)
-					throw Err("HTTP Response has already been committed")
-			})
-		else
-			// for testing
-			this.headers = HttpResponseHeaders(|->Str:Str| { Str:Str[:] }, |->| { })
 	} 
-
+	override HttpResponseHeaders headers() {
+		reqState().responseHeaders
+	}
 	override Bool disableGzip {
 		get { reqState().disableGzip ?: false }
 		set { reqState().disableGzip = it}
@@ -112,7 +99,7 @@ internal const class HttpResponseImpl : HttpResponse {
 		reqState().webRes.isCommitted
 	}
 	override OutStream out() {
-		reqState().out
+		reqState().responseBody
 	}
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "attachment; filename=${fileName}"

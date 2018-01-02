@@ -4,15 +4,22 @@ using web::WebUtil
 ** Accessors return 'null' if the header doesn't exist, or isn't encoded properly.
 ** 
 ** @see `https://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
-const class HttpResponseHeaders {
+class HttpResponseHeaders {
 	
-	private const static Log	log				:= HttpResponseHeaders#.pod.log
-	private const static Int 	maxTokenSize	:= 4096 - 10	// taken from web::WebUtil.maxTokenSize. -10 for good measure!
-	private const |->Str:Str|	getHeaders
-	private const |->| 			checkUncommitted
+	const static private Log		log				:= HttpResponseHeaders#.pod.log
+	const static private Int 		maxTokenSize	:= 4096 - 10	// taken from web::WebUtil.maxTokenSize. -10 for good measure!
+				 private Str:Str	headers
+				 private |->| 		checkUncommitted
 
-	internal new make(|->Str:Str| getHeaders, |->| checkUncommitted) {
-		this.getHeaders = getHeaders
+	** Creates a new instance with the given map.
+	new fromMap(Str:Str headers) {
+		this.headers = headers
+		this.checkUncommitted = |->| { }
+	}
+	
+	** BedSheet actually uses this ctor!
+	internal new make(Str:Str headers, |->| checkUncommitted) {
+		this.headers = headers
 		this.checkUncommitted = checkUncommitted
 	}
 	
@@ -76,7 +83,7 @@ const class HttpResponseHeaders {
 				return map
 			}
 		}}
-		set { addOrRemove("Content-Security-Policy-Report-Only", it?.join("; ") |v, k| { "${k} ${v}" }) }
+		set { addOrRemove("Content-Security-Policy-Report-Only", it?.join("; ") |v, k| { "${k} ${v}" }?.trimToNull) }
 	}
 
 	** The MIME type of this content.
@@ -191,7 +198,12 @@ const class HttpResponseHeaders {
 	** Returns the named response header.
 	@Operator
 	Str? get(Str name) {
-		getHeaders()[name]
+		headers[name]
+	}
+
+	** Call the specified function for every key/value in the header map.
+	Void each(|Str val, Str key| c) {
+		headers.each(c)
 	}
 
 	** Sets a response head to the given value.
@@ -219,28 +231,31 @@ const class HttpResponseHeaders {
 			value = value[0..<maxTokenSize].trimEnd
 		}
 		
-		getHeaders()[name] = value
+		headers[name] = value
 	}
 	
 	** Removes a response header.
 	Str? remove(Str name) {
 		checkUncommitted()
-		return getHeaders().remove(name)
+		return headers.remove(name)
 	}
 
-	** Returns a read / write map of the response headers.
+	** Returns a read only map of the response headers.
 	**  
-	** It is better to use 'set()' / 'remove()' / or one of the setters on this 'HttpResponseHeaders' instance to change response values.
-	** This allows us to check if the response has already been committed before updating header values.
-	** 
-	** Think of this 'map' as a *get-out-jail* card.
-	Str:Str map() {
-		getHeaders()
+	** Use 'set()' / 'remove()' to modify header values.
+	** This allows us to check if the response has already been committed.
+	Str:Str val() { headers.ro }
+	@NoDoc @Deprecated { msg="Use 'val()' instead" }
+	Str:Str map() { val }
+	
+	** Returns a list of all the response header keys.
+	Str[] keys() {
+		headers.keys
 	}
 
 	@NoDoc
 	override Str toStr() {
-		getHeaders().toStr
+		headers.toStr
 	}
 	
 	private Obj? makeIfNotNull(Str name, |Str->Obj| func) {

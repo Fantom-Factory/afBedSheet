@@ -3,8 +3,7 @@ class TestHttpResponseHeaders : Test {
 	
 	Void testContentSecurityPolicy() {
 		resMap  := Str:Str[:]
-		resFn   := Unsafe(|->Obj| { resMap })
-		httpRes := HttpResponseHeaders(|->Obj| { resFn.val->call }, |->| { })
+		httpRes := HttpResponseHeaders(resMap)
 		
 		verifyEq(httpRes.contentSecurityPolicy, null)
 		
