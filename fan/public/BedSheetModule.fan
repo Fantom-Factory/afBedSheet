@@ -288,7 +288,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		config[BedSheetConfigIds.gzipDisabled]				= false
 		config[BedSheetConfigIds.gzipThreshold]				= 376
-		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024	// todo: why not kB?
+		config[BedSheetConfigIds.responseBufferThreshold]	= 32 * 1024
 		config[BedSheetConfigIds.disableWelcomePage]		= false
 		config[BedSheetConfigIds.host]						= "http://localhost:${bedSheetPort ?: 80}".toUri		
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pod/`
