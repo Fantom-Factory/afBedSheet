@@ -26,6 +26,8 @@ const abstract class ClientAsset : Asset {
 
 	@Inject
 	private const ClientAssetCache?	_assetCache 
+	@Inject
+	private const BedSheetServer?	_bedServer
 	private const AtomicRef			_clientUrlRef		:= AtomicRef()
 	private const AtomicRef			_lastCheckedRef		:= AtomicRef(DateTime.now)
 
@@ -60,6 +62,13 @@ const abstract class ClientAsset : Asset {
 		if (_clientUrlRef.val == null)
 			_clientUrlRef.val = _assetCache.toClientUrl(localUrl, this)
 		return _clientUrlRef.val
+	}
+	
+	** Returns an absolute URL (for example, one that starts with 'http://...') using [BedSheetServer.toAbsoluteUrl()]`BedSheetServer.toAbsoluteUrl`.
+	** 
+	** Returns 'null' if asset doesn't exist.
+	virtual Uri? clientUrlAbs() {
+		_bedServer.toAbsoluteUrl(clientUrl)
 	}
 	
 	@NoDoc

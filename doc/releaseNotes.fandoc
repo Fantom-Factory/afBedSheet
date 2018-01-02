@@ -3,6 +3,7 @@ v1.5
 
 v1.5.10
 =======
+ - New: Added 'ClientAsset.clientUrlAbs()'.
  - New: Added to 'HttpResponseHeaders':
    - 'contentSecurityPolicy'
    - 'contentSecurityPolicyReportOnly'
