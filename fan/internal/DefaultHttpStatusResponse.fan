@@ -1,6 +1,5 @@
 using afIoc::Inject
 using afIocConfig::Config
-using web::WebRes
 
 internal const class DefaultHttpStatusResponse {
 	@Config { id="afIocEnv.isProd" }

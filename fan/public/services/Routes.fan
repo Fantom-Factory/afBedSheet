@@ -1,4 +1,3 @@
-using web
 using afIoc::Inject
 using afIoc::Registry
 

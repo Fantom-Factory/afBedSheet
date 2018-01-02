@@ -1,7 +1,6 @@
 using afIoc::Inject
 using afIoc::Registry
 using afIocConfig::Config
-using web::WebRes
 
 ** (Service) - Contribute your HttpStatus responses to this.
 ** 
