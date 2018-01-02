@@ -1,5 +1,6 @@
-using afIoc
-using web
+using afIoc::Inject
+using web::WebReq
+using web::WebRes
 
 ** Mutable request data
 internal class RequestState {	
