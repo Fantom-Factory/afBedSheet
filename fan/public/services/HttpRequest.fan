@@ -130,6 +130,7 @@ const mixin HttpRequest {
 const class HttpRequestWrapper : HttpRequest {
 	const 	 HttpRequest req
 	new 	 make(HttpRequest req) 			{ this.req = req 		} 
+	override HttpRequestHeaders headers()	{ req.headers			}
 	override Bool isXmlHttpRequest()		{ req.isXmlHttpRequest	}
 	override Version httpVersion() 			{ req.httpVersion		}
 	override Str httpMethod()				{ req.httpMethod		}
@@ -137,7 +138,6 @@ const class HttpRequestWrapper : HttpRequest {
 	override Int remotePort() 				{ req.remotePort		}
 	override Uri url() 						{ req.url				}
 	override Uri urlAbs() 					{ req.urlAbs			}
-	override HttpRequestHeaders headers()	{ req.headers			}
 	override Uri? host()					{ req.host				}
 	override Locale[] locales() 			{ req.locales			}
 	override Str:Obj? stash()				{ req.stash				}
@@ -147,14 +147,15 @@ const class HttpRequestWrapper : HttpRequest {
 }
 
 internal const class HttpRequestImpl : HttpRequest {	
-	override const HttpRequestHeaders	headers
-	@Inject  const |->RequestState|?	reqState	// nullable for testing
-	@Inject  const |->BedSheetServer|?	bedServer
 	static	 const Log					log			:= HttpRequestImpl#.pod.log
+	@Inject  const |->RequestState|?	reqState	// nullable for testing
+	@Inject  const |->BedSheetServer|?	bedServer	// nullable for testing
 
 	new make(|This|? in := null) { 
 		in?.call(this) 
-		this.headers = HttpRequestHeaders() |->Str:Str| { webReq.headers }
+	}
+	override HttpRequestHeaders	headers() {
+		reqState().requestHeaders
 	}
 	override Bool isXmlHttpRequest() {
 		headers.get("X-Requested-With")?.equalsIgnoreCase("XMLHttpRequest") ?: false

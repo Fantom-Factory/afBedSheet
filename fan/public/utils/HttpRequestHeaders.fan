@@ -5,11 +5,12 @@ using web::Cookie
 ** Note that the accessors are *safe* and will return 'null', rather than throw an Err, when they encounter a dodgy header value.
 ** 
 ** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
-const class HttpRequestHeaders {
-	private const static Log 	log := Utils.getLog(HttpRequestHeaders#)
-	private const |->Str:Str|	headFunc
+class HttpRequestHeaders {
+	const static private Log 		log := Utils.getLog(HttpRequestHeaders#)
+				 private Str:Str	headers
 
-	internal new make(|->Str:Str| headFunc) { this.headFunc = headFunc }
+	** Creates a new instance with the given map.
+	new fromMap(Str:Str headers) { this.headers = headers }
 
 	** Content-Types that are acceptable for the response.
 	** 
@@ -160,14 +161,14 @@ const class HttpRequestHeaders {
 		headers.each(c)
 	}
 	
+	** Returns a read only map of the request headers.
+	Str:Str val() { headers.ro }
 	@NoDoc @Deprecated { msg="Use val() instead" }
-	Str:Str map() {
-		headers
-	}
+	Str:Str map() { val }
 	
-	** Returns the underlying header map.
-	Str:Str val() {
-		headers
+	** Returns a list of all the response header keys.
+	Str[] keys() {
+		headers.keys
 	}
 
 	@NoDoc
@@ -182,9 +183,5 @@ const class HttpRequestHeaders {
 		try		return func(val)
 		catch	log.warn("Could not parse dodgy ${name} HTTP Header: ${val}")
 		return	null
-	}
-	
-	private Str:Str headers() {
-		headFunc.call()
 	}
 }
