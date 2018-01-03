@@ -95,6 +95,11 @@ const final class Text {
 		Text.make(text, MimeType.fromStr("$mimeType; charset=${charset.name}"))		
 	}
 	
+	** Converts the wrapped text to a 'Buf', encoded with the contentType's charset. 
+	Buf toBuf() {
+		text.toBuf(contentType.charset)
+	}
+	
 	override Str toStr() {
 		"${contentType.noParams}::${text}"
 	}
