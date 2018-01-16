@@ -2,7 +2,6 @@ using afIoc::Inject
 using afIoc::Registry
 using afIoc::IocErr
 using afConcurrent::LocalRef
-using concurrent::Actor
 using web::WebSession
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
@@ -227,24 +226,25 @@ internal const class HttpSessionImpl : HttpSession {
 			reqState.mutableSessionState.clear
 			reqState.mutableSessionState = null
 			session.delete
+			existsRef.val = false
 		}
 	}
 
 	override Bool exists() {
-		// make sure the request scope exists so we can further interrogate the session objs 
-		try	reqStateFunc()
-		catch (IocErr ie)
-			return false
-
 		// this gets called a *lot* and each time we manually compile cookie lists just to check if it's empty!
 		// so we do a little dirty cashing
 		if (existsRef.isMapped)
 			return existsRef.val
 		
-		// TODO: this session support only for WISP web server
-		exists := Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
+		// make sure the request scope exists so we can further interrogate the session objs 
+		try	reqState()
+		catch (IocErr ie)
+			return false
+
+		// note this session support only for WISP web server
+		exists := httpCookies["fanws"] != null
 		// note - I could also just check for the existence of 'Actor.locals["web.session"]' 
-		// but that's a wisp implementation detail
+		// but that's another, more in-depth, wisp implementation detail
 		
 		if (exists)
 			// don't save 'false' values, so we still re-evaluate next time round

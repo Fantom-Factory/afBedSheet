@@ -151,6 +151,12 @@ internal const class T_PageHandler {
 		session["sess"] = DodgySessionValue() { it.val = request.url.query["v"] } 
 		return Text.fromPlain("NOT OK")
 	}
+
+	Obj sessionDelete() {
+		session["key"] = "val"
+		session.delete 
+		return Text.fromPlain("session exists = ${session.exists}")
+	}
 	
 	// ---- Status Code Page ----
 	

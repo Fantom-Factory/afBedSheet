@@ -88,14 +88,14 @@ const class BedSheetModule {
 	}
 
 	@Build { scopes=["request"] }	
-	static WebReq buildWebReq() {
+	WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
 	@Build { scopes=["request"] } 
-	static WebRes buildWebRes() {
+	WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)
 			throw Err("No web request active in thread")

@@ -47,6 +47,7 @@ internal const class T_AppModule {
 		conf.add(Route(`/sessionMutable2`,		T_PageHandler#sessionMutable2))
 		conf.add(Route(`/sessionMutable3`,		T_PageHandler#sessionMutable3))
 		conf.add(Route(`/sessionBad`,			T_PageHandler#sessionBad))
+		conf.add(Route(`/sessionDelete`,		T_PageHandler#sessionDelete))
 
 		conf.add(Route(`/httpReq1`,				T_PageHandler#httpReq1))
 		conf.add(Route(`/httpReq2`,				T_PageHandler#httpReq2))
