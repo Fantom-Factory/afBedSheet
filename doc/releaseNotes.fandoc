@@ -19,6 +19,7 @@ v1.5.10
  - Chg: Converted 'HttpRequestHeaders.origin' from 'Str' to a 'URI'. (Potential breaking change.)
  - Chg: Added 'Text.toBuf()' and made Text processing more efficient (text is no longer encoded twice).
  - Bug: 'BedSheetServer.host()' could sometimes contain the app port, not the proxy port.
+ - Bug: 'HttpSession.exists()' would still return 'true' after it was deleted earlier in the request.
 
 v1.5.8
 ======

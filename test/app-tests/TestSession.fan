@@ -16,6 +16,9 @@ internal class TestSession : AppTest {
 
 		client = WebClient()
 		verifyEq(getAsStr(`/session`), "count 1 - created true")
+
+		client = WebClient()
+		verifyEq(getAsStr(`/sessionDelete`), "session exists = false")
 	}
 
 	Void testImmutableSessionVals() {

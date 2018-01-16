@@ -37,7 +37,8 @@ const mixin HttpCookies {
 }
 
 internal const class HttpCookiesImpl : HttpCookies {
-	@Inject	private const HttpRequest	httpReq
+	@Inject	private const HttpRequest		httpReq
+	@Inject private const |->RequestState|	reqStateFunc
 	
 	new make(|This|in) { in(this) } 
 
@@ -46,7 +47,7 @@ internal const class HttpCookiesImpl : HttpCookies {
 	}
 
 	override Void add(Cookie cookie) {
-		cookies := webRes().cookies
+		cookies := reqState.webRes.cookies
 		existing := cookies.find { it.name.equalsIgnoreCase(cookie.name) }
 		if (existing != null)
 			cookies.removeSame(existing)
@@ -54,7 +55,7 @@ internal const class HttpCookiesImpl : HttpCookies {
 	}
 
 	override Cookie? remove(Str cookieName) {
-		cookies := webRes().cookies
+		cookies := reqState.webRes.cookies
 		res := cookies.find { it.name.equalsIgnoreCase(cookieName) }
 		if (res != null)
 			cookies.removeSame(res)
@@ -72,15 +73,12 @@ internal const class HttpCookiesImpl : HttpCookies {
 	
 	override Cookie[] all() {
 		cookies := httpReq.headers.cookies ?: Cookie[,]
-		if (!webRes().isCommitted)
-			cookies.addAll(webRes().cookies)
+		if (!reqState.webRes.isCommitted)
+			cookies.addAll(reqState.webRes.cookies)
 		return cookies
 	}
 	
-	private WebRes webRes() {
-		// let's simplify and optimise, no point in querying IoC for this.
-		try return Actor.locals["web.res"]
-		catch (NullErr e) 
-			throw Err("No web request active in thread")
+	private RequestState reqState() {
+		reqStateFunc()
 	}
 }

@@ -48,8 +48,8 @@ const class BedSheetWebMod : WebMod {
 
 		} catch (RegistryShutdownErr err) {
 			// nothing we can do here
-			if (!webRes.isCommitted)
-				webRes.sendErr(500, "BedSheet shutting down...")
+			if (!res.isCommitted)
+				res.sendErr(500, "BedSheet shutting down...")
 			return
 
 		// theoretically, this should have already been dealt with by our ErrMiddleware...
@@ -66,8 +66,8 @@ const class BedSheetWebMod : WebMod {
 			// log and throw, because we don't trust Wisp to log it
 			Env.cur.err.printLine(errLog)					
 			
-			if (!webRes.isCommitted)
-				webRes.sendErr(500, "${err.typeof} - ${err.msg}")
+			if (!res.isCommitted)
+				res.sendErr(500, "${err.typeof} - ${err.msg}")
 
 			throw err
 		}
@@ -95,12 +95,5 @@ const class BedSheetWebMod : WebMod {
 	override Void onStop() {
 		registry.shutdown
 		log.info(BsLogMsgs.bedSheetWebMod_stopping(appName))
-	}
-
-	
-	private static WebRes webRes() {
-		try return Actor.locals["web.res"]
-		catch (NullErr e) 
-			throw Err("No web request active in thread")
 	}
 }

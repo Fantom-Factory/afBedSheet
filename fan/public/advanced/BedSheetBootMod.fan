@@ -82,7 +82,6 @@ const class BedSheetBootMod : WebMod {
 		// We used to sleep / queue them up until ready but then, when processing 100s at once, 
 		// it was easy to run into race conditions when lazily creating services.
 		if (webMod == null && startupErr == null) {
-			res := (WebRes) Actor.locals["web.res"]
 			res.headers["Retry-After"] = "10"	// 10 seconds
 			res.sendErr(503, startupMessage)
 			return
