@@ -3,19 +3,19 @@ using web::WebClient
 internal class TestSession : AppTest {
 
 	Void testSession() {
-		verifyEq(getAsStr(`/session`), "count 1")
+		verifyEq(getAsStr(`/session`), "count 1 - created true")
 		cookie 		:= client.resHeaders["Set-Cookie"].replace(";Path=/", "")
 		
 		client = WebClient()
 		client.reqHeaders["Cookie"] = cookie
-		verifyEq(getAsStr(`/session`), "count 2")
+		verifyEq(getAsStr(`/session`), "count 2 - created false")
 		
 		client = WebClient()
 		client.reqHeaders["Cookie"] = cookie
-		verifyEq(getAsStr(`/session`), "count 3")
+		verifyEq(getAsStr(`/session`), "count 3 - created false")
 
 		client = WebClient()
-		verifyEq(getAsStr(`/session`), "count 1")
+		verifyEq(getAsStr(`/session`), "count 1 - created true")
 	}
 
 	Void testImmutableSessionVals() {

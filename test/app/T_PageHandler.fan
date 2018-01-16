@@ -99,10 +99,16 @@ internal const class T_PageHandler {
 	// ---- Session Pages ----
 	
 	Obj countReqs() {
+		created := false
+		session.onCreate {
+			created = true
+			it["test.for.stackoverflow"] = "booya!"
+		}
+		
 		count := (Int) session.get("count", 0)
 		count += 1
 		session["count"] = count
-		return Text.fromPlain("count $count")
+		return Text.fromPlain("count $count - created $created")
 	}
 
 	Obj sessionImmutable1() {

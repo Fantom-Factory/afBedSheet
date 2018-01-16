@@ -3,6 +3,7 @@ v1.5
 
 v1.5.10
 =======
+ - New: Added 'HttpSession.onCreate()' that takes an event handler that's fired if a session is created during the current request.
  - New: Added 'ClientAsset.clientUrlAbs()'.
  - New: Added to 'HttpResponseHeaders':
    - 'contentSecurityPolicy'
@@ -10,8 +11,8 @@ v1.5.10
    - 'referrerPolicy'
    - 'strictTransportSecurity'
    - 'xContentTypeOptions'
+ - New: The standard BedSheet pages alter 'Content-Security-Policy' directives (should one be defined) to add hashes for their inline scripts and styles.
  - Chg: 'HttpRequestHeaders' and 'HttpResponseHeaders' are now non-const, it makes more sense and makes testing easier. They also have general purpose ctors, and generally received some love.
- - Chg: The standard BedSheet pages alter 'Content-Security-Policy' directives (should one be defined) to add hashes for their inline scripts and styles.
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
  - Chg: HTTP 'Referer' header is now URL decoded and more leniently parsed.
  - Chg: BedSheet defaults to port 80 when testing (and not port 0).

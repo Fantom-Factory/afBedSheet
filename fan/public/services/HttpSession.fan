@@ -3,6 +3,7 @@ using afIoc::Registry
 using afIoc::IocErr
 using afConcurrent::LocalRef
 using concurrent::Actor
+using web::WebSession
 
 ** (Service) - An injectable 'const' version of [WebSession]`web::WebSession`.
 ** 
@@ -112,6 +113,11 @@ const mixin HttpSession {
 	** Calling this method does not create a session if it does not exist.
 	abstract Obj? flashRemove(Str key)
 	
+	** Adds an event handler that gets called as soon as a session is created.
+	** 
+	** Callbacks may be mutable, do not need to be cleaned up, but should be added at the start of *every* HTTP request. 
+	abstract Void onCreate(|HttpSession| fn)
+
 	internal abstract Void _initFlash()
 	internal abstract Void _finalFlash()
 	internal abstract Void _finalSession()
@@ -120,26 +126,26 @@ const mixin HttpSession {
 internal const class HttpSessionImpl : HttpSession {
 	private static  const Str:Obj?			emptyRoMap	:= Str:Obj?[:].toImmutable
 	@Inject private const |->RequestState|	reqStateFunc
+	@Inject	private const LocalRef			reqStateRef
 	@Inject	private const HttpCookies		httpCookies
 	@Inject	private const LocalRef			existsRef
 	
 	new make(|This|in) { in(this) } 
 
 	override Str id() {
-		reqState().webReq.session.id
+		session.id
 	}
 
 	override Bool isEmpty() {
 		if (!exists)
 			return true
 		
-		reqState	:= (RequestState) reqState()
 		sessionMap	:= reqState.mutableSessionState
 		if (sessionMap.size > 0)
 			return false
 		
 		isEmpty := true
-		reqState.webReq.session.each { isEmpty = false }
+		session.each { isEmpty = false }
 		return isEmpty
 	}
 
@@ -147,13 +153,12 @@ internal const class HttpSessionImpl : HttpSession {
 		if (!exists)
 			return false
 
-		reqState	:= (RequestState) reqState()
 		sessionMap	:= reqState.mutableSessionState
 		if (sessionMap.containsKey(key))
 			return true
 		
 		containsKey := false
-		reqState.webReq.session.each |v, k| { if (k == key) containsKey = true }
+		session.each |v, k| { if (k == key) containsKey = true }
 		return containsKey
 	}
 	
@@ -161,12 +166,11 @@ internal const class HttpSessionImpl : HttpSession {
 		if (!exists)
 			return def
 
-		reqState	:= (RequestState) reqState()
 		sessionMap	:= reqState.mutableSessionState
 		if (sessionMap.containsKey(name))
 			return sessionMap[name]
 
-		val := reqState.webReq.session.get(name, def)
+		val := session.get(name, def)
 		if (val is SessionValue) {
 			rawVal := ((SessionValue) val).val
 			sessionMap[name] = rawVal
@@ -179,11 +183,10 @@ internal const class HttpSessionImpl : HttpSession {
 		if (!exists) 
 			return emptyRoMap
 
-		reqState	:= (RequestState) reqState()
 		sessionMap	:= reqState.mutableSessionState
 		map			:= reqState.mutableSessionState.dup
 		
-		reqState.webReq.session.each |val, key| {
+		session.each |val, key| {
 			if (!map.containsKey(key)) {
 				if (val is SessionValue) {
 					rawVal := ((SessionValue) val).val
@@ -205,28 +208,25 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) {
-		reqState	:= (RequestState) reqState()
 		sessionMap	:= reqState.mutableSessionState
 		sessVal		:= SessionValue.coerce(val)
 		if (sessVal is SessionValue)
 			sessionMap[name] = val
-		reqState.webReq.session.set(name, sessVal)
+		session.set(name, sessVal)
 	}
 	
 	override Void remove(Str name) {
 		if (exists) {
-			reqState := (RequestState) reqState()
 			reqState.mutableSessionState.remove(name)
-			reqState.webReq.session.remove(name)
+			session.remove(name)
 		}
 	}
 	
 	override Void delete() {
 		if (exists) {
-			reqState := (RequestState) reqState()
 			reqState.mutableSessionState.clear
 			reqState.mutableSessionState = null
-			reqState.webReq.session.delete
+			session.delete
 		}
 	}
 
@@ -243,6 +243,9 @@ internal const class HttpSessionImpl : HttpSession {
 		
 		// TODO: this session support only for WISP web server
 		exists := Actor.locals["web.req"] != null && httpCookies.get("fanws") != null
+		// note - I could also just check for the existence of 'Actor.locals["web.session"]' 
+		// but that's a wisp implementation detail
+		
 		if (exists)
 			// don't save 'false' values, so we still re-evaluate next time round
 			existsRef.val = true
@@ -250,7 +253,6 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Str:Obj? flash() {
-		reqState	:= (RequestState) reqState()
 		map := Str:Obj?[:] { it.caseInsensitive = true }
 		if (reqState.flashMapOld != null)
 			map.setAll(reqState.flashMapOld)
@@ -260,7 +262,6 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void flashSet(Str key, Obj? val) {
-		reqState	:= (RequestState) reqState()
 		flashMapNew := reqState.flashMapNew
 		
 		if (flashMapNew == null)
@@ -269,14 +270,13 @@ internal const class HttpSessionImpl : HttpSession {
 
 		// create a session to preempt setting values
 		// FlashMiddleware creates the cookie too late, because the response has already been committed
-		reqState.webReq.session.id
+		session.id
 	}
 
 	override Obj? flashRemove(Str key) {
 		if (!exists)
 			return null
-		reqState	:= (RequestState) reqState()
-		val			:= null
+		val	:= null
 		if (reqState.flashMapOld != null) {
 			if (reqState.flashMapOld.isRO)
 				reqState.flashMapOld = reqState.flashMapOld.rw
@@ -293,8 +293,7 @@ internal const class HttpSessionImpl : HttpSession {
 		if (!exists)
 			return
 
-		reqState	:= (RequestState) reqState()
-		val			:= reqState.webReq.session.get("afBedSheet.flash")
+		val			:= session.get("afBedSheet.flash")
 		carriedOver := val is SessionValue
 			? ((SessionValue) val).val
 			: val
@@ -302,18 +301,16 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 
 	override Void _finalFlash() {
-		reqState	:= (RequestState) reqState()
 		flashMapNew := reqState.flashMapNew
 
 		remove("afBedSheet.flash")
 		if (flashMapNew != null && flashMapNew.size > 0)
-			reqState.webReq.session.set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
+			session.set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
 		
 		reqState.flashMapNew = null
 	}
 
 	override Void _finalSession() {
-		reqState	:= (RequestState) reqState()
 		sessionMap	:= reqState.mutableSessionState
 		
 		sessionMap.each |v, k| { set(k, v) }
@@ -321,10 +318,29 @@ internal const class HttpSessionImpl : HttpSession {
 		reqState.mutableSessionState = null
 	}
 	
+	override Void onCreate(|HttpSession| fn) {
+		handlers := (|HttpSession|[]) reqState.webReq.stash.getOrAdd("afBedsheet.onHttpSessionCreate") { |HttpSession|[,] }
+		handlers.add(fn)
+	}
+	
 	private RequestState reqState() {
-		try	return reqStateFunc()
+		if (reqStateRef.isMapped)
+			return reqStateRef.val
+		try	return reqStateRef.val = reqStateFunc()
 		catch (IocErr ie)
 			throw IocErr("Request scope is not available")
+	}
+	
+	** Route all session requests through here so we can trap when it gets created
+	private WebSession session() {
+		didNotExist := !exists
+		session		:= reqState.webReq.session
+		
+		if (didNotExist) {
+			handlers := (|HttpSession|[]) reqState.webReq.stash.getOrAdd("afBedsheet.onHttpSessionCreate") { |HttpSession|[,] }
+			handlers.each { it.call(this) }
+		}
+		return session
 	}
 }
 
