@@ -18,6 +18,7 @@ internal class RequestState {
 			}
 			HttpRequestHeaders		requestHeaders
 			HttpResponseHeaders		responseHeaders
+	private	|HttpSession|[]?		sessionCreateFns
 	private HttpRequestBody?		_requestBody
 	private OutStream?				_responseBody
 	
@@ -42,5 +43,16 @@ internal class RequestState {
 		if (_responseBody == null)
 			_responseBody = outStreamBuilder.build
 		return _responseBody
+	}
+	
+	Void addSessionCreateFn(|HttpSession| fn) {
+		if (sessionCreateFns == null)
+			sessionCreateFns = |HttpSession|[,]
+		sessionCreateFns.add(fn)
+	}
+	
+	Void fireSessionCreate(HttpSession httpSession) {
+		if (sessionCreateFns != null)
+			sessionCreateFns.each { it.call(httpSession) }
 	}
 }
