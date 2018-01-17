@@ -19,6 +19,7 @@ internal class RequestState {
 			HttpRequestHeaders		requestHeaders
 			HttpResponseHeaders		responseHeaders
 	private	|HttpSession|[]?		sessionCreateFns
+	private	|HttpResponse|[]?		responseCommitFns
 	private HttpRequestBody?		_requestBody
 	private OutStream?				_responseBody
 	
@@ -54,5 +55,16 @@ internal class RequestState {
 	Void fireSessionCreate(HttpSession httpSession) {
 		if (sessionCreateFns != null)
 			sessionCreateFns.each { it.call(httpSession) }
+	}
+	
+	Void addResponseCommitFn(|HttpResponse| fn) {
+		if (responseCommitFns == null)
+			responseCommitFns = |HttpResponse|[,]
+		responseCommitFns.add(fn)
+	}
+	
+	Void fireResponseCommit(HttpResponse httpResponse) {
+		if (responseCommitFns != null)
+			responseCommitFns.each { it.call(httpResponse) }
 	}
 }

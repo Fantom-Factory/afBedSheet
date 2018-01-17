@@ -258,6 +258,11 @@ internal const class T_PageHandler {
 		request.parseMultiPartForm |nom, in| { form[nom] = in.readAllStr }
 		return Text.fromPlain(form.toCode)
 	}
+	
+	Obj onCommit() {
+		response.onCommit { it.headers["X-special"] = "Judge Dredd" }
+		return Text.fromPlain("Okay")
+	}
 }
 
 internal class AutoBoom {

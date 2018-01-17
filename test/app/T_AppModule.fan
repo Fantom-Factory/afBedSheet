@@ -69,6 +69,8 @@ internal const class T_AppModule {
 		conf.add(Route(`/postMultipartForm`, 	T_PageHandler#postMultipartForm, "POST"))
 
 		conf.add(Route(`/fieldResponse`,		T_PageHandler#fieldResponse))
+
+		conf.add(Route(`/onCommit`,				T_PageHandler#onCommit))
 		
 		// no logging for now!
 //		conf.add(Route(`/***`, 					RequestLogFilter#service))

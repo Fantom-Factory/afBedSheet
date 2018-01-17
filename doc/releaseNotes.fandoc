@@ -4,6 +4,7 @@ v1.5
 v1.5.10
 =======
  - New: Added 'HttpSession.onCreate()' that takes an event handler that's fired if a session is created during the current request.
+ - New: Added 'HttpResponse.onCommit()' that takes an event handler that's fired just before the response is committed so you can change the headers last minute.
  - New: Added 'ClientAsset.clientUrlAbs()'.
  - New: Added to 'HttpResponseHeaders':
    - 'contentSecurityPolicy'
