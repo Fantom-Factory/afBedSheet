@@ -312,15 +312,13 @@ internal const class HttpSessionImpl : HttpSession {
 
 	override Void _finalSession() {
 		sessionMap	:= reqState.mutableSessionState
-		
 		sessionMap.each |v, k| { set(k, v) }
 		reqState.mutableSessionState.clear
 		reqState.mutableSessionState = null
 	}
 	
 	override Void onCreate(|HttpSession| fn) {
-		handlers := (|HttpSession|[]) reqState.webReq.stash.getOrAdd("afBedsheet.onHttpSessionCreate") { |HttpSession|[,] }
-		handlers.add(fn)
+		reqState.addSessionCreateFn(fn)
 	}
 	
 	private RequestState reqState() {
@@ -335,11 +333,8 @@ internal const class HttpSessionImpl : HttpSession {
 	private WebSession session() {
 		didNotExist := !exists
 		session		:= reqState.webReq.session
-		
-		if (didNotExist) {
-			handlers := (|HttpSession|[]) reqState.webReq.stash.getOrAdd("afBedsheet.onHttpSessionCreate") { |HttpSession|[,] }
-			handlers.each { it.call(this) }
-		}
+		if (didNotExist)
+			reqState.fireSessionCreate(this)
 		return session
 	}
 }
