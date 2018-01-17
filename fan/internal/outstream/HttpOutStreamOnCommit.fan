@@ -1,7 +1,7 @@
 using afIoc::Inject
 using web::WebRes
 
-internal class OnCommitOutStream : OutStream {
+internal class HttpOutStreamOnCommit : OutStream {
 	
 	@Inject	private RequestState	requestState
 	@Inject	private HttpResponse 	httpResponse

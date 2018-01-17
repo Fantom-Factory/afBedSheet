@@ -1,19 +1,33 @@
-using afIoc
+using afIoc::Inject
+using web::WebRes
 
-internal const class HttpOutStreamBuilder {
-	@Inject 
-	private const |->Scope|				 scope
-	private const DelegateChainBuilder[] builders
+** Wraps the 'WebRes.out' stream so we can pass references of it around without committing the 
+** response.
+internal class HttpOutStream : OutStream {
 	
-	new make(DelegateChainBuilder[] builders, |This|in) {
+	@Inject
+	private WebRes 		webRes
+	
+	private new make(|This|in) : super(null) {
 		in(this)
-		this.builders = builders
 	}
 	
-	OutStream build() {
-		out := scope().build(WebResOutProxy#)
-		return builders.reduce(out) |Obj delegate, DelegateChainBuilder builder -> Obj| { 		
-			return builder.build(delegate)
-		}
+	override This write(Int byte) {
+		webRes.out.write(byte)
+		return this
+	}
+
+	override This writeBuf(Buf buf, Int n := buf.remaining()) {
+		webRes.out.writeBuf(buf, n)
+		return this
+	}
+	
+	override This flush() {
+		webRes.out.flush
+		return this
+	}
+	
+	override Bool close() {
+		webRes.out.close
 	}
 }

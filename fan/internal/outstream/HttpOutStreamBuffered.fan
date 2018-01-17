@@ -6,7 +6,7 @@ using web::WebRes
 ** Data is buffered until it accumulates past a given (maximum) threshold, at which point the all data streamed direct.
 ** 
 ** @see `BedSheetConfigIds.responseBufferThreshold`
-internal class BufferedOutStream : OutStream {
+internal class HttpOutStreamBuffered : OutStream {
 
 	@Config { id="afBedSheet.responseBuffer.threshold" }
 	@Inject private Int 			resBufThreadhold

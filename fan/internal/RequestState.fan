@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIoc::Scope
 using web::WebReq
 using web::WebRes
 
@@ -6,7 +7,7 @@ using web::WebRes
 internal class RequestState {	
 	@Inject	WebReq?					webReq				// nullable for testing
 	@Inject	WebRes?					webRes				// nullable for testing
-	@Inject	HttpOutStreamBuilder?	outStreamBuilder	// nullable for testing
+	@Inject	Scope?					scope				// nullable for testing
 			Duration				startTime		:= Duration.now
 			Int 					middlewareDepth	:= 0
 			Bool?					disableGzip
@@ -42,7 +43,7 @@ internal class RequestState {
 	
 	OutStream responseBody() {
 		if (_responseBody == null)
-			_responseBody = outStreamBuilder.build
+			_responseBody = scope.serviceById(HttpOutStream#.qname)
 		return _responseBody
 	}
 	

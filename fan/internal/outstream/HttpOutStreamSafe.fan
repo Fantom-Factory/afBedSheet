@@ -7,8 +7,8 @@ using web::WebRes
 **   java.net.SocketException: Connection reset
 ** 
 ** As there's nothing we can do about it, we may as well ignore it.
-internal class SafeOutStream : OutStream {
-	private static const Log log	:= Utils.getLog(SafeOutStream#)
+internal class HttpOutStreamSafe : OutStream {
+	private static const Log log	:= Utils.getLog(HttpOutStreamSafe#)
 	private OutStream	realOut
 	private Bool		socketErr
 
