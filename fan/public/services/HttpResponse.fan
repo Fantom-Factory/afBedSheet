@@ -59,31 +59,6 @@ const mixin HttpResponse {
 	abstract Void onCommit(|HttpResponse| fn)
 }
 
-** Wraps a given `HttpResponse`, delegating all its methods. 
-** You may find it handy to use when contributing to the 'HttpResponse' delegate chain.
-@NoDoc
-const class HttpResponseWrapper : HttpResponse {
-	const 	 HttpResponse res
-	new 	 make(HttpResponse res) 			 { this.res = res 	} 
-	override HttpResponseHeaders headers() 		 { res.headers		}
-	override Bool isCommitted() 				 { res.isCommitted	}
-	override OutStream out() 					 { res.out			}
-	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
-	override Void onCommit(|HttpResponse| fn)	 { res.onCommit(fn) }
-	override Bool disableGzip {
-		get { res.disableGzip }
-		set { res.disableGzip = it}
-	}
-	override Bool disableBuffering {
-		get { res.disableBuffering }
-		set { res.disableBuffering = it}
-	}
-	override Int statusCode {
-		get { res.statusCode }
-		set { res.statusCode = it }
-	}
-}
-
 internal const class HttpResponseImpl : HttpResponse {
 	@Inject  const |->RequestState|		reqState
 	new make(|This|in) { 

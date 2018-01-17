@@ -124,28 +124,6 @@ const mixin HttpRequest {
 	
 }
 
-** Wraps a given `HttpRequest`, delegating all its methods. 
-** You may find it handy to use when contributing to the 'HttpRequest' delegate chain.
-@NoDoc
-const class HttpRequestWrapper : HttpRequest {
-	const 	 HttpRequest req
-	new 	 make(HttpRequest req) 			{ this.req = req 		} 
-	override HttpRequestHeaders headers()	{ req.headers			}
-	override Bool isXmlHttpRequest()		{ req.isXmlHttpRequest	}
-	override Version httpVersion() 			{ req.httpVersion		}
-	override Str httpMethod()				{ req.httpMethod		}
-	override IpAddr remoteAddr() 			{ req.remoteAddr		}
-	override Int remotePort() 				{ req.remotePort		}
-	override Uri url() 						{ req.url				}
-	override Uri urlAbs() 					{ req.urlAbs			}
-	override Uri? host()					{ req.host				}
-	override Locale[] locales() 			{ req.locales			}
-	override Str:Obj? stash()				{ req.stash				}
-	override HttpRequestBody body()			{ req.body				}
-	override SocketOptions socketOptions()	{ req.socketOptions		}
-	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb)	{ req.parseMultiPartForm(cb) }
-}
-
 internal const class HttpRequestImpl : HttpRequest {	
 	static	 const Log					log			:= HttpRequestImpl#.pod.log
 	@Inject  const |->RequestState|?	reqState	// nullable for testing

@@ -22,7 +22,7 @@ using afIocConfig::Config
 ** @see `BedSheetConfigIds.gzipThreshold`
 ** 
 ** @see [What is recommended minimum object size for gzip performance benefits?]`http://webmasters.stackexchange.com/questions/31750/what-is-recommended-minimum-object-size-for-gzip-performance-benefits`
-internal class GzipOutStream : OutStream {
+internal class HttpOutStreamGzip : OutStream {
 
 	// We start by piping all data to the OutStream of an internal Buf. When that exceeds the 
 	// given gzip threshold, we switch to piping to gzip wrapped res.out. 

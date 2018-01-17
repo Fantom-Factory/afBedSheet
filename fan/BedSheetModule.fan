@@ -39,6 +39,11 @@ const class BedSheetModule {
 		defs.addService(RequestLoggers#)		.withRootScope
 		defs.addService(HttpSession#)			.withRootScope
 		defs.addService(HttpCookies#)			.withRootScope
+		defs.addService(HttpRequest#)			.withRootScope
+		defs.addService(HttpResponse#)			.withRootScope
+		defs.addService(HttpOutStreamWrapper#)	.withRootScope
+		defs.addService(HttpOutStream#)			.withScope("request")
+		defs.addService(RequestState#)			.withScope("request")
 
 		// Other services - root
 		defs.addService(StackFrameFilter#)		.withRootScope
@@ -51,9 +56,13 @@ const class BedSheetModule {
 		defs.addService(ClientAssetCache#)		.withRootScope
 		defs.addService(ObjCache#)				.withRootScope
 
-		defs.addService(HttpOutStreamBuilder#)	.withRootScope
-
-		defs.addService(RequestState#)			.withScope("request")
+		defs.decorateService(HttpOutStream#.qname) |Configuration config| {
+			wraper := (HttpOutStreamWrapper) config.scope.serviceById(HttpOutStreamWrapper#.qname)
+			config["afBedSheet.safe"	 ] = |out->OutStream| { wraper.safeWrapper		(out) }	// inner
+			config["afBedSheet.buffered" ] = |out->OutStream| { wraper.bufferedWrapper	(out) }	// middle - buff wraps safe
+			config["afBedSheet.gzip"	 ] = |out->OutStream| { wraper.gzipWrapper		(out) }	// outer  - gzip wraps buff
+			config["afBedSheet.onCcommit"] = |out->OutStream| { wraper.onCommitWrapper	(out) }	// space  - comm wraps gzip
+		}
 	}
 
 	Void onRegistryStartup(Configuration config, ConfigSource configSrc) {
@@ -73,18 +82,6 @@ const class BedSheetModule {
 			scope.build(FlashMiddleware#)
 		].addAll(userMiddleware).add(scope.build(MiddlewareTerminator#))
 		return scope.build(MiddlewarePipelineImpl#, [middleware])
-	}
-
-	@Build { scopes=["root"] }
-	HttpRequest buildHttpRequest(DelegateChainBuilder[] builders, Scope scope) {
-		httpReq := scope.build(HttpRequestImpl#)
-		return builders.isEmpty ? httpReq : makeDelegateChain(builders, httpReq)
-	}
-
-	@Build { scopes=["root"] }
-	HttpResponse buildHttpResponse(DelegateChainBuilder[] builders, Scope scope) {
-		httpRes := scope.build(HttpResponseImpl#)
-		return builders.isEmpty ? httpRes : makeDelegateChain(builders, httpRes)
 	}
 
 	@Build { scopes=["request"] }	
@@ -123,15 +120,6 @@ const class BedSheetModule {
 		config["afBedSheet.fileHandler"] 	= fileHandler
 		config["afBedSheet.podHandler"]  	= podHandler
 		config["afBedSheet.srcMapHandler"]  = config.build(SrcMapHandler#)
-	}
-	
-	@Contribute { serviceType=HttpOutStreamBuilder# }
-	Void contributeHttpOutStream(Configuration config) {
-		// TODO kill HttpOutStreamBuilder and use delegates instead
-		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
-		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)		// middle - buff wraps safe
-		config["afBedSheet.gzipBuilder"] = config.build(HttpOutStreamGzipBuilder#)		// outer  - gzip wraps buff
-		config["afBedSheet.commBuilder"] = config.build(HttpOutStreamOnCommitBuilder#)	// space  - comm wraps gzip
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
@@ -331,11 +319,5 @@ const class BedSheetModule {
 			throw BedSheetErr(BsErrMsgs.startup_hostMustHaveSchemeAndHost(BedSheetConfigIds.host, host))
 		if (!host.pathStr.isEmpty && host.pathStr != "/")
 			throw BedSheetErr(BsErrMsgs.startup_hostMustNotHavePath(BedSheetConfigIds.host, host))		
-	}
-
-	private Obj makeDelegateChain(DelegateChainBuilder[] delegateBuilders, Obj service) {
-		delegateBuilders.reduce(service) |Obj delegate, DelegateChainBuilder builder -> Obj| { 		
-			return builder.build(delegate)
-		}
 	}
 }

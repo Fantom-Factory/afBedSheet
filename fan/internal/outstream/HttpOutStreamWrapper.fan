@@ -2,19 +2,27 @@ using afIoc::Inject
 using afIoc::Scope
 using afIocConfig::Config
 
-internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
-	@Inject	private const Scope 			scope
-	@Inject	private const HttpRequest 		request
+internal const class HttpOutStreamWrapper {
+	@Inject private const |->Scope|			scope
+	@Inject	private const HttpRequest		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const GzipCompressible 	gzipCompressible
-
-	@Inject @Config { id="afBedSheet.gzip.disabled" }
-	private const Bool gzipDisabled
-
-	new make(|This|in) { in(this) } 
+	@Config { id="afBedSheet.gzip.disabled" }
+	@Inject private const Bool 				gzipDisabled
 	
-	override OutStream build(Obj delegate) {
-		
+	new make(|This| f) { f(this) }
+
+	OutStream safeWrapper(Obj delegate) {
+		HttpOutStreamSafe(delegate)
+	}
+
+	OutStream bufferedWrapper(Obj delegate) {
+		response.disableBuffering
+			? delegate
+			: scope().build(HttpOutStreamBuffered#, [delegate])
+	}
+
+	OutStream gzipWrapper(Obj delegate) {
 		// if the response *could* be gzipped, then set the vary header
 		// see http://blog.maxcdn.com/accept-encoding-its-vary-important/
 		if (!gzipDisabled && !response.isCommitted && response.headers.vary == null)
@@ -24,6 +32,10 @@ internal const class HttpOutStreamGzipBuilder : DelegateChainBuilder {
 		contentType := response.isCommitted ? null : response.headers.contentType
 		acceptGzip	:= request.headers.acceptEncoding?.accepts("gzip") ?: false
 		doGzip 		:= !gzipDisabled && !response.disableGzip && acceptGzip && gzipCompressible.isCompressible(contentType)		
-		return		doGzip ? scope.build(GzipOutStream#, [delegate]) : delegate
+		return		doGzip ? scope().build(HttpOutStreamGzip#, [delegate]) : delegate
+	}
+	
+	OutStream onCommitWrapper(Obj delegate) {
+		scope().build(HttpOutStreamOnCommit#, [delegate])
 	}
 }
