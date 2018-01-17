@@ -38,6 +38,9 @@ const mixin HttpResponse {
 	abstract Bool disableGzip
 	
 	** Set to 'true' to disable buffering for this response.
+	** 
+	** Buffered responses contain a 'Content-Length' header and are easier to process by clients. 
+	** Non buffered responses are streamed straight out to the client.
 	abstract Bool disableBuffering
 
 	** Directs the client to display a 'save as' dialog by setting the 'Content-Disposition' HTTP 
@@ -48,6 +51,12 @@ const mixin HttpResponse {
 	** 
 	** @see `HttpResponseHeaders.contentDisposition`
 	abstract Void saveAsAttachment(Str fileName)
+	
+	** Adds an event handler that gets called just before a session is committed.
+	** Use to make last minute changes to header values. 
+	** 
+	** Callbacks may be mutable, do not need to be cleaned up, but should be added at the start of *every* HTTP request. 
+	abstract Void onCommit(|HttpResponse| fn)
 }
 
 ** Wraps a given `HttpResponse`, delegating all its methods. 
@@ -60,6 +69,7 @@ const class HttpResponseWrapper : HttpResponse {
 	override Bool isCommitted() 				 { res.isCommitted	}
 	override OutStream out() 					 { res.out			}
 	override Void saveAsAttachment(Str fileName) { res.saveAsAttachment(fileName) }
+	override Void onCommit(|HttpResponse| fn)	 { res.onCommit(fn) }
 	override Bool disableGzip {
 		get { res.disableGzip }
 		set { res.disableGzip = it}
@@ -73,7 +83,6 @@ const class HttpResponseWrapper : HttpResponse {
 		set { res.statusCode = it }
 	}
 }
-
 
 internal const class HttpResponseImpl : HttpResponse {
 	@Inject  const |->RequestState|		reqState
@@ -104,6 +113,9 @@ internal const class HttpResponseImpl : HttpResponse {
 	override Void saveAsAttachment(Str fileName) {
 		headers.contentDisposition = "attachment; filename=${fileName}"
 		headers.contentType = fileName.toUri.mimeType
+	}
+	override Void onCommit(|HttpResponse| fn) {
+		reqState().addResponseCommitFn(fn)
 	}
 }
 

@@ -127,9 +127,11 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=HttpOutStreamBuilder# }
 	Void contributeHttpOutStream(Configuration config) {
-		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()				// inner
-		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)	// middle - buff wraps safe
-		config["afBedSheet.gzipBuilder"] = config.build(HttpOutStreamGzipBuilder#)	// outer  - gzip wraps buff
+		// TODO kill HttpOutStreamBuilder and use delegates instead
+		config["afBedSheet.safeBuilder"] = HttpOutStreamSafeBuilder()					// inner
+		config["afBedSheet.buffBuilder"] = config.build(HttpOutStreamBuffBuilder#)		// middle - buff wraps safe
+		config["afBedSheet.gzipBuilder"] = config.build(HttpOutStreamGzipBuilder#)		// outer  - gzip wraps buff
+		config["afBedSheet.commBuilder"] = config.build(HttpOutStreamOnCommitBuilder#)	// space  - comm wraps gzip
 	}
 
 	@Contribute { serviceType=ResponseProcessors# }
