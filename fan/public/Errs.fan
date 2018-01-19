@@ -46,7 +46,8 @@ const class HttpStatusErr : ReProcessErr {
 }
 
 ** Throw by the routing mechanism / 'ValueEncoders' when converting URI segments to method params.
-internal const class ValueEncodingErr : BedSheetErr {
+@NoDoc	// referenced by afPillow::Pages.convertArgs()
+const class ValueEncodingErr : BedSheetErr {
 	new make(Str msg := "", Err? cause := null) : super(msg, cause) { }
 }
 
