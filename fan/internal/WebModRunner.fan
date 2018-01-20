@@ -1,16 +1,34 @@
+using afIoc::RegistryBuilder
 using inet::IpAddr
 using concurrent::Actor
 using web::WebMod
 using wisp::WispService
+using wisp::WispSessionStore
 
 internal const class WebModRunner {
 
+	private const WispSessionStore? sessionStore
+	
+	new make(RegistryBuilder bob, Bool isProxy) {
+		if (!isProxy) {
+			if (bob.options.containsKey("wisp.sessionStore"))
+				sessionStore = ((Type) bob.options["wisp.sessionStore"]).make
+	
+			if (bob.options.containsKey("wisp.sessionStoreProxy"))
+				sessionStore = SessionStoreProxy(bob)
+		}
+	}
+	
 	** Run baby, run!
 	Int run(WebMod webMod, Int port, IpAddr? ipAddr := null) {
 		// if WISP reports "sys::IOErr java.net.SocketException: Unrecognized Windows Sockets error: 10106: create"
 		// then check all your ENV vars are being passed to java.
 		// see http://forum.springsource.org/showthread.php?106504-Error-running-grails-project-on-alternative-port-with-STS2-6-0&highlight=Unrecognized%20Windows%20Sockets%20error
-		startWisp(WispService { it.root=webMod; it.httpPort=port; it.addr = ipAddr })
+		startWisp(WispService {
+			it.root=webMod; it.httpPort=port; it.addr = ipAddr
+			if (this.sessionStore != null)
+				it.sessionStore = this.sessionStore
+		})
 	}
 	
 	private Int startWisp(WispService wisp) {

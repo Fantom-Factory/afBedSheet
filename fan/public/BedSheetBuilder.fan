@@ -11,7 +11,15 @@ using web::WebMod
 ** Note that BedSheet requires specific IoC config to run. Hence when running BedSheet apps this class should be used in
 ** preference to 'afIoc::RegistryBuilder'. 
 ** 
-** Note the `toRegistryBuilder` method should wish to build a web app, but not start the web app or listen to a port.  
+** The [toRegistryBuilder()]`BedSheetBuilder.toRegistryBuilder` method can be used to build a web app, but not start the web app or listen to a port.  
+** 
+** Note the following options:
+** 
+**   table:
+**   Name                    Type  Value
+**   -----------------       ----  --------------------------------
+**   wisp.sessionStore       Type  The 'WispSessionStore' implementation to use - note this is built outside of IoC.
+**   wisp.sessionStoreProxy  Type  The 'WispSessionStore' implementation to use - this version may be an IoC service, or an IoC autobuilt class. Note because the SessionStore needs to be created before the IoC Registry, a session store proxy is created.
 ** 
 class BedSheetBuilder {
 	private static const Log log 	:= Utils.getLog(BedSheetBuilder#)
@@ -28,7 +36,7 @@ class BedSheetBuilder {
 	}
 
 	** Options for IoC 'RegistryBuilder'.
-	** Read only.
+	** Map is mutable, but this field read only.
 	Str:Obj? options := Str:Obj?[:] { it.caseInsensitive = true } {
 		private set
 	}
@@ -125,12 +133,15 @@ class BedSheetBuilder {
 	** Convenience method to start a Wisp server running 'BedSheetWebMod'.
 	Int startWisp(Int port := 8069, Bool proxy := false, Str? env := null) {
 		this.port = port
-		options["afBedSheet.env"] = env
+		if (env != null)
+			options["afBedSheet.env"] = env
 		watchAllPods := options[BsConstants.meta_watchAllPods]?.toStr?.toBool(false) ?: false
-		mod := proxy ? ProxyMod(this, port, watchAllPods) : BedSheetBootMod(this)
-		return runWebMod(mod, port, _ipAddr)
+		bob := toRegistryBuilder
+		mod := proxy ? ProxyMod(this, port, watchAllPods) : BedSheetBootMod(bob)
+		return _runWebMod(bob, mod, port, _ipAddr)
 	}
 
+	** Enables request logs being setting BedSheet's logging level to debug.
 	This enableRequestLogs() {
 		this.typeof.pod.log.level = LogLevel.debug
 		return this
@@ -139,7 +150,7 @@ class BedSheetBuilder {
 	** Hook to run a fully configured BedSheet 'WebMod'.
 	@NoDoc
 	virtual Int runWebMod(WebMod webMod, Int port, IpAddr? ipAddr) {
-		WebModRunner().run(webMod, port, ipAddr)
+		_runWebMod(toRegistryBuilder, webMod, port, ipAddr)
 	}
 
 	@NoDoc // for serialisation
@@ -184,6 +195,10 @@ class BedSheetBuilder {
 		return bob
 	}
 	
+	private Int _runWebMod(RegistryBuilder bob, WebMod webMod, Int port, IpAddr? ipAddr) {
+		WebModRunner(bob, webMod is ProxyMod).run(webMod, port, ipAddr)
+	}
+
 	private Void _initModules(Str moduleName, Bool transDeps) {
 		Pod?  pod
 		Type? mod
