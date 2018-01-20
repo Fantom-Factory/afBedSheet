@@ -39,7 +39,7 @@ const class BedSheetBootMod : WebMod {
 	const Str startupMessage	:= "The website is starting up... Please retry in a moment."
 	
 	** A convenience ctor that starts up BedSheet.
-	new makeForBedSheet(BedSheetBuilder bob, |This|? f := null) {
+	new makeForBedSheet(RegistryBuilder bob, |This|? f := null) {
 		this.webModFuncRef.val = |->WebMod| {
 			appName := bob.options[BsConstants.meta_appName]
 			port 	:= bob.options[BsConstants.meta_appPort]

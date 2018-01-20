@@ -39,11 +39,6 @@ internal const class ProxyMod : WebMod {
 		if (restarter.checkPods)
 			Actor.sleep(1.5sec)
 
-		// 13-Jan-2013
-		// Safari seems to have trouble creating seesion cookie
-		// with proxy server - create session here as a workaround
-		dummy := req.session
-
 		c := (WebClient?) null
 		try {
 			c = writeReq()
