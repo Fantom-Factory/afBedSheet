@@ -79,7 +79,6 @@ const class BedSheetModule {
 			// loggers wrap SystemMiddleware so they can report 500 errors
 			reqLogger,
 			scope.build(ErrMiddleware#),
-			scope.build(FlashMiddleware#)
 		].addAll(userMiddleware).add(scope.build(MiddlewareTerminator#))
 		return scope.build(MiddlewarePipelineImpl#, [middleware])
 	}
