@@ -69,7 +69,7 @@ const mixin HttpSession {
 	** Calling this method does not create a session if it does not exist.
 	** 
 	** @see `web::WebSession.remove`
-	abstract Void remove(Str name)
+	abstract Obj? remove(Str name)
 
 	** The application name/value pairs which are persisted between HTTP requests. 
 	** Returns an empty map if a session does not exist.
@@ -94,6 +94,7 @@ const mixin HttpSession {
 	abstract Bool exists()
 	
 	** A map whose name/value pairs are persisted *only* until the end of the user's **next** HTTP request. 
+	** (Note that actually they're persisted until the next request in which 'flash()' is called again.)
 	** 
 	** The returned map is *READ ONLY*. 
 	abstract Str:Obj? flash()
@@ -117,8 +118,6 @@ const mixin HttpSession {
 	** Callbacks may be mutable, do not need to be cleaned up, but should be added at the start of *every* HTTP request. 
 	abstract Void onCreate(|HttpSession| fn)
 
-	internal abstract Void _initFlash()
-	internal abstract Void _finalFlash()
 	internal abstract Void _finalSession()
 }
 
@@ -171,7 +170,7 @@ internal const class HttpSessionImpl : HttpSession {
 
 		val := session.get(name, def)
 		if (val is SessionValue) {
-			rawVal := ((SessionValue) val).val
+			rawVal := SessionValue.deserialise(val)
 			sessionMap[name] = rawVal
 			val = rawVal 
 		}
@@ -188,7 +187,7 @@ internal const class HttpSessionImpl : HttpSession {
 		session.each |val, key| {
 			if (!map.containsKey(key)) {
 				if (val is SessionValue) {
-					rawVal := ((SessionValue) val).val
+					rawVal := SessionValue.deserialise(val)
 					map[key] = rawVal
 					sessionMap[key] = rawVal
 				} else
@@ -207,18 +206,25 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Void set(Str name, Obj? val) {
-		sessionMap	:= reqState.mutableSessionState
-		sessVal		:= SessionValue.coerce(val)
-		if (sessVal is SessionValue)
-			sessionMap[name] = val
+		// attempt serialisation just so we can fail fast and grab the users attention
+		sessVal		:= SessionValue.serialise(val)
+		if (isMutable(val))
+			// let mutable maps and lists stay mutable until the end of the request
+			reqState.mutableSessionState[name] = val
+		else
+			reqState.mutableSessionState.remove(name)
+		// always create the session on demand - when we expect it to (and before the response is committed)
 		session.set(name, sessVal)
 	}
 	
-	override Void remove(Str name) {
+	override Obj? remove(Str name) {
 		if (exists) {
-			reqState.mutableSessionState.remove(name)
-			session.remove(name)
+			val1 := reqState.mutableSessionState.remove(name)
+			val2 := session.get(name) 
+			session.remove(name)	// session.remove returns Void - see http://fantom.org/forum/topic/2672
+			return val1 ?: val2
 		}
+		return null
 	}
 	
 	override Void delete() {
@@ -253,72 +259,76 @@ internal const class HttpSessionImpl : HttpSession {
 	}
 	
 	override Str:Obj? flash() {
+		_initFlash
+		
+		oldFlashMap := reqState.flashOldMap
+		newFlashMap := get("afBedSheet.flash")
+
 		map := Str:Obj?[:] { it.caseInsensitive = true }
-		if (reqState.flashMapOld != null)
-			map.setAll(reqState.flashMapOld)
-		if (reqState.flashMapNew != null)
-			map.setAll(reqState.flashMapNew)
+		if (oldFlashMap != null)
+			map.setAll(oldFlashMap)
+		if (newFlashMap != null)
+			map.setAll(newFlashMap)
+
 		return map.ro
 	}
 	
 	override Void flashSet(Str key, Obj? val) {
-		flashMapNew := reqState.flashMapNew
-		
-		if (flashMapNew == null)
-			reqState.flashMapNew = flashMapNew = Str:Obj?[:]
-		flashMapNew[key] = val
-
-		// create a session to preempt setting values
-		// FlashMiddleware creates the cookie too late, because the response has already been committed
-		session.id
+		_initFlash
+		newFlashMap := ([Str:Obj?]?) get("afBedSheet.flash")
+		if (newFlashMap == null) {
+			newFlashMap = Str:Obj?[:]
+			set("afBedSheet.flash", newFlashMap)
+		}
+		newFlashMap[key] = val
 	}
 
 	override Obj? flashRemove(Str key) {
-		if (!exists)
-			return null
-		val	:= null
-		if (reqState.flashMapOld != null) {
-			if (reqState.flashMapOld.isRO)
-				reqState.flashMapOld = reqState.flashMapOld.rw
-			val = reqState.flashMapOld.remove(key)
-		}
-		if (reqState.flashMapNew != null)
-			// if the key was found in both maps, it is correct to return the new one
-			// as that was the last value to be added, hence the only value in 'flash()'
-			val = reqState.flashMapNew.remove(key)
-		return val
-	}
-	
-	override Void _initFlash() {
-		if (!exists)
-			return
-
-		val			:= session.get("afBedSheet.flash")
-		carriedOver := val is SessionValue
-			? ((SessionValue) val).val
-			: val
-		reqState.flashMapOld = carriedOver
-	}
-
-	override Void _finalFlash() {
-		flashMapNew := reqState.flashMapNew
-
-		remove("afBedSheet.flash")
-		if (flashMapNew != null && flashMapNew.size > 0)
-			session.set("afBedSheet.flash", SessionValue.coerce(flashMapNew))
+		_initFlash
 		
-		reqState.flashMapNew = null
+		oldFlashMap := reqState.flashOldMap
+		newFlashMap := ([Str:Obj?]?) get("afBedSheet.flash")
+
+		val1 := null
+		if (oldFlashMap != null)
+			val1 = oldFlashMap.remove(key)
+
+		val2 := null
+		if (newFlashMap != null)
+			val2 = newFlashMap.remove(key)
+		
+		return val2 ?: val1
 	}
 
 	override Void _finalSession() {
-		sessionMap	:= reqState.mutableSessionState
-		sessionMap.each |v, k| { set(k, v) }
-		reqState.mutableSessionState.clear
+		sessionMap := reqState.mutableSessionState
+		if (sessionMap != null && sessionMap.size > 0) {
+			session := session
+			sessionMap.each |v, k| {
+				session[k] = SessionValue.serialise(v)
+			}
+			sessionMap.clear
+		}
 		reqState.mutableSessionState = null
 	}
 	
 	override Void onCreate(|HttpSession| fn) {
 		reqState.addSessionCreateFn(fn)
+	}
+	
+	// if this is called *every* request (as it was in BedSheet 1.5.8) then 
+	// the Session is loaded (from database?) on *every* request, including for the many asset requests
+	// getting the user to call 'flash()' when they want to clear it is a happy compromise
+	private Void _initFlash() {
+		if (reqState.flashInitialised) return
+
+		// grab the old value...
+		reqState.flashOldMap = get("afBedSheet.flash")
+
+		// ... and delete it
+		remove("afBedSheet.flash")
+		
+		reqState.flashInitialised = true
 	}
 	
 	private RequestState reqState() {
@@ -337,6 +347,10 @@ internal const class HttpSessionImpl : HttpSession {
 			reqState.fireSessionCreate(this)
 		return session
 	}
+
+	private static Bool isMutable(Obj? val) {
+		val != null && !val.isImmutable
+	}
 }
 
 // Wraps an object value, serialising it if it's not immutable
@@ -346,7 +360,7 @@ const class SessionValue {
 	
 	private new make(|This| f) { f(this) }
 	
-	static Obj? coerce(Obj? val) {
+	static Obj? serialise(Obj? val) {
 		if (val == null)
 			return null
 		if (val.isImmutable)
@@ -361,11 +375,15 @@ const class SessionValue {
 
 		if (!val.typeof.hasFacet(Serializable#))
 			throw BedSheetErr("Session values should be immutable (preferably) or serialisable: ${val.typeof.qname} - ${val}")
-		
+
 		// do the serialisation
 		return SessionValue {
 			it.objStr = Buf().writeObj(val).flip.readAllStr
 		}
+	}
+	
+	static Obj? deserialise(Obj? val) {
+		val is SessionValue ? ((SessionValue) val).val : val
 	}
 	
 	Obj? val() {
