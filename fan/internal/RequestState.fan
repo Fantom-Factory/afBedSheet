@@ -12,8 +12,8 @@ internal class RequestState {
 			Int 					middlewareDepth	:= 0
 			Bool?					disableGzip
 			Bool?					disableBuffering
-			[Str:Obj?]?				flashMapOld
-			[Str:Obj?]?				flashMapNew
+			Bool					flashInitialised
+			[Str:Obj?]?				flashOldMap
 			[Str:Obj?]?				mutableSessionState {
 				get { if (&mutableSessionState == null) &mutableSessionState = Str:Obj?[:]; return &mutableSessionState }
 			}
