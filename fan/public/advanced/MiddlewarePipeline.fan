@@ -14,10 +14,11 @@ const mixin MiddlewarePipeline {
 
 internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 
-	@Inject  const Log				log
-	@Inject  const |->RequestState|	reqState
+	@Inject	 const Log				log
+	@Inject	 const |->RequestState|	reqState
 	@Inject	 const LocalRefManager?	localManager
 	@Inject	 const HttpResponse?	httpResponse
+	@Inject	 const HttpSession		httpSession
 	override const Middleware[]		middleware
 	
 	new make(Middleware[] middleware, |This| in) {
@@ -37,6 +38,8 @@ internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 			
 			// clean up - don't wish to pollute stacktraces with yet moar middleware just for this 
 			if (reqState.middlewareDepth == 0) {
+				httpSession._finalSession
+
 				// this commits the response (by calling res.out) if it hasn't already
 				// e.g. 304's and redirects have no body, so need to be committed here
 				httpResponse.out.flush.close
