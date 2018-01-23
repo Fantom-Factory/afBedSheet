@@ -113,9 +113,16 @@ class BedSheetBuilder {
 		return this
 	}
 	
+	** Suppresses surplus logging by this and IoC's 'RegistryBuilder'.
+	This silence() {
+		options["afIoc.silenceBuilder"] = true
+		return this
+	}
+	
 	** Copies the content of this builder, including all the BedSheet specific config, into an IoC 'RegistryBuilder' instance.
 	RegistryBuilder toRegistryBuilder() {
 		bob := RegistryBuilder()
+		if (isSilent) bob.suppressLogging = true
 		_modsToRemove.each { bob.removeModule(it) }
 		_pods.each { bob.addModulesFromPod(it[0], it[1]) }
 		_moduleTypes.each { bob.addModule(it) }
@@ -208,12 +215,12 @@ class BedSheetBuilder {
 		// see https://bitbucket.org/SlimerDude/afbedsheet/issue/1/add-a-warning-when-no-appmodule-is-passed
 		if (!moduleName.contains("::")) {
 			pod = Pod.find(moduleName, true)
-			log.info(BsLogMsgs.bedSheetWebMod_foundPod(pod))
+			if (!isSilent) log.info(BsLogMsgs.bedSheetWebMod_foundPod(pod))
 			mods := _findModFromPod(pod)
 			mod = mods.first
 			
 			if (!transDeps)
-				log.info("Suppressing transitive dependencies...")
+				if (!isSilent) log.info("Suppressing transitive dependencies...")
 			addModulesFromPod(pod.name, transDeps)
 			mods.each { addModule(it) }
 		}
@@ -221,7 +228,7 @@ class BedSheetBuilder {
 		// AppModule name given...
 		if (moduleName.contains("::")) {
 			mod = Type.find(moduleName, true)
-			log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
+			if (!isSilent) log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
 			pod = mod.pod
 			
 			addModule(mod)
@@ -241,19 +248,19 @@ class BedSheetBuilder {
 	}
 
 	** Looks for an 'AppModule' in the given pod. 
-	private static Type[] _findModFromPod(Pod pod) {
+	private Type[] _findModFromPod(Pod pod) {
 		mods := Type#.emptyList
 		modNames := pod.meta["afIoc.module"]
 		if (modNames != null) {
 			mods = modNames.split(',').map { Type.find(it, true) }
-			log.info(BsLogMsgs.bedSheetWebMod_foundType(mods.first))
+			if (!isSilent) log.info(BsLogMsgs.bedSheetWebMod_foundType(mods.first))
 		} else {
 			// we have a pod with no module meta... so lets guess the name 'AppModule'
 			mod := pod.type("AppModule", false)
 			if (mod != null) {
 				mods = [mod]
-				log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
-				log.warn(BsLogMsgs.bedSheetWebMod_addModuleToPodMeta(pod, mod))
+				if (!isSilent) log.info(BsLogMsgs.bedSheetWebMod_foundType(mod))
+				if (!isSilent) log.warn(BsLogMsgs.bedSheetWebMod_addModuleToPodMeta(pod, mod))
 			}
 		}
 		return mods
@@ -273,5 +280,9 @@ class BedSheetBuilder {
 
 	private static Str[] _loadQuotes() {
 		BedSheetWebMod#.pod.file(`/res/misc/quotes.txt`).readAllLines.exclude { it.isEmpty || it.startsWith("#")}
+	}
+	
+	private Bool isSilent() {
+		options["afIoc.silenceBuilder"] == true
 	}
 }
