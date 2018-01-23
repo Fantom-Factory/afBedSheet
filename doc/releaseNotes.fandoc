@@ -9,6 +9,7 @@ v1.5.10
  - New: Added 'ClientAsset.clientUrlAbs()'.
  - New: Added to 'HttpResponseHeaders': 'contentSecurityPolicy', 'contentSecurityPolicyReportOnly', 'referrerPolicy', 'strictTransportSecurity', 'xContentTypeOptions'
  - New: The standard BedSheet pages alter 'Content-Security-Policy' directives (should one be defined) to add hashes for their inline scripts and styles.
+ - New: Added 'BedSheetBuilder.silence()' method.
  - Chg: 'HttpRequestHeaders' and 'HttpResponseHeaders' are now non-const, it makes more sense and makes testing easier. They also have general purpose ctors, and generally received some love. (Potential breaking change.)
  - Chg: Deleted the Delegate Chain Builder pattern for 'HttpRequest', 'HttpResponse', and 'HttpOutStream'. (WTF was I thinking!?) 'HttpOutStream' uses standard IoC delegation.
  - Chg: Allow request bodies be read *and* parsed as multipart forms.
