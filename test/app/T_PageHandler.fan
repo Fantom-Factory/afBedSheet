@@ -207,6 +207,7 @@ internal const class T_PageHandler {
 	
 	Obj saveFlashMsg(Str msg) {
 		oldMsg := session.flash["msg"]
+		session.flashRemove("msg")	// check a read-only bug
 		session.flashSet("msg", msg)
 		return Text.fromPlain("Msg = $oldMsg")
 	}

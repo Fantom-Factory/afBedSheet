@@ -290,8 +290,11 @@ internal const class HttpSessionImpl : HttpSession {
 		newFlashMap := ([Str:Obj?]?) get("afBedSheet.flash")
 
 		val1 := null
-		if (oldFlashMap != null)
+		if (oldFlashMap != null) {
+			if (oldFlashMap.isRO)
+				oldFlashMap = oldFlashMap.rw
 			val1 = oldFlashMap.remove(key)
+		}
 
 		val2 := null
 		if (newFlashMap != null)
