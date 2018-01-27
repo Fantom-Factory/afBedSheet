@@ -5,7 +5,7 @@ internal class TestSession : AppTest {
 	Void testSession() {
 		verifyEq(getAsStr(`/session`), "count 1 - created true")
 		cookie 		:= client.resHeaders["Set-Cookie"].replace(";Path=/", "")
-		
+
 		client = WebClient()
 		client.reqHeaders["Cookie"] = cookie
 		verifyEq(getAsStr(`/session`), "count 2 - created false")
@@ -19,6 +19,17 @@ internal class TestSession : AppTest {
 
 		client = WebClient()
 		verifyEq(getAsStr(`/sessionDelete`), "session exists = false")
+		
+		
+		// test session.onCreate() is still fired when an old, timed out session ID is passed in
+		// this tests the "afBedSheet.exists" logic
+		client = WebClient()
+		client.reqHeaders["Cookie"] = "fanws=xxxx;HttpOnly"
+		verifyEq(getAsStr(`/session`), "count 1 - created true")
+		
+		// this validates the fact that wisp has session fixation
+		newCookie := client.resHeaders["Set-Cookie"]
+		verifyNull(newCookie)
 	}
 
 	Void testImmutableSessionVals() {
