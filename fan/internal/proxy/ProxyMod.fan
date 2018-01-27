@@ -10,11 +10,12 @@ internal const class ProxyMod : WebMod {
 	const Int 			proxyPort
 	const Int 			appPort
 	const AppRestarter	restarter
-	const Version 		webVer		:= Pod.find("web").version
+	const Duration		startupWait
 	
 	new make(BedSheetBuilder bob, Int proxyPort, Bool watchAllPods) {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
+		this.startupWait= (bob.options["afBedSheet.proxy.startupWait"] as Duration) ?: 1sec
 		bob.options[BsConstants.meta_proxyPort] = this.proxyPort
 		bob.options[BsConstants.meta_appPort] 	= this.appPort
 		bob.options[BsConstants.meta_pingProxy] = true
@@ -37,7 +38,7 @@ internal const class ProxyMod : WebMod {
 
 		// if restarted, wait for wisp to start up
 		if (restarter.checkPods)
-			Actor.sleep(1.5sec)
+			Actor.sleep(startupWait)
 
 		c := (WebClient?) null
 		try {
@@ -48,7 +49,7 @@ internal const class ProxyMod : WebMod {
 			// (e.g. if counldn't connect to MongoDB) so force a restart
 			log.info(BsLogMsgs.proxyMod_forceRestart)
 			restarter.forceRestart
-			Actor.sleep(1.5sec)
+			Actor.sleep(startupWait)
 			c = writeReq()
 		}
 
@@ -96,19 +97,22 @@ internal const class ProxyMod : WebMod {
 	
 	private WebClient writeReq() {
 		c := WebClient()
-		c.reqHeaders.clear
-		c.followRedirects = false
-		c.reqUri = "http://localhost:${appPort}${req.uri.relToAuth}".toUri
-		c.reqMethod = req.method
-		req.headers.each |v, k| {
-			if (!k.equalsIgnoreCase("Host"))	// don't mess with the Hoff! Err, I mean host.
-				c.reqHeaders[k] = v
+		try {
+			c.reqHeaders.clear
+			c.followRedirects = false
+			c.reqUri = "http://localhost:${appPort}${req.uri.relToAuth}".toUri
+			c.reqMethod = req.method
+			req.headers.each |v, k| {
+				if (!k.equalsIgnoreCase("Host"))	// don't mess with the Hoff! Err, I mean host.
+					c.reqHeaders[k] = v
+			}
+			
+			/// sys::IOErr: java.net.ConnectException: Connection refused: connect
+			c.writeReq
+			return c
+		} catch (Err err) {
+			c.close
+			throw err
 		}
-		
-		
-		/// sys::IOErr: java.net.ConnectException: Connection refused: connect
-		c.writeReq
-		
-		return c
 	}
 }

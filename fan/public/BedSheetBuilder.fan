@@ -16,10 +16,11 @@ using web::WebMod
 ** Note the following options:
 ** 
 **   table:
-**   Name                    Type  Value
-**   -----------------       ----  --------------------------------
-**   wisp.sessionStore       Type  The 'WispSessionStore' implementation to use - note this is built outside of IoC.
-**   wisp.sessionStoreProxy  Type  The 'WispSessionStore' implementation to use - this version may be an IoC service, or an IoC autobuilt class. Note because the SessionStore needs to be created before the IoC Registry, a session store proxy is created.
+**   Name                          Type      Value
+**   ----------------------------  --------  ------------------------------------------------------
+**   wisp.sessionStore             Type      The 'WispSessionStore' implementation to use - note this is built outside of IoC.
+**   wisp.sessionStoreProxy        Type      The 'WispSessionStore' implementation to use - this version may be an IoC service, or an IoC autobuilt class. Note because the SessionStore needs to be created before the IoC Registry, a session store proxy is created.
+**   afBedSheet.proxy.startupWait  Duration  The amount of time the proxy waits after (re)starting the app before it forwards on a request. Defaults to '1sec'. Increase this if you get connection errors on app restart.
 ** 
 class BedSheetBuilder {
 	private static const Log log 	:= Utils.getLog(BedSheetBuilder#)
