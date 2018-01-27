@@ -90,6 +90,10 @@ const mixin HttpSession {
 	
 	** Returns 'true' if a session exists. 
 	** 
+	** Wisp does not offer a sure-fire method of checking if a session actually exists or not.
+	** So in essence, all this does is check for the existence of a 'fanws' wisp session cookie.
+	** It makes no assurances that the associated ID is valid or if the session has expired or not.
+	** 
 	** Calling this method does not create a session if it does not exist.
 	abstract Bool exists()
 	
@@ -116,6 +120,9 @@ const mixin HttpSession {
 	** Adds an event handler that gets called as soon as a session is created.
 	** 
 	** Callbacks may be mutable, do not need to be cleaned up, but should be added at the start of *every* HTTP request. 
+	** 
+	** Note that due to limitations of the underlying 'web::WebSession' class, BedSheet must store a token "afBedSheet.exists" 
+	** value in the session to ensure 'onCreate()' is called at the appropriate time.
 	abstract Void onCreate(|HttpSession| fn)
 
 	internal abstract Void _finalSession()
@@ -251,7 +258,7 @@ internal const class HttpSessionImpl : HttpSession {
 		exists := httpCookies["fanws"] != null
 		// note - I could also just check for the existence of 'Actor.locals["web.session"]' 
 		// but that's another, more in-depth, wisp implementation detail
-		
+
 		if (exists)
 			// don't save 'false' values, so we still re-evaluate next time round
 			existsRef.val = true
@@ -341,13 +348,16 @@ internal const class HttpSessionImpl : HttpSession {
 		catch (IocErr ie)
 			throw IocErr("Request scope is not available")
 	}
-	
+
 	** Route all session requests through here so we can trap when it gets created
 	private WebSession session() {
-		didNotExist := !exists
-		session		:= reqState.webReq.session
-		if (didNotExist)
+		session	:= reqState.webReq.session
+		exists	:= session["afBedSheet.exists"] != null
+		existed	:= session["afBedSheet.exists"] == true
+		session["afBedSheet.exists"] = existed
+		if (!exists)
 			reqState.fireSessionCreate(this)
+		session["afBedSheet.exists"] = true
 		return session
 	}
 
