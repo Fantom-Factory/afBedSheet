@@ -1,5 +1,4 @@
 using afBeanUtils::NotFoundErr
-using web::WebRes
 
 ** As thrown by BedSheet
 const class BedSheetErr : Err {
@@ -42,7 +41,7 @@ const class ReProcessErr : Err {
 **   throw HttpStatusErr(404, "Page not found")
 @NoDoc @Deprecated { msg="Use 'HttpStatus.makeErr(...)' instead" } 
 const class HttpStatusErr : ReProcessErr {
-	new make(Int statusCode, Str statusMsg := WebRes.statusMsg[statusCode], Err? cause := null) : super.makeWithMsg(HttpStatus(statusCode, statusMsg), statusMsg, cause) { }
+	new make(Int statusCode, Str statusMsg := HttpResponse.statusMsg[statusCode], Err? cause := null) : super.makeWithMsg(HttpStatus(statusCode, statusMsg), statusMsg, cause) { }
 }
 
 ** Throw by the routing mechanism / 'ValueEncoders' when converting URI segments to method params.
