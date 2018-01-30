@@ -15,7 +15,7 @@ internal const class ProxyMod : WebMod {
 	new make(BedSheetBuilder bob, Int proxyPort, Bool watchAllPods) {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
-		this.startupWait= (bob.options["afBedSheet.proxy.startupWait"] as Duration) ?: 1sec
+		this.startupWait= (bob.options["afBedSheet.proxy.startupWait"] as Duration) ?: 1.5sec
 		bob.options[BsConstants.meta_proxyPort] = this.proxyPort
 		bob.options[BsConstants.meta_appPort] 	= this.appPort
 		bob.options[BsConstants.meta_pingProxy] = true
