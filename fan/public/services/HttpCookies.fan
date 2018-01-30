@@ -1,5 +1,5 @@
-using afIoc
-using web
+using afIoc::Inject
+using web::Cookie
 using concurrent
 
 ** (Service) - Use to manage your Cookies.

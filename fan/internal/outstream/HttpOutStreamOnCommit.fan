@@ -1,5 +1,4 @@
 using afIoc::Inject
-using web::WebRes
 
 internal class HttpOutStreamOnCommit : OutStream {
 	

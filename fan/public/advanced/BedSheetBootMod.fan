@@ -2,7 +2,7 @@ using afIoc
 using afIocEnv
 using afConcurrent
 using concurrent
-using web
+using web::WebMod
 
 ** A temporary `web::WebMod` that returns a 'startupMessage' while the real web app is booting up.
 @NoDoc 

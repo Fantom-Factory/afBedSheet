@@ -1,6 +1,5 @@
 using afIoc::Inject
 using afIocConfig::Config
-using web::WebRes
 
 ** Buffers the stream content so it can set the 'Content-Length' http response header.
 ** Data is buffered until it accumulates past a given (maximum) threshold, at which point the all data streamed direct.
