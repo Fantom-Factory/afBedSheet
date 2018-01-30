@@ -1,6 +1,5 @@
 using afIoc::Inject
 using web::WebOutStream
-using web::WebRes
 
 ** (Service) - Renders the standard 'BedSheet' web pages.
 @NoDoc	// Advanced use only
@@ -32,7 +31,7 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 	new make(|This|in) { in(this) }
 
 	override Text? renderHttpStatus(HttpStatus httpStatus, Bool verbose) {
-		title	:= "${httpStatus.code} - " + WebRes.statusMsg[httpStatus.code]
+		title	:= "${httpStatus.code} - " + HttpResponse.statusMsg[httpStatus.code]
 		// if the msg is html, leave it as is
 		msg		:= httpStatus.msg.startsWith("<p>") ? httpStatus.msg : "<p><b>${httpStatus.msg}</b></p>\n"
 		xhtml	:= (verbose && httpStatus.code == 404) ? msg + notFoundPrinterHtml().toHtml : msg
@@ -41,7 +40,7 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 	}	
 
 	override Text? renderErr(Err err, Bool verbose) {
-		title	:= "500 - " + WebRes.statusMsg[500]
+		title	:= "500 - " + HttpResponse.statusMsg[500]
 		xhtml	:= verbose ? errPrinterHtml().errToHtml(err) : "<p><b>${err.msg}</b></p>\n"
 		str		:= verbose ? errPrinterStr() .errToStr (err) : "${err.msg}\n"
 		return render(title, xhtml, str, BedSheetLogo.skull)

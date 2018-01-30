@@ -1,5 +1,6 @@
 using afIoc::Inject
 using web::Cookie
+using web::WebRes
 using concurrent::Actor
 
 ** (Service) - An injectable 'const' version of [WebRes]`web::WebRes`.
@@ -57,6 +58,11 @@ const mixin HttpResponse {
 	** 
 	** Callbacks may be mutable, do not need to be cleaned up, but should be added at the start of *every* HTTP request. 
 	abstract Void onCommit(|HttpResponse| fn)
+	
+	** Map of HTTP status codes to status messages.
+	** 
+	** See [WebRes.statusMsg]`web::WebRes.statusMsg`.
+	static const Int:Str statusMsg := WebRes.statusMsg
 }
 
 internal const class HttpResponseImpl : HttpResponse {
