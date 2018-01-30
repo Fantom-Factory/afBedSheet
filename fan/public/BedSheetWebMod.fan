@@ -3,8 +3,6 @@ using concurrent::ActorPool
 using concurrent::AtomicRef
 using concurrent::AtomicBool
 using web::WebMod
-using web::WebReq
-using web::WebRes
 using afIoc
 using afIocConfig::ConfigSource
 

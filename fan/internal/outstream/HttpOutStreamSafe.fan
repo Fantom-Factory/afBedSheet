@@ -1,6 +1,5 @@
 using afIoc::Inject
 using afIocConfig::Config
-using web::WebRes
 
 ** If the other side closes their connection before we've finished writing, then we get a
 **  

@@ -1,4 +1,6 @@
-using web
+using web::WebReq
+using web::WebRes
+using web::WebOutStream
 using afIoc
 using afIocEnv
 using afIocConfig
