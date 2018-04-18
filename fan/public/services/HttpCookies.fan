@@ -61,7 +61,7 @@ internal const class HttpCookiesImpl : HttpCookies {
 			cookies.removeSame(res)
 		
 		// don't return res straight away as it may also be set in the req
-		req := httpReq.headers.cookies.find { it.name.equalsIgnoreCase(cookieName) }
+		req := httpReq.headers.cookies?.find { it.name.equalsIgnoreCase(cookieName) }
 		if (req != null) {
 			dieCookie := Cookie(cookieName, "deleted-by-BedSheet") { it.maxAge = 0sec }
 			cookies.add(dieCookie)
