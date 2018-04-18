@@ -1,5 +1,8 @@
 v1.5
 ****
+v1.5.12
+=======
+ - Bug: Fixed occasional NPE when removing cookies.
 
 v1.5.10
 =======
