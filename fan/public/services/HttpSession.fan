@@ -255,7 +255,8 @@ internal const class HttpSessionImpl : HttpSession {
 			return false
 
 		// note this session support only for WISP web server
-		exists := httpCookies["fanws"] != null
+		cookieName := Env.cur.config(WebSession#.pod, "sessionCookieName", "fanws") 
+		exists := httpCookies[cookieName] != null
 		// note - I could also just check for the existence of 'Actor.locals["web.session"]' 
 		// but that's another, more in-depth, wisp implementation detail
 

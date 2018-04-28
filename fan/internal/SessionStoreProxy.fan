@@ -2,6 +2,7 @@ using afIoc::RegistryBuilder
 using afIoc::Scope
 using concurrent::AtomicRef
 using wisp::WispSessionStore
+using wisp::WispService
 
 internal const class SessionStoreProxy : WispSessionStore {
 
@@ -17,6 +18,10 @@ internal const class SessionStoreProxy : WispSessionStore {
 			}
 		}
 		bob.addModule(this)
+	}
+
+	override WispService service() {
+		Service.find(WispService#, true)
 	}
 
 	WispSessionStore sessionStore() {
