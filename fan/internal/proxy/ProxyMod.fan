@@ -37,8 +37,10 @@ internal const class ProxyMod : WebMod {
 		}
 
 		// if restarted, wait for wisp to start up
-		if (restarter.checkPods)
+		if (restarter.checkPods) {
+			echo("-> sleeping for $startupWait")
 			Actor.sleep(startupWait)
+		}
 
 		c := (WebClient?) null
 		try {
@@ -49,6 +51,7 @@ internal const class ProxyMod : WebMod {
 			// (e.g. if counldn't connect to MongoDB) so force a restart
 			log.info(BsLogMsgs.proxyMod_forceRestart)
 			restarter.forceRestart
+			echo("+> sleeping for $startupWait")
 			Actor.sleep(startupWait)
 			c = writeReq()
 		}
@@ -68,8 +71,15 @@ internal const class ProxyMod : WebMod {
 				if (v.trim == "deflate")
 					redeflate = true
 			}
-			res.headers[k] = v
+			
+			if (k == "Set-Cookie") {
+				// one can not simply set mutltiple cookies in a single header value:
+				// see https://stackoverflow.com/questions/11533867/set-cookie-header-with-multiple-cookies
+				// so instead, we set WebRes.cookies and let Wisp write out multiple Set-Cookie header values 
+			} else
+				res.headers[k] = v
 		}
+		res.cookies.addAll(c.cookies)
 		
 		if (c.resHeaders.containsKey("Content-Type") ||	c.resHeaders.containsKey("Content-Length")) {
 			resBuf := c.resIn.readAllBuf

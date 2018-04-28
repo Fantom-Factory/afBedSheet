@@ -4,6 +4,7 @@ v1.5.12
 =======
  - Chg: Updated code to work with Fantom 1.0.71 - the 'wisp::WispSessionStore' mixin changed.
  - Chg: Fixed an Err when flushing an upgraded WebSocket. Web / Wisp is the actual problem, but we work around it.
+ - Bug: Dev proxy did not correctly proxy multiple 'Set-Cookie' response headers.
  - Bug: Fixed occasional NPE when removing cookies.
 
 v1.5.10
