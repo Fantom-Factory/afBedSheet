@@ -1,4 +1,5 @@
 using concurrent::Actor
+using concurrent::AtomicBool
 using web::WebClient
 using web::WebMod
 
@@ -11,6 +12,7 @@ internal const class ProxyMod : WebMod {
 	const Int 			appPort
 	const AppRestarter	restarter
 	const Duration		startupWait
+	const AtomicBool	restarting
 	
 	new make(BedSheetBuilder bob, Int proxyPort, Bool watchAllPods) {
 		this.proxyPort 	= proxyPort
@@ -20,6 +22,7 @@ internal const class ProxyMod : WebMod {
 		bob.options[BsConstants.meta_appPort] 	= this.appPort
 		bob.options[BsConstants.meta_pingProxy] = true
 		this.restarter 	= AppRestarter(bob, appPort, watchAllPods)
+		this.restarting = AtomicBool(false)
 	}
 
 	override Void onStart() {
@@ -38,8 +41,8 @@ internal const class ProxyMod : WebMod {
 
 		// if restarted, wait for wisp to start up
 		if (restarter.checkPods) {
-			echo("-> sleeping for $startupWait")
 			Actor.sleep(startupWait)
+			restarting.val = true
 		}
 
 		c := (WebClient?) null
@@ -50,12 +53,14 @@ internal const class ProxyMod : WebMod {
 			// if we can't connect to the website, it may be down / not have started
 			// (e.g. if counldn't connect to MongoDB) so force a restart
 			log.info(BsLogMsgs.proxyMod_forceRestart)
-			restarter.forceRestart
-			echo("+> sleeping for $startupWait")
+			if (!restarting.val)
+				restarter.forceRestart
 			Actor.sleep(startupWait)
 			c = writeReq()
 		}
 
+		restarting.val = false
+		
 		if (req.headers.containsKey("Content-Type") || req.headers.containsKey("Content-Length"))
 			c.reqOut.writeBuf(req.in.readAllBuf).flush
 

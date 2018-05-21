@@ -7,6 +7,7 @@ v1.5.12
  - Bug: Dev proxy did not correctly proxy multiple 'Set-Cookie' response headers.
  - Bug: Fixed occasional NPE when removing cookies.
  - Bug: Fixed NPE when processing '/dev/' URLs in SrcMapHandler.
+ - Bug: Fixed some proxy restarting churn when webapp takes several seconds to startup.
 
 v1.5.10
 =======
