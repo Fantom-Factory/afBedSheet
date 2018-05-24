@@ -98,5 +98,8 @@ internal const class HttpResponseImpl : HttpResponse {
 	override Void onCommit(|HttpResponse| fn) {
 		reqState().addResponseCommitFn(fn)
 	}
+	override Str toStr() {
+		"$statusCode ${statusMsg[statusCode]}"
+	}
 }
 

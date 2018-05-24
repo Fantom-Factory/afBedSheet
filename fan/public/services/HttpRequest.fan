@@ -152,7 +152,7 @@ internal const class HttpRequestImpl : HttpRequest {
 	}
 	override Uri url() {
 		rel := webReq.modRel
-		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
+		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`		
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Uri urlAbs() {
@@ -189,6 +189,9 @@ internal const class HttpRequestImpl : HttpRequest {
 			cb(formName, partIn, partHeaders)
 			try { partIn.skip(Int.maxVal) } catch {} // drain stream
 		}
+	}
+	override Str toStr() {
+		"$httpMethod $url"
 	}
 	private WebReq webReq() {
 		// let's simplify and optimise, no point in querying IoC for this.
