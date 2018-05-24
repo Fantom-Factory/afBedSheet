@@ -42,7 +42,10 @@ internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 
 				// this commits the response (by calling res.out) if it hasn't already
 				// e.g. 304's and redirects have no body, so need to be committed here
-				httpResponse.out.flush.close
+				try httpResponse.out.flush.close
+				// flushing a WebSocket upgrade causes: sys::Err: Must set Content-Length or Content-Type to write content
+				// but the 'upgraded' flag is buried inside WispRes, to which we have no access, so just ignore for now
+				catch { /* meh */ }
 				
 				localManager.cleanUpThread				
 			}
