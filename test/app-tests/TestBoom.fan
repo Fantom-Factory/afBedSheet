@@ -24,6 +24,9 @@ internal class TestBoom : AppTest {
 		verifyNotNull(client.resHeaders["X-afBedSheet-errType"])
 		verifyNotNull(client.resHeaders["X-afBedSheet-errStackTrace"])
 
+		// check any pre-set headers have been cleared
+		verifyNull(client.resHeaders["kill.me"])
+
 		// never cache error pages!
 		verifyEq(client.resHeaders["Cache-Control"], "private, max-age=0, no-store")
 	}

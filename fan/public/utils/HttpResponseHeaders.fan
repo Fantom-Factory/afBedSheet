@@ -252,6 +252,13 @@ class HttpResponseHeaders {
 	Str[] keys() {
 		headers.keys
 	}
+	
+	** Clears all header values.
+	** Called by BedSheet before processing an error handler, to reset the response. 
+	Void clear() {
+		checkUncommitted()
+		headers.clear
+	}
 
 	@NoDoc
 	override Str toStr() {

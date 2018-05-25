@@ -15,6 +15,7 @@ internal const class T_PageHandler {
 	// ---- Boom Pages ----
 
 	Void boom() {
+		response.headers["kill.me"] = "true"
 		throw Err("BOOM!")
 	}
 	

@@ -59,6 +59,14 @@ const mixin HttpResponse {
 	** Callbacks may be mutable, do not need to be cleaned up, but should be added at the start of *every* HTTP request. 
 	abstract Void onCommit(|HttpResponse| fn)
 	
+	** Clears all response headers and sets the status code back to '200'.
+	** 
+	** Called by BedSheet before processing an error handler.
+	** 
+	** Throws an Err should the response already be committed.
+	@NoDoc	// advanced use only!
+	abstract Void reset()
+
 	** Map of HTTP status codes to status messages.
 	** 
 	** See [WebRes.statusMsg]`web::WebRes.statusMsg`.
@@ -97,6 +105,12 @@ internal const class HttpResponseImpl : HttpResponse {
 	}
 	override Void onCommit(|HttpResponse| fn) {
 		reqState().addResponseCommitFn(fn)
+	}
+	override Void reset() {
+		headers.clear
+		statusCode = 200
+		disableGzip = false
+		disableBuffering = false
 	}
 	override Str toStr() {
 		"$statusCode ${statusMsg[statusCode]}"

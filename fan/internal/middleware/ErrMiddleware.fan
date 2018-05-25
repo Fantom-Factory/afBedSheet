@@ -33,10 +33,16 @@ internal const class ErrMiddleware : Middleware {
 			// handle ReProcessErrs as it may be thrown outside of ResponseProcessor (e.g. in middleware), and people 
 			// would still expect it work
 			} catch (ReProcessErr reErr) {
+				if (!httpResponse.isCommitted)
+					httpResponse.reset
+
 				firstErr = reErr
 				response = reErr.responseObj
 				
 			} catch (Err err) {
+				if (!httpResponse.isCommitted)
+					httpResponse.reset
+
 				firstErr = err
 				setStackTraceHeader(err)
 
