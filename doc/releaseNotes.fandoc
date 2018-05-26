@@ -3,6 +3,7 @@ v1.5
 v1.5.12
 =======
  - New: Added 'BedSheetServer.getClientAsset()'.
+ - New: Added 'HttpResponseHeaders.addCsp()' convenience method.
  - Chg: Updated code to work with Fantom 1.0.71 - the 'wisp::WispSessionStore' mixin changed.
  - Chg: All HTTP Response headers are cleared before processing an error handler.
  - Chg: Fixed an Err when flushing an upgraded WebSocket. Web / Wisp is the actual problem, but we work around it.

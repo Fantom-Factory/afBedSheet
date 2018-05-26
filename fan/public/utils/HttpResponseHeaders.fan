@@ -260,6 +260,82 @@ class HttpResponseHeaders {
 		headers.clear
 	}
 
+	** Convenience method for adding CSP directive values.
+	** 
+	**   syntax: fantom 
+	**   headers.addCsp("script-src", "'self'")
+	** 
+	** Note this method does nothing if the 'Content-Security-Policy' header is not set,
+	** or if the given directive (or 'default-src' fallback) is blank.
+	** This enables libraries to work effortless with [Sleep Safe]`pod:afSleepSafe`.
+	Void addCsp(Str directive, Str value) {
+		csp := contentSecurityPolicy ?: Str:Str[:]
+		_addCsp(csp, directive, value, false)
+		contentSecurityPolicy = csp
+	}
+	
+	** Convenience method for adding CSP directive values.
+	** 
+	**   syntax: fantom 
+	**   headers.addCspReportOnly("script-src", "'self'")
+	**
+	** Note this method does nothing if the 'Content-Security-Policy' header is not set,
+	** or if the given directive (or 'default-src' fallback) is blank.
+	** This enables libraries to work effortless with [Sleep Safe]`pod:afSleepSafe`.
+	Void addCspReportOnly(Str directive, Str value) {
+		csp := contentSecurityPolicyReportOnly ?: Str:Str[:]
+		_addCsp(csp, directive, value, false)
+		contentSecurityPolicyReportOnly = csp
+	}
+	
+	** The directive is optionally normalised whereby unnecessary values are removed.
+	** For example:
+	**  - all 'http:XXXX' values are removed if 'http:' is present
+	**  - all 'sha256-XXXX' values are removed if 'unsafe-inline' is present.
+	** 
+	private Void _addCsp(Str:Str csp, Str directive, Str value, Bool normalise) {
+		src := csp.get(directive, "")
+		if (src.size > 0) src += " "
+		src += value
+		
+		// turns out that normalising values isn't much use, as it's really only:
+		//  - unsafe-inline replaces shaXXX-* and nonce-*
+		//  - XXXX: replaces XXXX:*
+		//
+		// what would be of more use (for Duvet et al) is a CSP class that tells you
+		// if a URL / scheme is allowed. 
+//		if (normalise && directive.endsWith("-src") && directive != "default-src") {
+//			def := csp.get("default-src", "")
+//			src = normaliseCsp(src, def)
+//		}
+		csp[directive] = src
+	}
+	
+//	private Str normaliseCsp(Str src, Str def) {
+//		srcs := src.split(' ').exclude { it.isEmpty }
+//		defs := def.split(' ').exclude { it.isEmpty }
+//		
+//		dirs := srcs.dup
+//		if (dirs.isEmpty)
+//			dirs = defs
+//		
+//		if (dirs.contains("'unsafe-inline'"))
+//			srcs = srcs.exclude {
+//				it.startsWith("sha256-") ||
+//				it.startsWith("sha384-") ||
+//				it.startsWith("sha512-") ||
+//				it.startsWith("nonce-")
+//			}
+//		
+//		dirs.findAll { it.endsWith(":") }.each |dir| {
+//			srcs = srcs.exclude {
+//				it.startsWith(dir)
+//			}
+//		}
+//		
+//		return srcs.join(" ")
+//	}
+	
 	@NoDoc
 	override Str toStr() {
 		headers.toStr
