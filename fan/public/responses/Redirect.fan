@@ -11,14 +11,18 @@
 **  - `http://www.iana.org/assignments/http-status-codes/http-status-codes.xml`
 const final class Redirect {
 	
-	** The URI to redirect to
-	const Uri uri
+	@NoDoc @Deprecated { msg="Use 'location' instead" }
+	Uri uri() { location }
 
-	internal const RedirectType type
+	** The URL to redirect to.
+	const Uri location
+
+	** Type combined with the HTTP version determines the HTTP status code to return.
+	const RedirectType type
 
 	private new make(Uri redirectTo, RedirectType type) {
-		this.uri = redirectTo
-		this.type = type
+		this.location	= redirectTo
+		this.type		= type
 	}
 
 	** Sends a 'Moved Permanently' response to the client with the following status codes:
@@ -26,8 +30,9 @@ const final class Redirect {
 	**  - 308 for HTTP 1.1
 	** 
 	** The client should use the same HTTP method when requesting the redirect.
-	// @see `http://fantom.org/sidewalk/topic/2169#c14003`
 	static new movedPermanently(Uri redirectTo) {
+		// @see http://fantom.org/sidewalk/topic/2169#c14003
+		// @see http://fantom.org/forum/topic/2683#c1
 		Redirect.make(redirectTo, RedirectType.movedPermanently)
 	}
 
@@ -40,7 +45,7 @@ const final class Redirect {
 		Redirect.make(redirectTo, RedirectType.movedTemporarily)
 	}
 
-	** Use when the client should perform a HTTP GET on the returned uri. Typically this is 
+	** Use when the client should perform a HTTP GET to the returned location. Typically this is 
 	** when you implement the *Redirect After Post* paradigm. 
 	**  - 302 for HTTP 1.0 
 	**  - 303 for HTTP 1.1
@@ -77,13 +82,28 @@ const final class Redirect {
 	
 	@NoDoc
 	override Str toStr() {
-		"Redirect -> ${uri} (${type.toStr.toDisplayName})"
+		"Redirect -> ${location} (${type.toStr.toDisplayName})"
 	}
 }
 
-** the order is important - see `RedirectResponseProcessor`
-internal enum class RedirectType {
+** The type of Redirect.
+enum class RedirectType {
+	// order is important - see statusCode() below
 	movedPermanently,
 	movedTemporarily,
 	afterPost;
+	
+	private static const Version ver10 		:= Version("1.0")
+	private static const Int[] statusCodes	:= [301, 302, 302, 308, 307, 303]
+
+	** Returns the HTTP status code associated with this redirect type, based on the given HTTP version.
+	** If the no HTTP version is given, it is assumed to be HTTP 1.1.
+	** 
+	** Note status codes only differ for HTTP 1.0.
+	Int statusCode(Version? httpVer := null) {
+		index := ordinal
+		if (httpVer == null || httpVer > ver10)
+			index = index + 3
+		return statusCodes[index]
+	}
 }

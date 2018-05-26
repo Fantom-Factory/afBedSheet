@@ -70,7 +70,12 @@ const mixin HttpResponse {
 	** Map of HTTP status codes to status messages.
 	** 
 	** See [WebRes.statusMsg]`web::WebRes.statusMsg`.
-	static const Int:Str statusMsg := WebRes.statusMsg
+	static const Int:Str statusMsg := WebRes.statusMsg.rw.setAll([
+		// @see http://fantom.org/forum/topic/2683#c1
+		203 : "Non-Authoritative Information",
+		308	: "Permanent Redirect",
+		418 : "I'm a teapot",
+	])
 }
 
 internal const class HttpResponseImpl : HttpResponse {

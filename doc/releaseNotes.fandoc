@@ -5,6 +5,7 @@ v1.5.12
  - Chg: Updated code to work with Fantom 1.0.71 - the 'wisp::WispSessionStore' mixin changed.
  - Chg: All HTTP Response headers are cleared before processing an error handler.
  - Chg: Fixed an Err when flushing an upgraded WebSocket. Web / Wisp is the actual problem, but we work around it.
+ - Chg: Deprecated 'Redirect.uri' in favour of new 'Redirect.location' and made the 'RedirectType' enum public.
  - Bug: Dev proxy did not correctly proxy multiple 'Set-Cookie' response headers.
  - Bug: Fixed occasional NPE when removing cookies.
  - Bug: Fixed NPE when processing '/dev/' URLs in SrcMapHandler.
@@ -18,7 +19,7 @@ v1.5.10
  - New: Added 'ClientAsset.clientUrlAbs()'.
  - New: Added to 'HttpResponseHeaders': 'contentSecurityPolicy', 'contentSecurityPolicyReportOnly', 'referrerPolicy', 'strictTransportSecurity', 'xContentTypeOptions'
  - New: The standard BedSheet pages alter 'Content-Security-Policy' directives (should one be defined) to add hashes for their inline scripts and styles.
- - New: 'HttpResponse.statusMsg' method.
+ - New: A static 'HttpResponse.statusMsg()' method.
  - New: Added 'BedSheetBuilder.silence()' method.
  - Chg: 'HttpRequestHeaders' and 'HttpResponseHeaders' are now non-const, it makes more sense and makes testing easier. They also have general purpose ctors, and generally received some love. (Potential breaking change.)
  - Chg: Deleted the Delegate Chain Builder pattern for 'HttpRequest', 'HttpResponse', and 'HttpOutStream'. (WTF was I thinking!?) 'HttpOutStream' uses standard IoC delegation.
