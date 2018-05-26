@@ -135,7 +135,8 @@ internal const class FileHandlerImpl : FileHandler {
 		
 		// add our default dir mapping should no config be given
 		if (directoryMappings.isEmpty)
-			directoryMappings[`/`] = `etc/web-static/`.toFile
+			if (`etc/web-static/`.toFile.exists)
+				directoryMappings[`/`] = `etc/web-static/`.toFile
 		
 		this.directoryMappings = directoryMappings
 	}
