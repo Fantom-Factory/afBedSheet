@@ -91,7 +91,7 @@ const mixin BedSheetConfigIds {
 	** 
 	**   "max-age=${1day.toSec}"
 	** 
-	** Ideally you should use an asset caching strategy, such as [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`, 
+	** Ideally you should use an asset caching strategy, such as [Cold Feet]`http://eggbox.fantomfactory.org/pods/afColdFeet`, 
 	** which sets this for you. 
 	** 
 	** Defaults to 'null'

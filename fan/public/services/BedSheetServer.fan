@@ -72,13 +72,18 @@ const mixin BedSheetServer {
 	**
 	** The scheme and authority in the generated URL are taken from the 'host()' method. 
 	abstract Uri toAbsoluteUrl(Uri clientUrl)
+	
+	** Returns a 'ClientAsset' for the given local URL.
+	** Throws an Err if 'checked' and a ClientAsset could not be produced.
+	abstract ClientAsset? getClientAsset(Uri localUrl, Bool checked := true)
 }
 
 internal const class BedSheetServerImpl : BedSheetServer {
 
 	// nullable for testing
-	@Inject private const RegistryMeta?	regMeta 
-	@Inject private const ConfigSource?	configSrc 
+	@Inject private const RegistryMeta?			regMeta 
+	@Inject private const ConfigSource?			configSrc 
+	@Inject private const |->ClientAssetCache|?	assetCache	// assetCache uses BedSheeetServer!
 	
 	new make(|This|in) { in(this) }
 	
@@ -161,6 +166,10 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	override Uri toAbsoluteUrl(Uri clientUrl) {
 		Utils.validateLocalUrl(clientUrl, `/css/myStyles.css`)
 		return host + clientUrl.relTo(`/`)
+	}
+	
+	override ClientAsset? getClientAsset(Uri localUrl, Bool checked := true) {
+		assetCache().getAndUpdateOrProduce(localUrl) ?: (checked ? throw Err("Could not produce a ClientAsset for: ${localUrl}") : null)
 	}
 	
 	private WebReq? webReq() {

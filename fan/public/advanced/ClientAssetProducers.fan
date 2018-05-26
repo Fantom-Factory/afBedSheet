@@ -1,8 +1,7 @@
 
-@NoDoc	// Advanced use only
+@NoDoc	// Advanced use only - used only for contributing
 const mixin ClientAssetProducers {
 	
-	** Implementors should create a new 'ClientAsset' instance each time.
 	abstract ClientAsset? produceAsset(Uri localUrl)
 }
 

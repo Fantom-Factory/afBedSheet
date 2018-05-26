@@ -48,11 +48,9 @@ const abstract class ClientAsset : Asset {
 	** 
 	** Client URLs are designed to be used / embedded in your HTML and therefore are relative to the host and start with a '/'. 
 	** 
-	** See [BedSheetServer.toAbsoluteUrl()]`BedSheetServer.toAbsoluteUrl` should you require an absolute URL that starts with 'http://'. 
-	** 
 	** Returns 'null' if asset doesn't exist.
 	** 
-	** Subclasses should override 'clientUrl()' if they don't wish the client URL to be transformed by asset caching strategies like [Cold Feet]`http://www.fantomfactory.org/pods/afColdFeet`. 
+	** Subclasses should override 'clientUrl()' if they **do not** wish the client URL to be transformed by asset caching strategies like [Cold Feet]`http://eggbox.fantomfactory.org/pods/afColdFeet`. 
 	virtual Uri? clientUrl() {
 		if (_assetCache == null)	// assetCache is nullable for FileAsset legacy code
 			throw Err("${this.typeof.qname} needs to be built via IoC")

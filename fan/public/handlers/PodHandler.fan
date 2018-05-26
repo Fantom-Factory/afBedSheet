@@ -60,7 +60,7 @@ using afBeanUtils::ArgNotFoundErr
 ** 
 ** Fantom code may also be executed via the [web::WebUtil.jsMain()]`web::WebUtil.jsMain` method.
 ** 
-** A much cleaner way injecting Fantom code is to use the [Duvet library]`http://www.fantomfactory.org/pods/afDuvet` which uses 
+** A much cleaner way injecting Fantom code is to use the [Duvet library]`http://eggbox.fantomfactory.org/pods/afDuvet` which uses 
 ** [RequireJS]`http://requirejs.org/docs/api.html` to wrap up the Fantom code as dependency managed Javascript modules. 
 ** 
 ** 

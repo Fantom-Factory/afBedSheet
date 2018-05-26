@@ -14,7 +14,7 @@ mixin ClientAssetProducer {
 
 	** Creates a 'ClientAsset' from the given local URL.
 	**  
-	** Returns 'null' if the URL can not be mapped. 
+	** Implementors should return 'null' if the URL can not be mapped. 
 	abstract ClientAsset? produceAsset(Uri localUrl)
 	
 }
