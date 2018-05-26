@@ -149,7 +149,7 @@ internal const class ErrPrinterStrSections {
 	Void printSession(StrBuf buf, Err? err) {
 		if (session.exists && !session.isEmpty) {
 			buf.add("\nSession:\n")
-			prettyPrintMap(buf, session.map, true)
+			prettyPrintMap(buf, session.val, true)
 		}		
 	}
 	

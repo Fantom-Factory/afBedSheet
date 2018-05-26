@@ -77,7 +77,10 @@ const mixin HttpSession {
 	** Calling this method does not create a session if it does not exist.
 	** 
 	** The returned map is *READ ONLY*. 
-	abstract Str:Obj? map()
+	abstract Str:Obj? val()
+	
+	@NoDoc @Deprecated { msg="Use 'val()' instead" }
+	virtual Str:Obj? map() { val }
 
 	** Delete this web session which clears both the user agent cookie and the server side session 
 	** instance. This method must be called before the WebRes is committed otherwise the server side 
@@ -184,7 +187,7 @@ internal const class HttpSessionImpl : HttpSession {
 		return val
 	}
 
-	override Str:Obj? map() {
+	override Str:Obj? val() {
 		if (!exists) 
 			return emptyRoMap
 

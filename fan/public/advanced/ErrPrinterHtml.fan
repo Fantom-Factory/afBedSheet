@@ -169,7 +169,7 @@ internal const class ErrPrinterHtmlSections {
 	Void printSession(WebOutStream out, Err? err) {
 		if (session.exists && !session.isEmpty) {
 			title(out, "Session")
-			prettyPrintMap(out, session.map, true, "session")
+			prettyPrintMap(out, session.val, true, "session")
 		}
 	}
 
