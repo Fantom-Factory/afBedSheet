@@ -7,7 +7,7 @@
 
 ## Overview
 
-BedSheet is a platform for delivering web applications written in [Fantom](http://fantom.org/). It provides a rich middleware mechanism for the routing and delivery of content over HTTP.
+BedSheet is a platform for delivering web applications written in [Fantom](http://fantom-lang.org/). It provides a rich middleware mechanism for the routing and delivery of content over HTTP.
 
 - **An IoC Container** - BedSheet applications are IoC applications
 - **Proxy Mode** - Never (manually) restart your application again!
