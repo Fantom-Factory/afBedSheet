@@ -6,7 +6,7 @@ using concurrent::AtomicInt
 using web::WebClient
 
 internal const class AppDestroyer {
-	private static const Log 	log 			:= Utils.getLog(AppDestroyer#)
+	private static const Log 	log 		:= Utils.log
 	
 	private const Actor		actor
 	private const Int 		proxyPort
@@ -34,7 +34,7 @@ internal const class AppDestroyer {
 			client.reqUri = "http://localhost:${proxyPort}${BsConstants.pingUrl}".toUri
 			client.writeReq
 			client.readRes
-			
+
 			resBody	:= client.resIn.readAllStr.trim
 
 			if (client.resCode != 200 || resBody != "OK")

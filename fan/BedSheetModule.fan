@@ -273,8 +273,7 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	Void contributeFactoryDefaults(Configuration config, RegistryMeta meta, IocEnv iocEnv) {
-		// look for the proxyPort (8069) before the appPort (8070) as generally, that's where we want to point to 
-		bedSheetPort := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
+		bedSheetPort := meta[BsConstants.meta_appPort]
 
 		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		config[BedSheetConfigIds.gzipDisabled]				= false

@@ -4,8 +4,8 @@ using concurrent::Future
 using util::PathEnv
 
 ** Originally adapted from 'draft'
-internal const class AppRestarter {
-	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
+internal const class AppRestarter2 {
+	private const static Log 		log 		:= Utils.getLog(AppRestarter2#)
 	private const SynchronizedState	conState
 	
 	const Str?	appPod
@@ -23,7 +23,7 @@ internal const class AppRestarter {
 		this.appPort 	= appPort
 		this.params		= bob.toStringy
 		// as we're not run inside afIoc, we don't have ActorPools
-		this.conState	= SynchronizedState(ActorPool(), AppRestarterState#)
+		this.conState	= SynchronizedState(ActorPool(), AppRestarterState2#)
 	}
 
 	Void initialise() {
@@ -57,13 +57,13 @@ internal const class AppRestarter {
 		}.get(30sec)		
 	}
 	
-	private Future withState(|AppRestarterState| state) {
+	private Future withState(|AppRestarterState2| state) {
 		conState.async(state)
 	}
 }
 
-internal class AppRestarterState {
-	private const static Log log := Utils.getLog(AppRestarter#)
+internal class AppRestarterState2 {
+	private const static Log log := Utils.getLog(AppRestarter2#)
 	
 	Str:DateTime?	podTimeStamps	:= [:]
 	Process?		realWebApp

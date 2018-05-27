@@ -6,11 +6,11 @@ using web::WebMod
 // todo: Move the app-restarting into separate thread which checks every X secs
 //       actually, don't. It takes too much processor time to re-start the app.
 internal const class ProxyMod : WebMod {
-	private const static Log log := Utils.getLog(ProxyMod#)
+	private const static Log log := Utils.log
 
 	const Int 			proxyPort
 	const Int 			appPort
-	const AppRestarter	restarter
+	const AppRestarter2	restarter
 	const Duration		startupWait
 	const AtomicBool	restarting
 	
@@ -18,10 +18,10 @@ internal const class ProxyMod : WebMod {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
 		this.startupWait= (bob.options["afBedSheet.proxy.startupWait"] as Duration) ?: 1.5sec
-		bob.options[BsConstants.meta_proxyPort] = this.proxyPort
+		bob.options[BsConstants.meta_dogPort]	= this.proxyPort
 		bob.options[BsConstants.meta_appPort] 	= this.appPort
-		bob.options[BsConstants.meta_pingProxy] = true
-		this.restarter 	= AppRestarter(bob, appPort, watchAllPods)
+		bob.options[BsConstants.meta_dogPing]	= true
+		this.restarter 	= AppRestarter2(bob, appPort, watchAllPods)
 		this.restarting = AtomicBool(false)
 	}
 

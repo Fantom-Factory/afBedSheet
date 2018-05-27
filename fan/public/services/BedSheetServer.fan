@@ -100,7 +100,7 @@ internal const class BedSheetServerImpl : BedSheetServer {
 	}
 	
 	override Int port() {
-		regMeta[BsConstants.meta_proxyPort] ?: regMeta[BsConstants.meta_appPort]
+		regMeta[BsConstants.meta_appPort]
 	}
 	
 	override [Str:Obj] options() {
@@ -137,18 +137,9 @@ internal const class BedSheetServerImpl : BedSheetServer {
 			host := HttpRequestImpl.hostViaHeaders(webReq.headers)
 			
 			if (host != null) {
-				// hostViaHeaders is not guarenteed to return a scheme
+				// hostViaHeaders is not guaranteed to return a scheme
 				if (host.scheme == null)
 					host = `http:${host}`
-
-				if (regMeta != null) {
-					// generate absolute URLs that point back to the proxy, not the app
-					appPort := regMeta[BsConstants.meta_appPort] ?: 80
-					if (host == `http://localhost:${appPort}/`) {
-						proxyPort := regMeta[BsConstants.meta_proxyPort] ?: 80
-						return `http://localhost:${proxyPort}/`
-					}
-				}
 				return host
 			}
 		}

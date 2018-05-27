@@ -139,14 +139,15 @@ class BedSheetBuilder {
 	}
 
 	** Convenience method to start a Wisp server running 'BedSheetWebMod'.
-	Int startWisp(Int port := 8069, Bool proxy := false, Str? env := null) {
+	Int startWisp(Int port := 8069, Bool watchdog := false, Str? env := null) {
 		this.port = port
 		if (env != null)
 			options["afBedSheet.env"] = env
-		watchAllPods := options[BsConstants.meta_watchAllPods]?.toStr?.toBool(false) ?: false
-		bob := toRegistryBuilder
-		mod := proxy ? ProxyMod(this, port, watchAllPods) : BedSheetBootMod(bob)
-		return _runWebMod(bob, mod, port, _ipAddr)
+		appPort	:= port
+		dogPort	:= port + 1
+		bob		:= toRegistryBuilder
+		mod		:= watchdog ? WatchdogMod(this, appPort) : BedSheetBootMod(bob)
+		return _runWebMod(bob, mod, watchdog ? dogPort : appPort, _ipAddr)
 	}
 
 	** Enables request logs being setting BedSheet's logging level to debug.
@@ -204,7 +205,7 @@ class BedSheetBuilder {
 	}
 	
 	private Int _runWebMod(RegistryBuilder bob, WebMod webMod, Int port, IpAddr? ipAddr) {
-		WebModRunner(bob, webMod is ProxyMod).run(webMod, port, ipAddr)
+		WebModRunner(bob, webMod is WatchdogMod).run(webMod, port, ipAddr)
 	}
 
 	private Void _initModules(Str moduleName, Bool transDeps) {

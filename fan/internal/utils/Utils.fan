@@ -1,10 +1,12 @@
 using concurrent::Actor
 
 internal const class Utils {
-	
+	static const Log log	:= Utils#.pod.log
+		
 	** Usage:
 	** 
 	**   private static const Log log	:= Utils.getLog(Wotever#)
+	// FIXME use log instead
 	static Log getLog(Type type) {
 //		Log.get(type.pod.name + "." + type.name)
 		type.pod.log

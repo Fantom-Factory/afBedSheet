@@ -9,8 +9,8 @@ internal const class WebModRunner {
 
 	private const WispSessionStore? sessionStore
 	
-	new make(RegistryBuilder bob, Bool isProxy) {
-		if (!isProxy) {
+	new make(RegistryBuilder bob, Bool isWatchdog) {
+		if (!isWatchdog) {
 			if (bob.options.containsKey("wisp.sessionStore"))
 				sessionStore = ((Type) bob.options["wisp.sessionStore"]).make
 	
