@@ -5,7 +5,7 @@ using util::PathEnv
 
 internal const class AppRestarter {
 	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
-	private const SynchronizedState	conState
+	private const SynchronizedState	state
 	
 	const Str	appName
 	const Int 	appPort
@@ -20,41 +20,29 @@ internal const class AppRestarter {
 		this.appPort 	= appPort
 		this.appParams	= bob.toStringy
 		// as we're not run inside afIoc, we don't have ActorPools
-		this.conState	= SynchronizedState(ActorPool(), AppRestarterState#)
+		this.state		= SynchronizedState(ActorPool(), AppRestarterState#)
 	}
 
 	Void startApp() {
-		withState |state| {
-			if (state.realWebApp == null)
-				state.launchWebApp(appName, appPort, appParams)
-		}
+		state->startWebApp(appName, appPort, appParams)
 	}
 	
-	Void stopAdd() {
-		withState |state| {
-			state.killWebApp(appName)
-		}.get(12sec)
+	Void stopApp() {
+		state->stopWebApp(appName)
 	}
 
 	Void restartApp() {
-		withState |state->Obj?| {
-			state.killWebApp(appName)
-			state.launchWebApp(appName, appPort, appParams)
-			return null
-		}.get(30sec)
-	}
-	
-	private Future withState(|AppRestarterState| state) {
-		conState.async(state)
+		state->restartWebApp(appName, appPort, appParams)
 	}
 }
 
 internal class AppRestarterState {
 	private const static Log log := Utils.log
 	
-	Process?		realWebApp
+	Process?	realWebApp
+	Duration?	startedOn
 	
-	Void launchWebApp(Str appName, Int appPort, Str appParams) {
+	Void startWebApp(Str appName, Int appPort, Str appParams) {
 		if (realWebApp != null) return
 
 		log.info(BsLogMsgs.appRestarter_lauchingApp(appName, appPort))
@@ -62,16 +50,28 @@ internal class AppRestarterState {
 			realWebApp = fanProcess([MainProxied#.qname, appParams]) 
 			log.info(BsLogMsgs.appRestarter_process(realWebApp.command.join(" ")))
 			realWebApp.run
+
+			startedOn = Duration.now
 		} catch (Err err)
 			throw BedSheetErr(BsErrMsgs.appRestarter_couldNotLaunch(appName), err)
 	}
 
-	Void killWebApp(Str appName) {
+	Void stopWebApp(Str appName) {
 		if (realWebApp == null) return
 
 		log.info(BsLogMsgs.appRestarter_killingApp(appName))
 		realWebApp.kill
 		realWebApp = null
+	}
+
+	Void restartWebApp(Str appName, Int appPort, Str appParams) {
+		if (startedOn == null || (Duration.now - startedOn) > 3sec) {
+			stopWebApp(appName)
+			startWebApp(appName, appPort, appParams)			
+		} else {
+			ago := Duration.now - startedOn
+			log.info("${appName} only restarted ${ago.toLocale} ago - not restarting it again just yet!")
+		}
 	}
 
 	static Process fanProcess(Str[] cmd) {

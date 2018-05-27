@@ -18,9 +18,9 @@ internal const class ProxyMod : WebMod {
 		this.proxyPort 	= proxyPort
 		this.appPort 	= proxyPort + 1
 		this.startupWait= (bob.options["afBedSheet.proxy.startupWait"] as Duration) ?: 1.5sec
-		bob.options[BsConstants.meta_dogPort]	= this.proxyPort
+		bob.options[BsConstants.meta_watchdogPort]	= this.proxyPort
 		bob.options[BsConstants.meta_appPort] 	= this.appPort
-		bob.options[BsConstants.meta_dogPing]	= true
+		bob.options[BsConstants.meta_watchdog]	= true
 		this.restarter 	= AppRestarter2(bob, appPort, watchAllPods)
 		this.restarting = AtomicBool(false)
 	}

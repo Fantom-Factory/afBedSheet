@@ -145,6 +145,10 @@ class BedSheetBuilder {
 			options["afBedSheet.env"] = env
 		appPort	:= port
 		dogPort	:= port + 1
+		if (watchdog) {
+			options[BsConstants.meta_watchdog]		= true
+			options[BsConstants.meta_watchdogPort]	= dogPort
+		}
 		bob		:= toRegistryBuilder
 		mod		:= watchdog ? WatchdogMod(this, appPort) : BedSheetBootMod(bob)
 		return _runWebMod(bob, mod, watchdog ? dogPort : appPort, _ipAddr)

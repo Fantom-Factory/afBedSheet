@@ -28,13 +28,16 @@ internal const class WatchdogMod : WebMod {
 			return
 		}
 
+		if (req.modRel == BsConstants.killUrl) {
+			res.headers["Content-Type"] = MimeType("text/plain").toStr
+			res.out.print("OK").flush.close
+			appRestarter.stopApp
+			return
+		}
+	
 		if (req.modRel == BsConstants.restartUrl) {
 			res.headers["Content-Type"] = MimeType("text/plain").toStr
 			res.out.print("OK").flush.close
-			
-			// KILLME sleep
-			concurrent::Actor.sleep(2sec)
-			
 			appRestarter.restartApp
 			return
 		}

@@ -1,6 +1,7 @@
 using concurrent::ActorPool
 using concurrent::AtomicRef
 using web::WebMod
+using web::WebClient
 using afIoc::Registry
 using afIoc::RegistryMeta
 using afIoc::RegistryShutdownErr
@@ -38,8 +39,11 @@ const class BedSheetWebMod : WebMod {
 	override Void onService() {
 		req.mod = this
 		
-		if (podCheckerRef.val != null && appRequiresRestart)
+		if (podCheckerRef.val != null && appRequiresRestart) {
+			notifyClientOfRestart
+			restartApp
 			return
+		}
 
 		try {
 			registry.activeScope.createChild("request") {
@@ -81,8 +85,8 @@ const class BedSheetWebMod : WebMod {
 		meta := (RegistryMeta)   registry.activeScope.serviceById(RegistryMeta#.qname)
 		beds := (BedSheetServer) registry.activeScope.serviceById(BedSheetServer#.qname)
 
-		if (meta.options[BsConstants.meta_dogPing] == true) {
-			pingPort := (Int) meta.options[BsConstants.meta_dogPort]
+		if (meta.options[BsConstants.meta_watchdog] == true) {
+			pingPort := (Int) meta.options[BsConstants.meta_watchdogPort]
 			destroyer := (AppDestroyer) registry.activeScope.build(AppDestroyer#, [ActorPool(), pingPort])
 			destroyer.start
 			
@@ -108,16 +112,28 @@ const class BedSheetWebMod : WebMod {
 	}
 	
 	private Bool appRequiresRestart() {
-		podChecker := (PodChecker?) podCheckerRef.val
-		if (podChecker == null) return false
-		
-		if (podChecker.podsModifed) {
-			
-			res.headers["Content-Type"] = MimeType("text/plain").toStr
-			res.out.print("Go go restart!").flush.close
-			
-			return true
+		((PodChecker?) podCheckerRef.val)?.podsModifed ?: false
+	}
+	
+	private Void notifyClientOfRestart() {
+		res.headers["Content-Type"] = MimeType("text/plain").toStr
+		res.out.print("Go go restart!").flush.close		
+	}
+	
+	private Void restartApp() {
+		meta	:= (RegistryMeta) registry.activeScope.serviceById(RegistryMeta#.qname)
+		dogPort	:= (Int) meta.options[BsConstants.meta_watchdogPort]
+
+		try {
+			resBody := WebClient() {
+				reqUri = "http://localhost:${dogPort}${BsConstants.restartUrl}".toUri
+			}.getStr.trim
+
+			if (resBody != "OK")
+				throw IOErr("Watchdog not OK: $resBody")
+
+		} catch (Err err) {
+			log.warn("Could not restart App: $err.msg")
 		}
-		return false
 	}
 }
