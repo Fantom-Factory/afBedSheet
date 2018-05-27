@@ -39,7 +39,7 @@ class Build : BuildPod {
 			"xml    1.0"
 		]
 
-		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/middleware/`, `fan/internal/outstream/`, `fan/internal/processors/`, `fan/internal/proxy/`, `fan/internal/utils/`, `fan/internal/watchdog/`, `fan/public/`, `fan/public/advanced/`, `fan/public/handlers/`, `fan/public/responses/`, `fan/public/services/`, `fan/public/utils/`, `test/app/`, `test/app-tests/`, `test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/services/`, `test/unit-tests/public/utils/`]
+		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/middleware/`, `fan/internal/outstream/`, `fan/internal/processors/`, `fan/internal/utils/`, `fan/internal/watchdog/`, `fan/public/`, `fan/public/advanced/`, `fan/public/handlers/`, `fan/public/responses/`, `fan/public/services/`, `fan/public/utils/`, `test/app/`, `test/app-tests/`, `test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/services/`, `test/unit-tests/public/utils/`]
 		resDirs = [`doc/`, `res/web/`, `res/misc/`, `res/test/`]
 
 		meta["afBuild.testPods"]	= "webmod xml"

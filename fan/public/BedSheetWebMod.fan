@@ -39,10 +39,18 @@ const class BedSheetWebMod : WebMod {
 	override Void onService() {
 		req.mod = this
 
-		if (podCheckerRef.val != null && appRequiresRestart) {
-			notifyClientOfRestart
-			restartApp
-			return
+		if (podCheckerRef.val != null) {
+			if (req.modRel == BsConstants.pingUrl) {
+				res.headers["Content-Type"] = MimeType("text/plain").toStr
+				res.out.print("OK").flush.close
+				return
+			}
+		
+			if (appRequiresRestart) {
+				notifyClientOfRestart
+				restartApp
+				return
+			}
 		}
 
 		try {

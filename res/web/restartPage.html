@@ -1,6 +1,6 @@
 
 <p>&#160;</p>
-<p>{{{ appName }}} is restarting<span id="dots">...</span></p>
+<p>{{{ appName }}} is restarting. Please wait<span id="dots">...</span></p>
 
 <script>
 	// https://stackoverflow.com/a/17800645/1532548
@@ -23,4 +23,24 @@
 		setTimeout(function() { goDots(); }, 300);
 	};
 	goDots();
+
+
+	
+	var pollServer = function() {
+		var oReq = new XMLHttpRequest();
+		oReq.addEventListener("load", function() {
+			if (oReq.status == 200)
+				location.reload();
+			else
+				pollAgain();
+		});
+		oReq.addEventListener("error", pollAgain);
+		oReq.addEventListener("abort", pollAgain);
+		oReq.open("GET", "/afBedSheet/ping");
+		oReq.send();
+	};
+	var pollAgain = function() {
+		setTimeout(pollServer, 1000);
+	};
+	pollAgain();
 </script>
