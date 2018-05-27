@@ -60,10 +60,10 @@ const class BedSheetModule {
 
 		defs.decorateService(HttpOutStream#.qname) |Configuration config| {
 			wraper := (HttpOutStreamWrapper) config.scope.serviceById(HttpOutStreamWrapper#.qname)
-			config["afBedSheet.safe"	 ] = |out->OutStream| { wraper.safeWrapper		(out) }	// inner
-			config["afBedSheet.buffered" ] = |out->OutStream| { wraper.bufferedWrapper	(out) }	// middle - buff wraps safe
-			config["afBedSheet.gzip"	 ] = |out->OutStream| { wraper.gzipWrapper		(out) }	// outer  - gzip wraps buff
-			config["afBedSheet.onCcommit"] = |out->OutStream| { wraper.onCommitWrapper	(out) }	// space  - comm wraps gzip
+			config["afBedSheet.safe"	] = |out->OutStream| { wraper.safeWrapper		(out) }	// inner
+			config["afBedSheet.buffered"] = |out->OutStream| { wraper.bufferedWrapper	(out) }	// middle - buff wraps safe
+			config["afBedSheet.gzip"	] = |out->OutStream| { wraper.gzipWrapper		(out) }	// outer  - gzip wraps buff
+			config["afBedSheet.onCommit"] = |out->OutStream| { wraper.onCommitWrapper	(out) }	// space  - comm wraps gzip
 		}
 	}
 

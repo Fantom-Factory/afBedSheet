@@ -38,7 +38,7 @@ const class BedSheetWebMod : WebMod {
 	@NoDoc
 	override Void onService() {
 		req.mod = this
-		
+
 		if (podCheckerRef.val != null && appRequiresRestart) {
 			notifyClientOfRestart
 			restartApp
@@ -116,8 +116,17 @@ const class BedSheetWebMod : WebMod {
 	}
 	
 	private Void notifyClientOfRestart() {
-		res.headers["Content-Type"] = MimeType("text/plain").toStr
-		res.out.print("Go go restart!").flush.close		
+		registry.activeScope.createChild("request") {
+			meta	:= (RegistryMeta)  it.serviceById(RegistryMeta#.qname)
+			pages	:= (BedSheetPages) it.serviceById(BedSheetPages#.qname)
+			appPod	:= (Pod) meta.options[BsConstants.meta_appPod]
+			text	:= pages.renderRestart(appName, appPod.version)
+	
+			buf := text.toBuf
+			res.headers["Content-Type"]		= text.contentType.toStr
+			res.headers["Content-Length"]	= buf.size.toStr
+			res.out.writeBuf(buf).flush.close
+		}
 	}
 	
 	private Void restartApp() {

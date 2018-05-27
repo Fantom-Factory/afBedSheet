@@ -19,7 +19,7 @@ internal const class TextProcessor : ResponseProcessor {
 		res.headers.contentType 	= text.contentType
 		res.headers.contentLength	= buf.size
 		if (req.httpMethod != "HEAD")
-			res.out.writeBuf(buf)
+			res.out.writeBuf(buf).flush
 
 		return true
 	}
