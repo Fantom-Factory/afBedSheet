@@ -6,7 +6,7 @@ using web::Cookie
 ** 
 ** @see `http://en.wikipedia.org/wiki/List_of_HTTP_header_fields`
 class HttpRequestHeaders {
-	const static private Log 		log := Utils.getLog(HttpRequestHeaders#)
+	const static private Log 		log := Utils.log
 				 private Str:Str	headers
 
 	** Creates a new instance with the given map.

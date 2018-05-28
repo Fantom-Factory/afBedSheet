@@ -1,14 +1,7 @@
 using concurrent::Actor
 
 internal const class Utils {
-	
-	** Usage:
-	** 
-	**   private static const Log log	:= Utils.getLog(Wotever#)
-	static Log getLog(Type type) {
-//		Log.get(type.pod.name + "." + type.name)
-		type.pod.log
-	}
+	static const Log log	:= BedSheetModule#.pod.log 
 
 	static Obj:Obj makeMap(Type keyType, Type valType) {
 		mapType := Map#.parameterize(["K":keyType, "V":valType])

@@ -3,7 +3,7 @@ using afIocConfig::Config
 
 ** Catches and processes Errs. This usually involves generating and sending a error page to the client. 
 internal const class ErrMiddleware : Middleware {
-	private const static Log log := Utils.getLog(ErrMiddleware#)
+	private const static Log log := Utils.log
 
 	@Config { id="afIocEnv.isProd" }
 	@Inject private const Bool					inProd

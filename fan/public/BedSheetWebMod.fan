@@ -8,7 +8,7 @@ using afIocConfig::ConfigSource
 
 ** The `web::WebMod` that runs in [Wisp]`pod:wisp`. 
 const class BedSheetWebMod : WebMod {
-	private const static Log log := Utils.getLog(BedSheetWebMod#)
+	private const static Log log := Utils.log
 
 	** Returns 'pod.dis' (or 'proj.name'if not found) from the application's pod meta, or the pod name if neither are defined.
 	const Str		appName

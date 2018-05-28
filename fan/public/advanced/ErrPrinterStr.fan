@@ -8,7 +8,7 @@ using web::WebOutStream
 ** (Service) - public, 'cos it's useful for emails. 
 @NoDoc	// Advanced use only
 const class ErrPrinterStr {
-	private const static Log log := Utils.getLog(ErrPrinterStr#)
+	private const static Log log := Utils.log
 	
 	const Str:|StrBuf buf, Err? err|	printerFuncs
 

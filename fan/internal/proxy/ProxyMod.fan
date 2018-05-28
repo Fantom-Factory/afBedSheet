@@ -6,7 +6,7 @@ using web::WebMod
 // todo: Move the app-restarting into separate thread which checks every X secs
 //       actually, don't. It takes too much processor time to re-start the app.
 internal const class ProxyMod : WebMod {
-	private const static Log log := Utils.getLog(ProxyMod#)
+	private const static Log log := Utils.log
 
 	const Int 			proxyPort
 	const Int 			appPort

@@ -5,7 +5,7 @@ using util::PathEnv
 
 ** Originally adapted from 'draft'
 internal const class AppRestarter {
-	private const static Log 		log 		:= Utils.getLog(AppRestarter#)
+	private const static Log 		log 		:= Utils.log
 	private const SynchronizedState	conState
 	
 	const Str?	appPod
@@ -63,7 +63,7 @@ internal const class AppRestarter {
 }
 
 internal class AppRestarterState {
-	private const static Log log := Utils.getLog(AppRestarter#)
+	private const static Log log := Utils.log
 	
 	Str:DateTime?	podTimeStamps	:= [:]
 	Process?		realWebApp

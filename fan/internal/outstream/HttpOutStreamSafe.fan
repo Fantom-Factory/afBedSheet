@@ -7,7 +7,7 @@ using afIocConfig::Config
 ** 
 ** As there's nothing we can do about it, we may as well ignore it.
 internal class HttpOutStreamSafe : OutStream {
-	private static const Log log	:= Utils.getLog(HttpOutStreamSafe#)
+	private static const Log log	:= Utils.log
 	private OutStream	realOut
 	private Bool		socketErr
 

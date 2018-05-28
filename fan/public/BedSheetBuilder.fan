@@ -23,7 +23,7 @@ using web::WebMod
 **   afBedSheet.proxy.startupWait  Duration  The amount of time the proxy waits after (re)starting the app before it forwards on a request. Defaults to '1.5sec'. Increase this if you get connection errors on app restart.
 ** 
 class BedSheetBuilder {
-	private static const Log log 	:= Utils.getLog(BedSheetBuilder#)
+	private static const Log log 	:= Utils.log
 	private IpAddr? _ipAddr
 	private Type[]	_moduleTypes	:= Type[,]
 	private Type[]	_modsToRemove	:= Type[,]

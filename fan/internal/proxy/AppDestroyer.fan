@@ -6,7 +6,7 @@ using concurrent::AtomicInt
 using web::WebClient
 
 internal const class AppDestroyer {
-	private static const Log 	log 			:= Utils.getLog(AppDestroyer#)
+	private static const Log 	log 			:= Utils.log
 	
 	private const Actor		actor
 	private const Int 		proxyPort

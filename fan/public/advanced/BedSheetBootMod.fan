@@ -7,7 +7,7 @@ using web::WebMod
 ** A temporary `web::WebMod` that returns a 'startupMessage' while the real web app is booting up.
 @NoDoc 
 const class BedSheetBootMod : WebMod {
-	private const static Log log := Utils.getLog(BedSheetBootMod#)
+	private const static Log log := Utils.log
 
 	private const AtomicBool	started			:= AtomicBool(false)
 	private const AtomicRef		startupErrRef	:= AtomicRef()

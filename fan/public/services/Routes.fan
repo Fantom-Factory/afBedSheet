@@ -18,7 +18,7 @@ const mixin Routes {
 }
 
 internal const class RoutesImpl : Routes {
-	private const static Log log := Utils.getLog(Routes#)
+	private const static Log log := Utils.log
 
 	override const Route[] routes
 
