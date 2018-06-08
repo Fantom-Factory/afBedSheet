@@ -70,18 +70,18 @@ internal class TestRegexRoute : BsTest {
 
 		httpReq := T_HttpRequest { it.url = `/meep/-\/-/..\@..` }
 		match	:= (MethodCall?) route.match(httpReq)
-		verifyEq(match?.args[0], "-/-")
-		verifyEq(match?.args[1], "..@..")
+		verifyEq(match?.args?.get(0), "-/-")
+		verifyEq(match?.args?.get(1), "..@..")
 		
 		httpReq = T_HttpRequest { it.url = `/meep/--\\\\/..\@..` }
 		match	= (MethodCall?) route.match(httpReq)
-		verifyEq(match?.args[0], "--\\\\")
-		verifyEq(match?.args[1], "..@..")
+		verifyEq(match?.args?.get(0), "--\\\\")
+		verifyEq(match?.args?.get(1), "..@..")
 
 		route   = Route(`/meep/*`, #handler2)
 		httpReq = T_HttpRequest { it.url = `/meep/-\/-` }
 		match	= (MethodCall?) route.match(httpReq)
-		verifyEq(match?.args[0], "-/-")
+		verifyEq(match?.args?.get(0), "-/-")
 
 		route   = Route(`/meep/*`, #handler2)
 		httpReq = T_HttpRequest { it.url = `/meep/-\/-/-` }
@@ -91,13 +91,13 @@ internal class TestRegexRoute : BsTest {
 		route   = Route(`/meep/me\/ep/*`, #handler2)
 		httpReq = T_HttpRequest { it.url = `/meep/me\/ep/foo` }
 		match	= (MethodCall?) route.match(httpReq)
-		verifyEq(match?.args[0], "foo")
+		verifyEq(match?.args?.get(0), "foo")
 
 		// test unicode - using a radioactive symbol!
 		route   = Route(`/meep/me\u2622ep/*`, #handler2)
 		httpReq = T_HttpRequest { it.url = `/meep/me\u2622ep/foo` }
 		match	= (MethodCall?) route.match(httpReq)
-		verifyEq(match?.args[0], "foo")
+		verifyEq(match?.args?.get(0), "foo")
 	}
 
 	Void testNonMethodMatch() {
