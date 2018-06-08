@@ -152,7 +152,12 @@ internal const class HttpRequestImpl : HttpRequest {
 	}
 	override Uri url() {
 		rel := webReq.modRel
-		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`		
+		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
+		
+		// todo sometimes Wisp seems to pass dodgy URLs like `//dev/`
+		if (rel.toStr.startsWith("//"))
+			throw Err("Dodgy wisp URL: ${webReq.uri} --> ${webReq.modRel}")
+		
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Uri urlAbs() {

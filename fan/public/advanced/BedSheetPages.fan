@@ -18,6 +18,9 @@ const mixin BedSheetPages {
 	** Renders the 'BedSheet' welcome page. 
 	** Usually shown in place of a 404 if no [Routes]`Route` have been contributed to the `Routes` service. 
 	abstract Text? renderWelcome(HttpStatus httpStatus)
+
+	** Renders the 'BedSheet' app restart page.
+	abstract Text? renderRestart(Str appName, Version appVer)
 }
 
 internal const class BedSheetPagesImpl : BedSheetPages {
@@ -52,6 +55,14 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 					.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr)
 		str		:= httpStatus.toStr
 					.replace("{{{ bedSheetVersion }}}", typeof.pod.version.toStr)
+		return render(title, xhtml, str)
+	}
+	
+	override Text? renderRestart(Str appName, Version appVer) {
+		title	:= " BedSheet ${typeof.pod.version}"
+		xhtml	:= typeof.pod.file(`/res/web/restartPage.html`).readAllStr
+					.replace("{{{ appName }}}", "${appName} ${appVer}".toXml)
+		str		:= "${appName} ${appVer} is restarting..."
 		return render(title, xhtml, str)
 	}
 	

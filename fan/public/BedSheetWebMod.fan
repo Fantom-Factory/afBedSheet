@@ -1,9 +1,10 @@
-using concurrent::Actor
 using concurrent::ActorPool
 using concurrent::AtomicRef
-using concurrent::AtomicBool
 using web::WebMod
-using afIoc
+using web::WebClient
+using afIoc::Registry
+using afIoc::RegistryMeta
+using afIoc::RegistryShutdownErr
 using afIocConfig::ConfigSource
 
 ** The `web::WebMod` that runs in [Wisp]`pod:wisp`. 
@@ -19,7 +20,8 @@ const class BedSheetWebMod : WebMod {
 	** The IoC registry.
 	const Registry	registry
 
-	private const MiddlewarePipeline pipeline
+	private const MiddlewarePipeline	pipeline
+	private const AtomicRef				podCheckerRef	:= AtomicRef(null)
 
 	** Creates this 'WebMod'. Use a 'BedSheetBuilder' to create the 'Registry' instance - it ensures all the options have been set.
 	new make(Registry registry) {
@@ -37,9 +39,23 @@ const class BedSheetWebMod : WebMod {
 	override Void onService() {
 		req.mod = this
 
+		if (podCheckerRef.val != null) {
+			if (req.modRel == BsConstants.pingUrl) {
+				res.headers["Content-Type"] = MimeType("text/plain").toStr
+				res.out.print("OK").flush.close
+				return
+			}
+		
+			if (appRequiresRestart) {
+				notifyClientOfRestart
+				restartApp
+				return
+			}
+		}
+
 		try {
 			registry.activeScope.createChild("request") {
-				// this is actual call to BedSheet! 
+				// this is the actual call to BedSheet! 
 				// the rest of this class is just startup and error handling fluff! 
 				pipeline.service
 			}
@@ -76,10 +92,18 @@ const class BedSheetWebMod : WebMod {
 		// start the destroyer!
 		meta := (RegistryMeta)   registry.activeScope.serviceById(RegistryMeta#.qname)
 		beds := (BedSheetServer) registry.activeScope.serviceById(BedSheetServer#.qname)
-		if (meta.options[BsConstants.meta_pingProxy] == true) {
-			pingPort := (Int) meta.options[BsConstants.meta_proxyPort]
+
+		if (meta.options[BsConstants.meta_watchdog] == true) {
+			pingPort := (Int) meta.options[BsConstants.meta_watchdogPort]
 			destroyer := (AppDestroyer) registry.activeScope.build(AppDestroyer#, [ActorPool(), pingPort])
 			destroyer.start
+			
+			watchAllPods := meta.options[BsConstants.meta_watchAllPods]?.toStr?.toBool(false) ?: false
+			appPod		 := (Pod) meta.options[BsConstants.meta_appPod]
+			if (appPod.meta["pod.isScript"] == "true")
+				throw Err(BsLogMsgs.appRestarter_canNotProxyScripts(appPod.name))
+			podChecker := PodChecker(appPod.name, watchAllPods)
+			this.podCheckerRef.val = podChecker.initialise
 		}
 
 		// print BedSheet connection details
@@ -93,5 +117,40 @@ const class BedSheetWebMod : WebMod {
 	override Void onStop() {
 		registry.shutdown
 		log.info(BsLogMsgs.bedSheetWebMod_stopping(appName))
+	}
+	
+	private Bool appRequiresRestart() {
+		((PodChecker?) podCheckerRef.val)?.podsModifed ?: false
+	}
+	
+	private Void notifyClientOfRestart() {
+		registry.activeScope.createChild("request") {
+			meta	:= (RegistryMeta)  it.serviceById(RegistryMeta#.qname)
+			pages	:= (BedSheetPages) it.serviceById(BedSheetPages#.qname)
+			appPod	:= (Pod) meta.options[BsConstants.meta_appPod]
+			text	:= pages.renderRestart(appName, appPod.version)
+	
+			buf := text.toBuf
+			res.headers["Content-Type"]		= text.contentType.toStr
+			res.headers["Content-Length"]	= buf.size.toStr
+			res.out.writeBuf(buf).flush.close
+		}
+	}
+	
+	private Void restartApp() {
+		meta	:= (RegistryMeta) registry.activeScope.serviceById(RegistryMeta#.qname)
+		dogPort	:= (Int) meta.options[BsConstants.meta_watchdogPort]
+
+		try {
+			resBody := WebClient() {
+				reqUri = "http://localhost:${dogPort}${BsConstants.restartUrl}".toUri
+			}.getStr.trim
+
+			if (resBody != "OK")
+				throw IOErr("Watchdog not OK: $resBody")
+
+		} catch (Err err) {
+			log.warn("Could not restart App: $err.msg")
+		}
 	}
 }

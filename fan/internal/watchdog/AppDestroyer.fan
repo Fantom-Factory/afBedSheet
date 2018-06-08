@@ -34,7 +34,7 @@ internal const class AppDestroyer {
 			client.reqUri = "http://localhost:${proxyPort}${BsConstants.pingUrl}".toUri
 			client.writeReq
 			client.readRes
-			
+
 			resBody	:= client.resIn.readAllStr.trim
 
 			if (client.resCode != 200 || resBody != "OK")

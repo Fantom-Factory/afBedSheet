@@ -60,10 +60,10 @@ const class BedSheetModule {
 
 		defs.decorateService(HttpOutStream#.qname) |Configuration config| {
 			wraper := (HttpOutStreamWrapper) config.scope.serviceById(HttpOutStreamWrapper#.qname)
-			config["afBedSheet.safe"	 ] = |out->OutStream| { wraper.safeWrapper		(out) }	// inner
-			config["afBedSheet.buffered" ] = |out->OutStream| { wraper.bufferedWrapper	(out) }	// middle - buff wraps safe
-			config["afBedSheet.gzip"	 ] = |out->OutStream| { wraper.gzipWrapper		(out) }	// outer  - gzip wraps buff
-			config["afBedSheet.onCcommit"] = |out->OutStream| { wraper.onCommitWrapper	(out) }	// space  - comm wraps gzip
+			config["afBedSheet.safe"	] = |out->OutStream| { wraper.safeWrapper		(out) }	// inner
+			config["afBedSheet.buffered"] = |out->OutStream| { wraper.bufferedWrapper	(out) }	// middle - buff wraps safe
+			config["afBedSheet.gzip"	] = |out->OutStream| { wraper.gzipWrapper		(out) }	// outer  - gzip wraps buff
+			config["afBedSheet.onCommit"] = |out->OutStream| { wraper.onCommitWrapper	(out) }	// space  - comm wraps gzip
 		}
 	}
 
@@ -273,8 +273,7 @@ const class BedSheetModule {
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	Void contributeFactoryDefaults(Configuration config, RegistryMeta meta, IocEnv iocEnv) {
-		// look for the proxyPort (8069) before the appPort (8070) as generally, that's where we want to point to 
-		bedSheetPort := meta[BsConstants.meta_proxyPort] ?: meta[BsConstants.meta_appPort]
+		bedSheetPort := meta[BsConstants.meta_appPort]
 
 		config[BedSheetConfigIds.proxyPingInterval]			= 1sec
 		config[BedSheetConfigIds.gzipDisabled]				= false
