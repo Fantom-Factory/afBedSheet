@@ -59,7 +59,7 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 	}
 	
 	override Text? renderRestart(Str appName, Version appVer) {
-		title	:= " BedSheet ${typeof.pod.version}"
+		title	:= " Application Restart"
 		xhtml	:= typeof.pod.file(`/res/web/restartPage.html`).readAllStr
 					.replace("{{{ appName }}}", "${appName} ${appVer}".toXml)
 		str		:= "${appName} ${appVer} is restarting..."
