@@ -41,6 +41,7 @@ const class BedSheetWebMod : WebMod {
 
 		if (podCheckerRef.val != null) {
 			if (req.modRel == BsConstants.pingUrl) {
+				// web pages ping us to check if we've restarted yet
 				res.headers["Content-Type"] = MimeType("text/plain").toStr
 				res.out.print("OK").flush.close
 				return
@@ -125,12 +126,14 @@ const class BedSheetWebMod : WebMod {
 	
 	private Void notifyClientOfRestart() {
 		registry.activeScope.createChild("request") {
+			msg		:= ((PodChecker?) podCheckerRef.val)?.restartMsg ?: "Just because I feel like it."
 			meta	:= (RegistryMeta)  it.serviceById(RegistryMeta#.qname)
 			pages	:= (BedSheetPages) it.serviceById(BedSheetPages#.qname)
 			appPod	:= (Pod) meta.options[BsConstants.meta_appPod]
-			text	:= pages.renderRestart(appName, appPod.version)
-	
-			buf := text.toBuf
+			text	:= pages.renderRestart(appName, appPod.version, msg)
+			buf		:= text.toBuf
+			
+			res.statusCode					= 503
 			res.headers["Content-Type"]		= text.contentType.toStr
 			res.headers["Content-Length"]	= buf.size.toStr
 			res.out.writeBuf(buf).flush.close

@@ -14,10 +14,6 @@ internal const class BsLogMsgs {
 
 	// ---- AppRestarter --------------------------------------------------------------------------
 
-	static Str appRestarter_cachedPodTimestamps(Int noOfPods) {
-		"Cached the timestamps of ${noOfPods} pods"
-	}	
-
 	static Str appRestarter_lauchingApp(Str appModule, Int port) {
 		"Launching BedSheet WebApp '$appModule' on port $port"
 	}	
@@ -28,18 +24,6 @@ internal const class BsLogMsgs {
 
 	static Str appRestarter_killingApp(Str appModule) {
 		"Killing BedSheet WebApp '$appModule'"
-	}	
-
-	static Str appRestarter_podUpdated(Str podName, Duration timeDiff) {
-		"Pod '$podName' pod was updated $timeDiff.toLocale ago"
-	}
-
-	static Str appRestarter_noMetaProps(File podFile) {
-		"Could not find `meta.props` in ${podFile.normalize}"
-	}
-
-	static Str appRestarter_noPodFile(Str podName) {
-		"Could not find pod file for '$podName'"
 	}
 
 	static Str appRestarter_canNotProxyScripts(Str podName) {

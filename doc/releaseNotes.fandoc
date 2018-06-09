@@ -2,6 +2,7 @@ v1.5
 ****
 v1.5.12
 =======
+ - New: Stable WatchDog process replaces the old dev proxy.
  - New: Added 'BedSheetServer.getClientAsset()'.
  - New: Added 'HttpResponseHeaders.addCsp()' convenience method.
  - Chg: Updated code to work with Fantom 1.0.71 - the 'wisp::WispSessionStore' mixin changed.

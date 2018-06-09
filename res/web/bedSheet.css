@@ -94,12 +94,13 @@ td:first-child {
 .bedSheetLogo .ghost {
 	position:			relative;
 	top:				-5px;
-	left:				-15px;
+	left:				-25px;
 }
 .bedSheetLogo.skull {
 	height:				60px;
 	width:				60px;
-	top:				2px;
+	top:				-6px;
+	left:				-5px;
 }
 
 .brand {

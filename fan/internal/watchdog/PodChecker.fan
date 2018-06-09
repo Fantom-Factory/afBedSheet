@@ -16,7 +16,7 @@ internal const class PodChecker {
 	}
 
 	This initialise() {
-		withState |state| {
+		async |state| {
 			state.loadTimeStamps(watchAllPods ? null : appPod)
 		}
 		return this
@@ -24,12 +24,16 @@ internal const class PodChecker {
 
 	** Check if pods have been modified.
 	Bool podsModifed() {
-		withState |state->Bool| {
+		async |state->Bool| {
 			state.podsModified 
 		}.get(12sec)
 	}
 	
-	private Future withState(|PodCheckerState| fn) {
+	Str? restartMsg() {
+		state->msg
+	}
+	
+	private Future async(|PodCheckerState| fn) {
 		state.async(fn)
 	}
 }
@@ -40,6 +44,7 @@ internal class PodCheckerState {
 	Str:DateTime?	podTimeStamps	:= [:]
 	Duration?		lastCheck
 	Bool?			lastValue
+	Str?			msg
 
 	// BugFix: Pod.list throws an Err if any pod is invalid (wrong dependencies etc) 
 	// this way we don't even load the pod into memory!
@@ -52,7 +57,7 @@ internal class PodCheckerState {
 		lastCheck = Duration.now
 		lastValue = false
 		
-		log.info(BsLogMsgs.appRestarter_cachedPodTimestamps(podTimeStamps.size))
+		log.info("Cached the timestamps of ${podTimeStamps.size} pods")
 	}
 
 	Bool podsModified()	{
@@ -61,11 +66,16 @@ internal class PodCheckerState {
 		
 		lastValue = true == podTimeStamps.keys.eachWhile |podName| {
 			podFile := podFile(podName)
-			if (podFile == null)
-				return true	// who deleted my pod!?
+			if (podFile == null) {
+				msg = "Pod '$podName' has been DELETED!?"
+				log.info(msg)	// who deleted my pod!?
+				return true
+			}
 
 			if (podFile.modified > podTimeStamps[podName]) {
-				log.info(BsLogMsgs.appRestarter_podUpdated(podName, DateTime.now - podFile.modified))
+				time := (DateTime.now - podFile.modified).toLocale
+				msg = "Pod '$podName' pod was updated $time ago."
+				log.info(msg)
 				return true
 			}
 
@@ -92,7 +102,7 @@ internal class PodCheckerState {
 		podFile   := podFile(podName)
 		
 		if (podFile == null) {
-			log.warn(BsLogMsgs.appRestarter_noPodFile(podName))
+			log.warn("Could not find pod file for '$podName'")
 			return Str#.emptyList
 		}
 		
@@ -109,7 +119,7 @@ internal class PodCheckerState {
 		}
 		
 		if (meta == null) {
-			log.warn(BsLogMsgs.appRestarter_noMetaProps(podFile))
+			log.warn("Could not find `meta.props` in ${podFile.normalize}")
 			return Str#.emptyList
 		}
 		

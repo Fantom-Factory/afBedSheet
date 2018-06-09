@@ -20,7 +20,7 @@ const mixin BedSheetPages {
 	abstract Text? renderWelcome(HttpStatus httpStatus)
 
 	** Renders the 'BedSheet' app restart page.
-	abstract Text? renderRestart(Str appName, Version appVer)
+	abstract Text? renderRestart(Str appName, Version appVer, Str restartMsg)
 }
 
 internal const class BedSheetPagesImpl : BedSheetPages {
@@ -58,10 +58,11 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 		return render(title, xhtml, str)
 	}
 	
-	override Text? renderRestart(Str appName, Version appVer) {
-		title	:= " Application Restart"
+	override Text? renderRestart(Str appName, Version appVer, Str restartMsg) {
+		title	:= "Application Restart"
 		xhtml	:= typeof.pod.file(`/res/web/restartPage.html`).readAllStr
 					.replace("{{{ appName }}}", "${appName} ${appVer}".toXml)
+					.replace("{{{ restartMsg }}}", restartMsg.toXml)
 		str		:= "${appName} ${appVer} is restarting..."
 		return render(title, xhtml, str)
 	}
@@ -130,7 +131,7 @@ internal const class BedSheetPagesImpl : BedSheetPages {
 
 internal enum class BedSheetLogo {
 	alienHead(`/res/web/bedSheetLogo.html`),
-	skull(`/res/web/skull.svg`);
+	skull	 (`/res/web/bedSheetSkull.html`);
 	
 	const Uri svgUri
 	private new make(Uri svgUri) {

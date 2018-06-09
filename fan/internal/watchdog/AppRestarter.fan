@@ -33,9 +33,6 @@ internal const class AppRestarter {
 
 	Void restartApp() {
 		state->restartWebApp(appName, appPort, appParams)
-//		state.asyncLater(100ms) |s| {
-//			s->restartWebApp(appName, appPort, appParams)
-//		}
 	}
 }
 
