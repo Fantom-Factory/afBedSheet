@@ -29,14 +29,19 @@ const class BedSheetBootMod : WebMod {
 
 	** When HTTP requests are received when BedSheet is starting up, then this message is returned to the client with a 500 status code.
 	** 
-	** Defaults to: 'The website is starting up... Please retry in a moment.'
+	** Defaults to: 'Website booting up... Please retry in a moment.'
 	** 
 	** Change it using a ctor it-block:
 	** 
 	**   BedSheetBootMod(bob) {
 	**       it.startupMessage = "Computer Says No..."
 	**   }
-	const Str startupMessage	:= "The website is starting up... Please retry in a moment."
+	** 
+	** Or using an IoC option:
+	** 
+	**   bob.options["afBedSheet.bootModStartupMsg"] = "Computer Says No..."
+	** 
+	const Str startupMessage	:= "Website booting up... Please retry in a moment."
 	
 	** A convenience ctor that starts up BedSheet.
 	new makeForBedSheet(RegistryBuilder bob, |This|? f := null) {
@@ -46,6 +51,8 @@ const class BedSheetBootMod : WebMod {
 			log.info(BsLogMsgs.bedSheetWebMod_starting(appName, port))
 			return BedSheetWebMod(bob.build)
 		}
+		if (bob.options.containsKey(BsConstants.meta_modStartupMsg))
+			startupMessage = bob.options[BsConstants.meta_modStartupMsg]
 		f?.call(this)
 	}
 

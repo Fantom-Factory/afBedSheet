@@ -10,6 +10,7 @@ v1.5.12
  - Chg: Fixed an Err when flushing an upgraded WebSocket. Web / Wisp is the actual problem, but we work around it.
  - Chg: Deprecated 'Redirect.uri' in favour of new 'Redirect.location' and made the 'RedirectType' enum public.
  - Chg: Deprecated 'HttpSession.map' in favour of new 'HttpSession.val'.
+ - Chg: BootMod startup message may now be configured via an Ioc option.
  - Bug: Dev proxy did not correctly proxy multiple 'Set-Cookie' response headers.
  - Bug: Fixed occasional NPE when removing cookies.
  - Bug: Fixed NPE when processing '/dev/' URLs in SrcMapHandler.

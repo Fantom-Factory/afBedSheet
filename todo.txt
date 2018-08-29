@@ -10,8 +10,6 @@ Future
 ------
 Logging filter with reqId, SessId and configurable userId
 
-Create an afBedSheetProtection pod, based on Rubys Rack::Protection
-
 Move code to BedSheetCore and remove all dependencies on Wisp / Web
  - create a BedSheetWisp default impl
  - that way BedSheet could be run on different servers (afWillow?)

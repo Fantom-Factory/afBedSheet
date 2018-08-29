@@ -17,5 +17,7 @@ internal mixin BsConstants {
 	static const Str	meta_watchdog		:= "afBedSheet.watchdog"
 	static const Str	meta_watchdogPort	:= "afBedSheet.watchdogPort"
 	static const Str	meta_watchAllPods	:= "afBedSheet.watchAllPods"
+
+	static const Str	meta_modStartupMsg	:= "afBedSheet.bootModStartupMsg"
 	
 }
