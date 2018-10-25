@@ -1,5 +1,9 @@
 v1.5
 ****
+v1.5.14
+=======
+ - Chg: 'HttpStatus.data' may now be any immutable object.
+
 v1.5.12
 =======
  - New: Stable WatchDog process replaces the old dev proxy.

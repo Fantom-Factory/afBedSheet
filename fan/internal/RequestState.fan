@@ -4,12 +4,13 @@ using web::WebReq
 using web::WebRes
 
 ** Mutable request data
-internal class RequestState {	
-	@Inject	WebReq?					webReq				// nullable for testing
-	@Inject	WebRes?					webRes				// nullable for testing
+internal class RequestState {
+	// TODO make webReq and webRes private, and have this class (or another) wrap all calls to them
+	@Inject	{ optional=true } WebReq?	webReq			// nullable for testing
+	@Inject	{ optional=true } WebRes?	webRes			// nullable for testing
 	@Inject	Scope?					scope				// nullable for testing
-			Duration				startTime		:= Duration.now
-			Int 					middlewareDepth	:= 0
+			Duration				startTime			:= Duration.now
+			Int 					middlewareDepth		:= 0
 			Bool?					disableGzip
 			Bool?					disableBuffering
 			Bool					flashInitialised
@@ -28,9 +29,9 @@ internal class RequestState {
 		in?.call(this)
 		// cache the headers so we can access / read them after the response has been committed - handy for logging
 		// note this only works while 'webRes.headers' returns the actual map used, and not a copy
-		requestHeaders  = HttpRequestHeaders (webReq.headers)
-		responseHeaders = HttpResponseHeaders(webRes.headers, |->| {
-			if (webRes.isCommitted)
+		requestHeaders  = HttpRequestHeaders (webReq?.headers ?: [:])
+		responseHeaders = HttpResponseHeaders(webRes?.headers ?: [:], |->| {
+			if (webRes?.isCommitted == true)
 				throw Err("HTTP Response has already been committed")				
 		})
 	}
