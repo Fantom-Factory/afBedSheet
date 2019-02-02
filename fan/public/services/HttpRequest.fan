@@ -156,7 +156,11 @@ internal const class HttpRequestImpl : HttpRequest {
 		
 		// sometimes Wisp seems to pass dodgy URLs like `//dev/`
 		if (rel.toStr.startsWith("//")) {
-			log.warn("Dodgy wisp URL: ${webReq.uri} --> ${webReq.modRel}")
+			if (webReq(false)?.stash?.containsKey("afBedSheet.dodgyUrl")?.not ?: true) {
+				// only log warnings once per request
+				log.warn("Dodgy wisp URL: ${webReq.uri} --> ${webReq.modRel}")
+				webReq(false)?.stash?.set("afBedSheet.dodgyUrl", rel)
+			}
 			while (rel.toStr.startsWith("//"))
 				rel = rel.toStr[1..-1].toUri
 		}
@@ -201,11 +205,11 @@ internal const class HttpRequestImpl : HttpRequest {
 	override Str toStr() {
 		"$httpMethod $url"
 	}
-	private WebReq webReq() {
+	private WebReq? webReq(Bool checked := true) {
 		// let's simplify and optimise, no point in querying IoC for this.
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
-			throw Err("No web request active in thread")
+			if (checked) throw Err("No web request active in thread"); else return null
 	}
 	static Uri? hostViaHeaders(Str:Str headers) {
 		proto	:= null as Str
