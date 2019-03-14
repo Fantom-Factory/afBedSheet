@@ -53,9 +53,10 @@ internal const class SrcMapHandlerImpl : SrcMapHandler {
 
 		remainingUrl := localUrl.relTo(baseUrl)
 
-		url := remainingUrl
-		if (!url.isDir && url != ``)
-			url = url.parent.plusSlash.plusName("src").plusSlash.plusName(url.name)
+		url		:= remainingUrl
+		parent	:= url.parent
+		if (!url.isDir && url != `` && parent != null)
+			url = parent.plusSlash.plusName("src").plusSlash.plusName(url.name)
 		return _fromPodResource(`fan://${url}`, checked, true)
 	}
 	

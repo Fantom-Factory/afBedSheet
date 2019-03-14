@@ -4,6 +4,7 @@ v1.5.14
 =======
  - Chg: 'HttpStatus.data' may now be any immutable object.
  - Chg: Downgraded doggy Wisp URL errors to warnings.
+ - Bug: Fixed NPE caused by bad SrcMap URLs.
 
 v1.5.12
 =======
