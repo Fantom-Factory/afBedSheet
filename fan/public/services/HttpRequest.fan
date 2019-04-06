@@ -152,19 +152,13 @@ internal const class HttpRequestImpl : HttpRequest {
 	}
 	override Uri url() {
 		rel := webReq.modRel
+		
+		// sometimes Wisp passes dodgy URLs like `//dev/` - usually from hack attempts, e.g. //wp-admin/install.php
+		// don't bother logging it, just sort it so an appropriate error page can be served (e.g. 404)
+		while (rel.toStr.startsWith("//"))
+			rel = rel.toStr[1..-1].toUri
+		
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
-		
-		// sometimes Wisp seems to pass dodgy URLs like `//dev/`
-		if (rel.toStr.startsWith("//")) {
-			if (webReq(false)?.stash?.containsKey("afBedSheet.dodgyUrl")?.not ?: true) {
-				// only log warnings once per request
-				log.warn("Dodgy wisp URL: ${webReq.uri} --> ${webReq.modRel}")
-				webReq(false)?.stash?.set("afBedSheet.dodgyUrl", rel)
-			}
-			while (rel.toStr.startsWith("//"))
-				rel = rel.toStr[1..-1].toUri
-		}
-		
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Uri urlAbs() {
