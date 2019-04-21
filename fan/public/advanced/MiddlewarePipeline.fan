@@ -10,6 +10,9 @@ const mixin MiddlewarePipeline {
 	
 	** Calls the next middleware in the pipeline.
 	abstract Void service()
+	
+	** Logs the middlewere stack to 'info'.
+	abstract Void logMiddleware()
 }
 
 internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
@@ -19,11 +22,15 @@ internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 	@Inject	 const LocalRefManager?	localManager
 	@Inject	 const HttpResponse?	httpResponse
 	@Inject	 const HttpSession		httpSession
-	override const Middleware[]		middleware
+			 const Str:Middleware	middlewareMap
 	
-	new make(Middleware[] middleware, |This| in) {
+	new make(Str:Middleware middleware, |This| in) {
 		in(this)
-		this.middleware = middleware
+		this.middlewareMap = middleware
+	}
+	
+	override Middleware[] middleware() {
+		middlewareMap.vals
 	}
 	
 	override Void service() {
@@ -50,5 +57,19 @@ internal const class MiddlewarePipelineImpl : MiddlewarePipeline {
 				localManager.cleanUpThread				
 			}
 		}
+	}
+	
+	override Void logMiddleware() {
+		buf := StrBuf()
+		buf.add("\n\n")
+		buf.add("BedSheet Middleware\n")
+		buf.add("===================\n")
+		maxSize := (Int) middlewareMap.keys.reduce(0) |Int max, key| { max.max(key.size) }
+		middlewareMap.each |val, key| {
+			buf.add(key).addChar(' ')
+			buf.add("." * (maxSize - key.size)).add(" : ")
+			buf.add(val.typeof.qname).addChar('\n')
+		}
+		log.info(buf.toStr)
 	}
 }

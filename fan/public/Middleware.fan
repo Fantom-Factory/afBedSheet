@@ -28,6 +28,18 @@
 **       config.set("MyMiddleware", config.build(MyMiddleware#)).before("afBedSheet.routes")
 **   }
 ** <pre
+** 
+** To list all middleware instances used by BedSheet (on startup), add the following to your 
+** IoC Module:
+** 
+** pre>
+** Void onRegistryStartup(Configuration config) {
+**     scope := config.scope
+**     config.set("logMiddleware", |->| {
+**         scope.serviceByType(MiddlewarePipeline#)->logMiddleware
+**     })
+** }
+** <pre
 // Used by Duvet
 const mixin Middleware {
 

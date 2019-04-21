@@ -75,13 +75,13 @@ const class BedSheetModule {
 	}
 
 	@Build { scopes=["root"] }
-	MiddlewarePipeline buildMiddlewarePipeline(Middleware[] userMiddleware, Scope scope, RequestLoggers reqLogger) {
+	MiddlewarePipeline buildMiddlewarePipeline(Str:Middleware userMiddleware, Scope scope, RequestLoggers reqLoggers) {
 		// hardcode BedSheet default middleware
-		middleware := Middleware?[
-			// loggers wrap SystemMiddleware so they can report 500 errors
-			reqLogger,
-			scope.build(ErrMiddleware#),
-		].addAll(userMiddleware).add(scope.build(MiddlewareTerminator#))
+		middleware := Str:Middleware?[:] { it.ordered = true }
+		middleware["afBedSheet.requestLogger"]	= reqLoggers	// loggers wrap SystemMiddleware so they can report 500 errors
+		middleware["afBedSheet.errHandler"]		= scope.build(ErrMiddleware#)
+		middleware.addAll(userMiddleware)
+		middleware["afBedSheet.terminator"]		= scope.build(MiddlewareTerminator#)
 		return scope.build(MiddlewarePipelineImpl#, [middleware])
 	}
 
