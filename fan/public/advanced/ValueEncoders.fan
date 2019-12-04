@@ -1,4 +1,4 @@
-using afBeanUtils::BeanFactory
+using afBeanUtils::BeanBuilder
 
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
@@ -72,7 +72,7 @@ internal const class ValueEncodersImpl : ValueEncoders {
 
 		// empty string values WILL ALWAYS DIE in the coercer, so treat them as null and create a default value
 		if (clientValue.trim.isEmpty)
-			try	return BeanFactory.defaultValue(valType)
+			try	return BeanBuilder.defVal(valType)
 			catch (Err cause)
 				throw ValueEncodingErr(BsErrMsgs.valueEncoding_buggered(clientValue, valType), cause)
 		

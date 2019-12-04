@@ -44,6 +44,8 @@ internal class T_WebReq : WebReq {
 	override WebSession	session				:= T_WebSession()
 	override InStream 	in					:= "in".toBuf.in
 	override TcpSocket	socket()			{ throw Err() }
+	override Bool		isGet()				{ method == "GET"  }
+	override Bool		isPost()			{ method == "POST" }
 }
 
 internal class T_WebRes : WebRes {

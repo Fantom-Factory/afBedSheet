@@ -1,4 +1,3 @@
-using afBeanUtils::TypeNotFoundErr
 using concurrent::Actor
 
 internal class TestResponseProcessors : BsTest {
