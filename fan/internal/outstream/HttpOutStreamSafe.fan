@@ -23,7 +23,8 @@ internal class HttpOutStreamSafe : OutStream {
 					throw err
 				// means the client closed the socket before we've finished writing data
 				socketErr = true
-				log.warn(BsLogMsgs.safeOutStream_socketErr(err))
+				if (log.isDebug)
+					log.debug(BsLogMsgs.safeOutStream_socketErr(err))
 			}
 		return this
 	}
@@ -36,7 +37,8 @@ internal class HttpOutStreamSafe : OutStream {
 					throw err
 				// means the client closed the socket before we've finished writing data
 				socketErr = true
-				log.warn(BsLogMsgs.safeOutStream_socketErr(err))
+				if (log.isDebug)
+					log.debug(BsLogMsgs.safeOutStream_socketErr(err))
 			}
 		return this
 	}
@@ -49,7 +51,8 @@ internal class HttpOutStreamSafe : OutStream {
 					throw err
 				// means the client closed the socket before we've finished writing data
 				socketErr = true
-				log.warn(BsLogMsgs.safeOutStream_socketErr(err))
+				if (log.isDebug)
+					log.debug(BsLogMsgs.safeOutStream_socketErr(err))
 			}
 		return this		
 	}
@@ -62,7 +65,8 @@ internal class HttpOutStreamSafe : OutStream {
 					throw err
 				// means the client closed the socket before we've finished writing data
 				socketErr = true
-				log.warn(BsLogMsgs.safeOutStream_socketErr(err))
+				if (log.isDebug)
+					log.debug(BsLogMsgs.safeOutStream_socketErr(err))
 			}
 		return false
 	}
