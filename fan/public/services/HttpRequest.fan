@@ -46,6 +46,9 @@ const mixin HttpRequest {
 	** @see `web::WebReq.modRel`
 	abstract Uri url()
 
+	** The url path component, cached.
+	abstract Str[] urlPath()
+
 	** Returns the absolute request URL including the full authority, mod path, and the query string.  
 	** If defined, this is taken from the `BedSheetConfigIds.host` config value othereise
 	** efforts are made to restore the original HTTP header 'host' should it have been lost / replaced by a proxy.
@@ -160,6 +163,11 @@ internal const class HttpRequestImpl : HttpRequest {
 		
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel
+	}
+	override Str[] urlPath() {
+		if (webReq.stash.containsKey("afBedSheet.urlPath") == false)
+			webReq.stash["afBedSheet.urlPath"] = webReq.modRel.path
+		return webReq.stash["afBedSheet.urlPath"]
 	}
 	override Uri urlAbs() {
 		host := bedServer().host
