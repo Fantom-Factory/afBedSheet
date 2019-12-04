@@ -19,6 +19,8 @@ const class RegexRoute : Route {
 	internal const RouteResponseFactory	factory
 
 	new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET", Bool caseInsensitive := true) {
+		// FIXME do not Glob or regex methods
+		// FIXME so not CSV methods, space only
 	    if (urlGlob.scheme != null || urlGlob.host != null || urlGlob.port!= null )
 			throw ArgErr(BsErrMsgs.route_shouldBePathOnly(urlGlob))
 	    if (!urlGlob.isPathAbs)
