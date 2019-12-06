@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "A fresh, crisp and clean platform to lay your web app on!"
-		version = Version("1.5.14")
+		version = Version("1.5.15")
 
 		meta = [
 			"pod.dis"			: "BedSheet",
