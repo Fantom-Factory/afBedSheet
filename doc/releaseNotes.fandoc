@@ -3,8 +3,10 @@ v1.5
 v1.5.14
 =======
  - New: 'MiddlewarePipeline.logMiddleware' so middleware may be logged at startup.
+ - Chg: Updated dependencies to latest pod versions.
  - Chg: 'HttpStatus.data' may now be any immutable object.
  - Chg: Dodgy Wisp URL errors are no longer logged, that is, URLs that start with a '//' (double slash).
+ - Chg: Downgraded "socket closed" errors to be logged at debug level.
  - Bug: Fixed NPE caused by bad SrcMap URLs.
 
 v1.5.12
