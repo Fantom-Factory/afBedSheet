@@ -1,5 +1,6 @@
-using afIoc
-using concurrent
+using afIoc::Inject
+using concurrent::AtomicBool
+using concurrent::AtomicRef
 
 ** (Response Object) - 
 ** An asset that is uniquely identified by a client URL.
@@ -29,7 +30,6 @@ const abstract class ClientAsset : Asset {
 	@Inject
 	private const BedSheetServer?	_bedServer
 	private const AtomicRef			_clientUrlRef		:= AtomicRef()
-	private const AtomicRef			_lastCheckedRef		:= AtomicRef(DateTime.now)
 
 	** Autobuild 'ClientAsset' instances with IoC.
 	@NoDoc
@@ -86,16 +86,35 @@ const abstract class ClientAsset : Asset {
 		clientUrl?.encode ?: super.toStr
 	}
 	
+	private const AtomicBool	_lastIsModifiedRef	:= AtomicBool(false)
+	private const AtomicRef		_lastCheckedRef		:= AtomicRef(Duration.now - 1day)
+
 	@NoDoc
-	virtual Bool isModified(Duration? timeout) {
-		lastChecked	:= (DateTime) _lastCheckedRef.getAndSet(DateTime.now)
-		actualModified := actualModified
-		if (actualModified == null)
-			return true
+	virtual Bool isModified(Duration timeout) {
+		// cache false responses for X secs to avoid hammering the file system
+		if (_lastIsModifiedRef.val == false) {
+			now		:= Duration.now.floor(1sec)
+			oldNow	:= (Duration) _lastCheckedRef.val
+			if ((now - oldNow) < timeout)
+				return _lastIsModifiedRef.val
+			
+			// don't update old now until timeout expires
+			_lastCheckedRef.val = now
+		}
+
+		newModifiedTs 	:= actualModified		// ?.floor(1sec) - lets not mess with the *actual* value
+		oldModifiedTs	:= modified
+		isModified		:= newModifiedTs == null || newModifiedTs > oldModifiedTs
+		_lastIsModifiedRef.val = isModified
+
+		// no need to cache the new "modified" value, because the Cache deletes us when this isModified() returns true
+		// plus it'd be difficult to make a nice API around it 
 		
-		if (timeout == null	|| (DateTime.now - lastChecked) > timeout)
-			return actualModified.floor(1sec) > modified.floor(1sec)
-		return false
+		// reset our cache timeout
+		if (isModified == false)
+			 _lastCheckedRef.val = Duration.now.floor(1sec)
+
+		return isModified
 	}
 	
 	** If the asset contents are liable to change behind the scenes, 

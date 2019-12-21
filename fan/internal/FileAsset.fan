@@ -40,7 +40,7 @@ internal const class FileAsset : ClientAsset {
 	}
 	
 	override DateTime? actualModified() {
-		file.modified
+		file.modified?.floor(1sec)
 	}
 }
 

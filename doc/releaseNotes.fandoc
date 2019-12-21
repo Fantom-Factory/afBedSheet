@@ -1,5 +1,9 @@
 v1.5
 ****
+v1.5.16
+=======
+ - Chg: Tweaked 'ClientAsset.isModified()' logic so it hits the file system less.
+
 v1.5.14
 =======
  - New: 'MiddlewarePipeline.logMiddleware' so middleware may be logged at startup.
