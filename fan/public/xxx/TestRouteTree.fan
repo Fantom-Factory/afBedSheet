@@ -59,13 +59,13 @@ class TestUriTrees : Test {
 		myTree.set(`/foo2/*/edit/*`, "test3")
 
 		verifyEq(myTree.get(`/wildCard`).handler, 			"test")
-		verifyEq(myTree.get(`/wildCard`).wildcardSegments,	["wildCard"])
+		verifyEq(myTree.get(`/wildCard`).wildcardSegments,	Obj["wildCard"])
 
 		verifyEq(myTree.get(`/foo/wildCard`).handler,			"test2")
-		verifyEq(myTree.get(`/foo/wildCard`).wildcardSegments,	["wildCard"])
+		verifyEq(myTree.get(`/foo/wildCard`).wildcardSegments,	Obj["wildCard"])
 
 		verifyEq(myTree.get(`/foo2/wildCard/edit/12`).handler,			"test3")
-		verifyEq(myTree.get(`/foo2/wildCard/edit/12`).wildcardSegments,	["wildCard", "12"])
+		verifyEq(myTree.get(`/foo2/wildCard/edit/12`).wildcardSegments,	Obj["wildCard", "12"])
 
 
 		verifyEq(myTree.get(`/foo/foo\/b\#ar`).handler, 			"test2")
@@ -123,14 +123,11 @@ class TestUriTrees : Test {
 
 		verifyEq(myTree.get(`/my/images/get/file/foo.png`).handler, "test")
 		verifyEq(myTree.get(`/My/Images/get/file/fOo.png`).canonicalUrl, `/my/images/get/file/foo.png`)
-		verifyEq(myTree.get(`/my/images/get/file/foo.png`).wildcardSegments, Str[,])
-		verifyEq(myTree.get(`/my/images/get/file/foo.png`).remainingSegments, ["get", "file", "foo.png"])
-
+		verifyEq(myTree.get(`/my/images/get/file/foo.png`).wildcardSegments, Obj[`/get/file/foo.png`])
 		verifyEq(myTree.get(`/my/images/get/file/foo.png`).requestUrl, `/my/images/get/file/foo.png`)
 
 		verifyEq(myTree.get(`/foo.png`).handler, "test2")
 		verifyEq(myTree.get(`/fOo.png`).canonicalUrl, `/foo.png`)
-		verifyEq(myTree.get(`/foo.png`).wildcardSegments, Str[,])
-		verifyEq(myTree.get(`/foo.png`).remainingSegments, ["foo.png"])
+		verifyEq(myTree.get(`/foo.png`).wildcardSegments, Obj[`/foo.png`])
 	}
 }

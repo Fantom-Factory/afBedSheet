@@ -1,6 +1,5 @@
 
-class RouteTree {
-
+internal class RouteTree {
 	private Str:Obj			handlers
 	private Str:RouteTree	childTrees
 	
@@ -18,9 +17,13 @@ class RouteTree {
 			handlers[urlKey] = handler
 
 		} else {
+			if (urlKey == "**")
+				throw Err("Double wildcards can only be the last segment: $segments")
+			
 			childTree := childTrees[urlKey]
 			if (childTree == null)
-				childTrees[urlKey] = childTree = RouteTree()
+				// use add so we don't overwrite
+				childTrees.add(urlKey, childTree = RouteTree())
 			childTree[segments[1..-1]] = handler
 		}
 
@@ -28,7 +31,7 @@ class RouteTree {
 	}
 
 	@Operator
-	internal Route3? get(Str[] segments) {
+	internal Route4? get(Str[] segments) {
 		depth	:= segments.size
 		segment	:= segments.first
 		urlKey	:= segment.lower
@@ -37,14 +40,14 @@ class RouteTree {
 
 			handler := handlers[urlKey]
 			if (handler != null) {
-				route := Route3(handler)
+				route := Route4(handler)
 				route.canonical.insert(0, urlKey)
 				return route
 			}
 
 			handler = handlers["*"]
 			if (handler != null) {
-				route := Route3(handler)
+				route := Route4(handler)
 				route.canonical.insert(0, urlKey)
 				route.wildcards.insert(0, segment)
 				return route
@@ -74,11 +77,14 @@ class RouteTree {
 
 		handler := handlers["**"]
 		if (handler != null) {
-			route := Route3(handler)
+			route	  := Route4(handler)
+			wildcard  := ``
 			for (i := 0; i < segments.size; ++i) {
+				wildcard = wildcard.plusSlash.plusName(segments[i])
 				route.canonical.add(segments[i].lower)
 			}
-			route.remaining = segments
+			route.wildcards.insert(0, wildcard)
+			
 			return route
 		}
 

@@ -50,10 +50,8 @@ internal const class BsErrMsgs {
 		"Route `$routeBase` must start with a slash. e.g. `/foo/bar`"
 	}
 
-	static Str route_uriWillNeverMatchMethod(Regex routeRegex, Uri? routeGlob, Method method) {
-		routeGlob != null
-			? "Route Uri `${routeGlob}` will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
-			: "Route Regex ${routeRegex} will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
+	static Str route_uriWillNeverMatchMethod(Uri url, Method method) {
+		"Route URL `${url}` will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
 	}
 
 	static Str routes_wrongType(Obj obj) {

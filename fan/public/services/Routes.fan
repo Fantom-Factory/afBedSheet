@@ -39,7 +39,10 @@ internal const class RoutesImpl : Routes {
 	override Bool processRequest(HttpRequest httpRequest) {
 		// loop through all routes looking for a non-null response
 		handled := routes.eachWhile |route| {
-			response := route.match(httpRequest)
+			
+			// FIXME
+//			response := route.match(httpRequest)
+			response := null
 
 			if (response == null)
 				return null

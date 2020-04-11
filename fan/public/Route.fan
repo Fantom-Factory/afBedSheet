@@ -149,7 +149,7 @@
 ** Otherwise the containing class is [autobuilt]`afIoc::Scope.build`. 
 ** If the class is 'const', the instance is cached for future use.
 ** 
-const mixin Route {
+const mixin RouteX {
 
 	** Creates a Route that matches on the given URL glob pattern. 
 	** 'urlGlob' must start with a slash "/". Example: 
@@ -166,9 +166,9 @@ const mixin Route {
 	**  - 'GET' 
 	**  - 'GET HEAD'
 	** 
-	static new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET") {
-		RegexRoute(urlGlob, response, httpMethod)
-	}
+//	static new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET") {
+//		RegexRoute(urlGlob, response, httpMethod)
+//	}
 
 	** Returns a response object should the given uri (and http method) match this route. Returns 'null' if not.
 	abstract Obj? match(HttpRequest httpRequest)
