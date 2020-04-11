@@ -1,19 +1,12 @@
 
 class Route2 {
 	Uri    requestUrl
-	
     Uri?   canonicalUrl
-	
     Obj    handler
-
-    // --> my bad, these need to be different
-    // --> so this is JUST the wildcards
     Str[]  wildcardSegments
-
-    // --> and this is JUST the remaining segs
     Str[]  remainingSegments
 
-	new make(Uri requestUrl, Uri foo, Uri? canonicalUrl, Obj handler, Str[] wildcardSegments, Str[] remainingSegments) {
+	new make(Uri requestUrl, Uri? canonicalUrl, Obj handler, Str[] wildcardSegments, Str[] remainingSegments) {
 		this.requestUrl = requestUrl
 		this.canonicalUrl = canonicalUrl
 		this.handler = handler

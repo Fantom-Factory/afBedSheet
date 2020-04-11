@@ -25,6 +25,6 @@ class RouteMatcher {
 		
 		canonicalUrl := route.canonicalUrl
 		
-		return Route2(url, ``, canonicalUrl, route.handler, route.wildcards, route.remaining)
+		return Route2(url, canonicalUrl, route.handler, route.wildcards, route.remaining)
 	}    
 }

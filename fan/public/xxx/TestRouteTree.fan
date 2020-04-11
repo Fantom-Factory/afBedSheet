@@ -123,14 +123,14 @@ class TestUriTrees : Test {
 
 		verifyEq(myTree.get(`/my/images/get/file/foo.png`).handler, "test")
 		verifyEq(myTree.get(`/My/Images/get/file/fOo.png`).canonicalUrl, `/my/images/get/file/foo.png`)
-		verifyEq(myTree.get(`/my/images/get/file/foo.png`).wildcardSegments, ["get", "file", "foo.png"])
+		verifyEq(myTree.get(`/my/images/get/file/foo.png`).wildcardSegments, Str[,])
 		verifyEq(myTree.get(`/my/images/get/file/foo.png`).remainingSegments, ["get", "file", "foo.png"])
 
 		verifyEq(myTree.get(`/my/images/get/file/foo.png`).requestUrl, `/my/images/get/file/foo.png`)
 
 		verifyEq(myTree.get(`/foo.png`).handler, "test2")
 		verifyEq(myTree.get(`/fOo.png`).canonicalUrl, `/foo.png`)
-		verifyEq(myTree.get(`/foo.png`).wildcardSegments, ["foo.png"])
+		verifyEq(myTree.get(`/foo.png`).wildcardSegments, Str[,])
 		verifyEq(myTree.get(`/foo.png`).remainingSegments, ["foo.png"])
 	}
 }
