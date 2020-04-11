@@ -37,13 +37,15 @@ class RouteTree {
 
 			handler := handlers[urlKey]
 			if (handler != null) {
-				route := Route3(handler, urlKey)
+				route := Route3(handler)
+				route.canonical.insert(0, urlKey)
 				return route
 			}
 
 			handler = handlers["*"]
 			if (handler != null) {
-				route := Route3(handler, urlKey)
+				route := Route3(handler)
+				route.canonical.insert(0, urlKey)
 				route.wildcards.insert(0, segment)
 				return route
 			}
@@ -72,8 +74,10 @@ class RouteTree {
 
 		handler := handlers["**"]
 		if (handler != null) {
-			route := Route3(handler, urlKey)
-			route.canonical = segments.map { it.lower }	// FIXME - lower!
+			route := Route3(handler)
+			for (i := 0; i < segments.size; ++i) {
+				route.canonical.add(segments[i].lower)
+			}
 			route.remaining = segments
 			return route
 		}

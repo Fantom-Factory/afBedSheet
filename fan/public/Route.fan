@@ -1,19 +1,12 @@
 
 ** Matches HTTP Requests to response objects.
 ** 
-** 'Route' is a mixin so you may provide your own implementations. The rest of this documentation 
-** relates to the default implementation which uses regular expressions to match against the 
-** Request URL and HTTP Method.
-** 
 ** Regex Routes
 ** ************
 ** Matches the HTTP Request URL and HTTP Method to a response object using regular expressions.
 ** 
-** Note that all URL matching is case-insensitive. If you really need case-sensitive matching (???)
-** use the 'RegexRoute' explicitly, passing 'false' as the 'caseInsensitive' argument. Example:
-** 
-**   syntax: fantom 
-**   RegexRoute(`/index`, MyPage#hello, "GET", false)
+** URL matching is case-insensitive and trailing slashes that denote index or directory directory 
+** pages are ignored.
 ** 
 ** 
 ** 
@@ -43,7 +36,7 @@
 ** 
 ** Response Methods
 ** ================
-** Routes may also return `MethodCall` instances that call a Fantom method. 
+** Routes may return `MethodCall` instances that call a Fantom method. 
 ** To use, pass in the method as the response object. 
 ** On a successful match, the 'Route' will convert the method into a 'MethodCall' object.
 ** 
@@ -71,17 +64,17 @@
 **   /user/42     --> /user/*    => "42"
 **   /user/42/    --> /user/*    => no match
 **   /user/42/dee --> /user/*    => no match
-**                               
+**
 **   /user/       --> /user/*/*  => no match
 **   /user/42     --> /user/*/*  => no match
 **   /user/42/    --> /user/*/*  => "42", null
 **   /user/42/dee --> /user/*/*  => "42", "dee"
-**                               
+**
 **   /user/       --> /user/**   => null
 **   /user/42     --> /user/**   => "42"
 **   /user/42/    --> /user/**   => "42", null
 **   /user/42/dee --> /user/**   => "42", "dee"
-**                               
+**
 **   /user/       --> /user/***  => null
 **   /user/42     --> /user/***  => "42"
 **   /user/42/    --> /user/***  => "42/"
@@ -164,47 +157,17 @@ const mixin Route {
 	**   syntax: fantom 
 	**   Route(`/index/**`)
 	** 
-	** Note that matching is made against URI patterns in [Fantom standard form]`sys::Uri`. 
-	** That means certain delimiter characters in the path section will be escaped with a 
-	** backslash. Notably the ':/?#[]@\' characters. Glob expressions have to take account 
-	** of this.   
+	** Matching is made against URI patterns in [Fantom standard form]`sys::Uri` meaning 
+	** delimiter characters in the path section will be escaped with a backslash, 
+	** notably the ':/?#[]@\' characters. 
 	** 
-	** 'httpMethod' may specify multiple HTTP methods, separated by spaces and / or commas.  
-	** Each may also be a glob pattern. Example, all the following are valid:
+	** 'httpMethod' may specify multiple HTTP method separated by a space.
+	**   
 	**  - 'GET' 
 	**  - 'GET HEAD'
-	**  - 'GET, HEAD'
-	**  - 'GET, H*'
 	** 
-	** Use the simple string '*' to match all HTTP methods.
 	static new makeFromGlob(Uri urlGlob, Obj response, Str httpMethod := "GET") {
 		RegexRoute(urlGlob, response, httpMethod)
-	}
-
-	** For hardcore users; make a Route from a regex. Capture groups are used to match arguments.
-	** Example:
-	** 
-	**   syntax: fantom 
-	**   Route(Regex<|(?i)^\/index\/(.*?)$|>, #foo, "GET", true) ==> Route(`/index/**`)
-	** 
-	** Set 'matchAllSegs' to 'true' to have the last capture group mimic the glob '**' operator, 
-	** splitting on "/" to match all remaining segments.  
-	** 
-	** Note that matching is made against URI patterns in [Fantom standard form]`sys::Uri`. 
-	** That means certain delimiter characters in the path section will be escaped with a 
-	** backslash. Notably the ':/?#[]@\' characters. Regular expressions have to take account 
-	** of this.
-	**    
-	** 'httpMethod' may specify multiple HTTP methods, separated by spaces and / or commas.  
-	** Each may also be a glob pattern. Example, all the following are valid:
-	**  - 'GET' 
-	**  - 'GET HEAD'
-	**  - 'GET, HEAD'
-	**  - 'GET, H*'
-	** 
-	** Use the simple string '*' to match all HTTP methods.
-	static new makeFromRegex(Regex uriRegex, Obj response, Str httpMethod := "GET", Bool matchAllSegs := false) {
-		RegexRoute(uriRegex, response, httpMethod, matchAllSegs)
 	}
 
 	** Returns a response object should the given uri (and http method) match this route. Returns 'null' if not.

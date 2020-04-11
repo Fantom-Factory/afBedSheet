@@ -1,12 +1,12 @@
 
 class Route2 {
-	Uri    requestUrl
-    Uri?   canonicalUrl
-    Obj    handler
-    Str[]  wildcardSegments
-    Str[]  remainingSegments
+    Obj		handler
+	Uri		requestUrl
+    Uri		canonicalUrl
+    Str[]	wildcardSegments
+    Str[]	remainingSegments
 
-	new make(Uri requestUrl, Uri? canonicalUrl, Obj handler, Str[] wildcardSegments, Str[] remainingSegments) {
+	new make(Uri requestUrl, Uri canonicalUrl, Obj handler, Str[] wildcardSegments, Str[] remainingSegments) {
 		this.requestUrl = requestUrl
 		this.canonicalUrl = canonicalUrl
 		this.handler = handler
@@ -21,13 +21,13 @@ internal class Route3 {
     Str[]	wildcards
     Str[]	remaining
 
-	new make(Obj handler, Str canonical) {
+	new make(Obj handler) {
 		this.handler	= handler
-		this.canonical	= Str[canonical]
+		this.canonical	= Str[,]
 		this.wildcards	= Str[,]
 		this.remaining	= Str[,]
 	}
-	
+
 	Uri canonicalUrl() {
 		url := ``
 		for (i := 0; i < canonical.size; ++i) {
