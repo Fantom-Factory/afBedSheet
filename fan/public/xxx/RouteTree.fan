@@ -1,102 +1,92 @@
 
 class RouteTree {
 
-	private Str:Obj			handlerMap	:= Str:Obj[:]
-	private Str:RouteTree	nestedMap	:= Str:RouteTree[:]
+	private Str:Obj			handlers
+	private Str:RouteTree	childTrees
 	
+	new make() {
+		handlers	= Str:Obj[:]
+		childTrees	= Str:RouteTree[:]
+	}
 	
 	@Operator
-	This set(Uri url, Obj handler) {
-		if (url.pathStr.contains("//"))	throw ArgErr("That's nasty! $url")
+	This set(Str[] segments, Obj handler) {
+		depth	:= segments.size
+		urlKey	:= segments.first.lower
 
-		childRouteTree := (RouteTree?) null
-        	routeStr	:= url.pathStr
-		routeDepth	:= url.path.size
-		workingUri := url.path[0].lower
+		if (depth == 1) {
+			handlers[urlKey] = handler
 
-		if (routeDepth == 1) {
-			handlerMap[workingUri.toStr] = handler
 		} else {
-
-			// --> FAN use Map.getOrAdd(...)
-			childRouteTree = nestedMap[workingUri.toStr]
-
-			if (childRouteTree == null) {
-				childRouteTree = RouteTree()
-				nestedMap[workingUri.toStr] = childRouteTree
-			}
-			childRouteTree[url[1..-1]] = handler
+			childTree := childTrees[urlKey]
+			if (childTree == null)
+				childTrees[urlKey] = childTree = RouteTree()
+			childTree[segments[1..-1]] = handler
 		}
-        return this
-    }
 
-	// List out all absoluteMaps
-	Str:RouteTree getHandlerMap() { return handlerMap }
+		return this
+	}
 
-	// List out all absoluteMaps
-	Str:RouteTree getNestedMap() { return nestedMap }
+	@Operator
+	internal Route3? get(Str[] segments) {
+		depth	:= segments.size
+		segment	:= segments.first
+		urlKey	:= segment.lower
 
-    @Operator
-    Route2? get(Uri url) {
-		matchHandler := (RouteTree?) null
-		workingUri := url.path[0].lower
-		handlerMatch := null
-		routeMatch := (Route2?) null
-		routeDepth	:= url.path.size
-		if (routeDepth == 1) {
+		if (depth == 1) {
 
-			handlerMatch = handlerMap[workingUri]
-
-			if (handlerMatch != null) {
-				return Route2(url, workingUri.toUri, `/` + workingUri.toUri,handlerMatch, Str[,], Str[,])
+			handler := handlers[urlKey]
+			if (handler != null) {
+				route := Route3(handler, urlKey)
+				return route
 			}
 
-			handlerMatch = handlerMap["**"]
+//			handlerMatch = handlers["**"]
+//			if (handlerMatch != null) {
+//				return Route2(url, `**`, `/` + workingUri.lower.toUri, handlerMatch, [url.path[0]], [url.path[0]])
+//			}
 
-			if (handlerMatch != null) {
-				return Route2(url, `**`, `/` + workingUri.lower.toUri, handlerMatch, [url.path[0]], [url.path[0]])
+			handler = handlers["*"]
+			if (handler != null) {
+				route := Route3(handler, urlKey)
+				route.wildcards.insert(0, segment)
+				return route
 			}
 
-			handlerMatch = handlerMap["*"]
+		} else if (depth > 1) {
 
-			if (handlerMatch != null) {
-				return Route2(url, `*`, `/` + workingUri.toUri, handlerMatch, Uri.fromStr(url.path[0]).path, Str[,])
-			}
-		} else if (routeDepth > 1) {
-			matchHandler = nestedMap[workingUri]
-			if (matchHandler != null) {
-				routeMatch = matchHandler[url[1..-1]]
-				
-				if (routeMatch != null) {
-					
-					if (!routeMatch.canonicalUrl.isPathAbs) {
-						routeMatch.canonicalUrl = Uri.fromStr("/" + workingUri + "/" + routeMatch.canonicalUrl.toStr)
-					} else {
-						routeMatch.canonicalUrl = Uri.fromStr("/" + workingUri + routeMatch.canonicalUrl.toStr)
-					}
-					routeMatch.requestUrl = url
-					
+			childTree := childTrees[urlKey]
+			if (childTree != null) {
+				route := childTree[segments[1..-1]]
+				if (route != null) {
+					route.canonical.insert(0, urlKey)
 				}
-				return routeMatch
+				return route
 			}
 
-			handlerMatch = handlerMap["**"]
+//			handlerMatch := handlers["**"]
+//			if (handlerMatch != null) {
+//				Str[] wildCardList := url.path
+//				return Route2(url, `**`, Uri.fromStr(url.toStr.lower), handlerMatch, wildCardList, wildCardList)
+//			}
 
-			if (handlerMatch != null) {
-				Str[] wildCardList := url.path
-				return Route2(url, `**`, Uri.fromStr(url.toStr.lower), handlerMatch, wildCardList, wildCardList)
-			}
-
-			matchHandler = nestedMap["*"]
-
-			if (matchHandler != null) {
-				routeMatch = matchHandler.get(Uri.fromStr("/" + url.getRange(1..-1).toStr))
+			childTree = childTrees["*"]
+			if (childTree != null) {
 				
-				routeMatch.wildcardSegments = routeMatch.wildcardSegments.rw.insert(0, Uri.fromStr(url.path[0]).path[0])
+				route := childTree[segments[1..-1]]
+				if (route != null) {
+					route.canonical.insert(0, urlKey)
+					route.wildcards.insert(0, segment)
+				}
+				return route
 				
-				routeMatch.canonicalUrl = Uri.fromStr("/" + workingUri + routeMatch.canonicalUrl.toStr)
-				routeMatch.requestUrl = url
-				return routeMatch
+//				routeMatch = matchHandler.get(Uri.fromStr("/" + url.getRange(1..-1).toStr))
+//				
+//				routeMatch.wildcardSegments = routeMatch.wildcardSegments.rw.insert(0, Uri.fromStr(url.path[0]).path[0])
+//				
+//				routeMatch.canonicalUrl = Uri.fromStr("/" + workingUri + routeMatch.canonicalUrl.toStr)
+//				routeMatch.requestUrl = url
+//				return routeMatch
 			}
 		}
 
