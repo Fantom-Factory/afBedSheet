@@ -51,7 +51,7 @@ internal class TestRouteParams : AppTest {
 
 	Void testUri() {
 		res := getAsStr(`/route/uri/1/2/3`)
-		verifyEq(res, "uri: 1/2/3")
+		verifyEq(res, "uri: /1/2/3")
 	}
 
 	Void testInvalidValEnc() {

@@ -35,10 +35,10 @@ internal const class T_MyModule02 {
 
 	@Contribute { serviceType=Routes# }
 	static Void contribute(Configuration conf) {
-		conf.add(Route(`/1/***`,		TestRoutes#handler1))
-		conf.add(Route(`/1/2/***`,		TestRoutes#handler2))
-		conf.add(Route(`/1/2/3/***`,	TestRoutes#handler3))
-		conf.add(Route(`/1/2/3/4/***`,	TestRoutes#handler4))
+		conf.add(Route(`/1/**`,			TestRoutes#handler1))
+		conf.add(Route(`/1/2/**`,		TestRoutes#handler2))
+		conf.add(Route(`/1/2/3/**`,		TestRoutes#handler3))
+		conf.add(Route(`/1/2/3/4/**`,	TestRoutes#handler4))
 		conf.add(Route(`/1/2/3/4/5`, 	TestRoutes#handler5))
 	}
 	

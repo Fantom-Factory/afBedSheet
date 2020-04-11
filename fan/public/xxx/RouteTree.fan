@@ -1,11 +1,11 @@
 
-internal class RouteTree {
-	private Str:Obj			handlers
-	private Str:RouteTree	childTrees
+internal class RouteTreeBuilder {
+	private Str:RouteTreeBuilder	childTrees
+	private Str:Obj					handlers
 	
 	new make() {
-		handlers	= Str:Obj[:]
-		childTrees	= Str:RouteTree[:]
+		this.childTrees	= Str:RouteTreeBuilder[:]
+		this.handlers	= Str:Obj[:]
 	}
 	
 	@Operator
@@ -23,15 +23,33 @@ internal class RouteTree {
 			childTree := childTrees[urlKey]
 			if (childTree == null)
 				// use add so we don't overwrite
-				childTrees.add(urlKey, childTree = RouteTree())
+				childTrees.add(urlKey, childTree = RouteTreeBuilder())
 			childTree[segments[1..-1]] = handler
 		}
 
 		return this
 	}
+	
+	@Operator	// stoopid fantom
+	RouteMatch? get(Str[] segments) { null }
+	
+	RouteTree toConst() {
+		constTrees := this.childTrees.map { it.toConst }
+		return RouteTree(constTrees, handlers)
+	}
+}
+
+internal const class RouteTree {
+	private const Str:RouteTree	childTrees
+	private const Str:Obj		handlers
+	
+	new make(Str:RouteTree childTrees, Str:Obj handlers) {
+		this.childTrees	= childTrees.toImmutable
+		this.handlers	= handlers.toImmutable
+	}
 
 	@Operator
-	internal RouteMatch? get(Str[] segments) {
+	RouteMatch? get(Str[] segments) {
 		depth	:= segments.size
 		segment	:= segments.first
 		urlKey	:= segment.lower

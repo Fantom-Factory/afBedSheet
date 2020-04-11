@@ -18,7 +18,6 @@ const mixin Routes2 {
 }
 
 internal const class RoutesImpl : Routes {
-
 	@Inject	private const Log					log
 	@Inject	private const ResponseProcessors	responseProcessors
 			private const Str:RouteTree			routeTrees
@@ -36,7 +35,7 @@ internal const class RoutesImpl : Routes {
 		if (rs.isEmpty)
 			log.warn(BsLogMsgs.routes_gotNone)
 
-		routeTrees := Str:RouteTree[:]
+		routeTrees := Str:RouteTreeBuilder[:]
 		rs.each |route| {
 			
 			if (route.response is Method)
@@ -46,25 +45,26 @@ internal const class RoutesImpl : Routes {
 				httpMethod	:= route.httpMethods[i]
 				routeTree	:= routeTrees[httpMethod]
 				if (routeTree == null)
-					routeTrees[httpMethod] = routeTree = RouteTree()
+					routeTrees[httpMethod] = routeTree = RouteTreeBuilder()
 				
 				routeTree.set(route.urlGlob.path, route.response)
 			}
 		}
 
 		this.routes		= rs.toImmutable
-		this.routeTrees = routeTrees.toImmutable
+		this.routeTrees = routeTrees.map { it.toConst }
 	}
 
 	override Bool processRequest(HttpRequest httpRequest) {
 		urlMatch := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
-
+echo("$httpRequest.url -> ${urlMatch?.canonicalUrl} + ${urlMatch?.wildcards}")
 		if (urlMatch != null) {
 			response	 := urlMatch.handler
 			canonicalUrl := urlMatch.canonicalUrl
 
-			if (httpRequest.url.pathOnly != canonicalUrl)
-				response = Redirect.movedTemporarily(canonicalUrl)
+			// FIXME - this is cool - but breaks tests!
+//			if (httpRequest.url.pathOnly != canonicalUrl)
+//				response = Redirect.movedTemporarily(canonicalUrl)
 			
 			if (response is Method)
 				response = MethodCall(urlMatch.handler, urlMatch.wildcards)
@@ -101,20 +101,23 @@ internal const class RoutesImpl : Routes {
 
 @Deprecated
 class RouteMatcher {
-	private RouteTree routeTree
+	private RouteTreeBuilder routeTreeBob
+	private RouteTree?		 routeTree
 	
 	new make() {
-		this.routeTree = RouteTree()
+		this.routeTreeBob = RouteTreeBuilder()
 	}
 	
 	@Operator
 	This set(Uri url, Obj handler) {
-		routeTree.set(url.path, handler)
+		routeTreeBob.set(url.path, handler)
 		return this
 	}
 	
 	@Operator
 	Route3? get(Uri url) {
+		routeTree = routeTreeBob.toConst
+
 		route := routeTree.get(url.path)
 		
 		if (route == null)
