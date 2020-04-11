@@ -152,17 +152,15 @@ class Route3 {
 	}
 }
 
-internal class Route4 {
+internal class RouteMatch {
     Obj		handler
 	Str[]	canonical
     Obj[]	wildcards
-//    Str[]	remaining
 
 	new make(Obj handler) {
 		this.handler	= handler
 		this.canonical	= Str[,]
 		this.wildcards	= Obj[,]
-//		this.remaining	= Str[,]
 	}
 
 	Uri canonicalUrl() {

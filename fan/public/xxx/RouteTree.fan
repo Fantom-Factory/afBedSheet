@@ -31,7 +31,7 @@ internal class RouteTree {
 	}
 
 	@Operator
-	internal Route4? get(Str[] segments) {
+	internal RouteMatch? get(Str[] segments) {
 		depth	:= segments.size
 		segment	:= segments.first
 		urlKey	:= segment.lower
@@ -40,14 +40,14 @@ internal class RouteTree {
 
 			handler := handlers[urlKey]
 			if (handler != null) {
-				route := Route4(handler)
+				route := RouteMatch(handler)
 				route.canonical.insert(0, urlKey)
 				return route
 			}
 
 			handler = handlers["*"]
 			if (handler != null) {
-				route := Route4(handler)
+				route := RouteMatch(handler)
 				route.canonical.insert(0, urlKey)
 				route.wildcards.insert(0, segment)
 				return route
@@ -77,7 +77,7 @@ internal class RouteTree {
 
 		handler := handlers["**"]
 		if (handler != null) {
-			route	  := Route4(handler)
+			route	  := RouteMatch(handler)
 			wildcard  := ``
 			for (i := 0; i < segments.size; ++i) {
 				wildcard = wildcard.plusSlash.plusName(segments[i])

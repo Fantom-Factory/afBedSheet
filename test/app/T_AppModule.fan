@@ -17,9 +17,9 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/route/no-params`, 		T_PageHandler#noParams))
 		conf.add(Route(`/route/meth-call-err`, 	T_PageHandler#methodCallErr))
-		conf.add(Route(`/route/optional/**`, 	T_PageHandler#defaultParams))
+		conf.add(Route(`/route/optional/*/*/*`,	T_PageHandler#defaultParams))
 		conf.add(Route(`/route/valEnc/*`,		T_PageHandler#valEnc))
-		conf.add(Route(`/route/uri/***`, 		T_PageHandler#uri))
+		conf.add(Route(`/route/uri/**`, 		T_PageHandler#uri))
 		
 		conf.add(Route(`/StatusCode/*`, 		T_PageHandler#statusCode))
 
@@ -54,9 +54,9 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/welcome`, 				T_PageHandler#renderWelcome))
 
-		conf.add(Route(`/fh/test-src/***`, 		T_PageHandler#altFileHandler))
+		conf.add(Route(`/fh/test-src/**`, 		T_PageHandler#altFileHandler))
 		
-		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
+//		conf.add(Route(`/res/DeeDee*`, 			T_PageHandler#deeDee))
 
 		conf.add(Route(`/saveAs/*`, 			T_PageHandler#saveAs))
 

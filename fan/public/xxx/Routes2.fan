@@ -17,7 +17,7 @@ const mixin Routes2 {
 	abstract Bool processRequest(HttpRequest httpRequest)
 }
 
-internal const class Routes2Impl : Routes2 {
+internal const class RoutesImpl : Routes {
 
 	@Inject	private const Log					log
 	@Inject	private const ResponseProcessors	responseProcessors
@@ -38,6 +38,10 @@ internal const class Routes2Impl : Routes2 {
 
 		routeTrees := Str:RouteTree[:]
 		rs.each |route| {
+			
+			if (route.response is Method)
+				validateMethodUri(route.urlGlob, route.response)
+			
 			for (i := 0; i < route.httpMethods.size; ++i) {
 				httpMethod	:= route.httpMethods[i]
 				routeTree	:= routeTrees[httpMethod]
@@ -48,15 +52,25 @@ internal const class Routes2Impl : Routes2 {
 			}
 		}
 
-//		this.routes		= rs.toImmutable
-		this.routes		= Route[,]
+		this.routes		= rs.toImmutable
 		this.routeTrees = routeTrees.toImmutable
 	}
 
 	override Bool processRequest(HttpRequest httpRequest) {
-		response := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
-		if (response != null)
+		urlMatch := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
+
+		if (urlMatch != null) {
+			response	 := urlMatch.handler
+			canonicalUrl := urlMatch.canonicalUrl
+
+			if (httpRequest.url.pathOnly != canonicalUrl)
+				response = Redirect.movedTemporarily(canonicalUrl)
+			
+			if (response is Method)
+				response = MethodCall(urlMatch.handler, urlMatch.wildcards)
+			
 			return responseProcessors.processResponse(response)
+		}
 		
 		return false
 	}
