@@ -55,7 +55,7 @@ const class BedSheetWebMod : WebMod {
 		}
 
 		try {
-			registry.activeScope.createChild("request") {
+			registry.activeScope.createChild("httpRequest") {
 				// this is the actual call to BedSheet! 
 				// the rest of this class is just startup and error handling fluff! 
 				pipeline.service
@@ -125,7 +125,7 @@ const class BedSheetWebMod : WebMod {
 	}
 	
 	private Void notifyClientOfRestart() {
-		registry.activeScope.createChild("request") {
+		registry.activeScope.createChild("httpRequest") {
 			msg		:= ((PodChecker?) podCheckerRef.val)?.restartMsg ?: "Just because I feel like it."
 			meta	:= (RegistryMeta)  it.serviceById(RegistryMeta#.qname)
 			pages	:= (BedSheetPages) it.serviceById(BedSheetPages#.qname)

@@ -10,7 +10,7 @@ internal class TestBedSheetPages : AppTest {
 	
 	Void testPagesAreValidXml() {
 		registry.activeScope.inject(this)
-		registry.activeScope.createChild("request") {
+		registry.activeScope.createChild("httpRequest") {
 			Actor.locals["web.req"] = T_WebReq() { headers=["Accept":"application/xhtml+xml"]}
 			Actor.locals["web.res"] = T_WebRes()
 	

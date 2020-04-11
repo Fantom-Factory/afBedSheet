@@ -154,7 +154,7 @@ class AppModule {
     Void defineServices(RegistryBuilder bob) {
         bob.addService(MyService1#).withScope("root")
 
-        bob.addService(MyService2#).withScope("request")
+        bob.addService(MyService2#).withScope("httpRequest")
     }
 }
 <pre
@@ -796,7 +796,7 @@ const class BedSheetExt : Ext, Weblet {
     }
 
     override Void onService() {
-        registry.activeScope.createChild("request") {
+        registry.activeScope.createChild("httpRequest") {
             // this is the actual call to BedSheet!
             pipeline.service
         }

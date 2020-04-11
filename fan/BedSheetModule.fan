@@ -19,7 +19,7 @@ const class BedSheetModule {
 	// dependencies on BedSheet startup
 	
 	Void defineModule(RegistryBuilder defs) {
-		defs.addScope("request", true)		
+		defs.addScope("httpRequest", true)		
 
 		// Route handlers
 		defs.addService(FileHandler#)			.withRootScope
@@ -44,8 +44,8 @@ const class BedSheetModule {
 		defs.addService(HttpRequest#)			.withRootScope
 		defs.addService(HttpResponse#)			.withRootScope
 		defs.addService(HttpOutStreamWrapper#)	.withRootScope
-		defs.addService(HttpOutStream#)			.withScope("request")
-		defs.addService(RequestState#)			.withScope("request")
+		defs.addService(HttpOutStream#)			.withScope("httpRequest")
+		defs.addService(RequestState#)			.withScope("httpRequest")
 
 		// Other services - root
 		defs.addService(StackFrameFilter#)		.withRootScope
@@ -85,14 +85,14 @@ const class BedSheetModule {
 		return scope.build(MiddlewarePipelineImpl#, [middleware])
 	}
 
-	@Build { scopes=["request"] }	
+	@Build { scopes=["httpRequest"] }	
 	WebReq buildWebReq() {
 		try return Actor.locals["web.req"]
 		catch (NullErr e) 
 			throw Err("No web request active in thread")
 	}
 
-	@Build { scopes=["request"] } 
+	@Build { scopes=["httpRequest"] } 
 	WebRes buildWebRes() {
 		try return Actor.locals["web.res"]
 		catch (NullErr e)

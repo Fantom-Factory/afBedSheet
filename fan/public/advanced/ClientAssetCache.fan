@@ -45,7 +45,7 @@ const class ClientAssetCacheImpl : ClientAssetCache {
 	@Inject	private const BedSheetServer		bedServer
 
 	new make(IocEnv env, ActorPools actorPools, |This|? in) {
-		this.cacheTimeout = env.isProd ? 2min : 2sec
+		this.cacheTimeout = env.isProd ? 2min : 5sec
 		this.assetCache = SynchronizedMap(actorPools["afBedSheet.system"]) { it.keyType = Uri#; it.valType = ClientAsset?# }		
 		in?.call(this)
 	}
