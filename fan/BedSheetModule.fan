@@ -87,16 +87,12 @@ const class BedSheetModule {
 
 	@Build { scopes=["httpRequest"] }	
 	WebReq buildWebReq() {
-		try return Actor.locals["web.req"]
-		catch (NullErr e) 
-			throw Err("No web request active in thread")
+		Actor.locals["web.req"] ?: throw Err("No web request active in thread")
 	}
 
 	@Build { scopes=["httpRequest"] } 
 	WebRes buildWebRes() {
-		try return Actor.locals["web.res"]
-		catch (NullErr e)
-			throw Err("No web request active in thread")
+		Actor.locals["web.res"] ?: throw Err("No web request active in thread")
 	}
 
 	@Contribute { serviceType=ActorPools# }
