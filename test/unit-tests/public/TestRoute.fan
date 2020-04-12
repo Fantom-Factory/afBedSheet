@@ -1,6 +1,6 @@
-//
-//internal class TestRegexRoute : BsTest {
-//	
+
+internal class TestRoute : BsTest {
+	
 ////	Void testBuggy() {
 ////		Str?[]? match
 ////		
@@ -12,10 +12,10 @@
 ////		verifyEq(match[0],		"fin5Ext")
 ////		verifyEq(match[1],		"addPkgTag")
 ////	}
-//	
+	
 //	Void handlerBug(Str event, Str? extra := null) { }
-//	
-//	Void handler1() { }
+	
+	Void handler1() { }
 //	Void handler2(Str p1) { }
 //	Void handler3(Str p1, Int p2) { }
 //	Void handler4(Str p1, Int p2 := 69) { }
@@ -31,19 +31,19 @@
 //	Void bar4(Str? a, Str b := "") { }
 //
 //	Void stackhubOrg(Str org, Str? pageUrl := null) { }
-//
-//	Void testUriPathOnly() {
-//		verifyErrMsg(ArgErr#, BsErrMsgs.route_shouldBePathOnly(`http://www.alienfactory.co.uk/`)) {
-//			r := Route(`http://www.alienfactory.co.uk/`, #handler1)
-//		}
-//	}
-//
-//	Void testUriStartWithSlash() {
-//		verifyErrMsg(ArgErr#, BsErrMsgs.route_shouldStartWithSlash(`foo/bar`)) {
-//			r := Route(`foo/bar`, #handler1)
-//		}
-//	}	
-//
+
+	Void testUriPathOnly() {
+		verifyErrMsg(ArgErr#, "Route `http://www.alienfactory.co.uk/` must only contain a path. e.g. `/foo/bar`") {
+			r := Route(`http://www.alienfactory.co.uk/`, #handler1)
+		}
+	}
+
+	Void testUriStartWithSlash() {
+		verifyErrMsg(ArgErr#, "Route `foo/bar` must start with a slash. e.g. `/foo/bar`") {
+			r := Route(`foo/bar`, #handler1)
+		}
+	}	
+
 //	Void testHttpMethodMismatch() {
 //		httpReq := T_HttpRequest { it.httpMethod = "POST"; it.url = `/index` }
 //		match := Route(`/index`, #handler1).match(httpReq)
@@ -128,12 +128,6 @@
 ////		verifyEq(match[0],		"dude")
 ////		verifyEq(match[1],		"2")
 ////		verifyEq(match[2],		"argh")
-////
-////		// FIXME Regex limitation (yeah - I got 2 problems!)
-////		match = RegexRoute(Regex<|(?i)^\/org\/(.*?)\/?(.*?)$|>, #stackhubOrg, "GET", true).matchUri(`/org/StackHub`)
-////		verifyEq(match.size,	2)
-////		verifyEq(match[0],		null)		// :( should be null
-////		verifyEq(match[1],		"StackHub")	// :( should be "StackHub"
 ////	}
 //	
 //	Void testMatchGlobFromDocs() {
@@ -525,7 +519,8 @@
 //	
 //	Void defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") { }
 //	Void wotever(Str? p1, Str? p2) { }
-//}
+}
+
 
 internal const class T_HttpRequest : HttpRequestImpl {
 	override const Str 		httpMethod := "GET"

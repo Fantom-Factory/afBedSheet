@@ -36,28 +36,6 @@ internal const class BsErrMsgs {
 		"Directory listing not allowed: ${url}"
 	}
 
-	// ---- Routes ----
-
-	static Str route_notFound(Uri notFound) {
-		"No route found for '$notFound'"
-	}
-	
-	static Str route_shouldBePathOnly(Uri routeBase) {
-		"Route `$routeBase` must only contain a path. e.g. `/foo/bar`"
-	}
-
-	static Str route_shouldStartWithSlash(Uri routeBase) {
-		"Route `$routeBase` must start with a slash. e.g. `/foo/bar`"
-	}
-
-	static Str route_uriWillNeverMatchMethod(Uri url, Method method) {
-		"Route URL `${url}` will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
-	}
-
-	static Str routes_wrongType(Obj obj) {
-		"Contribution is NOT of type ${Route#.name} - ${obj.typeof.qname} - ${obj}"
-	}
-
 	// ---- Startup Validation ----
 	
 	static Str startup_hostMustHaveSchemeAndHost(Str configName, Uri host) {

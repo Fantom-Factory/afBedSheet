@@ -30,7 +30,7 @@ internal const class RoutesImpl : Routes {
 		
 		for (i := 0; i < rs.size; ++i) {
 			if (rs[i] isnot Route)
-				throw ArgErr(BsErrMsgs.routes_wrongType(rs[i]))
+				throw ArgErr("Contribution is NOT of type ${Route#.name} - ${rs[i].typeof.qname} - ${rs[i]}")
 		}
 		if (rs.isEmpty)
 			log.warn(BsLogMsgs.routes_gotNone)
@@ -61,9 +61,9 @@ internal const class RoutesImpl : Routes {
 			response	 := urlMatch.handler
 			canonicalUrl := urlMatch.canonicalUrl
 
-			// FIXME - this is cool - but breaks tests!
-//			if (httpRequest.url.pathOnly != canonicalUrl)
-//				response = Redirect.movedTemporarily(canonicalUrl)
+			// TODO use a canonicalUrlRedirect strategy
+			if (httpRequest.url.pathOnly != canonicalUrl)
+				response = Redirect.movedTemporarily(canonicalUrl)
 			
 			if (response is Method)
 				response = MethodCall(urlMatch.handler, urlMatch.wildcards)

@@ -100,8 +100,10 @@ const class Route {
 	**   Route(`/index/**`, MyClass#myMethod, "GET HEAD")
 	** 
 	new make(Uri url, Obj response, Str httpMethod := "GET") {
-		
-		// FIXME check for empty path, non-abs path, //, ** not at the end, etc
+		if (url.pathOnly != url)
+			throw ArgErr("Route `$url` must only contain a path. e.g. `/foo/bar`")
+		if (url.isPathRel)
+			throw ArgErr("Route `$url` must start with a slash. e.g. `/foo/bar`")
 		
 		this._urlGlob		= url
 		this._httpMethods	= httpMethod.upper.split
@@ -120,7 +122,7 @@ const class Route {
 				numWildcards++
 		}
 		if (numWildcards > method.params.size)
-			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(_urlGlob, method))
+			throw ArgErr(msg_uriWillNeverMatchMethod(_urlGlob, method))
 		
 		numMinArgs := 0
 		for (i := 0; i < method.params.size; ++i) {
@@ -128,7 +130,7 @@ const class Route {
 				numMinArgs++
 		}
 		if (numWildcards < numMinArgs)
-			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(_urlGlob, method))
+			throw ArgErr(msg_uriWillNeverMatchMethod(_urlGlob, method))
 		
 		if (numMinArgs == method.params.size)
 			return null
@@ -153,5 +155,9 @@ const class Route {
 	
 	override Str toStr() {
 		"${matchHint} : $responseHint"
+	}
+	
+	private static Str msg_uriWillNeverMatchMethod(Uri url, Method method) {
+		"Route URL `${url}` will never match method ${method.parent.qname} " + method.signature.replace("sys::", "")
 	}
 }
