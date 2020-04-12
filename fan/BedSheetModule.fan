@@ -131,6 +131,7 @@ const class BedSheetModule {
 		config[Field#]			= config.build(FieldProcessor#)
 		config[File#]			= config.build(FileProcessor#)
 		config[Func#]			= config.build(FuncProcessor#)
+		config[HttpRedirect#]	= config.build(HttpRedirectProcessor#)
 		config[HttpStatus#]		= config.build(HttpStatusProcessor#)
 		config[InStream#]		= config.build(InStreamProcessor#)
 		config[MethodCall#]		= config.build(MethodCallProcessor#)

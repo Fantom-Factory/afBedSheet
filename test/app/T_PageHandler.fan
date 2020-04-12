@@ -63,15 +63,15 @@ internal const class T_PageHandler {
 	// ---- Redirect Pages ----
 
 	Obj redirectPerm() {
-		Redirect.movedPermanently(`/movedPermanently`)
+		HttpRedirect.movedPermanently(`/movedPermanently`)
 	}
 
 	Obj redirectTemp() {
-		Redirect.movedTemporarily(`/movedTemporarily`)
+		HttpRedirect.movedTemporarily(`/movedTemporarily`)
 	}
 	
 	Obj afterPost() {
-		Redirect.afterPost(`/afterPost`)
+		HttpRedirect.afterPost(`/afterPost`)
 	}
 	
 	

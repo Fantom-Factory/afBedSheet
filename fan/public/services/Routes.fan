@@ -67,7 +67,7 @@ internal const class RoutesImpl : Routes {
 
 			// TODO use a canonicalUrlRedirect strategy
 			if (httpRequest.url.pathOnly != canonicalUrl)
-				response = Redirect.movedTemporarily(canonicalUrl)
+				response = HttpRedirect.movedTemporarily(canonicalUrl)
 			
 			return responseProcessors.processResponse(response)
 		}
