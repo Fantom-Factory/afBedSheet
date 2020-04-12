@@ -58,7 +58,7 @@ internal const class RoutesImpl : Routes {
 		urlMatch := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
 
 		if (urlMatch != null) {
-			response	 := urlMatch.handler
+			response	 := urlMatch.response
 			canonicalUrl := urlMatch.canonicalUrl
 
 			// TODO use a canonicalUrlRedirect strategy
@@ -66,7 +66,7 @@ internal const class RoutesImpl : Routes {
 				response = Redirect.movedTemporarily(canonicalUrl)
 			
 			if (response is Method)
-				response = MethodCall(urlMatch.handler, urlMatch.wildcards)
+				response = MethodCall(urlMatch.response, urlMatch.wildcards)
 			
 			return responseProcessors.processResponse(response)
 		}

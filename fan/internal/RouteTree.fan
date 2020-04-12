@@ -115,18 +115,20 @@ internal const class RouteTree {
     }
 }
 
-internal class RouteMatch {
-    Obj		handler
+** The result of matching a Route.
+@NoDoc // Advanced use only
+class RouteMatch {
+    Obj		response
 	Str[]	canonical
     Obj[]	wildcards
 
-	new make(Obj handler) {
-		this.handler	= handler
+	new make(Obj response) {
+		this.response	= response
 		this.canonical	= Str[,]
 		this.wildcards	= Obj[,]
 	}
 
-	** 'canonicalUrl' is what the handler was SET with
+	** 'canonicalUrl' is what the handler was SET with.
 	Uri canonicalUrl() {
 		url := ``
 		for (i := 0; i < canonical.size; ++i) {
