@@ -16,14 +16,14 @@ internal class TestBigFileHandling : AppTest {
 		
 		// no buff, no gzip
 		client.reqHeaders["Accept-encoding"] = "gzip"
-		getAsBuf(`/res/DeeDee.jpg`)
+		getAsBuf(`/res/DeeDee/.jpg`)
 		verifyEq(client.resHeaders["Content-Encoding"], null)
 		verifyEq(client.resHeaders["Content-Length"], 	"11868")
 		
 		// no buff, WITH gzip
 		client = WebClient()
 		client.reqHeaders["Accept-encoding"] = "gzip"
-		getAsBuf(`/res/DeeDee.css`)
+		getAsBuf(`/res/DeeDee/.css`)
 		verifyEq(client.resHeaders["Content-Encoding"], "gzip")
 		verifyEq(client.resHeaders["Content-Length"], 	null)	
 	}
@@ -34,14 +34,14 @@ internal class TestBigFileHandling : AppTest {
 		
 		// bufferedOut, no gzip
 		client.reqHeaders["Accept-encoding"] = "gzip"
-		getAsBuf(`/res/DeeDee.jpg`)
+		getAsBuf(`/res/DeeDee/.jpg`)
 		verifyEq(client.resHeaders["Content-Encoding"], null)
 		verifyEq(client.resHeaders["Content-Length"], 	"11868")
 		
 		// bufferedOut, WITH gzip
 		client = WebClient()
 		client.reqHeaders["Accept-encoding"] = "gzip"
-		getAsBuf(`/res/DeeDee.css`)
+		getAsBuf(`/res/DeeDee/.css`)
 		verifyEq(client.resHeaders["Content-Encoding"], "gzip")
 		verifyEq(client.resHeaders["Content-Length"], 	"11839")	
 	}

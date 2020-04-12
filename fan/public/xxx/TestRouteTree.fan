@@ -131,3 +131,48 @@ class TestUriTrees : Test {
 		verifyEq(myTree.get(`/foo.png`).wildcardSegments, Obj[`/foo.png`])
 	}
 }
+
+@Deprecated
+class RouteMatcher {
+	private RouteTreeBuilder routeTreeBob
+	private RouteTree?		 routeTree
+	
+	new make() {
+		this.routeTreeBob = RouteTreeBuilder()
+	}
+	
+	@Operator
+	This set(Uri url, Obj handler) {
+		routeTreeBob.set(url.path, handler)
+		return this
+	}
+	
+	@Operator
+	Route3? get(Uri url) {
+		routeTree = routeTreeBob.toConst
+
+		route := routeTree.get(url.path)
+		
+		if (route == null)
+			return null
+		
+		canonicalUrl := route.canonicalUrl
+		
+		return Route3(url, canonicalUrl, route.handler, route.wildcards)
+	}    
+}
+
+@Deprecated
+class Route3 {
+    Obj		handler
+	Uri		requestUrl
+    Uri		canonicalUrl
+    Str[]	wildcardSegments
+
+	new make(Uri requestUrl, Uri canonicalUrl, Obj handler, Str[] wildcardSegments) {
+		this.requestUrl = requestUrl
+		this.canonicalUrl = canonicalUrl
+		this.handler = handler
+		this.wildcardSegments = wildcardSegments
+	}
+}

@@ -85,7 +85,7 @@ internal const class T_PageHandler {
 		MethodCall(#noParams, [69])
 	}
 
-	Obj defaultParams(Str? p1, Str p2 := "p2", Str p3 := "p3") {
+	Obj defaultParams(Str? p1 := null, Str p2 := "p2", Str p3 := "p3") {
 		Text.fromPlain("$p1 $p2 $p3")
 	}
 
@@ -191,8 +191,8 @@ internal const class T_PageHandler {
 	
 	// ---- Dee Dee!!! ----
 
-	Obj deeDee(Uri uri) {
-		temp := File.createTemp("DeeDee", uri.toStr).deleteOnExit
+	Obj deeDee(Str str) {
+		temp := File.createTemp("DeeDee", str).deleteOnExit
 		typeof.pod.file(`/res/test/DeeDee.jpg`).copyTo(temp, ["overwrite":true])
 		return temp
 	}

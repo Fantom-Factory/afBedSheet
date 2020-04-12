@@ -528,8 +528,9 @@
 //}
 
 internal const class T_HttpRequest : HttpRequestImpl {
-	override const Str httpMethod := "GET"
-	override const Uri url
+	override const Str 		httpMethod := "GET"
+	override const Uri 		url
+	override	   Str[]	urlPath() { url.path }
 	new make(|This|in) : super(in) {
 		in(this)
 	}

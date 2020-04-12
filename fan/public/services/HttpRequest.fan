@@ -165,9 +165,11 @@ internal const class HttpRequestImpl : HttpRequest {
 		return rel.isPathAbs ? rel : `/` + rel
 	}
 	override Str[] urlPath() {
-		if (webReq.stash.containsKey("afBedSheet.urlPath") == false)
-			webReq.stash["afBedSheet.urlPath"] = webReq.modRel.path
-		return webReq.stash["afBedSheet.urlPath"]
+		webReq	:= webReq
+		stash	:= webReq.stash
+		if (stash.containsKey("afBedSheet.urlPath") == false)
+			stash["afBedSheet.urlPath"] = webReq.modRel.path
+		return stash["afBedSheet.urlPath"]
 	}
 	override Uri urlAbs() {
 		host := bedServer().host
@@ -209,9 +211,10 @@ internal const class HttpRequestImpl : HttpRequest {
 	}
 	private WebReq? webReq(Bool checked := true) {
 		// let's simplify and optimise, no point in querying IoC for this.
-		try return Actor.locals["web.req"]
-		catch (NullErr e) 
-			if (checked) throw Err("No web request active in thread"); else return null
+		webReq := Actor.locals["web.req"]
+		if (webReq == null && checked)
+			throw Err("No web request active in thread")
+		return webReq
 	}
 	static Uri? hostViaHeaders(Str:Str headers) {
 		proto	:= null as Str

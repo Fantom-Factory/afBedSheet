@@ -16,103 +16,22 @@ const class Route {
 		
 		this.urlGlob		= urlGlob
 		this.httpMethods	= httpMethod.upper.split
-		
 		this.matchHint		= httpMethod.justl(4) + " ${urlGlob}"
 		this.responseHint	= response is Method ? "-> " + ((Method) response).qname : response.toStr
-		
 		this.response		= response
-		
-		// FIXME sort out this shite!
-//		this.factory 		= wrapResponse(response).validate(urlGlob)
 	}
 
-//	@NoDoc @Deprecated
-//	Obj? match(HttpRequest httpRequest) { null }
-//	
-//	private RouteResponseFactory wrapResponse(Obj response) {
-//		if (response.typeof.fits(RouteResponseFactory#))
-//			return response
-//		if (response.typeof.fits(Method#))
-//			return MethodCallFactory(response)
-//		return NoOpFactory(response)
-//	}
-	
-	override Str toStr() {
-		"${matchHint} : $responseHint"
-	}
-}
-
-** Keep public cos it could prove useful!
-@NoDoc
-const mixin RouteResponseFactory {
-
-	abstract Bool matchSegments(Str?[] segments)
-
-	abstract Obj? createResponse(Str?[] segments)
-
-	virtual This validate(Uri url) { this }
-
-	** Helper method for subclasses
-	static Bool matchesMethod(Method method, Str?[] segments) {
-		if (segments.size > method.params.size)
-			return false
-		
-		for (i := 0; i < method.params.size; ++i) {
-			param := method.params[i]
-			
-			if (i >= segments.size && !param.hasDefault)
-				return false
-			
-			if (segments[i] == null && !param.type.isNullable) {
-				// convert nulls to "" and let the valueEncoder convert
-				segments[i] = ""
-			}
-		}
-		return true
-	}
-
-	** Helper method for subclasses
-	static Bool matchesParams(Type[] paramTypes, Str?[] segments) {
-		if (segments.size > paramTypes.size)
-			return false
-
-		for (i := 0; i < paramTypes.size; ++i) {
-			paramType := paramTypes[i]
-
-			if (i >= segments.size)
-				return false
-
-			if (segments[i] == null && !paramType.isNullable)
-				return false
-		}
-		return true
-	}
-}
-
-internal const class MethodCallFactory : RouteResponseFactory {
-	const Method method
-	
-	new make(Method method) {
-		this.method = method
-	}
-	
-	override Bool matchSegments(Str?[] segments) {
-		matchesMethod(method, segments)
-	}
-
-	override Obj? createResponse(Str?[] segments) {
-		MethodCall(method, segments)
-	}
-
-	override This validate(Uri url) {
-		path := url.path
+	** Creates Routes that match default method arguments
+	internal Route[]? _defRoutes() {
+		method	:= (Method) response
+		path	:= urlGlob.path
 		numWildcards := 0
 		for (i := 0; i < path.size; ++i) {
 			if (path[i] == "*" || path[i] == "**")
 				numWildcards++
 		}
 		if (numWildcards > method.params.size)
-			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(url, method))
+			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(urlGlob, method))
 		
 		numMinArgs := 0
 		for (i := 0; i < method.params.size; ++i) {
@@ -120,35 +39,31 @@ internal const class MethodCallFactory : RouteResponseFactory {
 				numMinArgs++
 		}
 		if (numWildcards < numMinArgs)
-			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(url, method))
+			throw ArgErr(BsErrMsgs.route_uriWillNeverMatchMethod(urlGlob, method))
 		
-		return this
+		if (numMinArgs == method.params.size)
+			return null
+		
+		routes	:= Route[,]
+		numWild	:= 0
+		for (i := 0; i < path.size; ++i) {
+			if (path[i] == "*" || path[i] == "**") {
+				if (numWild >= numMinArgs) {
+					url := ``
+					for (x := 0; x < i; ++x) {
+						url = url.plusSlash.plusName(path[x])
+					}
+					routes.add(Route(url, response, httpMethods.join(" ")))
+				}
+				numWild++
+			}
+		}
+		
+		return routes
 	}
-
-	override Str toStr() { "-> ${method.qname}()" }
-}
-
-internal const class NoOpFactory : RouteResponseFactory {
-	const Obj? response
-	new make(Obj? response) { this.response = response }
-	override Bool matchSegments(Str?[] segments) { true	}
-	override Obj? createResponse(Str?[] segments) { response }
-	override Str toStr() { response.toStr }
-}
-
-
-@Deprecated
-class Route3 {
-    Obj		handler
-	Uri		requestUrl
-    Uri		canonicalUrl
-    Str[]	wildcardSegments
-
-	new make(Uri requestUrl, Uri canonicalUrl, Obj handler, Str[] wildcardSegments) {
-		this.requestUrl = requestUrl
-		this.canonicalUrl = canonicalUrl
-		this.handler = handler
-		this.wildcardSegments = wildcardSegments
+	
+	override Str toStr() {
+		"${matchHint} : $responseHint"
 	}
 }
 
