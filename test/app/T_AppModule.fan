@@ -56,7 +56,7 @@ internal const class T_AppModule {
 
 		conf.add(Route(`/fh/test-src/**`, 		T_PageHandler#altFileHandler))
 		
-		conf.add(Route(`/res/DeeDee/*`, 			T_PageHandler#deeDee))
+		conf.add(Route(`/res/DeeDee/*`, 		T_PageHandler#deeDee))
 
 		conf.add(Route(`/saveAs/*`, 			T_PageHandler#saveAs))
 

@@ -109,3 +109,23 @@ internal const class RouteTree {
 		return null
     }
 }
+
+internal class RouteMatch {
+    Obj		handler
+	Str[]	canonical
+    Obj[]	wildcards
+
+	new make(Obj handler) {
+		this.handler	= handler
+		this.canonical	= Str[,]
+		this.wildcards	= Obj[,]
+	}
+
+	Uri canonicalUrl() {
+		url := ``
+		for (i := 0; i < canonical.size; ++i) {
+			url = url.plusSlash.plusName(canonical[i])
+		}
+		return url
+	}
+}

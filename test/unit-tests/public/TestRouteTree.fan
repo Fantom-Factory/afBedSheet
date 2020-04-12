@@ -1,5 +1,5 @@
 
-class TestUriTrees : Test {
+class TestRouteTree : Test {
 
 	// Test Basic Functionality
 	//   1 - Create myTree
@@ -59,13 +59,13 @@ class TestUriTrees : Test {
 		myTree.set(`/foo2/*/edit/*`, "test3")
 
 		verifyEq(myTree.get(`/wildCard`).handler, 			"test")
-		verifyEq(myTree.get(`/wildCard`).wildcardSegments,	Obj["wildCard"])
+		verifyEq(myTree.get(`/wildCard`).wildcards,	Obj["wildCard"])
 
 		verifyEq(myTree.get(`/foo/wildCard`).handler,			"test2")
-		verifyEq(myTree.get(`/foo/wildCard`).wildcardSegments,	Obj["wildCard"])
+		verifyEq(myTree.get(`/foo/wildCard`).wildcards,	Obj["wildCard"])
 
 		verifyEq(myTree.get(`/foo2/wildCard/edit/12`).handler,			"test3")
-		verifyEq(myTree.get(`/foo2/wildCard/edit/12`).wildcardSegments,	Obj["wildCard", "12"])
+		verifyEq(myTree.get(`/foo2/wildCard/edit/12`).wildcards,	Obj["wildCard", "12"])
 
 
 		verifyEq(myTree.get(`/foo/foo\/b\#ar`).handler, 			"test2")
@@ -108,7 +108,6 @@ class TestUriTrees : Test {
 		verifyEq(myTree.get(`/fOO`).canonicalUrl, `/foo`)
 
 		verifyEq(myTree.get(`/foO2/BaR/TrucK/What`).handler, "test2")
-		verifyEq(myTree.get(`/foO2/BaR/TrucK/What`).requestUrl, `/foO2/BaR/TrucK/What`)
 		verifyEq(myTree.get(`/foO2/BaR/TrucK/What`).canonicalUrl, `/foo2/bar/truck/what`)
 	}
 
@@ -123,17 +122,15 @@ class TestUriTrees : Test {
 
 		verifyEq(myTree.get(`/my/images/get/file/foo.png`).handler, "test")
 		verifyEq(myTree.get(`/My/Images/get/file/fOo.png`).canonicalUrl, `/my/images/get/file/foo.png`)
-		verifyEq(myTree.get(`/my/images/get/file/foo.png`).wildcardSegments, Obj[`/get/file/foo.png`])
-		verifyEq(myTree.get(`/my/images/get/file/foo.png`).requestUrl, `/my/images/get/file/foo.png`)
+		verifyEq(myTree.get(`/my/images/get/file/foo.png`).wildcards, Obj[`/get/file/foo.png`])
 
 		verifyEq(myTree.get(`/foo.png`).handler, "test2")
 		verifyEq(myTree.get(`/fOo.png`).canonicalUrl, `/foo.png`)
-		verifyEq(myTree.get(`/foo.png`).wildcardSegments, Obj[`/foo.png`])
+		verifyEq(myTree.get(`/foo.png`).wildcards, Obj[`/foo.png`])
 	}
 }
 
-@Deprecated
-class RouteMatcher {
+internal class RouteMatcher {
 	private RouteTreeBuilder routeTreeBob
 	private RouteTree?		 routeTree
 	
@@ -148,31 +145,7 @@ class RouteMatcher {
 	}
 	
 	@Operator
-	Route3? get(Uri url) {
-		routeTree = routeTreeBob.toConst
-
-		route := routeTree.get(url.path)
-		
-		if (route == null)
-			return null
-		
-		canonicalUrl := route.canonicalUrl
-		
-		return Route3(url, canonicalUrl, route.handler, route.wildcards)
+	RouteMatch? get(Uri url) {
+		routeTreeBob.toConst.get(url.path)
 	}    
-}
-
-@Deprecated
-class Route3 {
-    Obj		handler
-	Uri		requestUrl
-    Uri		canonicalUrl
-    Str[]	wildcardSegments
-
-	new make(Uri requestUrl, Uri canonicalUrl, Obj handler, Str[] wildcardSegments) {
-		this.requestUrl = requestUrl
-		this.canonicalUrl = canonicalUrl
-		this.handler = handler
-		this.wildcardSegments = wildcardSegments
-	}
 }

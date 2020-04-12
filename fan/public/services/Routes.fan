@@ -17,43 +17,71 @@ const mixin Routes {
 	abstract Bool processRequest(HttpRequest httpRequest)
 }
 
-//internal const class RoutesImpl : Routes {
-//	private const static Log log := Utils.log
-//
-//	override const Route[] routes
-//
-//	@Inject	private const ResponseProcessors	responseProcessors  
-//
-//	internal new make(Obj[] routes, |This|? in := null) {
-//		in?.call(this)
-//		rs := routes.flatten
-//		this.routes = rs.map |route->Route| {
-//			if (route isnot Route)
-//				throw ArgErr(BsErrMsgs.routes_wrongType(route))
-//			return route
-//		}
-//		if (routes.isEmpty)
-//			log.warn(BsLogMsgs.routes_gotNone)
-//	}
-//
-//	override Bool processRequest(HttpRequest httpRequest) {
-//		// loop through all routes looking for a non-null response
-//		handled := routes.eachWhile |route| {
-//			
-//			// FIXME
-////			response := route.match(httpRequest)
-//			response := null
-//
-//			if (response == null)
-//				return null
-//			
-//			// process any non-null results
-//			processed := responseProcessors.processResponse(response)
-//			
-//			return processed ? true : null
-//		}
-//
-//		return handled != null
-//	}
-//}
-//
+internal const class RoutesImpl : Routes {
+	@Inject	private const Log					log
+	@Inject	private const ResponseProcessors	responseProcessors
+			private const Str:RouteTree			routeTrees
+
+	override const Route[] routes
+
+	internal new make(Obj[] routes, |This|? in := null) {
+		in?.call(this)
+		rs := (Route[]) routes.flatten
+		
+		for (i := 0; i < rs.size; ++i) {
+			if (rs[i] isnot Route)
+				throw ArgErr(BsErrMsgs.routes_wrongType(rs[i]))
+		}
+		if (rs.isEmpty)
+			log.warn(BsLogMsgs.routes_gotNone)
+
+		routeTrees := Str:RouteTreeBuilder[:]
+		rs.each |route| {
+			
+			if (route._response is Method) {
+				defRoutes := route._defRoutes
+				if (defRoutes != null) {
+					defRoutes.each {
+						addRoute(routeTrees, it)
+					}
+				}
+			}
+			
+			addRoute(routeTrees, route)
+		}
+
+		this.routes		= rs.toImmutable
+		this.routeTrees = routeTrees.map { it.toConst }
+	}
+	
+	override Bool processRequest(HttpRequest httpRequest) {
+		urlMatch := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
+
+		if (urlMatch != null) {
+			response	 := urlMatch.handler
+			canonicalUrl := urlMatch.canonicalUrl
+
+			// FIXME - this is cool - but breaks tests!
+//			if (httpRequest.url.pathOnly != canonicalUrl)
+//				response = Redirect.movedTemporarily(canonicalUrl)
+			
+			if (response is Method)
+				response = MethodCall(urlMatch.handler, urlMatch.wildcards)
+			
+			return responseProcessors.processResponse(response)
+		}
+		
+		return false
+	}
+	
+	private Void addRoute(Str:RouteTreeBuilder routeTrees, Route route) {
+		for (i := 0; i < route._httpMethods.size; ++i) {
+			httpMethod	:= route._httpMethods[i]
+			routeTree	:= routeTrees[httpMethod]
+			if (routeTree == null)
+				routeTrees[httpMethod] = routeTree = RouteTreeBuilder()
+			
+			routeTree.set(route._urlGlob.path, route._response)
+		}
+	}
+}
