@@ -95,6 +95,11 @@ const class BedSheetModule {
 		Actor.locals["web.res"] ?: throw Err("No web request active in thread")
 	}
 
+	@Build { scopes=["httpRequest"] } 
+	RouteMatch? buildRouteMatch(HttpRequest httpRequest) {
+		httpRequest.stash["afBedSheet.routeMatch"]
+	}
+
 	@Contribute { serviceType=ActorPools# }
 	Void contributeActorPools(Configuration config) {
 		// used by ClientAssetCache only
@@ -121,16 +126,17 @@ const class BedSheetModule {
 
 	@Contribute { serviceType=ResponseProcessors# }
 	Void contributeResponseProcessors(Configuration config) {
-		config[Asset#]		= config.build(AssetProcessor#)
-		config[Err#]		= config.build(ErrProcessor#)
-		config[Field#]		= config.build(FieldProcessor#)
-		config[File#]		= config.build(FileProcessor#)
-		config[Func#]		= config.build(FuncProcessor#)
-		config[HttpStatus#]	= config.build(HttpStatusProcessor#)
-		config[InStream#]	= config.build(InStreamProcessor#)
-		config[MethodCall#]	= config.build(MethodCallProcessor#)
-		config[Redirect#]	= config.build(RedirectProcessor#)
-		config[Text#]		= config.build(TextProcessor#)
+		config[Asset#]			= config.build(AssetProcessor#)
+		config[Err#]			= config.build(ErrProcessor#)
+		config[Field#]			= config.build(FieldProcessor#)
+		config[File#]			= config.build(FileProcessor#)
+		config[Func#]			= config.build(FuncProcessor#)
+		config[HttpStatus#]		= config.build(HttpStatusProcessor#)
+		config[InStream#]		= config.build(InStreamProcessor#)
+		config[MethodCall#]		= config.build(MethodCallProcessor#)
+		config[Redirect#]		= config.build(RedirectProcessor#)
+		config[Text#]			= config.build(TextProcessor#)
+		config[RouteMethod#]	= config.build(RouteMethodProcessor#)
 	}
 
 	@Contribute { serviceType=ValueEncoders# }
@@ -194,6 +200,7 @@ const class BedSheetModule {
 		config["text/plain"]					= true
 		config["text/tab-separated-values"]		= true
 		config["text/xml"]						= true
+		config["text/zinc"]						= true
 
 		// compress web fonts
 		// see http://stackoverflow.com/questions/2871655/proper-mime-type-for-fonts#20723357

@@ -78,15 +78,9 @@
 ** If the class is 'const', the instance is cached for future use.
 ** 
 const class Route {
-	** A hint at what this route matches on. Used for debugging and in 404 / 500 error pages. 
-	const Str		matchHint
-
-	** A hint at what response this route returns. Used for debugging and in 404 / 500 error pages. 
-	const Str		responseHint
-	
-	internal const Uri		_urlGlob
-	internal const Str[]	_httpMethods
-	internal const Obj		_response
+	internal const Uri	_urlGlob
+	internal const Str	_httpMethod
+	internal const Obj	_response
 
 	** Creates a Route that matches on the given URL glob pattern. 
 	** 'urlGlob' must start with a slash "/". Example: 
@@ -106,15 +100,23 @@ const class Route {
 			throw ArgErr("Route `$url` must start with a slash. e.g. `/foo/bar`")
 		
 		this._urlGlob		= url
-		this._httpMethods	= httpMethod.upper.split
-		this._response		= response
-		this.matchHint		= httpMethod.justl(4) + " ${_urlGlob}"
-		this.responseHint	= response is Method ? "-> " + ((Method) response).qname : response.toStr
+		this._httpMethod	= httpMethod
+		this._response		= response is Method ? RouteMethod(response) : response
 	}
 
-	** Creates Routes that match default method arguments
-	internal Route[]? _defRoutes() {
-		method	:= (Method) _response
+	** A hint at what this route matches on. Used for debugging and in 404 / 500 error pages. 
+	virtual Str matchHint() {
+		_httpMethod.justl(4) + " ${_urlGlob}"
+	}
+
+	** A hint at what response this route returns. Used for debugging and in 404 / 500 error pages. 
+	virtual Str responseHint() {
+		_response.toStr
+	}
+
+	** Creates additional Routes that match default method arguments
+	@NoDoc	// for advanced Pillow use
+	Route[]? _defRoutes(Method method) {
 		path	:= _urlGlob.path
 		numWildcards := 0
 		for (i := 0; i < path.size; ++i) {
@@ -144,7 +146,7 @@ const class Route {
 					for (x := 0; x < i; ++x) {
 						url = url.plusSlash.plusName(path[x])
 					}
-					routes.add(Route(url, _response, _httpMethods.join(" ")))
+					routes.add(Route(url, _response, _httpMethod))
 				}
 				numWild++
 			}
@@ -154,7 +156,7 @@ const class Route {
 	}
 	
 	override Str toStr() {
-		"${matchHint} : $responseHint"
+		"${matchHint} : ${responseHint}"
 	}
 	
 	private static Str msg_uriWillNeverMatchMethod(Uri url, Method method) {

@@ -38,8 +38,10 @@ internal const class RoutesImpl : Routes {
 		routeTrees := Str:RouteTreeBuilder[:]
 		rs.each |route| {
 			
-			if (route._response is Method) {
-				defRoutes := route._defRoutes
+			// special RouteMethod handling to define handlers for methods with default arguments
+			if (route._response is RouteMethod) {
+				rMethod	  := (RouteMethod) route._response
+				defRoutes := route._defRoutes(rMethod.method)
 				if (defRoutes != null) {
 					defRoutes.each {
 						addRoute(routeTrees, it)
@@ -55,18 +57,17 @@ internal const class RoutesImpl : Routes {
 	}
 	
 	override Bool processRequest(HttpRequest httpRequest) {
-		urlMatch := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
+		routeMatch := routeTrees[httpRequest.httpMethod]?.get(httpRequest.urlPath)
 
-		if (urlMatch != null) {
-			response	 := urlMatch.response
-			canonicalUrl := urlMatch.canonicalUrl
+		if (routeMatch != null) {
+			httpRequest.stash["afBedSheet.routeMatch"] = routeMatch
+			
+			response	 := routeMatch.response
+			canonicalUrl := routeMatch.canonicalUrl
 
 			// TODO use a canonicalUrlRedirect strategy
 			if (httpRequest.url.pathOnly != canonicalUrl)
 				response = Redirect.movedTemporarily(canonicalUrl)
-			
-			if (response is Method)
-				response = MethodCall(urlMatch.response, urlMatch.wildcards)
 			
 			return responseProcessors.processResponse(response)
 		}
@@ -75,8 +76,9 @@ internal const class RoutesImpl : Routes {
 	}
 	
 	private Void addRoute(Str:RouteTreeBuilder routeTrees, Route route) {
-		for (i := 0; i < route._httpMethods.size; ++i) {
-			httpMethod	:= route._httpMethods[i]
+		httpMethods := route._httpMethod.upper.split
+		for (i := 0; i < httpMethods.size; ++i) {
+			httpMethod	:= httpMethods[i]
 			routeTree	:= routeTrees[httpMethod]
 			if (routeTree == null)
 				routeTrees[httpMethod] = routeTree = RouteTreeBuilder()

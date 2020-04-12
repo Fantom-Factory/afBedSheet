@@ -143,7 +143,7 @@ internal const class FileHandlerImpl : FileHandler {
 		
 	override Uri? findMappingFromLocalUrl(Uri localUri) {
 		Utils.validateLocalUrl(localUri, `/css/myStyles.css`)
-		// TODO: what if 2 dirs map to the same url at the same level?
+		// TODO what if 2 dirs map to the same url at the same level?
 
 		// use pathStr to knockout any unwanted query str
 		localUrl := localUri.pathStr.toUri

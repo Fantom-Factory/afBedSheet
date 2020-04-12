@@ -30,7 +30,7 @@ class MethodCall {
 	** If this 'MethodCall' wraps an instance method (not static) then the returned func's first (and only) 
 	** argument must be the target object. Otherwise the func takes no arguments.
 	** 
-	** TODO: Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
+	** TODO Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
 	virtual Func toImmutableFunc() {
 		iMeth := this.method
 		iArgs := this.args.toImmutable
