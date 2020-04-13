@@ -288,6 +288,7 @@ const class BedSheetModule {
 		config[BedSheetConfigIds.podHandlerBaseUrl]			= `/pod/`
 		config[BedSheetConfigIds.srcMapHandlerBaseUrl]		= iocEnv.isDev ? `/dev/` : null
 		config[BedSheetConfigIds.fileAssetCacheControl]		= null	// don't assume we know how long to cache for
+		config[BedSheetConfigIds.canonicalRouteStrategy]	= "redirect"
 		
 		config[BedSheetConfigIds.defaultErrResponse]		= MethodCall(DefaultErrResponse#process).toImmutableFunc
 		config[BedSheetConfigIds.defaultHttpStatusResponse]	= MethodCall(DefaultHttpStatusResponse#process).toImmutableFunc

@@ -1,4 +1,5 @@
 using afIoc::Inject
+using afIocConfig::Config
 using afIoc::Registry
 
 ** (Service) - Contribute your `Route` objects to this.
@@ -20,6 +21,7 @@ const mixin Routes {
 internal const class RoutesImpl : Routes {
 	@Inject	private const Log					log
 	@Inject	private const ResponseProcessors	responseProcessors
+	@Config private const Str					canonicalRouteStrategy
 			private const Str:RouteTree			routeTrees
 
 	override const Route[] routes
@@ -65,9 +67,9 @@ internal const class RoutesImpl : Routes {
 			response	 := routeMatch.response
 			canonicalUrl := routeMatch.canonicalUrl
 
-			// TODO use a canonicalUrlRedirect strategy
-			if (httpRequest.url.pathOnly != canonicalUrl)
-				response = HttpRedirect.movedTemporarily(canonicalUrl)
+			if (canonicalRouteStrategy == "redirect")
+				if (httpRequest.url.pathOnly != canonicalUrl)
+					response = HttpRedirect.movedTemporarily(canonicalUrl)
 			
 			return responseProcessors.processResponse(response)
 		}

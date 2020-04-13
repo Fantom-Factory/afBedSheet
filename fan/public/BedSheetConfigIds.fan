@@ -65,6 +65,16 @@ const mixin BedSheetConfigIds {
 	** Defaults to 'http://localhost:<PORT>'
 	static const Str host							:= "afBedSheet.host"
 
+	** Routes handling is case-insensitive and ignores directory URLs.
+	** If a Route is matched, but the URL is different to the prescribed URL this strategy defines what should happen next.   
+	** 
+	** Valid options are:
+	**  - 'ignore' - do nothing and process the Route
+	**  - 'redirect' - redirect to the prescribed canonical URL
+	** 
+	** Defaults to 'redirect'
+	static const Str canonicalRouteStrategy			:= "afBedSheet.canonicalRouteStrategy"
+
 
 
 	// --- Handlers ----

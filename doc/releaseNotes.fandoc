@@ -3,6 +3,7 @@ v1.5
 v1.5.16
 =======
  - New: Rewrote 'Route' handling service to be vastly simpler and optimised. Many thanks to [Phil Birch]`https://github.com/Donklord` for the initial implementation. (Potential breaking change.)
+ - New: Config ID 'canonicalRouteStrategy' for re-directing to non-prescribed URLsl
  - Chg: Renamed 'Redirect' to 'HttpRedirect'.
  - Chg: Tweaked 'ClientAsset.isModified()' logic so it hits the file system less.
  - Chg: Renamed IoC scope 'request' to 'httpRequest'. (Potential breaking change.)
