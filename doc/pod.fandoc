@@ -38,7 +38,7 @@ Quick Start [#quickStart]
         @Contribute { serviceType=Routes# }
         Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
-            conf.add(Route(`/hello/**`, HelloPage#hello))
+            conf.add(Route(`/hello/*/*`, HelloPage#hello))
         }
     }
 
@@ -159,13 +159,13 @@ class AppModule {
 }
 <pre
 
-Root Scope
+root Scope
 ==========
 In IoC's default 'root' scope, only one instance of the service is created for the entire application. It is how you share data and services between requests and threads. *Root scoped* services need to be 'const' classes.
 
-Request Scope
-=============
-In BedSheet's 'request' scope a new instance of the service will be created for each thread / web request. BedSheet's 'WebReq' and 'WebRes' are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
+httpRequest Scope
+==================
+In BedSheet's 'httpRequest' scope a new instance of the service will be created for each thread / web request. BedSheet's 'WebReq' and 'WebRes' are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
 
 Writing 'const' services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. See the Maps and Lists in Alien-Factory's [Concurrent]`pod:afConcurrent` pod for examples. The article [From One Thread to Another...]`article:from-one-thread-to-another` explains the principles in more detail.
 
@@ -175,8 +175,7 @@ The smart ones may be thinking that 'root' scoped services can only hold other '
 
 Request Routing [#requestRouting]
 *********************************
-The 'Routes' service maps HTTP request URLs to response objects and handler methods. It is where you would typically define
-how requests are handled. You configure the 'Routes' service by contributing instances of `Route`. Example:
+The 'Routes' service maps HTTP request URLs to response objects and handler methods. It is where you would typically define how requests are handled. You configure the 'Routes' service by contributing instances of `Route`. Example:
 
 pre>
 syntax: fantom
@@ -196,9 +195,7 @@ class AppModule {
 }
 <pre
 
-[Route]`Route` objects take a matching 'glob' and a response object. A response object is any object that BedSheet knows how to
-[process]`#responseObjects` or a 'Method' to be called. If a method is given, then request URL path segments are matched to the
-method parameters. See `Route` for more details.
+[Route]`Route` objects take a matching 'glob' and a response object. A response object is any object that BedSheet knows how to [process]`#responseObjects` or a 'Method' to be called. If a method is given, then request URL path segments are matched to the method parameters. See `Route` for more details.
 
 Note that 'Route' is actually a mixin, so you can create custom instances that match on anything, not just URLs.
 
@@ -210,9 +207,7 @@ Routing lesson over.
 
 Route Handling
 **************
-*Route Handler* is the name given to a class or method that is processed by a 'Route'. They process logic and generally don't pipe
-anything to the HTTP response stream. Instead they return a *Response Object* for further processing.
-For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` *response object*.
+*Route Handler* is the name given to a class or method that is processed by a 'Route'. They process logic and generally don't pipe anything to the HTTP response stream. Instead they return a *Response Object* for further processing. For example, the [Quick Start]`#quickStart` 'HelloPage' *route handler* returns a `Text` *response object*.
 
 Route handlers are written by the application developer, but a couple of common use-cases are bundled with BedSheet:
  - `FileHandler`: Maps request URLs to files on the file system.
@@ -229,9 +224,7 @@ See the `PodHandler` documentation for examples on how to serve up static pod fi
 
 Response Objects [#responseObjects]
 ***********************************
-*Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to
-process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return
-*Response Objects*, which will be handled by another *Response Processor*.
+*Response Objects* are returned from *Route Handlers*. It is then the job of [Response Processors]`ResponseProcessor` to process these objects, converting them into data to be sent to the client. *Response Processors* may themselves return *Response Objects*, which will be handled by another *Response Processor*.
 
 You can define *Response Processors* and process *Response Objects* yourself; but by default, BedSheet handles the
 following:
@@ -267,16 +260,13 @@ Note that response object processing is extensible, just contribute your own [Re
 
 Template Rendering
 ******************
-Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of BedSheet.
-That said, there a couple templating libraries *out there* and integrating them into BedSheet is relatively simple.
-For instance, Alien-Factory provides the following libraries:
+Templating, or formatting text (HTML or otherwise) is left for other 3rd party libraries and is not a conern of BedSheet. That said, there a couple templating libraries *out there* and integrating them into BedSheet is relatively simple. For instance, Alien-Factory provides the following libraries:
 
  - [efan]`pod:afEfan` for basic templating,
  - [Slim]`pod:afSlim` for concise HTML templating, and
  - [Pillow]`pod:afPillow` for integrating [efanXtra]`pod:afEfanXtra` components (may be used with [Slim]`pod:afSlim`!)
 
-Taking [Slim]`pod:afSlim` as an example, simply inject the Slim service into your *Route Handler* and use it to return a 'Text'
-response object:
+Taking [Slim]`pod:afSlim` as an example, simply inject the Slim service into your *Route Handler* and use it to return a 'Text' response object:
 
 pre>
 syntax: fantom
@@ -299,8 +289,7 @@ class IndexPage {
 
 BedSheet Middleware
 *******************
-When a HTTP request is received, it is passed through a pipeline of BedSheet `Middleware`; this is a similar to
-[Java Servlet Filters]`http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html`.
+When a HTTP request is received, it is passed through a pipeline of BedSheet `Middleware`; this is a similar to [Java Servlet Filters]`http://docs.oracle.com/javaee/5/api/javax/servlet/Filter.html`.
 If the request reaches the end of the pipeline without being processed, a 404 is returned.
 
 Middleware bundled with BedSheet include:
@@ -308,8 +297,7 @@ Middleware bundled with BedSheet include:
  - 'RequestLoggers': For logging HTTP request / responses.
  - 'Routes' : Performs the standard [request routing]`#requestRouting`
 
-You can define your own middleware to address cross cutting concerns such as authentication and authorisation.
-See the FantomFactory article [Basic HTTP Authentication With BedSheet]`article:basic-http-authentication-with-bedSheet` for working examples.
+You can define your own middleware to address cross cutting concerns such as authentication and authorisation. See the FantomFactory article [Basic HTTP Authentication With BedSheet]`article:basic-http-authentication-with-bedSheet` for working examples.
 
 
 
@@ -322,10 +310,10 @@ It displays (a shed load of) debugging information and is highly customisable:
 
 ![BedSheet's Verbose Err500 Page]`err500.png`
 
-The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public!
-So note that in a production environment (see [IocEnv]`pod:afIocEnv`) a simple HTTP status page is displayed instead.
+The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public! So note that in a production environment (see [IocEnv]`pod:afIocEnv`) a simple HTTP status page is displayed instead.
 
 > **ALIEN-AID:** BedSheet defaults to production mode, so to see the verbose error page you must switch to development mode.
+
 The easiest way to do this is to set an environment variable called 'ENV' with the value 'development'.
 See [IocEnv]`pod:afIocEnv` details.
 
@@ -339,8 +327,7 @@ Void contributeErrResponses(Configuration config) {
 }
 <pre
 
-Note that in the above example, 'ArgErr' and all subclasses of 'ArgErr' will be processed by 'MyErrHandler.process()'.
-A contribution for just 'Err' will act as a capture all and be used should a more precise match not be found.
+Note that in the above example, 'ArgErr' and all subclasses of 'ArgErr' will be processed by 'MyErrHandler.process()'. A contribution for just 'Err' will act as a capture all and be used should a more precise match not be found.
 
 You can also replace the default err response object:
 
@@ -361,9 +348,7 @@ When processing an Err, note that the thrown 'Err' is stored in 'HttpRequest.sta
 
 HTTP Status Processing [#httpStatusProcessing]
 **********************************************
-'HttpStatus' objects are handled by a `ResponseProcessor` that selects a contributed response object that corresponds to the
-HTTP status code. If no specific response object is found then the *default http status response object* is used. This default
-response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a '404 Not Found' error.
+'HttpStatus' objects are handled by a `ResponseProcessor` that selects a contributed response object that corresponds to the HTTP status code. If no specific response object is found then the *default http status response object* is used. This default response object displays BedSheet's HTTP Status Code page. This is what you see when you receive a '404 Not Found' error.
 
 ![BedSheet's 404 Status Page]`err404.png`
 
@@ -399,11 +384,9 @@ Void contributeApplicationDefaults(Configuration config) {
 Config Injection
 ****************
 BedSheet uses [IoC Config]`pod:afIocConfig` to give injectable '@Config' values. '@Config' values
-are essentially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider
-config values to be immutable once the app has started).
+are essentially a map of Str to immutable / constant values that may be set and overriden at application start up. (Consider config values to be immutable once the app has started).
 
-BedSheet sets the initial config values by contributing to the 'FactoryDefaults' service. An application may then override
-these values by contributing to the 'ApplicationDefaults' service.
+BedSheet sets the initial config values by contributing to the 'FactoryDefaults' service. An application may then override these values by contributing to the 'ApplicationDefaults' service.
 
 pre>
 syntax: fantom
@@ -419,7 +402,9 @@ Void contributeApplicationDefaults(Configuration conf) {
 All BedSheet config keys are listed in `BedSheetConfigIds` meaning the above can be more safely rewriten as:
 
 pre>
-  conf[BedSheetConfigIds.noOfStackFrames] = 100
+syntax: fantom
+
+conf[BedSheetConfigIds.noOfStackFrames] = 100
 <pre
 
 Use the '@Config' facet to inject config values:
@@ -431,8 +416,7 @@ syntax: fantom
 Int noOfStackFrames
 <pre
 
-The config mechanism is not just for BedSheet, you can use it too when creating 3rd Party libraries! Contributing initial
-values to 'FactoryDefaults' gives users of your library an easy way to override your values.
+The config mechanism is not just for BedSheet, you can use it too when creating 3rd Party libraries! Contributing initial values to 'FactoryDefaults' gives users of your library an easy way to override your values.
 
 
 
@@ -837,8 +821,8 @@ See Alien-Factory's [Fantom Quickstart for OpenShift]`https://bitbucket.org/Alie
 
 
 
-Tips
-****
+Hints
+*****
 All route handlers and processors are built by [IoC]`pod:afIoc` so feel free to '@Inject' DAOs and other services.
 
 BedSheet itself is built with [IoC]`pod:afIoc` so look at the

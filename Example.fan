@@ -11,7 +11,7 @@
         @Contribute { serviceType=Routes# }
         Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
-            conf.add(Route(`/hello/**`, HelloPage#hello))
+            conf.add(Route(`/hello/*/*`, HelloPage#hello))
         }
     }
     

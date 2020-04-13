@@ -1,8 +1,8 @@
-# BedSheet v1.5.14
+# BedSheet v1.5.16
 ---
 
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](https://fantom-lang.org/)
-[![pod: v1.5.14](http://img.shields.io/badge/pod-v1.5.14-yellow.svg)](http://eggbox.fantomfactory.org/pods/afBedSheet)
+[![pod: v1.5.16](http://img.shields.io/badge/pod-v1.5.16-yellow.svg)](http://eggbox.fantomfactory.org/pods/afBedSheet)
 [![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)](https://choosealicense.com/licenses/isc/)
 
 ## Overview
@@ -52,7 +52,7 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
         @Contribute { serviceType=Routes# }
         Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/index`, Text.fromHtml("<html><body>Welcome to BedSheet!</body></html>")))
-            conf.add(Route(`/hello/**`, HelloPage#hello))
+            conf.add(Route(`/hello/*/*`, HelloPage#hello))
         }
     }
     
@@ -153,18 +153,18 @@ By default const services are matched to the root scope and non-const services a
         Void defineServices(RegistryBuilder bob) {
             bob.addService(MyService1#).withScope("root")
     
-            bob.addService(MyService2#).withScope("request")
+            bob.addService(MyService2#).withScope("httpRequest")
         }
     }
     
 
-### Root Scope
+### root Scope
 
 In IoC's default `root` scope, only one instance of the service is created for the entire application. It is how you share data and services between requests and threads. *Root scoped* services need to be `const` classes.
 
-### Request Scope
+### httpRequest Scope
 
-In BedSheet's `request` scope a new instance of the service will be created for each thread / web request. BedSheet's `WebReq` and `WebRes` are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
+In BedSheet's `httpRequest` scope a new instance of the service will be created for each thread / web request. BedSheet's `WebReq` and `WebRes` are good examples this. Note in some situations this *per thread* object creation could be considered wasteful. In other situations, such as sharing database connections, it is not even viable.
 
 Writing `const` services (for the root scope) may be off-putting - because they're constant and can't hold mutable data, right!? ** *Wrong!* ** Const classes *can* hold *mutable* data. See the Maps and Lists in Alien-Factory's [Concurrent](http://eggbox.fantomfactory.org/pods/afConcurrent) pod for examples. The article [From One Thread to Another...](http://www.alienfactory.co.uk/articles/from-one-thread-to-another) explains the principles in more detail.
 
@@ -296,8 +296,10 @@ When BedSheet catches an Err it scans through a list of contributed response obj
 
 The BedSheet Err page is great for development, but not so great for production - stack traces tend to scare Joe Public! So note that in a production environment (see [IocEnv](http://eggbox.fantomfactory.org/pods/afIocEnv)) a simple HTTP status page is displayed instead.
 
-> **ALIEN-AID:** BedSheet defaults to production mode, so to see the verbose error page you must switch to development mode. The easiest way to do this is to set an environment variable called `ENV` with the value `development`. See [IocEnv](http://eggbox.fantomfactory.org/pods/afIocEnv) details.
+> **ALIEN-AID:** BedSheet defaults to production mode, so to see the verbose error page you must switch to development mode.
 
+
+The easiest way to do this is to set an environment variable called `ENV` with the value `development`. See [IocEnv](http://eggbox.fantomfactory.org/pods/afIocEnv) details.
 
 To handle a specific Err, contribute a response object to `ErrResponses`:
 
@@ -368,9 +370,9 @@ All BedSheet config keys are listed in [BedSheetConfigIds](http://eggbox.fantomf
     conf[BedSheetConfigIds.noOfStackFrames] = 100
     
 
-To inject config values in your services, use the `@Config` facet with conjunction with [IoC](http://eggbox.fantomfactory.org/pods/afIoc)'s `@Inject`:
+Use the `@Config` facet to inject config values:
 
-    @Inject @Config { id="afBedSheet.errPrinter.noOfStackFrames" }
+    @Config { id="afBedSheet.errPrinter.noOfStackFrames" }
     Int noOfStackFrames
     
 
@@ -633,7 +635,7 @@ For example, the following Wisp application places BedSheet under the path `poo/
     ** A tiny BedSheet app that returns 'Hello Mum!' for every request.
     const class TinyBedAppModule {
         @Contribute { serviceType=Routes# }
-        static Void contributeRoutes(Configuration conf) {
+        Void contributeRoutes(Configuration conf) {
             conf.add(Route(`/***`, Text.fromPlain("Hello Mum!")))
         }
     }
@@ -679,7 +681,7 @@ Following is a SkySpark Web [Ext](https://skyfoundry.com/doc/skyarcd/Ext) that d
         }
     
         override Void onService() {
-            registry.activeScope.createChild("request") {
+            registry.activeScope.createChild("httpRequest") {
                 // this is the actual call to BedSheet!
                 pipeline.service
             }
@@ -713,7 +715,7 @@ In a hurry to go live? Use [OpenShift](https://www.openshift.com/)! RedHat's Ope
 
 See Alien-Factory's [Fantom Quickstart for OpenShift](https://bitbucket.org/AlienFactory/openshift-fantom-quickstart) template for details on how to deploy your BedSheet application to OpenShift.
 
-## Tips
+## Hints
 
 All route handlers and processors are built by [IoC](http://eggbox.fantomfactory.org/pods/afIoc) so feel free to `@Inject` DAOs and other services.
 
