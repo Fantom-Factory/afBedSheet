@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afBedSheet"
 		summary = "A framework and IoC container for web applications"
-		version = Version("1.5.15")
+		version = Version("1.5.16")
 
 		meta = [
 			"pod.dis"			: "BedSheet",
@@ -15,17 +15,13 @@ class Build : BuildPod {
 			"repo.public"		: "true"
 		]
 
-		index = [
-			"afIoc.module"	: "afBedSheet::BedSheetModule"
-		]
-
 		depends = [
-			"sys        1.0.71 - 1.0",
-			"concurrent 1.0.71 - 1.0",
-			"web        1.0.71 - 1.0",
-			"wisp       1.0.71 - 1.0",
-			"util       1.0.71 - 1.0",
-			"inet       1.0.71 - 1.0",
+			"sys          1.0.71 - 1.0",
+			"concurrent   1.0.71 - 1.0",
+			"web          1.0.71 - 1.0",
+			"wisp         1.0.71 - 1.0",
+			"util         1.0.71 - 1.0",
+			"inet         1.0.71 - 1.0",
 
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.10 - 1.0",
@@ -35,8 +31,8 @@ class Build : BuildPod {
 			"afIocEnv     1.1.0  - 1.1",
 
 			// ---- Test ------------------------
-			"webmod 1.0",
-			"xml    1.0"
+			"webmod       1.0",
+			"xml          1.0"
 		]
 
 		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/middleware/`, `fan/internal/outstream/`, `fan/internal/processors/`, `fan/internal/utils/`, `fan/internal/watchdog/`, `fan/public/`, `fan/public/advanced/`, `fan/public/handlers/`, `fan/public/responses/`, `fan/public/services/`, `fan/public/utils/`, `test/app/`, `test/app-tests/`, `test/unit-tests/`, `test/unit-tests/public/`, `test/unit-tests/public/services/`, `test/unit-tests/public/utils/`]

@@ -24,13 +24,12 @@ class MethodCall {
 		this.args	= args
 	}
 	
+	// TODO Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
 	** Returns an immutable func that represents this method call. 
 	** May be used as a response object itself.
 	** 
 	** If this 'MethodCall' wraps an instance method (not static) then the returned func's first (and only) 
 	** argument must be the target object. Otherwise the func takes no arguments.
-	** 
-	** TODO Suggest design ideas for [implementing Obj.toImmutable()]`http://fantom.org/forum/topic/2263`
 	virtual Func toImmutableFunc() {
 		iMeth := this.method
 		iArgs := this.args.toImmutable

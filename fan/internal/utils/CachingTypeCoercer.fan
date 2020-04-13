@@ -8,7 +8,10 @@ internal const class CachingTypeCoercer : TypeCoercer {
 	** Cache the conversion functions
 	override protected |Obj->Obj|? createCoercionFunc(Type fromType, Type toType) {
 		key	:= "${fromType.qname}->${toType.qname}"
-		return cache.getOrAdd(key) { doCreateCoercionFunc(fromType, toType) } 
+		// try get() first to avoid creating the func - method.func binding doesn't work in JS
+		return cache.containsKey(key)
+			? cache.get(key)
+			: cache.getOrAdd(key) { doCreateCoercionFunc(fromType, toType) } 
 	}
 
 	** Clears the function cache 

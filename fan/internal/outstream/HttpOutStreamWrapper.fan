@@ -3,7 +3,7 @@ using afIoc::Scope
 using afIocConfig::Config
 
 internal const class HttpOutStreamWrapper {
-	@Inject private const |->Scope|			scope
+	@Inject private const |->Scope|			scopeFn
 	@Inject	private const HttpRequest		request
 	@Inject	private const HttpResponse 		response
 	@Inject	private const GzipCompressible 	gzipCompressible
@@ -19,7 +19,7 @@ internal const class HttpOutStreamWrapper {
 	OutStream bufferedWrapper(Obj delegate) {
 		response.disableBuffering
 			? delegate
-			: scope().build(HttpOutStreamBuffered#, [delegate])
+			: scopeFn().build(HttpOutStreamBuffered#, [delegate])
 	}
 
 	OutStream gzipWrapper(Obj delegate) {
@@ -32,10 +32,10 @@ internal const class HttpOutStreamWrapper {
 		contentType := response.isCommitted ? null : response.headers.contentType
 		acceptGzip	:= request.headers.acceptEncoding?.accepts("gzip") ?: false
 		doGzip 		:= !gzipDisabled && !response.disableGzip && acceptGzip && gzipCompressible.isCompressible(contentType)		
-		return		doGzip ? scope().build(HttpOutStreamGzip#, [delegate]) : delegate
+		return		doGzip ? scopeFn().build(HttpOutStreamGzip#, [delegate]) : delegate
 	}
 	
 	OutStream onCommitWrapper(Obj delegate) {
-		scope().build(HttpOutStreamOnCommit#, [delegate])
+		scopeFn().build(HttpOutStreamOnCommit#, [delegate])
 	}
 }

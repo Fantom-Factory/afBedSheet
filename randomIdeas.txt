@@ -1,0 +1,27 @@
+
+BedSheet::BedServer.toLocalUriFromClientUri()??
+
+BedSheet Stats --- put in BedServer?
+ - Uptime
+ - No of http reqs / res
+ - Http status code
+ - list sessions
+Historical TS data?
+
+Have a BedSheetStatsListener, make a default impl (in afBedSheetStats) that keeps stats in memory and makes pretty charts?
+
+New BedSheet project to serve serve static files from the cmd line
+	* see https://www.npmjs.com/package/http-server 
+
+
+
+Bad Ideas
+=========
+
+BedServer.toAbsoluteUrl() - should be able to convert both client AND local Urls
+ - problematic because we DON'T know if a url IS local or not - 'cos what if the local url starts with a repeated modBase?
+ - AND we would only care if BedSheet is used in a nested Mod - which we've never done!
+
+
+BedSheet to log middleware and routes to DEBUG -> easy to turn on and off
+ - how is this different to the Default Request Logger that logs to DEBUG? 

@@ -3,7 +3,6 @@ using afBeanUtils::BeanBuilder
 ** (Service) - Contribute your 'ValueEncoder' classes to this.
 ** 
 ** @uses a Configuration of 'Type:ValueEncoder' where 'Type' is what the 'ValueEncoder', um, encodes!
-@NoDoc	// don't overwhelm the masses!
 const mixin ValueEncoders {
 	
 	** Converts the given 'value' to Str via a contributed `ValueEncoder`. If no 'ValueEncoder' is 

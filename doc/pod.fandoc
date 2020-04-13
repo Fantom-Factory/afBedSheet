@@ -422,13 +422,12 @@ pre>
   conf[BedSheetConfigIds.noOfStackFrames] = 100
 <pre
 
-To inject config values in your services, use the '@Config' facet with conjunction with
-[IoC]`pod:afIoc`'s '@Inject':
+Use the '@Config' facet to inject config values:
 
 pre>
 syntax: fantom
 
-@Inject @Config { id="afBedSheet.errPrinter.noOfStackFrames" }
+@Config { id="afBedSheet.errPrinter.noOfStackFrames" }
 Int noOfStackFrames
 <pre
 
@@ -747,7 +746,7 @@ class Example {
 ** A tiny BedSheet app that returns 'Hello Mum!' for every request.
 const class TinyBedAppModule {
     @Contribute { serviceType=Routes# }
-    static Void contributeRoutes(Configuration conf) {
+    Void contributeRoutes(Configuration conf) {
         conf.add(Route(`/***`, Text.fromPlain("Hello Mum!")))
     }
 }

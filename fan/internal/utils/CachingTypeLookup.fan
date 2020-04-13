@@ -11,13 +11,19 @@ internal const class CachingTypeLookup : TypeLookup {
 	** Cache the lookup results
 	override Obj? findParent(Type type, Bool checked := true) {
 		nonNullable := type.toNonNullable
-		return parentCache.getOrAdd(nonNullable) { doFindParent(nonNullable, checked) } 
+		// try get() first to avoid creating the func
+		return parentCache.containsKey(nonNullable)
+			? parentCache.get(nonNullable)
+			: parentCache.getOrAdd(nonNullable) { doFindParent(nonNullable, checked) } 
 	}
 	
 	** Cache the lookup results
 	override Obj?[] findChildren(Type type, Bool checked := true) {
 		nonNullable := type.toNonNullable
-		return parentCache.getOrAdd(nonNullable) { doFindChildren(nonNullable, checked) } 
+		// try get() first to avoid creating the func
+		return childrenCache.containsKey(nonNullable)
+			? childrenCache.get(nonNullable)
+			: childrenCache.getOrAdd(nonNullable) { doFindChildren(nonNullable, checked) } 
 	}
 
 	** Clears the lookup cache 

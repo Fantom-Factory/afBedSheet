@@ -13,18 +13,20 @@ const class RequestLoggers : Middleware {
 	}
 	
 	override Void service(MiddlewarePipeline pipeline) {
-		requestLoggers.each { 
-			try it.logIncoming
+		for (i := 0; i < requestLoggers.size; ++i) {
+			requestLogger := requestLoggers[i]
+			try requestLogger.logIncoming
 			catch (Err err)
-				log.err("Error in ${it.typeof.qname}.logIncoming() - ignoring...", err)
+				log.err("Error in ${requestLogger.typeof.qname}.logIncoming() - ignoring...", err)			
 		}
 		
 		pipeline.service
 
-		requestLoggers.each { 
-			try it.logOutgoing
+		for (i := 0; i < requestLoggers.size; ++i) {
+			requestLogger := requestLoggers[i]
+			try requestLogger.logOutgoing
 			catch (Err err)
-				log.err("Error in ${it.typeof.qname}.logOutgoing() - ignoring...", err)				
+				log.err("Error in ${requestLogger.typeof.qname}.logOutgoing() - ignoring...", err)				
 		}
 	}
 }
@@ -33,7 +35,7 @@ const class RequestLoggers : Middleware {
 const class BasicRequestLogger : RequestLogger {
 	@Inject private const HttpRequest		httpRequest
 	@Inject private const HttpResponse		httpResponse
-	@Inject private const |->RequestState|	reqState
+	@Inject private const |->RequestState|	reqStateFn
 	@Inject private const Log				log
 			private const Int				minLogWidth
 	
@@ -45,7 +47,7 @@ const class BasicRequestLogger : RequestLogger {
 	override Void logOutgoing() {
 		if (log.isDebug) {
 			// attempt to keep the standard debug line at 120 chars (120 isn't special, it just seems to be a manageable width)
-			timeTaken := Duration.now.minus(reqState().startTime)
+			timeTaken := Duration.now.minus(reqStateFn().startTime)
 			// 42 is the preamble length ... [20:33:47 04-Oct-15] [debug] [afBedSheet] 
 			// 16 is the suffix ............ -> 200 (in 17ms)
 			msg := "${httpRequest.httpMethod.justl(4)} ${httpRequest.url.encode}".padr(minLogWidth - 42 - 16, '-') + "-> ${httpResponse.statusCode} (in ${timeTaken.toLocale.justr(4)})"

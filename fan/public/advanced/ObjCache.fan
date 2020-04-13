@@ -7,11 +7,11 @@ const class ObjCache {
 	private const AtomicMap		constTypeCache		:= AtomicMap()
 	private const AtomicList	autobuildTypeCache	:= AtomicList()
 	
-	@Inject	private const |->Scope|	activeScope
+	@Inject	private const |->Scope|	activeScopeFn
 
 	new make(|This|in) {
 		in(this) 
-		this.serviceTypeCache = activeScope().registry.serviceDefs.vals.map { it.type }
+		this.serviceTypeCache = activeScopeFn().registry.serviceDefs.vals.map { it.type }
 	}
 
 	@Operator
@@ -21,22 +21,22 @@ const class ObjCache {
 		
 		obj := null
 		if (serviceTypeCache.contains(type))
-			obj = activeScope().serviceByType(type)
+			obj = activeScopeFn().serviceByType(type)
 
 		if (constTypeCache.containsKey(type))
 			obj = constTypeCache[type]
 		
 		if (autobuildTypeCache.contains(type))
-			obj = activeScope().build(type)
+			obj = activeScopeFn().build(type)
 		
 		if (obj == null) {
 			if (type.isConst) {
-				obj = activeScope().build(type)
+				obj = activeScopeFn().build(type)
 				constTypeCache.set(type, obj)
 				
 			} else {
 				autobuildTypeCache.add(type)
-				obj = activeScope().build(type)
+				obj = activeScopeFn().build(type)
 			}
 		}
 

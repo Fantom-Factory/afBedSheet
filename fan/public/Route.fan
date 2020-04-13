@@ -115,8 +115,8 @@ const class Route {
 	}
 
 	** Creates additional Routes that match default method arguments
-	@NoDoc	// for advanced Pillow use
-	Route[]? _defRoutes(Method method) {
+	@NoDoc	// I thought I'd need this for Pillow - I don't
+	internal Route[]? _defRoutes(Method method) {
 		path	:= _urlGlob.path
 		numWildcards := 0
 		for (i := 0; i < path.size; ++i) {

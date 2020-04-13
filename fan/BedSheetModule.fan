@@ -96,7 +96,7 @@ const class BedSheetModule {
 	}
 
 	@Build { scopes=["httpRequest"] } 
-	RouteMatch? buildRouteMatch(HttpRequest httpRequest) {
+	RouteMatch buildRouteMatch(HttpRequest httpRequest) {
 		httpRequest.stash["afBedSheet.routeMatch"]
 	}
 
