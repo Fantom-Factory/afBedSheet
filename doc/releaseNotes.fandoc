@@ -2,6 +2,7 @@ v1.5
 ****
 v1.5.18
 =======
+ - Chg: Err is now thrown if you try to overwrite a Route with the same URL.
  - Bug: Canonical URL redirects from Route middleware did not honour query params.
 
 v1.5.16

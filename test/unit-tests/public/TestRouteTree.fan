@@ -106,6 +106,15 @@ class TestRouteTree : Test {
 		verifyEq(myTree.get(`/FOo.png`).canonicalUrl,	`/FOo.png`)
 		verifyEq(myTree.get(`/FOo.png`).wildcards,		Obj[`/FOo.png`])
 	}
+	
+	Void testOverwrite() {
+		myTree := RouteMatcher()
+		myTree.set(`/foo/bar/wot/ever`,	"test1")
+		
+		verifyErrMsg(Err#, "Route already mapped: /foo/bar/wot/ever -> test1 (sys::Str)") {
+			myTree.set(`/foo/bar/wot/ever`,	"test2")
+		}
+	}
 }
 
 internal class RouteMatcher {
@@ -113,7 +122,7 @@ internal class RouteMatcher {
 	private RouteTree?		 routeTree
 	
 	new make() {
-		this.routeTreeBob = RouteTreeBuilder()
+		this.routeTreeBob = RouteTreeBuilder(null)
 	}
 	
 	@Operator

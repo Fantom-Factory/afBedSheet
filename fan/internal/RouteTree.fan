@@ -2,9 +2,12 @@
 internal class RouteTreeBuilder {
 	private Str:RouteTreeBuilder	childTrees
 	private Str:Obj					handlers
-	private Str:Str					canonicalNames 
+	private Str:Str					canonicalNames		// required due to caseInsensitive
+	private RouteTreeBuilder?		parent
+	private Str?					urlSeg
 	
-	new make() {
+	new make(RouteTreeBuilder? parent) {
+		this.parent			= parent
 		this.childTrees		= Str:RouteTreeBuilder[:]	{ it.caseInsensitive = true }
 		this.handlers		= Str:Obj[:] 				{ it.caseInsensitive = true }
 		this.canonicalNames	= Str:Str[:] 				{ it.caseInsensitive = true }
@@ -16,8 +19,12 @@ internal class RouteTreeBuilder {
 		segment	:= segments.first ?: ""
 
 		if (depth <= 1) {
+			if (handlers.containsKey(segment))
+				throw Err("Route already mapped: $route -> ${handlers[segment]} (${handlers[segment].typeof})")
+
 			handlers		[segment] = handler
 			canonicalNames	[segment] = segment
+			urlSeg					  = segment
 
 		} else {
 			if (segment == "**")
@@ -25,10 +32,10 @@ internal class RouteTreeBuilder {
 			
 			childTree := childTrees[segment]
 			if (childTree == null)
-				// use "add()" so we don't overwrite
-				childTrees.add(segment, childTree = RouteTreeBuilder())
-			childTree[segments[1..-1]] = handler
-			canonicalNames[segment] = segment
+				childTrees[segment]		= childTree = RouteTreeBuilder(this)
+			childTree[segments[1..-1]]	= handler
+			canonicalNames[segment]		= segment
+			urlSeg						= segment
 		}
 
 		return this
@@ -40,6 +47,10 @@ internal class RouteTreeBuilder {
 	RouteTree toConst() {
 		constTrees := this.childTrees.map { it.toConst }
 		return RouteTree(constTrees, handlers, canonicalNames)
+	}
+	
+	Str route() {
+		(parent?.route ?: "") + "/" + urlSeg
 	}
 }
 

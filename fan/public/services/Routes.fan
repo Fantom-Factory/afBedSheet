@@ -85,7 +85,7 @@ internal const class RoutesImpl : Routes {
 			httpMethod	:= httpMethods[i]
 			routeTree	:= routeTrees[httpMethod]
 			if (routeTree == null)
-				routeTrees[httpMethod] = routeTree = RouteTreeBuilder()
+				routeTrees[httpMethod] = routeTree = RouteTreeBuilder(null)
 			
 			routeTree.set(route._urlGlob.path, route._response)
 		}
