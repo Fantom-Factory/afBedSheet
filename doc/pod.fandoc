@@ -239,7 +239,7 @@ following:
  - `HttpStatus` : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing]`#httpStatusProcessing`.)
  - [InStream]`sys::InStream` : The 'InStream' is piped to the client. The 'InStream' is guaranteed to be closed.
  - `MethodCall` : The method is called and the return value used for further processing. (*)
- - `Redirect` : Sends a 3xx redirect response to the client.
+ - `HttpRedirect` : Sends a 3xx redirect response to the client.
  - `Text` : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding 'Content-Type'.
 
 Because of the nature of response object processing it is possible, nay normal, to *chain* multiple response objects together. Example:

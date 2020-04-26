@@ -1,5 +1,9 @@
 v1.5
 ****
+v1.5.18
+=======
+ - Bug: Canonical URL redirects from Route middleware did not honour query params.
+
 v1.5.16
 =======
  - New: Rewrote 'Route' handling service to be vastly simpler and optimised. Many thanks to [Phil Birch]`https://github.com/Donklord` for the initial implementation. (Potential breaking change.)

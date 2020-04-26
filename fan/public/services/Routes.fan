@@ -67,10 +67,12 @@ internal const class RoutesImpl : Routes {
 			response	 := routeMatch.response
 			canonicalUrl := routeMatch.canonicalUrl
 
-			if (canonicalRouteStrategy == "redirect")
-				if (httpRequest.url.pathOnly != canonicalUrl)
-					response = HttpRedirect.movedTemporarily(canonicalUrl)
-			
+			if (canonicalRouteStrategy == "redirect") {
+				httpUrl := httpRequest.url
+				if (httpUrl.pathOnly != canonicalUrl)
+					response = HttpRedirect.movedTemporarily(canonicalUrl.plusQuery(httpUrl.query))
+			}
+
 			return responseProcessors.processResponse(response)
 		}
 		

@@ -16,6 +16,7 @@ const mixin HttpCookies {
 	** Cookies replace any other cookie with the same name.
 	** 
 	** Throws Err if response is already committed.
+	** 
 	** @see `web::WebRes.cookies`
 	abstract Void add(Cookie cookie)
 	
@@ -43,7 +44,7 @@ internal const class HttpCookiesImpl : HttpCookies {
 	new make(|This|in) { in(this) } 
 
 	override Cookie? get(Str name) {
-		all.find { it.name.equalsIgnoreCase(name) }	// ?: (checked ? throw NotFoundErr(BsErrMsgs.cookieNotFound(name), all) : null)
+		all.find { it.name.equalsIgnoreCase(name) }
 	}
 
 	override Void add(Cookie cookie) {
@@ -68,7 +69,7 @@ internal const class HttpCookiesImpl : HttpCookies {
 			return req
 		}
 		
-		return res	// ?: (checked ? throw NotFoundErr(BsErrMsgs.cookieNotFound(cookieName), all) : null)
+		return res
 	}
 	
 	override Cookie[] all() {
