@@ -19,7 +19,7 @@
 ** And this redirects any request for '/home' to '/greet'
 ** 
 **   syntax: fantom 
-**   Route(`/home`, Redirect.movedTemporarily(`/greet`)) 
+**   Route(`/home`, HttpRedirect.movedTemporarily(`/greet`)) 
 ** 
 ** You can use glob expressions in your URL, so:
 ** 

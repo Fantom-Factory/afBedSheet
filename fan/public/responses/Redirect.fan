@@ -4,7 +4,7 @@
 ** differences in HTTP 1.0 and HTTP 1.1. 
 ** 
 **   syntax: fantom
-**   Redirect.movedTemporarily(`/newUrl`)
+**   HttpRedirect.movedTemporarily(`/newUrl`)
 ** 
 ** @see
 **  - `http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection`
@@ -54,7 +54,7 @@ const final class HttpRedirect {
 	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
 	** 
 	**   syntax: fantom
-	**   throw Redirect.movedPermanentlyErr(`/some/other/page.html`)
+	**   throw HttpRedirect.movedPermanentlyErr(`/some/other/page.html`)
 	static ReProcessErr movedPermanentlyErr(Uri redirectTo) {
 		ReProcessErr(HttpRedirect.movedPermanently(redirectTo))
 	}
@@ -63,7 +63,7 @@ const final class HttpRedirect {
 	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
 	** 
 	**   syntax: fantom
-	**   throw Redirect.movedTemporarilyErr(`/some/other/page.html`)
+	**   throw HttpRedirect.movedTemporarilyErr(`/some/other/page.html`)
 	static ReProcessErr movedTemporarilyErr(Uri redirectTo) {
 		ReProcessErr(HttpRedirect.movedTemporarily(redirectTo))
 	}
@@ -72,7 +72,7 @@ const final class HttpRedirect {
 	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
 	** 
 	**   syntax: fantom
-	**   throw Redirect.afterPostErr(`/some/other/page.html`)
+	**   throw HttpRedirect.afterPostErr(`/some/other/page.html`)
 	static ReProcessErr afterPostErr(Uri redirectTo) {
 		ReProcessErr(HttpRedirect.afterPost(redirectTo))
 	}
@@ -92,7 +92,7 @@ const final class HttpRedirect {
 ** differences in HTTP 1.0 and HTTP 1.1. 
 ** 
 **   syntax: fantom
-**   Redirect.movedTemporarily(`/newUrl`)
+**   HttpRedirect.movedTemporarily(`/newUrl`)
 ** 
 ** @see
 **  - `http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#3xx_Redirection`
@@ -146,27 +146,27 @@ const final class Redirect {
 	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
 	** 
 	**   syntax: fantom
-	**   throw Redirect.movedPermanentlyErr(`/some/other/page.html`)
+	**   throw HttpRedirect.movedPermanentlyErr(`/some/other/page.html`)
 	static ReProcessErr movedPermanentlyErr(Uri redirectTo) {
-		ReProcessErr(Redirect.movedPermanently(redirectTo))
+		ReProcessErr(HttpRedirect.movedPermanently(redirectTo))
 	}
 
 	** Throw to send a redirect to the client. 
 	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
 	** 
 	**   syntax: fantom
-	**   throw Redirect.movedTemporarilyErr(`/some/other/page.html`)
+	**   throw HttpRedirect.movedTemporarilyErr(`/some/other/page.html`)
 	static ReProcessErr movedTemporarilyErr(Uri redirectTo) {
-		ReProcessErr(Redirect.movedTemporarily(redirectTo))
+		ReProcessErr(HttpRedirect.movedTemporarily(redirectTo))
 	}
 
 	** Throw to send a redirect to the client. 
 	** Use in exceptional cases where it may not be suitable / possible to return a 'Redirect' instance.
 	** 
 	**   syntax: fantom
-	**   throw Redirect.afterPostErr(`/some/other/page.html`)
+	**   throw HttpRedirect.afterPostErr(`/some/other/page.html`)
 	static ReProcessErr afterPostErr(Uri redirectTo) {
-		ReProcessErr(Redirect.afterPost(redirectTo))
+		ReProcessErr(HttpRedirect.afterPost(redirectTo))
 	}
 	
 	@NoDoc

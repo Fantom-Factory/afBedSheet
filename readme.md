@@ -182,7 +182,7 @@ The `Routes` service maps HTTP request URLs to response objects and handler meth
         @Contribute { serviceType=Routes# }
         Void contributeRoutes(Configuration config) {
     
-            config.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
+            config.add(Route(`/home`,  HttpRedirect.movedTemporarily(`/index`)))
             config.add(Route(`/index`, IndexPage#service))
             config.add(Route(`/work`,  WorkPage#service, "POST"))
         }
@@ -230,7 +230,7 @@ You can define *Response Processors* and process *Response Objects* yourself; bu
 * [HttpStatus](http://eggbox.fantomfactory.org/pods/afBedSheet/api/HttpStatus) : An appropriate response object is selected from contributed HTTP status responses. (See [HTTP Status Processing](#httpStatusProcessing).)
 * [InStream](https://fantom.org/doc/sys/InStream.html) : The `InStream` is piped to the client. The `InStream` is guaranteed to be closed.
 * [MethodCall](http://eggbox.fantomfactory.org/pods/afBedSheet/api/MethodCall) : The method is called and the return value used for further processing. (*)
-* [Redirect](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Redirect) : Sends a 3xx redirect response to the client.
+* [HttpRedirect](http://eggbox.fantomfactory.org/pods/afBedSheet/api/HttpRedirect) : Sends a 3xx redirect response to the client.
 * [Text](http://eggbox.fantomfactory.org/pods/afBedSheet/api/Text) : The text (be it plain, json, xml, etc...) is sent to the client with a corresponding `Content-Type`.
 
 

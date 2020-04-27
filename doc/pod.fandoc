@@ -188,7 +188,7 @@ class AppModule {
     @Contribute { serviceType=Routes# }
     Void contributeRoutes(Configuration config) {
 
-        config.add(Route(`/home`,  Redirect.movedTemporarily(`/index`)))
+        config.add(Route(`/home`,  HttpRedirect.movedTemporarily(`/index`)))
         config.add(Route(`/index`, IndexPage#service))
         config.add(Route(`/work`,  WorkPage#service, "POST"))
     }

@@ -10,7 +10,7 @@ const class BedSheetErr : Err {
 ** example:
 **
 **   syntax: fantom 
-**   throw ReProcessErr(Redirect.movedTemporarily(`/admin/login`))
+**   throw ReProcessErr(HttpRedirect.movedTemporarily(`/admin/login`))
 const class ReProcessErr : Err {
 	
 	** I'm not proud of this but some response objs just aren't const (e.g. Pillow PageMeta)
