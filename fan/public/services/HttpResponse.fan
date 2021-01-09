@@ -2,6 +2,7 @@ using afIoc::Inject
 using web::Cookie
 using web::WebRes
 using concurrent::Actor
+using web::WebUtil
 
 ** (Service) - An injectable 'const' version of [WebRes]`web::WebRes`.
 ** 
@@ -105,7 +106,7 @@ internal const class HttpResponseImpl : HttpResponse {
 		reqState().responseBody
 	}
 	override Void saveAsAttachment(Str fileName) {
-		headers.contentDisposition = "attachment; filename=${fileName}"
+		headers.contentDisposition = "attachment; filename=" + WebUtil.toQuotedStr(fileName)
 		headers.contentType = fileName.toUri.mimeType
 	}
 	override Void onCommit(|HttpResponse| fn) {

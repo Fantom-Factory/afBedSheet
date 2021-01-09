@@ -1,5 +1,10 @@
 v1.5
 ****
+v1.5.18
+=======
+ - Chg: The 'filename' directive the 'Content-Disposition' HTTP header as set by 'HttpResponse.saveAsAttachment()' is now quoted.
+        This fixes an issue in new versions of FireFox. Thanks to Sean Rosin of BuildingFit for reporting.
+
 v1.5.16
 =======
  - New: Rewrote 'Route' handling service to be vastly simpler and optimised. Many thanks to [Phil Birch]`https://github.com/Donklord` for the initial implementation. (Potential breaking change.)
