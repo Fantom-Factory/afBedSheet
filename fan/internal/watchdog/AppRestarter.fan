@@ -76,9 +76,9 @@ internal class AppRestarterState {
 
 	static Process fanProcess(Str[] cmd) {
 		homeDir		:= Env.cur.homeDir.normalize
-		classpath	:= [homeDir + `lib/java/sys.jar`, homeDir + `lib/java/jline.jar`].join(File.pathSep) { it.osPath } 
-		javaOpts	:= Env.cur.config(Pod.find("sys"), "java.options", "")
-		args 		:= ["java", javaOpts, "-cp", classpath, "-Dfan.home=${homeDir.osPath}", "fanx.tools.Fan"].addAll(cmd)
+		classpath	:= [homeDir + `lib/java/sys.jar`, homeDir + `lib/java/jline.jar`].findAll { it.exists }.join(File.pathSep) { it.osPath } 
+		javaOpts	:= Env.cur.config(Pod.find("sys"), "java.options", null)
+		args 		:= ["java", javaOpts, "-cp", classpath, "-Dfan.home=${homeDir.osPath}", "fanx.tools.Fan"].addAll(cmd).exclude { it == null }
 		return Process(args)
 	}
 }
