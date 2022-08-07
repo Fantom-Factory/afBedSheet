@@ -1,9 +1,10 @@
 v1.5
 ****
+
 v1.5.18
 =======
- - Chg: The 'filename' directive the 'Content-Disposition' HTTP header as set by 'HttpResponse.saveAsAttachment()' is now quoted.
-        This fixes an issue in new versions of FireFox. Thanks to Sean Rosin of BuildingFit for reporting.
+ - New: 'HttpStatus.toErr()' to replace 'HttpStatus.makeErr()'.
+ - Chg: The 'filename' directive the 'Content-Disposition' HTTP header as set by 'HttpResponse.saveAsAttachment()' is now quoted. This fixes an issue in new versions of FireFox. Thanks to Sean Rosin of BuildingFit for reporting.
  - Bug: Fixed a bug with Windows 10 that threw a "Java class not found error" when launching a web app with the development proxy enabled.
 
 v1.5.16

@@ -30,8 +30,19 @@ const class HttpStatus {
 	**
 	**   syntax: fantom
 	**   throw HttpStatus.makeErr(404, "Page Not Found")
+	** 
+	** *Consider using 'toErr()' instead.*
 	static ReProcessErr makeErr(Int statusCode, Str? statusMsg := HttpResponse.statusMsg[statusCode], Obj? data := null) {
 		ReProcessErr(HttpStatus(statusCode, statusMsg, data))
+	}
+
+	** Convert this status to an Err to be thrown.
+	** Use in exceptional cases where it may not be suitable / possible to return a 'HttpStatus' instance.
+	**
+	**   syntax: fantom
+	**   throw HttpStatus(404, "Page Not Found").toErr
+	ReProcessErr toErr() {
+		ReProcessErr(this)
 	}
 
 	** Returns '${code} - ${msg}'
