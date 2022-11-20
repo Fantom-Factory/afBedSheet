@@ -168,10 +168,14 @@ internal const class FileHandlerImpl : FileHandler {
 
 	ClientAsset? _fromLocalUrl(Uri localUrl, Bool checked, Bool cache) {
 		prefix	:= findMappingFromLocalUrl(localUrl)
-		
+
 		if (prefix == null)
 			if (checked) throw BedSheetNotFoundErr(BsErrMsgs.fileHandler_urlNotMapped(localUrl), directoryMappings.keys) 
 			else return null
+
+		// we can't serve up directories!
+		if (localUrl.isDir)
+			return null
 
 		// We pass 'false' to prevent Errs being thrown if the uri is a dir but doesn't end in '/'.
 		// The 'false' appends a '/' automatically - it's nicer web behaviour
