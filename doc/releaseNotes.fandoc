@@ -5,6 +5,7 @@ v1.5.18
 =======
  - New: 'HttpStatus.toErr()' to replace 'HttpStatus.makeErr()'.
  - Chg: The 'filename' directive the 'Content-Disposition' HTTP header as set by 'HttpResponse.saveAsAttachment()' is now quoted. This fixes an issue in new versions of FireFox. Thanks to Sean Rosin of BuildingFit for reporting.
+ - Chg: Hardened up Quality Value parsing to allow for parameters.
  - Bug: Fixed a bug with Windows 10 that threw a "Java class not found error" when launching a web app with the development proxy enabled.
  - Bug: Directory URLs would cause an Err in FileHandler.
 
