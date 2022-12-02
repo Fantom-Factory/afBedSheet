@@ -74,25 +74,25 @@ const mixin HttpRequest {
 
 	** Attempts to determine the original 'host' HTTP request header.
 	** 
-	** Proxy servers such as httpd or AWS ELB, often replace the originating client's 'host' header with their own.
-	** This method attempts to untangle common proxy request headers to reform the original 'host'.
+	** Proxy servers such as httpd or AWS ELB, often replace the originating client's 'Host' header with their own.
+	** This method attempts to untangle common proxy request headers to reform the original 'Host'.
 	** 
-	** The 'host' can be useful to ensure clients contact the correct (sub) domain, and web apps may redirect them if not. 
+	** The 'Host' can be useful to ensure clients contact the correct (sub) domain, and web apps may redirect them if not. 
 	** 
-	** The 'host' value is formed by inspecting, in order:
+	** The 'Host' value is formed by inspecting, in order:
 	** 
-	**  1. the 'forwarded' HTTP header as per [RFC 7239]`https://tools.ietf.org/html/rfc7239`
-	**  1. the 'X-Forwarded-XXXX' de-facto standard headers
-	**  1. the 'host' standard headers
+	**  1. the 'Forwarded' HTTP header as per [RFC 7239]`https://tools.ietf.org/html/rfc7239`
+	**  1. the 'X-Forwarded-XXXX' de-facto standard header
+	**  1. the 'Host' standard header
 	** 
 	** Typical responses may be:
 	** 
 	**   http://fantom-lang.org/
 	**   //fantom-lang.org/
 	** 
-	** Note how the scheme may be missing if it can not be reliably obtained.
+	** The scheme may be missing if it can not be reliably obtained.
 	** 
-	** Note HTTP 1.0 requests are not required to send a host header, for which this method returns 'null'.
+	** HTTP 1.0 requests are not required to send a host header, for which this method returns 'null'.
 	abstract Uri? host()
 
 	** The accepted locales for this request based on the "Accept-Language" HTTP header. List is 
