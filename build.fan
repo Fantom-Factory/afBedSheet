@@ -41,4 +41,3 @@ class Build : BuildPod {
 		meta["afBuild.testPods"]	= "webmod xml"
 	}
 }
-
