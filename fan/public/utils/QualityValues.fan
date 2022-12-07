@@ -9,8 +9,18 @@ class QualityValues {
 
 	private HttpQVal[]	qVals
 	
-	private new make(HttpQVal[] qVals) {
+	private new fromHttpQVals(HttpQVal[] qVals) {
 		this.qVals = qVals
+	}
+	
+	** Creates a new 'QualityValues' instance from the given map.
+	static new make(Str:Float qvals) {
+		// used by afHaystackOps for StackHub
+		http := HttpQVal[,]
+		qvals.each |v, k| {
+			http.add(HttpQVal("$k;q=$v"))
+		}
+		return fromHttpQVals(http)
 	}
 	
 	** Parses a HTTP header value into a 'name:qvalue' map.
