@@ -1,16 +1,6 @@
 
 // FIXME killme BsLogMsgs
 internal const class BsLogMsgs {
-	
-	// ---- ProxyMod ------------------------------------------------------------------------------
-	
-	static Str proxyMod_starting(Int proxyPort) {
-		"Starting BedSheet Watchdog on port $proxyPort"
-	}	
-
-	static Str proxyMod_forceRestart() {
-		"Website is down -> forcing a restart..."
-	}	
 
 	// ---- AppRestarter --------------------------------------------------------------------------
 
