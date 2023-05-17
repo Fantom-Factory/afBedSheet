@@ -22,7 +22,7 @@ const class HttpStatus {
 	new make(Int statusCode, Str? statusMsg := HttpResponse.statusMsg[statusCode], Obj? data := null) {
 		this.code 	= statusCode
 		this.msg 	= statusMsg ?: ""	// makes life easier if msg is not-null - see BedSheetPagesImpl
-		this.data 	= data.toImmutable
+		this.data 	= data?.toImmutable
 	}
 
 	** Throw to send a HTTP Status to the client.

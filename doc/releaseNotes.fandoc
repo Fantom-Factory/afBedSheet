@@ -1,5 +1,8 @@
 v1.5
 ****
+v1.5.20
+=======
+ - Bug: Fix an NPE in the ctor of 'HttpStatus'.
 
 v1.5.18
 =======
