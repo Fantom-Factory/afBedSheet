@@ -4,5 +4,5 @@
 	<buildpathentry kind="src" path="test/app"/>
 	<buildpathentry kind="src" path="test/app-tests"/>
 	<buildpathentry kind="src" path="test/unit-tests"/>
-	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
+	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER/com.xored.fanide.internal.debug.ui.launcher.GenericFanInstallType/fantom-1.0.78"/>
 </buildpath>

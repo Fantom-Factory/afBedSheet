@@ -192,18 +192,16 @@ internal const class HttpRequestImpl : HttpRequest {
 	override SocketOptions socketOptions()	{
 		webReq.socketOptions
 	}
-	override Void parseMultiPartForm(|Str, InStream, Str:Str| cb) {
-		// copied from 'webReq.parseMultiPartForm()' but uses body.in.
-		mime := MimeType(this.headers["Content-Type"])
-		if (mime.subType != "form-data") throw Err("Invalid content-type: $mime")
-		boundary := mime.params["boundary"] ?: throw Err("Missing boundary param: $mime")
-		WebUtil.parseMultiPart(body.in, boundary) |partHeaders, partIn| {
-			cd			:= partHeaders["Content-Disposition"] ?: throw Err("Multi-part missing Content-Disposition")
-			semi		:= cd.index(";") ?: throw Err("Expected semicolon; Content-Disposition: $cd")
-			params		:= MimeType.parseParams(cd[cd.index(";")+1..-1])
-			formName	:= params["name"] ?: throw Err("Expected name param; Content-Disposition: $cd")
-			cb(formName, partIn, partHeaders)
-			try { partIn.skip(Int.maxVal) } catch {} // drain stream
+	override Void parseMultiPartForm(|Str partName, InStream in, Str:Str headers| fn) {
+		mime := headers.contentType
+		if (mime?.subType != "form-data")		throw Err("Invalid content-type: $mime")
+		boundary := mime.params["boundary"] ?:	throw Err("Missing boundary param: $mime")
+
+		AfxMultipartInStream.parseMultipart(body.in, boundary) |Str:Str partHeaders, InStream partIn| {
+			formName := MimeType.parseParams(partHeaders.get("Content-Disposition", ""), false)?.get("name")
+				?: throw Err("Multi-part has a dodgy Content-Disposition: " + partHeaders["Content-Disposition"])
+
+			fn(formName, partIn, partHeaders)
 		}
 	}
 	override Str toStr() {
