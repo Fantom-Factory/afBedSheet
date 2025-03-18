@@ -161,6 +161,10 @@ internal const class HttpRequestImpl : HttpRequest {
 		while (rel.toStr.startsWith("//"))
 			rel = rel.toStr[1..-1].toUri
 		
+		// make sure scheme and host are dropped
+		if (rel.isAbs || rel.host != null)
+			rel = rel.getRange(1..-1)
+		
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel
 	}
