@@ -163,7 +163,7 @@ internal const class HttpRequestImpl : HttpRequest {
 		
 		// make sure scheme and host are dropped
 		if (rel.isAbs || rel.host != null)
-			rel = rel.getRange(1..-1)
+			rel = rel.relToAuth
 		
 		// see [Inconsistent WebReq::modRel()]`http://fantom.org/sidewalk/topic/2237`
 		return rel.isPathAbs ? rel : `/` + rel
