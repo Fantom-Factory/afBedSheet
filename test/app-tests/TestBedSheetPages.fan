@@ -50,6 +50,7 @@ internal class T_WebReq : WebReq {
 
 internal class T_WebRes : WebRes {
 	override Int statusCode					:= 200
+//	override Str? statusPhrase				// Fantom 1.0.79
 	override Str:Str headers 				:= [:]
 	override Cookie[] cookies 				:= [,]
 	override Bool isCommitted 				:= false
